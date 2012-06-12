@@ -197,7 +197,7 @@ public class MainActivitySupport {
 	}
 
 	public void enableBonusModus() {
-		Log.i("MainActivitySupport", "bonus gekauft, aktivieren");
+		Log.i("MainActivitySupport", "bonus bought, enable");
 		setMenuItemBuyBonusEnabled(false);
 		AdView ad = (AdView) mActivity.findViewById(R.id.adView);
 		ad.setVisibility(View.GONE);

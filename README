@@ -1,0 +1,2 @@
+Create your own class `EncodedPublicKey` in the package `com.inovex.zabbixmobile.billing` with
+the static public method #getKey that returns your key as string.
