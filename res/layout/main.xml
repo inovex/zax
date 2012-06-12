@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:id="@+id/root_layout"
+	android:orientation="vertical">
+	<com.google.ads.AdView android:id="@+id/adView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:visibility="gone"
+		ads:adUnitId="a14e550def8cf09"
+		ads:adSize="BANNER" />
+	<TabHost android:id="@android:id/tabhost" android:layout_width="fill_parent" android:layout_height="fill_parent">
+		<LinearLayout android:layout_width="fill_parent" android:id="@+id/linearLayout1" android:layout_height="fill_parent" android:orientation="vertical">
+			<TabWidget android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@android:id/tabs"></TabWidget>
+			<FrameLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@android:id/tabcontent">
+				<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tab_status">
+					<TextView android:id="@+id/listview_triggers_empty" android:text="@string/no_items_to_display" android:gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+					<com.inovex.zabbixmobile.view.HieraticalHostListView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/hosts_status">
+						<ListView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/listview_triggers"></ListView>
+					</com.inovex.zabbixmobile.view.HieraticalHostListView>
+				</LinearLayout>
+				<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tab_events">
+					<TextView android:id="@+id/listview_events_empty" android:text="@string/no_items_to_display" android:gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+					<ListView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/listview_events"></ListView>
+				</LinearLayout>
+				<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tab_checks">
+					<TextView android:id="@+id/listview_checks_empty" android:text="@string/no_items_to_display" android:gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+					<com.inovex.zabbixmobile.view.HieraticalHostListView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/hosts_checks">
+						<ExpandableListView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/listview_checks" />
+					</com.inovex.zabbixmobile.view.HieraticalHostListView>
+				</LinearLayout>
+				<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tab_screens" android:orientation="vertical">
+					<TextView android:id="@+id/listview_screens_empty" android:text="@string/no_items_to_display" android:gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" />
+					<ViewFlipper android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/view_switcher_screens" android:inAnimation="@android:anim/slide_in_left" android:outAnimation="@android:anim/slide_out_right">
+						<ListView
+							android:choiceMode="singleChoice"
+							android:layout_height="fill_parent"
+							android:id="@+id/list_screens"
+							android:layout_width="fill_parent"
+							android:layout_marginRight="1dip" />
+						<ScrollView
+							android:layout_width="fill_parent"
+							android:layout_height="fill_parent">
+							<LinearLayout
+								android:orientation="vertical"
+								android:layout_width="fill_parent"
+								android:layout_height="fill_parent"
+								android:id="@+id/layout_graphs" />
+						</ScrollView>
+					</ViewFlipper>
+				</LinearLayout>
+				<RelativeLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tab_graphs">
+					<TextView android:id="@+id/textview_graph" android:text="@string/no_graph" android:gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:layout_alignParentTop="true" />
+					<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tab_graphs_container" android:layout_below="@id/textview_graph"></LinearLayout>
+				</RelativeLayout>
+			</FrameLayout>
+		</LinearLayout>
+	</TabHost>
+</LinearLayout>

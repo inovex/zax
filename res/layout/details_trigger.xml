@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="fill_parent" android:orientation="vertical" android:padding="5dip"
+	android:id="@+id/dlg_details_trigger_container">
+	<TextView android:text="@string/trigger_details" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textStyle="bold"></TextView>
+	<TableLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+		<TableRow android:id="@+id/tableRow1" android:layout_width="wrap_content" android:layout_height="wrap_content">
+			<TextView android:text="@string/host" android:layout_width="100dip" android:layout_height="wrap_content"></TextView>
+			<TextView android:text="TextView" android:id="@+id/dlg_eventdetails_tv_host" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		</TableRow>
+		<TableRow android:id="@+id/tableRow2" android:layout_width="fill_parent" android:layout_height="wrap_content">
+			<TextView android:text="@string/trigger" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:text="TextView" android:id="@+id/dlg_eventdetails_tv_trigger" android:layout_width="190dip" android:layout_height="wrap_content" android:maxLines="4"></TextView>
+		</TableRow>
+		<TableRow android:id="@+id/tableRow3" android:layout_width="wrap_content" android:layout_height="wrap_content">
+			<TextView android:text="@string/severity" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:text="TextView" android:id="@+id/dlg_eventdetails_tv_severity" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		</TableRow>
+		<TableRow android:id="@+id/tableRow4" android:layout_width="wrap_content" android:layout_height="wrap_content">
+			<TextView android:text="@string/expression" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:text="TextView" android:id="@+id/dlg_eventdetails_tv_expression" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		</TableRow>
+		<TableRow android:id="@+id/tableRow5" android:layout_width="wrap_content" android:layout_height="wrap_content">
+			<TextView android:text="@string/disabled" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+			<TextView android:text="TextView" android:id="@+id/dlg_eventdetails_tv_disabled" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		</TableRow>
+	</TableLayout>
+</LinearLayout>

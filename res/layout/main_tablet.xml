@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="@color/layout_border" >
+	<ListView
+		android:id="@+id/listview_menu"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:layout_weight="8"
+		android:choiceMode="singleChoice"
+		android:background="#000000"
+		android:layout_marginRight="2dip" />
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="fill_parent" android:layout_height="fill_parent"
+		android:layout_weight="2"
+		xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads">
+		<fragment
+			android:id="@+id/fragment_host_list"
+			android:name="com.inovex.zabbixmobile.activities.HostListFragment"
+			android:layout_width="fill_parent" android:layout_height="fill_parent"
+			android:layout_weight="2"
+			android:layout_marginBottom="2dip" />
+		<fragment
+			android:id="@+id/fragment_content"
+			android:name="com.inovex.zabbixmobile.activities.ContentFragment"
+			android:layout_width="fill_parent" android:layout_height="fill_parent"
+			android:layout_weight="1" />
+		<com.google.ads.AdView android:id="@+id/adView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:visibility="gone"
+			ads:adUnitId="a14e550def8cf09"
+			ads:adSize="BANNER" />
+	</LinearLayout>
+</LinearLayout>

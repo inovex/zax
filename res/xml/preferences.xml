@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/zabbix_login">
+		<EditTextPreference android:summary="@string/url_example" android:key="zabbix_url" android:title="@string/url" android:defaultValue="http://zabbix.company.net/zabbix" android:inputType="textUri"></EditTextPreference>
+		<EditTextPreference android:title="@string/username" android:key="zabbix_username" android:inputType="text"></EditTextPreference>
+		<EditTextPreference android:title="@string/password" android:key="zabbix_password" android:inputType="textPassword"></EditTextPreference>
+		<CheckBoxPreference android:title="@string/trust_all_ssl_certificates" android:key="zabbix_trust_all_ssl_ca"/><PreferenceScreen android:title="@string/http_auth" android:summary="@string/http_auth_description">
+			<CheckBoxPreference android:title="@string/enabled" android:key="http_auth_enabled"></CheckBoxPreference>
+			<EditTextPreference android:title="@string/username" android:key="http_auth_username" android:inputType="text" android:dependency="http_auth_enabled"></EditTextPreference>
+			<EditTextPreference android:title="@string/password" android:key="http_auth_password" android:inputType="textPassword" android:dependency="http_auth_enabled"></EditTextPreference>
+		</PreferenceScreen>
+		
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/push_notifications">
+		<CheckBoxPreference android:key="zabbix_push_enabled" android:title="@string/enabled"></CheckBoxPreference>
+		<EditTextPreference android:dependency="zabbix_push_enabled" android:key="zabbix_push_subscribe_key" android:title="@string/subscribe_key"></EditTextPreference>
+		<RingtonePreference android:dependency="zabbix_push_enabled" android:title="@string/ringtone" android:ringtoneType="notification" android:showSilent="true" android:key="zabbix_push_ringtone" android:showDefault="true"></RingtonePreference>
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/homescreen_widget">
+		<EditTextPreference android:key="widget_refresh_interval_mins" android:title="Refresh interval (min)" android:defaultValue="15" android:inputType="number" />
+	</PreferenceCategory>
+</PreferenceScreen>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content">
+		<ImageView
+			android:layout_width="wrap_content"
+			android:id="@+id/imageView1"
+			android:layout_height="wrap_content"
+			android:src="@drawable/problem" />
+		<TextView
+			android:paddingLeft="4dip"
+			android:text="TextView"
+			android:id="@+id/dlg_failuremessage_message"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="@android:style/TextAppearance.DialogWindowTitle" />
+	</LinearLayout>
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Refresh Current View"
+		android:layout_gravity="center"
+		android:id="@+id/btn_refresh_current_view" />
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Show Preferences"
+		android:layout_gravity="center"
+		android:id="@+id/btn_show_preferences" />
+</LinearLayout>

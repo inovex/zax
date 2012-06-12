@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:id="@+id/tab_graphs"
+	android:background="@color/box_background">
+	<TextView android:id="@+id/textview_graph" android:text="@string/no_graph" android:gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:layout_alignParentTop="true" />
+	<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tab_graphs_container" android:layout_below="@id/textview_graph"></LinearLayout>
+</RelativeLayout>

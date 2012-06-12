@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="layout_border">#888888</color>
+    <color name="box_background">#333333</color>
+</resources>

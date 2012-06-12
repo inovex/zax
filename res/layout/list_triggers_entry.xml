@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:padding="6dip">
+	<ImageView
+		android:id="@+id/triggers_entry_status"
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent"
+		android:layout_alignParentTop="true"
+		android:layout_marginRight="6dip"
+		android:layout_marginTop="9dip" />
+	<TextView
+		android:id="@+id/triggers_entry_priority"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/triggers_entry_status"
+		android:layout_alignParentTop="true"
+		android:layout_alignParentRight="true"
+		android:ellipsize="marquee"
+		android:textSize="26dip" />
+	<TextView
+		android:id="@+id/triggers_entry_clock"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		android:layout_alignParentRight="true"
+		android:textSize="12dip" />
+	<TextView
+		android:id="@+id/triggers_entry_description"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/events_entry_status"
+		android:layout_alignParentRight="true"
+		android:layout_below="@id/triggers_entry_priority"
+		android:textSize="20dip" />
+</RelativeLayout>

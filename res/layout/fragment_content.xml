@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	android:background="@color/box_background">
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:id="@+id/fragment_content_loading">
+		<ProgressBar
+			android:layout_width="150dip"
+			android:layout_height="wrap_content"
+			android:layout_centerInParent="true"
+			style="@android:style/Widget.ProgressBar.Horizontal"
+			android:indeterminate="false"
+			android:progress="1" />
+	</RelativeLayout>
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:id="@+id/layout_content_details"
+		android:orientation="vertical"
+		android:visibility="gone"
+		android:background="@color/layout_border">
+		<LinearLayout
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:orientation="horizontal"
+			android:layout_weight="1"
+			android:layout_marginBottom="1dip">
+			<fragment
+				android:id="@+id/fragment_details_trigger"
+				android:name="com.inovex.zabbixmobile.activities.DetailsTriggerFragment"
+				android:layout_width="fill_parent" android:layout_height="fill_parent"
+				android:layout_weight="1"
+				android:layout_marginRight="1dip" />
+			<fragment
+				android:id="@+id/fragment_details_event"
+				android:name="com.inovex.zabbixmobile.activities.DetailsEventFragment"
+				android:layout_width="fill_parent" android:layout_height="fill_parent"
+				android:layout_weight="1" />
+		</LinearLayout>
+		<fragment
+			android:id="@+id/fragment_details_item"
+			android:name="com.inovex.zabbixmobile.activities.DetailsItemFragment"
+			android:layout_width="fill_parent" android:layout_height="fill_parent"
+			android:layout_weight="1" />
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:id="@+id/layout_content_checks"
+		android:visibility="gone"
+		android:background="@color/layout_border">
+		<ListView
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:id="@+id/listview_checks_applications"
+			android:layout_weight="2"
+			android:choiceMode="singleChoice"
+			android:layout_marginRight="1dip"
+			android:background="@color/box_background" />
+		<ListView
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:id="@+id/listview_checks_items"
+			android:layout_weight="1"
+			android:background="@color/box_background" />
+	</LinearLayout>
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@color/box_background"
+		android:id="@+id/listview_events_empty"
+		android:text="@string/no_items_to_display"
+		android:gravity="center_vertical|center_horizontal"
+		android:textAppearance="@android:style/TextAppearance.DialogWindowTitle"
+		android:visibility="gone" />
+	<ListView
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:id="@+id/listview_events"
+		android:visibility="gone" />
+	<ScrollView
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:visibility="gone">
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:id="@+id/layout_graphs"
+			 />
+	</ScrollView>
+	<ViewStub
+		android:id="@+id/fragment_content_stub_problems"
+		android:inflatedId="@+id/stub_problems_content"
+		android:layout="@layout/fragment_content_stubs"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:visibility="gone" />
+</LinearLayout>
