@@ -1,5 +1,9 @@
 package com.inovex.zabbixmobile;
 
+import java.util.List;
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,10 +13,26 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 
+import com.inovex.zabbixmobile.push.PushService;
+
 /**
  * activity for preferences
  */
 public class AppPreferenceActivity extends PreferenceActivity {
+	private void killService() {
+		ActivityManager manager = (ActivityManager) this.getSystemService(ACTIVITY_SERVICE);
+
+		List<RunningAppProcessInfo> services = manager.getRunningAppProcesses();
+		for (RunningAppProcessInfo service : services) {
+			if (service.processName.equals("com.inovex.zabbixmobile:pushservice")) {
+				int pid = service.pid;
+				android.os.Process.killProcess(pid);
+			}
+		}
+		Intent messageservice = new Intent(this, PushService.class);
+		stopService(messageservice);
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -42,8 +62,20 @@ public class AppPreferenceActivity extends PreferenceActivity {
 					});
 					AlertDialog alert = builder.create();
 					alert.show();
+				} else {
+					killService();
 				}
 
+				return true;
+			}
+		});
+
+		// update pubnub subscribtion if sub-key has changed
+		pref = findPreference("zabbix_push_subscribe_key");
+		pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				killService();
 				return true;
 			}
 		});

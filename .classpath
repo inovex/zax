@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="lib/GoogleAdMobAdsSdk-4.1.1.jar"/>
 	<classpathentry kind="src" path="pubnub-api_java"/>
 	<classpathentry kind="src" path="GraphView_src"/>
+	<classpathentry kind="lib" path="lib/PubnubCrypto.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

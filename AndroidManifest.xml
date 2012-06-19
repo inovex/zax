@@ -29,7 +29,6 @@
 			android:authorities="com.inovex.zabbixmobile.ZabbixContentProvider"
 			android:syncable="false" />
 		
-		<service android:name=".api.PushReceiverService" />
 		<receiver android:name=".BootCompletedIntentReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -55,5 +54,6 @@
 				android:resource="@xml/widget_info" />
 		</receiver>
 		<service android:name=".api.HomescreenWidgetService"></service>
+		<service android:name=".push.PushService" android:process=":pushservice"></service>
 	</application>
 </manifest>

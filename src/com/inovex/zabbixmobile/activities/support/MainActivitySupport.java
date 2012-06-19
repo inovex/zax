@@ -3,9 +3,11 @@ package com.inovex.zabbixmobile.activities.support;
 import java.lang.reflect.Method;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -30,11 +32,12 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.ZabbixContentProvider;
 import com.inovex.zabbixmobile.activities.MainActivitySmartphone;
 import com.inovex.zabbixmobile.activities.MainActivityTablet.AppView;
-import com.inovex.zabbixmobile.api.PushReceiverService;
 import com.inovex.zabbixmobile.billing.BillingService;
 import com.inovex.zabbixmobile.billing.Consts;
 import com.inovex.zabbixmobile.billing.ResponseHandler;
 import com.inovex.zabbixmobile.billing.ZabbixMobilePurchaseObserver;
+import com.inovex.zabbixmobile.push.PushAlarm;
+import com.inovex.zabbixmobile.push.PushService;
 
 public class MainActivitySupport {
 	private final Activity mActivity;
@@ -264,10 +267,13 @@ public class MainActivitySupport {
 		// push notifications
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
 		boolean push = prefs.getBoolean("zabbix_push_enabled", false);
-		Intent intent = new Intent(mActivity, PushReceiverService.class);
+		AlarmManager am = (AlarmManager) mActivity.getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(mActivity, PushAlarm.class);
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(mActivity, 0,
+				intent, PendingIntent.FLAG_CANCEL_CURRENT);
 		if (!push) {
 			// stop service
-			mActivity.stopService(intent);
+			am.cancel(pendingIntent);
 		} else if (push) {
 			// start service
 			String subscribe_key = prefs.getString("zabbix_push_subscribe_key", "").trim();
@@ -275,7 +281,11 @@ public class MainActivitySupport {
 				// invalid subscribe key
 				showFailureMessage(R.string.invalid_subscribe_key, false);
 			} else {
-				mActivity.startService(intent);
+				Intent messageservice = new Intent(mActivity, PushService.class);
+				mActivity.startService(messageservice);
+
+				am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
+						(5 * 60 * 1000), pendingIntent); //wake up every 5 minutes to ensure service stays alive
 			}
 		}
 

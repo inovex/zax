@@ -53,7 +53,7 @@
     <string name="http_auth_failed">401 Authorization Required. Please enable http authentication in the preferences.</string>
     <string name="refresh_finished">Refresh finished</string>
     <string name="subscribe_key">Pubnub Subscribe Key</string>
-    <string name="invalid_subscribe_key">Invalid Pubnub Subscribe Key</string>
+    <string name="invalid_subscribe_key">Invalid Pubnub Subscribe Key. Go to preferences and change it or unable push notifications.</string>
     <string name="event_details">Event Details</string>
     <string name="show_item_details">Show Item Details</string>
     <string name="graph_text" formatted="false">Latest data: %s at %s</string>
