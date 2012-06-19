@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.inovex.zabbixmobile"
-	android:versionName="1.4.2" android:versionCode="9">
+	android:versionName="1.4.3" android:versionCode="10">
 	<uses-sdk android:minSdkVersion="8" android:targetSdkVersion="11"></uses-sdk>
 	<supports-screens android:normalScreens="true" android:smallScreens="true" android:largeScreens="true"></supports-screens>
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"></uses-permission>
