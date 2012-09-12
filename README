@@ -1,2 +1,6 @@
 Create your own class `EncodedPublicKey` in the package `com.inovex.zabbixmobile.billing` with
 the static public method #getKey that returns your key as string.
+
+
+=== Test API
+$ wget --post-file=data --header='Content-Type: application/json; utf-8' http://www.mozbx.net/zabbix/api_jsonrpc.php

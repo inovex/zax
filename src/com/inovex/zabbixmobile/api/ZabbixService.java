@@ -1254,6 +1254,9 @@ public class ZabbixService {
 	 */
 	public void importTriggers() throws JSONException, IOException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException {
 		if (!isCached(TriggerData.TABLE_NAME, null)) {
+			// clear triggers
+			zabbixLocalDB.delete(TriggerData.TABLE_NAME, null, null);
+
 			_startTransaction();
 
 			long min = (new Date().getTime()/1000)-ZabbixConfig.STATUS_SHOW_TRIGGER_TIME;
