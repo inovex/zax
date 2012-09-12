@@ -1,5 +1,8 @@
 package com.inovex.zabbixmobile.activities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
@@ -18,12 +21,15 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ResourceCursorAdapter;
 import android.widget.SimpleCursorAdapter;
+import android.widget.ToggleButton;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.ZabbixContentProvider;
@@ -47,6 +53,7 @@ public class HostListFragment extends Fragment implements OnItemClickListener, L
 	private int restoreHostGroupPos = -1;
 	private int restoreHostPos = -1;
 	private int restoreScreenPos = -1;
+	private final List<Integer> problemsFilterPriority = new ArrayList<Integer>();
 
 	public int getListHostCheckedItemPosition() {
 		return listHosts.getCheckedItemPosition();
@@ -96,6 +103,20 @@ public class HostListFragment extends Fragment implements OnItemClickListener, L
 		));
 
 		hostListSupport.setupLists(listHosts, listHostGroups);
+
+		// toggle buttons problems filter
+		OnCheckedChangeListener tplList = new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				onProblemsFilterChanged();
+			}
+		};
+		((ToggleButton) getActivity().findViewById(R.id.tgl_trigger_filter_0)).setOnCheckedChangeListener(tplList);
+		((ToggleButton) getActivity().findViewById(R.id.tgl_trigger_filter_1)).setOnCheckedChangeListener(tplList);
+		((ToggleButton) getActivity().findViewById(R.id.tgl_trigger_filter_2)).setOnCheckedChangeListener(tplList);
+		((ToggleButton) getActivity().findViewById(R.id.tgl_trigger_filter_3)).setOnCheckedChangeListener(tplList);
+		((ToggleButton) getActivity().findViewById(R.id.tgl_trigger_filter_4)).setOnCheckedChangeListener(tplList);
+		((ToggleButton) getActivity().findViewById(R.id.tgl_trigger_filter_5)).setOnCheckedChangeListener(tplList);
 	}
 
 	@Override
@@ -108,12 +129,30 @@ public class HostListFragment extends Fragment implements OnItemClickListener, L
 		} else { // LOADER_SCREENS
 			uri = ZabbixContentProvider.CONTENT_URI_SCREENS;
 		}
+
+		// problem filter
+		String[] selectionArgs = null;
+		if (currentView==AppView.PROBLEMS) {
+			if (!problemsFilterPriority.isEmpty()) {
+				StringBuffer filterstr = new StringBuffer();
+				for (int i : problemsFilterPriority) {
+					filterstr.append(i);
+				}
+				selectionArgs = new String[] {
+						"triggerFlag"
+						, filterstr.toString()
+				};
+			} else {
+				selectionArgs = new String[] { "triggerFlag" };
+			}
+		}
+
 		return new CursorLoader(
 				getActivity()
 				, uri
 				, null
 				, null
-				, currentView==AppView.PROBLEMS?new String[] { "triggerFlag" }:null
+				, selectionArgs
 				, null
 		);
 	}
@@ -196,6 +235,30 @@ public class HostListFragment extends Fragment implements OnItemClickListener, L
 		}
 	}
 
+	private void onProblemsFilterChanged() {
+		problemsFilterPriority.clear();
+		if (((ToggleButton) getActivity().findViewById(R.id.tgl_trigger_filter_0)).isChecked()) {
+			problemsFilterPriority.add(0);
+		}
+		if (((ToggleButton) getActivity().findViewById(R.id.tgl_trigger_filter_1)).isChecked()) {
+			problemsFilterPriority.add(1);
+		}
+		if (((ToggleButton) getActivity().findViewById(R.id.tgl_trigger_filter_2)).isChecked()) {
+			problemsFilterPriority.add(2);
+		}
+		if (((ToggleButton) getActivity().findViewById(R.id.tgl_trigger_filter_3)).isChecked()) {
+			problemsFilterPriority.add(3);
+		}
+		if (((ToggleButton) getActivity().findViewById(R.id.tgl_trigger_filter_4)).isChecked()) {
+			problemsFilterPriority.add(4);
+		}
+		if (((ToggleButton) getActivity().findViewById(R.id.tgl_trigger_filter_5)).isChecked()) {
+			problemsFilterPriority.add(5);
+		}
+		showView(currentView);
+		((MainActivityTablet) getActivity()).getContentFragment().showView(currentView);
+	}
+
 	public void restoreLastSelection(int hostGroupPos, long hostGroupId, int hostPos) {
 		restoreHostGroupPos = hostGroupPos;
 		restoreHostPos = hostPos;
@@ -256,6 +319,10 @@ public class HostListFragment extends Fragment implements OnItemClickListener, L
 			getView().setVisibility(View.VISIBLE);
 			getView().startAnimation(animationFragmentSlideIn);
 		}
+
+		// problems - show filter
+		getActivity().findViewById(R.id.problems_filter_severity).setVisibility(
+				view == AppView.PROBLEMS?View.VISIBLE:View.GONE);
 
 		// if there are no settings, we do nothing
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
