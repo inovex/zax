@@ -1,6 +1,8 @@
 package com.inovex.zabbixmobile.activities;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import android.app.Dialog;
 import android.app.TabActivity;
@@ -52,6 +54,8 @@ import com.inovex.zabbixmobile.model.ScreenData;
 import com.inovex.zabbixmobile.model.TriggerData;
 import com.inovex.zabbixmobile.view.HieraticalHostListView;
 import com.inovex.zabbixmobile.view.HieraticalHostListView.OnChildEntryClickListener;
+import com.inovex.zabbixmobile.view.MultipleSpinner;
+import com.inovex.zabbixmobile.view.MultipleSpinner.MultipleSpinnerListener;
 import com.inovex.zabbixmobile.view.PromptDialog;
 
 /**
@@ -96,6 +100,7 @@ public class MainActivitySmartphone extends TabActivity implements CurrentViewSu
 	private DetailsItemFragmentSupport detailsItemSupport;
 	private boolean showDialogDetails;
 	private MainActivitySupport support;
+	private List<Integer> problemsFilterPriority;
 
 	void acknowledgeEvent(long eventid, String input) {
 		showLoading();
@@ -437,6 +442,12 @@ public class MainActivitySmartphone extends TabActivity implements CurrentViewSu
 		}
 	}
 
+	private void setProblemsFilter(List<Integer> filterPriority) {
+		this.problemsFilterPriority = filterPriority;
+		setupListViewProblemsFinished = null;
+		setupListViewProblems();
+	}
+
 	private void setupDialogDetails() {
 		if (dlgDetails == null) {
 			dlgDetails = new Dialog(this);
@@ -581,8 +592,9 @@ public class MainActivitySmartphone extends TabActivity implements CurrentViewSu
 			}
 		});
 
-		HieraticalHostListView hlv = (HieraticalHostListView) findViewById(R.id.hosts_status);
+		final HieraticalHostListView hlv = (HieraticalHostListView) findViewById(R.id.hosts_status);
 		hlv.setEmptyView(findViewById(R.id.listview_triggers_empty));
+		hlv.setPriorityFilter(problemsFilterPriority);
 		hlv.loadData(true, this);
 		hlv.setOnChildEntryClickListener(new OnChildEntryClickListener() {
 			@Override
@@ -682,6 +694,29 @@ public class MainActivitySmartphone extends TabActivity implements CurrentViewSu
 				} else if (tabId.equals("tab_screens")) {
 					setupListViewScreens();
 				}
+			}
+		});
+
+		// setup problems filter
+		MultipleSpinner spinner = (MultipleSpinner) findViewById(R.id.problems_filter);
+		List<String> items = new ArrayList<String>();
+		items.add(getResources().getString(R.string.priority_not_classified));
+		items.add(getResources().getString(R.string.priority_information));
+		items.add(getResources().getString(R.string.priority_warning));
+		items.add(getResources().getString(R.string.priority_average));
+		items.add(getResources().getString(R.string.priority_high));
+		items.add(getResources().getString(R.string.priority_disaster));
+		spinner.setItems(items, getResources().getString(R.string.no_filter), new MultipleSpinnerListener() {
+			@Override
+			public void onItemsSelected(boolean[] selected) {
+				List<Integer> filterPriority = new ArrayList<Integer>();
+				for (int i=0; i<selected.length; i++) {
+					if (selected[i]) filterPriority.add(i);
+				}
+				if (filterPriority.size() == 0) {
+					filterPriority = null;
+				}
+				setProblemsFilter(filterPriority);
 			}
 		});
 	}

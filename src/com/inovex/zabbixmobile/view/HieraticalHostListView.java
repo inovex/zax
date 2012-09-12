@@ -1,5 +1,7 @@
 package com.inovex.zabbixmobile.view;
 
+import java.util.List;
+
 import android.content.AsyncQueryHandler;
 import android.content.Context;
 import android.database.Cursor;
@@ -30,6 +32,7 @@ public class HieraticalHostListView extends ViewFlipper implements OnItemClickLi
 	private final ListView listViewHosts;
 	private OnChildEntryClickListener onChildEntryClickListener;
 	private MainActivitySmartphone mActivity;
+	private List<Integer> priorityFilter;
 
 	public HieraticalHostListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -66,7 +69,18 @@ public class HieraticalHostListView extends ViewFlipper implements OnItemClickLi
 		// hostGroups
 		String[] selectionArgs = null;
 		if (triggerFlag) {
-			selectionArgs = new String[] { "triggerFlag" };
+			if (priorityFilter != null) {
+				StringBuffer filterstr = new StringBuffer();
+				for (int i : priorityFilter) {
+					filterstr.append(i);
+				}
+				selectionArgs = new String[] {
+						"triggerFlag"
+						, filterstr.toString()
+				};
+			} else {
+				selectionArgs = new String[] { "triggerFlag" };
+			}
 		}
 		AsyncQueryHandler queryHandler = new AsyncQueryHandler(getContext().getContentResolver()) {
 			@Override
@@ -89,7 +103,18 @@ public class HieraticalHostListView extends ViewFlipper implements OnItemClickLi
 			Uri uri = Uri.parse(ZabbixContentProvider.CONTENT_URI_HOSTGROUPS.toString()+"/"+id+"/hosts");
 			String[] selectionArgs = null;
 			if (HieraticalHostListView.this.triggerFlag) {
-				selectionArgs = new String[] { "triggerFlag" };
+				if (priorityFilter != null) {
+					StringBuffer filterstr = new StringBuffer();
+					for (int i : priorityFilter) {
+						filterstr.append(i);
+					}
+					selectionArgs = new String[] {
+							"triggerFlag"
+							, filterstr.toString()
+					};
+				} else {
+					selectionArgs = new String[] { "triggerFlag" };
+				}
 			}
 			AsyncQueryHandler queryHandler = new AsyncQueryHandler(getContext().getContentResolver()) {
 				@Override
@@ -127,6 +152,10 @@ public class HieraticalHostListView extends ViewFlipper implements OnItemClickLi
 	 */
 	public void setOnChildEntryClickListener(OnChildEntryClickListener onChildEntryClickListener) {
 		this.onChildEntryClickListener = onChildEntryClickListener;
+	}
+
+	public void setPriorityFilter(List<Integer> priorityFilter) {
+		this.priorityFilter = priorityFilter;
 	}
 
 	@Override

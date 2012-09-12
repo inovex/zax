@@ -403,6 +403,7 @@ public class ZabbixContentProvider extends ContentProvider {
 			String groupBy;
 			String[] selection;
 			if (arg3 != null && arg3[0].equals("triggerFlag")) {
+				// Problems
 				try {
 					zabbix.importTriggers();
 				} catch (Exception e) {
@@ -421,6 +422,20 @@ public class ZabbixContentProvider extends ContentProvider {
 						TriggerData.COLUMN_LASTCHANGE+">"+min
 						+ " AND "+TriggerData.COLUMN_VALUE+"=1"
 						+ " AND "+TriggerData.COLUMN_STATUS+"=0"); // only enabled triggers
+
+				// filter by priority
+				if (arg3.length == 2) {
+					boolean _first = true;
+					sqlBuilder.appendWhere(" AND (");
+					for (int i=0; i<arg3[1].length(); i++) {
+						char c = arg3[1].charAt(i);
+						if (c >= '0' && c <= '9') {
+							sqlBuilder.appendWhere((_first?"":" OR ")+TriggerData.COLUMN_PRIORITY+"="+c);
+						}
+						_first=false;
+					}
+					sqlBuilder.appendWhere(")");
+				}
 			} else {
 				sqlBuilder.setTables(HostGroupData.TABLE_NAME);
 				groupBy = null;

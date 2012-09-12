@@ -343,7 +343,7 @@ public class ZabbixService {
 	 * @throws HttpAuthorizationRequiredException
 	 * @throws NoAPIAccessException
 	 */
-	private JsonArrayReader _queryStream(String method, JSONObject params) throws JSONException, IOException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException {
+	private JsonArrayOrObjectReader _queryStream(String method, JSONObject params) throws JSONException, IOException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException {
 		// http request
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
@@ -354,6 +354,9 @@ public class ZabbixService {
 			.put("params", params)
 			.put("auth", token)
 			.put("id", 0);
+
+		Log.d("ZabbixService", "_queryStream: "+url);
+		Log.d("ZabbixService", "_queryStream: "+json.toString());
 
 		post.setEntity(new StringEntity(json.toString(), "UTF-8"));
 		try {
@@ -384,7 +387,7 @@ public class ZabbixService {
 						// first do a new auth and then try the same api call again
 						if (authenticate() && !_notAuthorizedRetry) {
 							_notAuthorizedRetry = true;
-							JsonArrayReader r = _queryStream(method, params);
+							JsonArrayOrObjectReader r = _queryStream(method, params);
 							_notAuthorizedRetry = false;
 							return r;
 						} else throw new IllegalStateException(errortxt);
@@ -393,10 +396,20 @@ public class ZabbixService {
 			} while (!jp.getCurrentName().equals("result"));
 
 			// result array found
-			if (jp.nextToken() != JsonToken.START_ARRAY) { // go inside the array
+			if (jp.nextToken() != JsonToken.START_ARRAY && jp.getCurrentToken() != JsonToken.START_OBJECT) { // go inside the array
+				try {
+					Log.d("ZabbixService", "current token: "+jp.getCurrentToken());
+					Log.d("ZabbixService", "current name: "+jp.getCurrentName());
+					Log.d("ZabbixService", "get text: "+jp.getText());
+					Log.d("ZabbixService", "next value: "+jp.nextValue());
+					Log.d("ZabbixService", "next token: "+jp.nextToken());
+					Log.d("ZabbixService", "current token: "+jp.getCurrentToken());
+					Log.d("ZabbixService", "current name: "+jp.getCurrentName());
+					Log.d("ZabbixService", "get text: "+jp.getText());
+				} catch (Exception e) {}
 				throw new IOException("Expected data to start with an Array");
 			}
-			return new JsonArrayReader(jp);
+			return new JsonArrayOrObjectReader(jp);
 		} catch (SSLPeerUnverifiedException e) {
 			throw e;
 		} catch (IOException e) {
@@ -487,6 +500,7 @@ public class ZabbixService {
 					, new JSONObject()
 			);
 			isVersion2 = result.getString("result").equals("1.4");
+			Log.i("ZabbixService", "Zabbix Server Version: isVersion2="+isVersion2);
 		}
 		return token != null;
 	}
@@ -504,7 +518,7 @@ public class ZabbixService {
 		}
 	}
 
-	private void importApplications(long hostid, long itemid, JsonArrayReader jsonArray) throws JsonParseException, NumberFormatException, IOException {
+	private void importApplications(long hostid, long itemid, JsonArrayOrObjectReader jsonArray) throws JsonParseException, NumberFormatException, IOException {
 		int num = 0;
 		JsonObjectReader application;
 		while ((application = jsonArray.next()) != null) {
@@ -576,7 +590,7 @@ public class ZabbixService {
 					.put("sortorder", "DESC");
 			}
 
-			JsonArrayReader events = _queryStream(
+			JsonArrayOrObjectReader events = _queryStream(
 					"event.get"
 					, params
 			);
@@ -618,7 +632,7 @@ public class ZabbixService {
 				params.put("sortfield", "clock")
 					.put("sortorder", "DESC");
 			}
-			JsonArrayReader events = _queryStream(
+			JsonArrayOrObjectReader events = _queryStream(
 					"event.get"
 					, params
 			);
@@ -636,7 +650,7 @@ public class ZabbixService {
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
-	private void importEvents(JsonArrayReader events, Integer numEvents) throws JsonParseException, IOException {
+	private void importEvents(JsonArrayOrObjectReader events, Integer numEvents) throws JsonParseException, IOException {
 		int i=0;
 		JsonObjectReader eventReader;
 		while ((eventReader = events.next()) != null) {
@@ -688,7 +702,7 @@ public class ZabbixService {
 	 * @throws NumberFormatException
 	 * @throws IOException
 	 */
-	private boolean importGraphItems(JsonArrayReader graphItems) throws JsonParseException, NumberFormatException, IOException {
+	private boolean importGraphItems(JsonArrayOrObjectReader graphItems) throws JsonParseException, NumberFormatException, IOException {
 		boolean mustSetGraphid = false;
 		JsonObjectReader graphItemReader;
 		while ((graphItemReader = graphItems.next()) != null) {
@@ -737,7 +751,7 @@ public class ZabbixService {
 			}
 			zabbixLocalDB.delete(CacheData.TABLE_NAME, CacheData.COLUMN_KIND+"='"+GraphData.TABLE_NAME+"' AND "+CacheData.COLUMN_FILTER+"='screenid="+screenid+'\'', null);
 
-			JsonArrayReader graphs = _queryStream(
+			JsonArrayOrObjectReader graphs = _queryStream(
 					"graph.get"
 					, new JSONObject()
 						.put(isVersion2?"selectGraphItems":"select_graph_items", "extend")
@@ -826,7 +840,7 @@ public class ZabbixService {
 				// so we use a fiction
 				int numDetails = 400;
 				int curI=0;
-				JsonArrayReader historydetails = _queryStream(
+				JsonArrayOrObjectReader historydetails = _queryStream(
 						"history.get"
 						, new JSONObject()
 							.put("output", "extend")
@@ -878,7 +892,7 @@ public class ZabbixService {
 		}
 	}
 
-	private long importHostGroups(JsonArrayReader jsonArray) throws JsonParseException, IOException {
+	private long importHostGroups(JsonArrayOrObjectReader jsonArray) throws JsonParseException, IOException {
 		long firstHostGroupId = -1;
 		JsonObjectReader hostReader;
 		while ((hostReader = jsonArray.next()) != null) {
@@ -910,7 +924,7 @@ public class ZabbixService {
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
-	private Object[] importHosts(JsonArrayReader jsonArray, Integer numHosts) throws JsonParseException, IOException {
+	private Object[] importHosts(JsonArrayOrObjectReader jsonArray, Integer numHosts) throws JsonParseException, IOException {
 		List<String> hostnames = new ArrayList<String>();
 		long firstHostId = -1;
 		JsonObjectReader hostReader;
@@ -971,7 +985,7 @@ public class ZabbixService {
 						.put(isVersion2?"selectGroups":"select_groups", "extend")
 			);
 			int numHosts = result.getInt("result");
-			JsonArrayReader hosts = _queryStream(
+			JsonArrayOrObjectReader hosts = _queryStream(
 					"host.get"
 					, new JSONObject()
 						.put("output", "extend")
@@ -995,7 +1009,7 @@ public class ZabbixService {
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
-	private long importItems(JsonArrayReader items, int numItems, boolean checkBeforeInsert) throws JsonParseException, IOException {
+	private long importItems(JsonArrayOrObjectReader items, int numItems, boolean checkBeforeInsert) throws JsonParseException, IOException {
 		long firstItemId = -1;
 		int curI=0;
 		JsonObjectReader itemReader;
@@ -1090,7 +1104,7 @@ public class ZabbixService {
 					.put("hostids", new JSONArray().put(hostid))
 			);
 			int numItems = result.getInt("result");
-			JsonArrayReader items = _queryStream(
+			JsonArrayOrObjectReader items = _queryStream(
 					"item.get"
 					, new JSONObject()
 						.put("output", "extend")
@@ -1106,7 +1120,7 @@ public class ZabbixService {
 		}
 	}
 
-	private void importScreenItems(JsonArrayReader screenItems) throws JsonParseException, NumberFormatException, IOException {
+	private void importScreenItems(JsonArrayOrObjectReader screenItems) throws JsonParseException, NumberFormatException, IOException {
 		JsonObjectReader screenItemReader;
 		while ((screenItemReader = screenItems.next()) != null) {
 			ScreenItemData si = new ScreenItemData();
@@ -1140,7 +1154,7 @@ public class ZabbixService {
 			zabbixLocalDB.delete(ScreenItemData.TABLE_NAME, null, null);
 			zabbixLocalDB.delete(CacheData.TABLE_NAME, CacheData.COLUMN_KIND+"='"+ScreenData.TABLE_NAME+"'", null);
 
-			JsonArrayReader screens = _queryStream(
+			JsonArrayOrObjectReader screens = _queryStream(
 					(isVersion2?"s":"S")+"creen.get"
 					, new JSONObject()
 						.put("output", "extend")
@@ -1174,7 +1188,7 @@ public class ZabbixService {
 		if (!isCached(TriggerData.TABLE_NAME, "triggerid="+triggerid)) {
 			_startTransaction();
 
-			JsonArrayReader trigger = _queryStream(
+			JsonArrayOrObjectReader trigger = _queryStream(
 					"trigger.get"
 					, new JSONObject()
 						.put("output", "extend")
@@ -1216,7 +1230,7 @@ public class ZabbixService {
 		if (mustImport) {
 			_startTransaction();
 			zabbixLocalDB.delete(TriggerData.TABLE_NAME, TriggerData.COLUMN_TRIGGERID+"="+triggerid, null);
-			JsonArrayReader triggers = _queryStream(
+			JsonArrayOrObjectReader triggers = _queryStream(
 					"trigger.get"
 					, new JSONObject()
 						.put("output", "extend")
@@ -1243,7 +1257,7 @@ public class ZabbixService {
 			_startTransaction();
 
 			long min = (new Date().getTime()/1000)-ZabbixConfig.STATUS_SHOW_TRIGGER_TIME;
-			JsonArrayReader triggers = _queryStream(
+			JsonArrayOrObjectReader triggers = _queryStream(
 					"trigger.get"
 					, new JSONObject()
 						.put("output", "extend")
@@ -1265,7 +1279,7 @@ public class ZabbixService {
 		}
 	}
 
-	private void importTriggers(JsonArrayReader jsonArray) throws JsonParseException, IOException {
+	private void importTriggers(JsonArrayOrObjectReader jsonArray) throws JsonParseException, IOException {
 		JsonObjectReader triggerReader;
 		while ((triggerReader = jsonArray.next()) != null) {
 			TriggerData t = new TriggerData();
@@ -1311,7 +1325,7 @@ public class ZabbixService {
 		if (!isCached(TriggerData.TABLE_NAME, "itemid="+itemid)) {
 			_startTransaction();
 			zabbixLocalDB.delete(TriggerData.TABLE_NAME, TriggerData.COLUMN_ITEMID+"="+itemid, null);
-			JsonArrayReader triggers = _queryStream(
+			JsonArrayOrObjectReader triggers = _queryStream(
 					"trigger.get"
 					, new JSONObject()
 						.put("output", "extend")

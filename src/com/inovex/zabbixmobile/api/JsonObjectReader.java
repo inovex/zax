@@ -53,14 +53,14 @@ public class JsonObjectReader {
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
-	public JsonArrayReader getJsonArray() throws JsonParseException, IOException {
+	public JsonArrayOrObjectReader getJsonArray() throws JsonParseException, IOException {
 		if (
 				parser.getCurrentToken() != JsonToken.START_ARRAY
 				&& parser.nextToken() != JsonToken.START_ARRAY
 		) {
 			throw new IllegalStateException();
 		}
-		return new JsonArrayReader(parser);
+		return new JsonArrayOrObjectReader(parser);
 	}
 
 	/**

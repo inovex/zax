@@ -10,15 +10,17 @@ import org.codehaus.jackson.JsonToken;
  * json array wrapper
  * parses a json array direct from stream
  */
-public class JsonArrayReader {
+public class JsonArrayOrObjectReader {
 	private final JsonParser parser;
 	private JsonObjectReader lastObject;
+	private final boolean isObject;
 
 	/**
 	 * @param parser
 	 */
-	public JsonArrayReader(JsonParser parser) {
+	public JsonArrayOrObjectReader(JsonParser parser) {
 		this.parser = parser;
+		isObject = (parser.getCurrentToken() == JsonToken.START_OBJECT);
 	}
 
 	/**
@@ -38,8 +40,13 @@ public class JsonArrayReader {
 		int offen = 1;
 		do {
 			JsonToken tk = parser.nextToken();
-			if (tk == JsonToken.START_ARRAY) offen++;
-			else if (tk == JsonToken.END_ARRAY) offen--;
+			if (isObject) {
+				if (tk == JsonToken.START_OBJECT) offen++;
+				else if (tk == JsonToken.END_OBJECT) offen--;
+			} else {
+				if (tk == JsonToken.START_ARRAY) offen++;
+				else if (tk == JsonToken.END_ARRAY) offen--;
+			}
 		} while (offen > 0);
 	}
 
@@ -51,7 +58,11 @@ public class JsonArrayReader {
 	 */
 	public JsonObjectReader next() throws JsonParseException, IOException {
 		JsonToken tk = parser.nextToken();
-		if (tk == JsonToken.END_ARRAY) return null;
+		if (isObject) {
+			if (tk == JsonToken.END_OBJECT) return null;
+		} else {
+			if (tk == JsonToken.END_ARRAY) return null;
+		}
 		if (lastObject != null && !lastObject.isParsed()) {
 			throw new IllegalStateException("The last object must be read complete before the next object can be parsed.");
 		}

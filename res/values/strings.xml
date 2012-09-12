@@ -80,4 +80,5 @@
      <string name="ssl_certificate_not_trusted">This SSL certificate is not trusted by this device. Please install the certificate or check \'Trust all SSL Certificates\' in the ZAX preferences.</string>
      <string name="preconditionFailed">Zabbix: 412 Precondition Failed. This looks like version 1.8.2. ZAX requires at least 1.8.3.</string>
      <string name="homescreen_widget">Homescreen Widget</string>
+     <string name="no_filter">No filter applied.</string>
 </resources>
