@@ -102,14 +102,15 @@
 				android:layout_width="fill_parent"
 				android:layout_weight="1"
 				android:background="@color/box_background" />
+			<ListView
+				android:choiceMode="singleChoice"
+				android:layout_height="fill_parent"
+				android:id="@+id/list_screens"
+				android:layout_width="fill_parent"
+				android:layout_marginRight="1dip"
+				android:layout_weight="1"
+				android:background="@color/box_background"
+				android:visibility="gone" />
 		</LinearLayout>
 	</LinearLayout>
-	<ListView
-		android:choiceMode="singleChoice"
-		android:layout_height="fill_parent"
-		android:id="@+id/list_screens"
-		android:layout_width="fill_parent"
-		android:layout_marginRight="1dip"
-		android:background="@color/box_background"
-		android:visibility="gone" />
 </LinearLayout>
