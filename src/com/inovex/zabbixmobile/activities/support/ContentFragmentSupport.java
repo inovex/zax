@@ -28,8 +28,9 @@ import com.inovex.zabbixmobile.model.HostData;
 import com.inovex.zabbixmobile.model.ItemData;
 import com.inovex.zabbixmobile.model.TriggerData;
 import com.jjoe64.graphview.GraphView.GraphViewData;
-import com.jjoe64.graphview.GraphView.GraphViewSeries;
-import com.jjoe64.graphview.GraphView.GraphViewStyle;
+import com.jjoe64.graphview.GraphViewStyle;
+import com.jjoe64.graphview.GraphViewSeries;
+import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
 import com.jjoe64.graphview.GraphView.LegendAlign;
 import com.jjoe64.graphview.LineGraphView;
 
@@ -207,7 +208,7 @@ public class ContentFragmentSupport {
 				lowestclock = Math.min(lowestclock, (long) dataArray[0].valueX);
 				graphView.addSeries(new GraphViewSeries(
 						graphItemNames.get(seriesEntry.getKey()),
-						new GraphViewStyle(graphItemColors.get(seriesEntry.getKey()), 3),
+						new GraphViewSeriesStyle(graphItemColors.get(seriesEntry.getKey()), 3),
 						dataArray
 				));
 			}

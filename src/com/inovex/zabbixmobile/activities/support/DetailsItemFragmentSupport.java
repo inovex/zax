@@ -12,7 +12,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.HistoryDetailData;
 import com.inovex.zabbixmobile.model.ItemData;
 import com.jjoe64.graphview.GraphView.GraphViewData;
-import com.jjoe64.graphview.GraphView.GraphViewSeries;
+import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.LineGraphView;
 
 public class DetailsItemFragmentSupport {
@@ -35,7 +35,7 @@ public class DetailsItemFragmentSupport {
 		java.text.DateFormat tf = DateFormat.getTimeFormat(mActivity.getApplicationContext());
 		String clock = df.format(date)+ " " +tf.format(date);
 
-		return String.format(mActivity.getResources().getString(R.string.graph_text), svalue, clock);
+		return String.format(mActivity.getResources().getString(R.string.graph_text) + "itemID: " + cursor.getInt(cursor.getColumnIndex(ItemData.COLUMN_ITEMID)), svalue, clock);
 	}
 
 	public void showGraph(Cursor cursor, String currentGraphDescription) {

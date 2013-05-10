@@ -142,7 +142,7 @@ public class ZabbixService {
 	public class ZabbixConfig {
 		public static final int APPLICATION_GET_LIMIT = 1000;
 		public static final int EVENTS_GET_LIMIT = 60;
-		public static final int HISTORY_GET_TIME_FROM_SHIFT = 8*60*60; // -8h
+		public static final int HISTORY_GET_TIME_FROM_SHIFT = 24*60*60; // -24h
 		public static final int HISTORY_GET_LIMIT = 8000;
 		public static final int HOSTGROUP_GET_LIMIT = 200;
 		public static final int HOST_GET_LIMIT = 300;
@@ -172,6 +172,11 @@ public class ZabbixService {
 	private int transformProgressEnd;
 	private boolean _notAuthorizedRetry;
 	private boolean isVersion2 = true;
+	/**
+	 * The API version. From 1.8.3 (maybe earlier) to 2.0 (excluded), this was 1.3. With 2.0, it changed to 1.4. 
+	 * Finally, since 2.0.4, the API version matches the program version.
+	 */
+	private String apiVersion = "";
 
 	/**
 	 * init
@@ -499,8 +504,9 @@ public class ZabbixService {
 					"apiinfo.version"
 					, new JSONObject()
 			);
-			isVersion2 = result.getString("result").equals("1.4");
-			Log.i("ZabbixService", "Zabbix Server Version: isVersion2="+isVersion2);
+			apiVersion = result.getString("result");
+			isVersion2 = (apiVersion.equals("1.4") || apiVersion.startsWith("2"));
+			Log.i("ZabbixService", "Zabbix API Version: " + apiVersion);
 		}
 		return token != null;
 	}
@@ -802,7 +808,7 @@ public class ZabbixService {
 
 			// the past 2 hours
 			long time_till = new Date().getTime() / 1000;
-			long time_from = time_till - ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT; // jetzt-2h
+			long time_from = time_till - ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT;
 
 			// Workaround: historydetails only comes if you use the correct "history"-parameter.
 			// this parameter can be "null" or a number 0-4. Because we don't know when to use which,
