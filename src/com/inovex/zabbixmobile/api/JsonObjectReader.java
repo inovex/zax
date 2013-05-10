@@ -49,20 +49,22 @@ public class JsonObjectReader {
 	}
 
 	/**
-	 * @return value of current property as json array
+	 * @return JSon array or object reader for the current property
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
-	public JsonArrayOrObjectReader getJsonArray() throws JsonParseException, IOException {
+	public JsonArrayOrObjectReader getJsonArrayOrObjectReader() throws JsonParseException, IOException {
 		if (
 				parser.getCurrentToken() != JsonToken.START_ARRAY
 				&& parser.nextToken() != JsonToken.START_ARRAY
+				&& parser.getCurrentToken() != JsonToken.START_OBJECT
+				&& parser.nextToken() != JsonToken.START_OBJECT
 		) {
 			throw new IllegalStateException();
 		}
 		return new JsonArrayOrObjectReader(parser);
 	}
-
+	
 	/**
 	 * @return value of current property as string
 	 * @throws JsonParseException
@@ -137,4 +139,5 @@ public class JsonObjectReader {
 		}
 		return true;
 	}
+	
 }

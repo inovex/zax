@@ -35,7 +35,7 @@ public class DetailsItemFragmentSupport {
 		java.text.DateFormat tf = DateFormat.getTimeFormat(mActivity.getApplicationContext());
 		String clock = df.format(date)+ " " +tf.format(date);
 
-		return String.format(mActivity.getResources().getString(R.string.graph_text) + "itemID: " + cursor.getInt(cursor.getColumnIndex(ItemData.COLUMN_ITEMID)), svalue, clock);
+		return String.format(mActivity.getResources().getString(R.string.graph_text), svalue, clock);
 	}
 
 	public void showGraph(Cursor cursor, String currentGraphDescription) {
