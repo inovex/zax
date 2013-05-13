@@ -455,6 +455,7 @@ public class ZabbixService {
 				"event.acknowledge"
 				, new JSONObject()
 					.put("eventids", new JSONArray().put(eventid))
+					.put("message", comment)
 		);
 		// it can be an (empty) array
 		try {
