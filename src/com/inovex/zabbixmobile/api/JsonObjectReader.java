@@ -51,7 +51,7 @@ public class JsonObjectReader {
 	}
 
 	/**
-	 * @return value of current property as json array
+	 * @return JSon array or object reader for the current property
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
@@ -73,7 +73,7 @@ public class JsonObjectReader {
 		}
 		return new JsonArrayOrObjectReader(parser);
 	}
-
+	
 	/**
 	 * @return value of current property as string
 	 * @throws JsonParseException
@@ -148,4 +148,5 @@ public class JsonObjectReader {
 		}
 		return true;
 	}
+	
 }

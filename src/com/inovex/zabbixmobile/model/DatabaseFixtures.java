@@ -118,7 +118,7 @@ public class DatabaseFixtures {
 			.set(HistoryDetailData.COLUMN_VALUE, 274114000d)
 			.set(HistoryDetailData.COLUMN_ITEMID, 202));
 		allModels.add(new HistoryDetailData()
-			.set(HistoryDetailData.COLUMN_CLOCK, (new Date().getTime()/1000)-60*60*3) // too old
+			.set(HistoryDetailData.COLUMN_CLOCK, (new Date().getTime()/1000)-60*60*30) // too old
 			.set(HistoryDetailData.COLUMN_VALUE, 274113000d)
 			.set(HistoryDetailData.COLUMN_ITEMID, 202));
 	}

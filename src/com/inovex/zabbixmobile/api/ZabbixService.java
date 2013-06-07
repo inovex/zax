@@ -142,7 +142,7 @@ public class ZabbixService {
 	public class ZabbixConfig {
 		public static final int APPLICATION_GET_LIMIT = 1000;
 		public static final int EVENTS_GET_LIMIT = 60;
-		public static final int HISTORY_GET_TIME_FROM_SHIFT = 8*60*60; // -8h
+		public static final int HISTORY_GET_TIME_FROM_SHIFT = 24*60*60; // -24h
 		public static final int HISTORY_GET_LIMIT = 8000;
 		public static final int HOSTGROUP_GET_LIMIT = 200;
 		public static final int HOST_GET_LIMIT = 300;
@@ -172,6 +172,11 @@ public class ZabbixService {
 	private int transformProgressEnd;
 	private boolean _notAuthorizedRetry;
 	private boolean isVersion2 = true;
+	/**
+	 * The API version. From 1.8.3 (maybe earlier) to 2.0 (excluded), this was 1.3. With 2.0, it changed to 1.4. 
+	 * Finally, since 2.0.4, the API version matches the program version.
+	 */
+	private String apiVersion = "";
 
 	/**
 	 * init
@@ -450,6 +455,7 @@ public class ZabbixService {
 				"event.acknowledge"
 				, new JSONObject()
 					.put("eventids", new JSONArray().put(eventid))
+					.put("message", comment)
 		);
 		// it can be an (empty) array
 		try {
@@ -499,8 +505,9 @@ public class ZabbixService {
 					"apiinfo.version"
 					, new JSONObject()
 			);
-			isVersion2 = result.getString("result").equals("1.4");
-			Log.i("ZabbixService", "Zabbix Server Version: isVersion2="+isVersion2);
+			apiVersion = result.getString("result");
+			isVersion2 = (apiVersion.equals("1.4") || apiVersion.startsWith("2"));
+			Log.i("ZabbixService", "Zabbix API Version: " + apiVersion);
 		}
 		return token != null;
 	}
@@ -659,12 +666,12 @@ public class ZabbixService {
 				String propName = eventReader.getCurrentName();
 				if (propName.equals("hosts")) {
 					// import hosts
-					String hostnames = (String) importHosts(eventReader.getJsonArray(), null)[0];
+					String hostnames = (String) importHosts(eventReader.getJsonArrayOrObjectReader(), null)[0];
 					// store hosts namen
 					e.set(EventData.COLUMN_HOSTS, hostnames);
 				} else if (propName.equals("triggers")) {
 					// import triggers
-					importTriggers(eventReader.getJsonArray());
+					importTriggers(eventReader.getJsonArrayOrObjectReader());
 				} else if (propName.equals(EventData.COLUMN_EVENTID)) {
 					e.set(EventData.COLUMN_EVENTID, Long.parseLong(eventReader.getText()));
 				} else if (propName.equals(EventData.COLUMN_CLOCK)) {
@@ -770,9 +777,9 @@ public class ZabbixService {
 					} else if (propName.equals(GraphData.COLUMN_NAME)) {
 						scr.set(GraphData.COLUMN_NAME, graphReader.getText());
 					} else if (propName.equals("gitems")) {
-						mustSetGraphid = importGraphItems(graphReader.getJsonArray());
+						mustSetGraphid = importGraphItems(graphReader.getJsonArrayOrObjectReader());
 					} else if (propName.equals("items")) {
-						importItems(graphReader.getJsonArray(), 0, true);
+						importItems(graphReader.getJsonArrayOrObjectReader(), 0, true);
 					} else {
 						graphReader.nextProperty();
 					}
@@ -802,7 +809,7 @@ public class ZabbixService {
 
 			// the past 2 hours
 			long time_till = new Date().getTime() / 1000;
-			long time_from = time_till - ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT; // jetzt-2h
+			long time_from = time_till - ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT;
 
 			// Workaround: historydetails only comes if you use the correct "history"-parameter.
 			// this parameter can be "null" or a number 0-4. Because we don't know when to use which,
@@ -943,7 +950,7 @@ public class ZabbixService {
 					hostnames.add(host);
 					h.set(HostData.COLUMN_HOST, host);
 				} else if (propName.equals("groups")) {
-					long groupid = importHostGroups(hostReader.getJsonArray());
+					long groupid = importHostGroups(hostReader.getJsonArrayOrObjectReader());
 					if (groupid != -1) {
 						h.set(HostData.COLUMN_GROUPID, groupid);
 					}
@@ -1049,7 +1056,7 @@ public class ZabbixService {
 					// at this point itemid and hostid is unknown
 					// because of this, all applicationrelations will be saved with itemid and hostid "-1".
 					// later the IDs will be replaced with the correct
-					importApplications(-1, -1, itemReader.getJsonArray());
+					importApplications(-1, -1, itemReader.getJsonArrayOrObjectReader());
 				} else {
 					itemReader.nextProperty();
 				}
@@ -1170,7 +1177,7 @@ public class ZabbixService {
 					} else if (propName.equals(ScreenData.COLUMN_NAME)) {
 						scr.set(ScreenData.COLUMN_NAME, screenReader.getText());
 					} else if (propName.equals("screenitems")) {
-						importScreenItems(screenReader.getJsonArray());
+						importScreenItems(screenReader.getJsonArrayOrObjectReader());
 					} else {
 						screenReader.nextProperty();
 					}
@@ -1307,14 +1314,14 @@ public class ZabbixService {
 				} else if (propName.equals(TriggerData.COLUMN_URL)) {
 					t.set(TriggerData.COLUMN_URL, triggerReader.getText());
 				} else if (propName.equals("hosts")) {
-					Object[] hostsCache = importHosts(triggerReader.getJsonArray(), null);
+					Object[] hostsCache = importHosts(triggerReader.getJsonArrayOrObjectReader(), null);
 					t.set(TriggerData.COLUMN_HOSTS, hostsCache[0]);
 					t.set(TriggerData.COLUMN_HOSTID, hostsCache[1]);
 				} else if (propName.equals("groups")) {
-					importHostGroups(triggerReader.getJsonArray());
+					importHostGroups(triggerReader.getJsonArrayOrObjectReader());
 				} else if (propName.equals("items")) {
 					// store the first item id
-					t.set(TriggerData.COLUMN_ITEMID, importItems(triggerReader.getJsonArray(), 1, true));
+					t.set(TriggerData.COLUMN_ITEMID, importItems(triggerReader.getJsonArrayOrObjectReader(), 1, true));
 				} else {
 					triggerReader.nextProperty();
 				}

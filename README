@@ -4,3 +4,13 @@ the static public method #getKey that returns your key as string.
 
 === Test API
 $ wget --post-file=data --header='Content-Type: application/json; utf-8' http://www.mozbx.net/zabbix/api_jsonrpc.php
+
+-------------------------
+Dependencies
+-------------------------
+
+All libraries the project depends on are included in the libs folder:
+- Google Ad Mob
+- GraphView
+- Jackson JSON Processor
+- PubNub Cryptography 

@@ -11,7 +11,7 @@
 		android:layout_height="wrap_content"
 		android:layout_gravity="center"
 		android:visibility="gone"
-		ads:adUnitId="a14e550def8cf09"
+		ads:adUnitId="a14e550def8cf09" 
 		ads:adSize="BANNER" />
 	<TabHost android:id="@android:id/tabhost" android:layout_width="fill_parent" android:layout_height="fill_parent">
 		<LinearLayout android:layout_width="fill_parent" android:id="@+id/linearLayout1" android:layout_height="fill_parent" android:orientation="vertical">
@@ -24,11 +24,11 @@
 						<ListView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/listview_triggers"></ListView>
 					</com.inovex.zabbixmobile.view.HieraticalHostListView>
 				</LinearLayout>
-				<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tab_events">
+				<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tab_events" android:orientation="vertical">
 					<TextView android:id="@+id/listview_events_empty" android:text="@string/no_items_to_display" android:gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" />
 					<ListView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/listview_events"></ListView>
 				</LinearLayout>
-				<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tab_checks">
+				<LinearLayout android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tab_checks" android:orientation="vertical">
 					<TextView android:id="@+id/listview_checks_empty" android:text="@string/no_items_to_display" android:gravity="center_horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" />
 					<com.inovex.zabbixmobile.view.HieraticalHostListView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/hosts_checks">
 						<ExpandableListView android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/listview_checks" />

@@ -12,7 +12,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.HistoryDetailData;
 import com.inovex.zabbixmobile.model.ItemData;
 import com.jjoe64.graphview.GraphView.GraphViewData;
-import com.jjoe64.graphview.GraphView.GraphViewSeries;
+import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.LineGraphView;
 
 public class DetailsItemFragmentSupport {
