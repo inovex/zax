@@ -7,15 +7,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" 
-    android:id="@+id/layout_main"
+    android:id="@+id/layout_checks"
     android:orientation="vertical">
 
-    <ListView
-        android:id="@+id/main_activities"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="22dp"
-        android:layout_marginTop="22dp" >
-    </ListView>
-    
 </LinearLayout>

@@ -4,5 +4,12 @@
     <string name="app_name">ZAX</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    
+    <string name="activity_events">Events</string>
+    <string name="call_service">Call Service</string>
+    
+    <string name="activity_checks">Checks</string>
+    
+    <string name="activity_screens">Screens</string>
 
 </resources>
