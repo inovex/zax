@@ -6,6 +6,8 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 
+import android.util.Log;
+
 /**
  * json object wrapper
  * parses the attributes of json objects direct from stream
@@ -54,10 +56,19 @@ public class JsonObjectReader {
 	 * @throws IOException
 	 */
 	public JsonArrayOrObjectReader getJsonArray() throws JsonParseException, IOException {
-		if (
-				parser.getCurrentToken() != JsonToken.START_ARRAY
-				&& parser.nextToken() != JsonToken.START_ARRAY
-		) {
+		boolean ok = false;
+		if (parser.getCurrentToken() == JsonToken.START_ARRAY || parser.getCurrentToken() == JsonToken.START_OBJECT) {
+			ok = true;
+		} else {
+			parser.nextToken();
+			if (parser.getCurrentToken() == JsonToken.START_ARRAY || parser.getCurrentToken() == JsonToken.START_OBJECT) {
+				ok = true;
+			}
+		}
+		if (!ok) {
+			Log.e("JsonObjectReader", "token: "+parser.getCurrentToken());
+			Log.e("JsonObjectReader", "name: "+parser.getCurrentName());
+			Log.e("JsonObjectReader", "text: "+parser.getText());
 			throw new IllegalStateException();
 		}
 		return new JsonArrayOrObjectReader(parser);
