@@ -55,7 +55,7 @@ public class JsonObjectReader {
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
-	public JsonArrayOrObjectReader getJsonArray() throws JsonParseException, IOException {
+	public JsonArrayOrObjectReader getJsonArrayOrObjectReader() throws JsonParseException, IOException {
 		boolean ok = false;
 		if (parser.getCurrentToken() == JsonToken.START_ARRAY || parser.getCurrentToken() == JsonToken.START_OBJECT) {
 			ok = true;
