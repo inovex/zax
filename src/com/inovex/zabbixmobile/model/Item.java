@@ -9,10 +9,7 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "items")
 public class Item {
 
-	// TODO: For the moment, we have the id generated; in the real application,
-	// we'll get it from Zabbix
-	// @DatabaseField(id = true)
-	@DatabaseField(generatedId = true)
+	@DatabaseField(id = true)
 	long id;
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	Host host;
@@ -26,13 +23,14 @@ public class Item {
 	String lastvalue;
 	@DatabaseField
 	String units;
-	
+
 	public Item() {
-		
+
 	}
-	
-	public Item(long id, Host host, int valueType, String description, long lastclock, String lastvalue, String units) {
-		//this.id = id;
+
+	public Item(long id, Host host, int valueType, String description,
+			long lastclock, String lastvalue, String units) {
+		this.id = id;
 		this.host = host;
 		this.value_type = valueType;
 		this.description = description;

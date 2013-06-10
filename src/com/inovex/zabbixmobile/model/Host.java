@@ -1,25 +1,24 @@
 package com.inovex.zabbixmobile.model;
 
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
+@DatabaseTable(tableName = "hosts")
 public class Host {
 
-	// TODO: For the moment, we have the id generated; in the real application,
-	// we'll get it from Zabbix
-	// @DatabaseField(id = true)
-	@DatabaseField(generatedId = true)
+	@DatabaseField(id = true)
 	long id;
 	@DatabaseField
 	String host;
-	
+
 	// TODO: add group ID if necessary
-	
+
 	public Host() {
-		
+
 	}
-	
+
 	public Host(long id, String name) {
-		//this.id = id;
+		this.id = id;
 		this.host = name;
 	}
 }
