@@ -32,11 +32,29 @@ public class MockDatabaseHelper extends DatabaseHelper {
 			Dao<Trigger, Integer> triggerDao = getDao(Trigger.class);
 			Dao<Item, Integer> itemDao = getDao(Item.class);
 			Dao<Host, Integer> hostDao = getDao(Host.class);
-			eventDao.create(new Event(20616, 0, 1370861291, 1, false, false));
-			eventDao.create(new Event(20617, 0, 1370861391, 0, false, false));
-			triggerDao.create(new Trigger(14062, "This is a sample trigger.",
-					"{13513}>0", "Comments...", 1370861291, 2, 0, 1, "URL",
-					false));
+			eventDao.create(new Event(12345, 0, System.currentTimeMillis()
+					- (3600 * 1000 * 12), 1, false, false));
+			eventDao.create(new Event(13467, 0, System.currentTimeMillis()
+					- (3600 * 1000 * 10), 0, true, false));
+			eventDao.create(new Event(17231, 0, System.currentTimeMillis()
+					- (3600 * 1000 * 7), 1, false, true));
+			eventDao.create(new Event(19865, 0, System.currentTimeMillis()
+					- (3600 * 1000 * 5), 0, false, false));
+			eventDao.create(new Event(14562, 0, System.currentTimeMillis()
+					- (3600 * 1000 * 9), 1, true, true));
+			eventDao.create(new Event(19872, 0, System.currentTimeMillis()
+					- (3600 * 1000 * 4), 0, false, false));
+			eventDao.create(new Event(20616, 0, System.currentTimeMillis()
+					- (3600 * 1000 * 3), 1, true, false));
+			eventDao.create(new Event(21576, 0, System.currentTimeMillis()
+					- (3600 * 1000 * 2), 0, false, true));
+			eventDao.create(new Event(25821, 0, System.currentTimeMillis()
+					- (3600 * 1000 * 0), 1, true, true));
+			eventDao.create(new Event(14529, 0, System.currentTimeMillis()
+					- (3600 * 1000 * 8), 0, false, false));
+			triggerDao.create(new Trigger(14062, "Sample trigger #1",
+					"{13513}>0", "", System.currentTimeMillis()
+							- (3600 * 1000 * 12), 2, 0, 1, "URL", false));
 			triggerDao.create(new Trigger(14063,
 					"This also is a sample trigger.", "{13518}>0",
 					"Comments...", 1370861291, 4, 0, 1, "URL", false));

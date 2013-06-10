@@ -1,5 +1,8 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
+import java.sql.SQLException;
+
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +12,11 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.model.DatabaseHelper;
+import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.MockDatabaseHelper;
+import com.inovex.zabbixmobile.view.EventsArrayAdapter;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 public class EventsListPage extends SherlockListFragment {
 
@@ -32,11 +40,21 @@ public class EventsListPage extends SherlockListFragment {
 		// this selects simple_list_item_activated_1 only for API > 11 and
 		// landscape orientation; otherwise simple_list_item_1
 		int listItemLayout = R.layout.simple_list_item;
-		this.setListAdapter(new ArrayAdapter<String>(getSherlockActivity(),
-				listItemLayout, new String[] { "1", "2", "3" }));
-		TextView tv = new TextView(getSherlockActivity());
-		tv.setText("Test");
-		container.addView(tv);
+//		this.setListAdapter(new ArrayAdapter<String>(getSherlockActivity(),
+//				listItemLayout, new String[] { "1", "2", "3" }));
+		DatabaseHelper databaseHelper = OpenHelperManager.getHelper(getSherlockActivity(),
+				MockDatabaseHelper.class);
+		databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), 0, 1);
+		try {
+			EventsArrayAdapter adapter = new EventsArrayAdapter(getSherlockActivity(),
+					R.layout.events_list_item, databaseHelper.getEvents());
+			this.setListAdapter(adapter);
+			adapter.getFilter().filter("1");
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return rootView;
 	}
 

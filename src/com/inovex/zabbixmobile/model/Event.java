@@ -50,18 +50,50 @@ public class Event {
 		trigger = t;
 	}
 
-	@Override
-	public String toString() {
+	public String getDetailedString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("id=").append(id);
 		sb.append(", ").append("source=").append(source);
 		sb.append(", ").append("trigger=").append(trigger);
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
-				SimpleDateFormat.DEFAULT, SimpleDateFormat.DEFAULT, Locale.US);
+				SimpleDateFormat.DEFAULT, SimpleDateFormat.DEFAULT);
 		sb.append(", ").append("date=").append(dateFormatter.format(clock));
 		sb.append(", ").append("value=").append(value);
 		sb.append(", ").append("acknowledged=").append(acknowledged);
 		sb.append(", ").append("value_changed=").append(value_changed);
 		return sb.toString();
+	}
+	
+	public long getId() {
+		return id;
+	}
+
+	public int getSource() {
+		return source;
+	}
+
+	public Trigger getTrigger() {
+		return trigger;
+	}
+
+	public Date getClock() {
+		return clock;
+	}
+
+	public int getValue() {
+		return value;
+	}
+
+	public boolean isAcknowledged() {
+		return acknowledged;
+	}
+
+	public boolean isValue_changed() {
+		return value_changed;
+	}
+	
+	@Override
+	public String toString() {
+		return String.valueOf(id);
 	}
 }
