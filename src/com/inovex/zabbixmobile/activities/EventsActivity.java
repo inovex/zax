@@ -76,7 +76,8 @@ public class EventsActivity extends SherlockFragmentActivity {
 		
 		StringBuilder sb = new StringBuilder();
 		
-		Event e = new Event(databaseHelper, System.currentTimeMillis());
+		Event e = new Event(0, 0, System.currentTimeMillis(), 1, false, false);
+		databaseHelper.getDao(Event.class).create(e);
 
 		Dao<Event, Integer> eventDao = databaseHelper.getDao(Event.class);
 

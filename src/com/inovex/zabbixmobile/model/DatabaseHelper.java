@@ -25,8 +25,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
 
 	// the DAO object we use to access the SimpleData table
-	private Dao<Event, Integer> simpleDao = null;
-	private RuntimeExceptionDao<Event, Integer> simpleRuntimeDao = null;
+	private Dao<Event, Integer> eventDao = null;
 
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
@@ -76,34 +75,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
-	/**
-	 * Returns the Database Access Object (DAO) for our SimpleData class. It will create it or just give the cached
-	 * value.
-	 */
-	public Dao<Event, Integer> getDao() throws SQLException {
-		if (simpleDao == null) {
-			simpleDao = getDao(Event.class);
-		}
-		return simpleDao;
-	}
-
-	/**
-	 * Returns the RuntimeExceptionDao (Database Access Object) version of a Dao for our SimpleData class. It will
-	 * create it or just give the cached value. RuntimeExceptionDao only through RuntimeExceptions.
-	 */
-	public RuntimeExceptionDao<Event, Integer> getSimpleDataDao() {
-		if (simpleRuntimeDao == null) {
-			simpleRuntimeDao = getRuntimeExceptionDao(Event.class);
-		}
-		return simpleRuntimeDao;
-	}
-
-	/**
-	 * Close the database connections and clear any cached DAOs.
-	 */
 	@Override
 	public void close() {
 		super.close();
-		simpleRuntimeDao = null;
+		eventDao = null;
 	}
 }
