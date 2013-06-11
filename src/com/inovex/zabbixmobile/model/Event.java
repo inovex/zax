@@ -19,7 +19,7 @@ public class Event {
 	long id;
 	@DatabaseField
 	int source;
-	@DatabaseField(canBeNull = true, foreign = true, foreignAutoRefresh = true)
+	@DatabaseField(canBeNull = true, foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	Trigger trigger;
 	@DatabaseField
 	Date clock;

@@ -102,7 +102,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 	
-	public List<Event> getEvents() throws SQLException {
+	public List<Event> getAllEvents() throws SQLException {
 		return getDao(Event.class).queryForAll();
 	}
 

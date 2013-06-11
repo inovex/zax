@@ -19,7 +19,7 @@
 		android:layout_alignParentTop="true"
 		android:layout_alignParentRight="true"
 		android:ellipsize="marquee"
-		android:textSize="26sp" />
+		android:textSize="16sp" />
 	<TextView
 		android:id="@+id/events_entry_clock"
 		android:layout_width="wrap_content"
@@ -34,5 +34,5 @@
 		android:layout_toRightOf="@id/events_entry_status"
 		android:layout_alignParentRight="true"
 		android:layout_below="@id/events_entry_host"
-		android:textSize="20sp" />
+		android:textSize="12sp" />
 </RelativeLayout>

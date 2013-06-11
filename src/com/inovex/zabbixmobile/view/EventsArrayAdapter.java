@@ -3,7 +3,6 @@ package com.inovex.zabbixmobile.view;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -18,6 +17,7 @@ import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.Trigger;
 
 public class EventsArrayAdapter extends ArrayAdapter<Event> {
 
@@ -49,13 +49,21 @@ public class EventsArrayAdapter extends ArrayAdapter<Event> {
 		TextView clock = (TextView) row.findViewById(R.id.events_entry_clock);
 
 		Event e = getItem(position);
-		title.setText(String.valueOf(e.getId()));
-		description.setText(String.valueOf(e.getValue()));
+		Trigger t = e.getTrigger();
+		if(t == null)
+			throw new RuntimeException("No trigger defined for Event with ID " + e.getId());
+		title.setText(String.valueOf("status: " + t.getStatus() + " severity: " + t.getPriority()));
+		description.setText(String.valueOf(t.getDescription()));
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
-				SimpleDateFormat.DEFAULT, SimpleDateFormat.DEFAULT, Locale.US);
+				SimpleDateFormat.SHORT, SimpleDateFormat.SHORT, Locale.getDefault());
 		clock.setText(String.valueOf(dateFormatter.format(e.getClock())));
 
 		return row;
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return mObjects.get(position).getId();
 	}
 
 	@Override

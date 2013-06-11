@@ -21,23 +21,50 @@ public class EventsListFragment extends SherlockFragment {
 	
 	protected static final String TAG = EventsListFragment.class.getSimpleName();
 	ViewPager mEventCategoryPager;
-	EventCategoryPagerAdapter mEventCategoryPagerAdapter;
+	EventListPagerAdapter mEventCategoryPagerAdapter;
 	TabPageIndicator mEventCategoryTabIndicator;
+	
+	public enum Severities {
+		ALL("all", -1),
+		DISASTER("disaster", 5),
+		HIGH("high", 4),
+		AVERAGE("average", 3),
+		WARNING("warning", 2),
+		INFORMATION("information", 1),
+		NOT_CLASSIFIED("not classified", 0);
+		
+		private final String name;
+		private final int number;
+		
+		Severities(String name, int n) {
+			this.name = name;
+			number = n;
+		}
+		
+		public String getName() {
+			return name;
+		}
 
-	class EventCategoryPagerAdapter extends FragmentStatePagerAdapter {
+		public int getNumber() {
+			return number;
+		}
+		
+	}
+
+	class EventListPagerAdapter extends FragmentStatePagerAdapter {
 
 		String[] categoryNames = new String[] {"all", "disaster", "high", "warning", "information", "not classified"};
 		ArrayList<EventsListPage> fragments = new ArrayList<EventsListPage>();
 
-		public EventCategoryPagerAdapter(FragmentManager fm) {
+		public EventListPagerAdapter(FragmentManager fm) {
 			super(fm);
 			EventsListPage f;
-			for (int i = 0; i < categoryNames.length; i++) {
+			for (Severities s : Severities.values()) {
 				f = new EventsListPage();
 				Bundle args = new Bundle();
-				args.putInt(EventsListPage.ARG_CATEGORY_NUMBER, i);
-				args.putString(EventsListPage.ARG_CATEGORY_NAME,
-						categoryNames[i]);
+				args.putInt(EventsListPage.ARG_SEVERITY, s.getNumber());
+				args.putString(EventsListPage.ARG_TITLE,
+						s.getName());
 				f.setArguments(args);
 				
 				fragments.add(f);
@@ -85,12 +112,12 @@ public class EventsListFragment extends SherlockFragment {
 		// Set up the ViewPager, attaching the adapter and setting up a listener
 		// for when the
 		// user swipes between sections.
-		mEventCategoryPagerAdapter = new EventCategoryPagerAdapter(
+		mEventCategoryPagerAdapter = new EventListPagerAdapter(
 				getChildFragmentManager());
 		mEventCategoryPager = (ViewPager) getView().findViewById(
 				R.id.events_list_viewpager);
 		mEventCategoryPager.setAdapter(mEventCategoryPagerAdapter);
-		mEventCategoryPager.setOffscreenPageLimit(10);
+		mEventCategoryPager.setOffscreenPageLimit(1);
 
 		// Bind the tab indicator to the adapter
 		mEventCategoryTabIndicator = (TabPageIndicator) getView().findViewById(

@@ -1,10 +1,11 @@
-package com.inovex.zabbixmobile.activities;
+	package com.inovex.zabbixmobile.activities;
 
 import java.sql.SQLException;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -12,7 +13,9 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListFragment;
+import com.inovex.zabbixmobile.activities.fragments.OnEventSelectedListener;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.MockDatabaseHelper;
@@ -20,9 +23,11 @@ import com.inovex.zabbixmobile.model.Trigger;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
-public class EventsActivity extends SherlockFragmentActivity {
+public class EventsActivity extends SherlockFragmentActivity implements OnEventSelectedListener {
 
 	private static final String TAG = EventsActivity.class.getSimpleName();
+
+	private static final String FRAGMENT_EVENTS_LIST = "fragment_event_list";
 
 	private DatabaseHelper databaseHelper = null;
 	private FragmentManager fragmentManager;
@@ -60,7 +65,7 @@ public class EventsActivity extends SherlockFragmentActivity {
 		LinearLayout baseLayout = (LinearLayout) findViewById(R.id.layout_events);
 		
 		FragmentTransaction ft = fragmentManager.beginTransaction();
-		ft.add(R.id.layout_events, new EventsListFragment());
+		ft.add(R.id.layout_events, new EventsListFragment(), FRAGMENT_EVENTS_LIST);
 		ft.commit();
 
 //		TextView textView = new TextView(this);
@@ -118,6 +123,27 @@ public class EventsActivity extends SherlockFragmentActivity {
 			break;
 		}
 		return false;
+	}
+
+	@Override
+	public void onEventSelected(int position, int severity, long id) {
+		Log.d(TAG, "event selected: " + id + ",severity: " + severity + "(position: " + position + ")");
+		EventsDetailsFragment f = new EventsDetailsFragment();
+		Bundle args = new Bundle();
+		args.putLong(EventsDetailsFragment.ARG_EVENT_ID, id);
+		args.putInt(EventsDetailsFragment.ARG_SEVERITY, severity);
+		f.setArguments(args);
+		FragmentTransaction ft = fragmentManager.beginTransaction();
+		ft.remove(fragmentManager.findFragmentByTag(FRAGMENT_EVENTS_LIST));
+		ft.add(R.id.layout_events, f);
+		ft.addToBackStack(null);
+		ft.commit();
+	}
+
+	@Override
+	public void onEventClicked(int position) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

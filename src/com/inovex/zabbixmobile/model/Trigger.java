@@ -61,6 +61,54 @@ public class Trigger {
 		this.value_changed = value_changed;
 	}
 
+	public long getId() {
+		return id;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public String getExpression() {
+		return expression;
+	}
+
+	public String getComments() {
+		return comments;
+	}
+
+	public Date getLastchange() {
+		return lastchange;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public int getValue() {
+		return value;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public boolean isValue_changed() {
+		return value_changed;
+	}
+
+	public ForeignCollection<Host> getHosts() {
+		return hosts;
+	}
+
+	public ForeignCollection<Item> getItems() {
+		return items;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
