@@ -28,9 +28,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// increase the database version
 	private static final int DATABASE_VERSION = 1;
 
-	// the DAO object we use to access the SimpleData table
-	private Dao<Event, Integer> eventDao = null;
-
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION,
 				R.raw.ormlite_config);
@@ -105,7 +102,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	@Override
 	public void close() {
 		super.close();
-		eventDao = null;
+		mEventDao = null;
 	}
 	
 }

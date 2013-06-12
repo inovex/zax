@@ -21,15 +21,15 @@ import com.inovex.zabbixmobile.model.Trigger;
 
 public class EventsArrayAdapter extends ArrayAdapter<Event> {
 
-	private Context context;
-	private int textViewResourceId;
+	private Context mContext;
+	private int mTextViewResourceId;
 	protected List<Event> mObjects;
 
 	public EventsArrayAdapter(Context context, int textViewResourceId,
 			List<Event> objects) {
 		super(context, textViewResourceId, objects);
-		this.textViewResourceId = textViewResourceId;
-		this.context = context;
+		this.mTextViewResourceId = textViewResourceId;
+		this.mContext = context;
 		this.mObjects = objects;
 	}
 
@@ -38,8 +38,8 @@ public class EventsArrayAdapter extends ArrayAdapter<Event> {
 		View row = convertView;
 
 		if (row == null) {
-			LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-			row = inflater.inflate(textViewResourceId, parent, false);
+			LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+			row = inflater.inflate(mTextViewResourceId, parent, false);
 
 		}
 

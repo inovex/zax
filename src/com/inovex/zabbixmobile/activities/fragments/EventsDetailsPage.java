@@ -19,7 +19,7 @@ public class EventsDetailsPage extends SherlockFragment {
 
 	public static final String ARG_EVENT_ID = "event_id";
 
-	private long eventId;
+	private long mEventId;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -32,15 +32,15 @@ public class EventsDetailsPage extends SherlockFragment {
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.page_events_details, null);
 		if (savedInstanceState != null)
-			eventId = savedInstanceState.getLong(ARG_EVENT_ID, -1);
+			mEventId = savedInstanceState.getLong(ARG_EVENT_ID, -1);
 		Bundle args = getArguments();
 		if (args != null)
-			eventId = args.getLong(ARG_EVENT_ID, -1);
+			mEventId = args.getLong(ARG_EVENT_ID, -1);
 
 		DataAccess dataAccess = DataAccess.getInstance(getSherlockActivity());
 		StringBuilder sb = new StringBuilder();
 		try {
-			Event e = dataAccess.getEventById(eventId);
+			Event e = dataAccess.getEventById(mEventId);
 			sb.append("Event: \n\n");
 			sb.append("ID: " + e.getId() + "\n");
 			sb.append("source: " + e.getSource() + "\n");
@@ -70,7 +70,7 @@ public class EventsDetailsPage extends SherlockFragment {
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putLong(ARG_EVENT_ID, eventId);
+		outState.putLong(ARG_EVENT_ID, mEventId);
 	}
 
 	public String getTitle() {

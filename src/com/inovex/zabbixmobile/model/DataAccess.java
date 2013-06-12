@@ -7,7 +7,6 @@ import java.util.List;
 import android.content.Context;
 import android.util.Log;
 
-import com.inovex.zabbixmobile.activities.fragments.EventsListFragment.Severities;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
@@ -15,7 +14,7 @@ public class DataAccess {
 
 	private static final String TAG = DataAccess.class.getSimpleName();
 	private static DataAccess instance = null;
-	private DatabaseHelper databaseHelper;
+	private DatabaseHelper mDatabaseHelper;
 	private Context mContext;
 
 	/**
@@ -39,9 +38,9 @@ public class DataAccess {
 	 */
 	private DataAccess(Context context) {
 		mContext = context;
-		databaseHelper = OpenHelperManager.getHelper(mContext,
+		mDatabaseHelper = OpenHelperManager.getHelper(mContext,
 				MockDatabaseHelper.class);
-		databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), 0, 1);
+//		databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), 0, 1);
 	}
 
 	/**
@@ -51,7 +50,7 @@ public class DataAccess {
 	 * @throws SQLException
 	 */
 	public List<Event> getAllEvents() throws SQLException {
-		List<Event> events = databaseHelper.getDao(Event.class).queryForAll();
+		List<Event> events = mDatabaseHelper.getDao(Event.class).queryForAll();
 		eventCache = events;
 		return events;
 	}
@@ -67,7 +66,7 @@ public class DataAccess {
 	 * @throws SQLException
 	 */
 	public List<Event> getEventsBySeverity(int severity) throws SQLException {
-		if(severity == Severities.ALL.getNumber())
+		if(severity == TriggerSeverities.ALL.getNumber())
 			return getAllEvents();
 		// TODO: replace this with a JOIN
 		List<Event> events;
@@ -75,7 +74,7 @@ public class DataAccess {
 			events = eventCache;
 			Log.d(TAG, "Using events from cache.");
 		} else
-			events = databaseHelper.getDao(Event.class).queryForAll();
+			events = mDatabaseHelper.getDao(Event.class).queryForAll();
 		List<Event> eventsBySeverity = new ArrayList<Event>();
 		Trigger t;
 		for (Event e : events) {
@@ -89,7 +88,7 @@ public class DataAccess {
 	}
 	
 	public Event getEventById(long id) throws SQLException {
-		Dao<Event, Long> dao = databaseHelper.getDao(Event.class);
+		Dao<Event, Long> dao = mDatabaseHelper.getDao(Event.class);
 		return dao.queryForId(id);
 	}
 }

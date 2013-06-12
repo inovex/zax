@@ -16,6 +16,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.viewpagerindicator.TabPageIndicator;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.model.TriggerSeverities;
 
 public class EventsListFragment extends SherlockFragment {
 	
@@ -24,51 +25,14 @@ public class EventsListFragment extends SherlockFragment {
 	public static final String ARG_EVENT_ID = "event_id";
 	public static final String ARG_SEVERITY = "severity";
 	
-	private int currentPosition = 0;
-	private long currentEventId = 0;
-	private int currentSeverity = Severities.ALL.getNumber();
+	private int mCurrentPosition = 0;
+	private long mCurrentEventId = 0;
+	private int mCurrentSeverity = TriggerSeverities.ALL.getNumber();
 	
 	ViewPager mEventsListPager;
 	EventListPagerAdapter mEventsListPagerAdapter;
 	TabPageIndicator mEventListTabIndicator;
 	
-	public enum Severities {
-		ALL("all", -1, 0),
-		DISASTER("disaster", 5, 1),
-		HIGH("high", 4, 2),
-		AVERAGE("average", 3, 3),
-		WARNING("warning", 2, 4),
-		INFORMATION("information", 1, 5),
-		NOT_CLASSIFIED("not classified", 0, 6);
-		
-		private final String name;
-		private final int number;
-		private final int position;
-		
-		Severities(String name, int n, int position) {
-			this.name = name;
-			number = n;
-			this.position= position; 
-		}
-		
-		public int getPosition() {
-			return position;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public int getNumber() {
-			return number;
-		}
-		
-		public static Severities getSeverityByNumber(int n) {
-			return ALL;
-		}
-		
-	}
-
 	class EventListPagerAdapter extends FragmentStatePagerAdapter {
 
 		ArrayList<EventsListPage> fragments = new ArrayList<EventsListPage>();
@@ -76,7 +40,7 @@ public class EventsListFragment extends SherlockFragment {
 		public EventListPagerAdapter(FragmentManager fm) {
 			super(fm);
 			EventsListPage f;
-			for (Severities s : Severities.values()) {
+			for (TriggerSeverities s : TriggerSeverities.values()) {
 				f = new EventsListPage();
 				Bundle args = new Bundle();
 				args.putInt(EventsListPage.ARG_SEVERITY, s.getNumber());
@@ -96,7 +60,7 @@ public class EventsListFragment extends SherlockFragment {
 
 		@Override
 		public int getCount() {
-			return Severities.values().length;
+			return TriggerSeverities.values().length;
 		}
 
 		@Override
@@ -123,16 +87,16 @@ public class EventsListFragment extends SherlockFragment {
 		super.onViewCreated(view, savedInstanceState);
 		
 		if (savedInstanceState != null) {
-			currentPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
-			currentEventId = savedInstanceState.getLong(ARG_EVENT_ID, 0);
-			currentSeverity = savedInstanceState.getInt(ARG_SEVERITY, Severities.ALL.getNumber());
+			mCurrentPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
+			mCurrentEventId = savedInstanceState.getLong(ARG_EVENT_ID, 0);
+			mCurrentSeverity = savedInstanceState.getInt(ARG_SEVERITY, TriggerSeverities.ALL.getNumber());
 		}
 
 		Bundle args = getArguments();
 		if (args != null) {
-			currentPosition = args.getInt(ARG_EVENT_POSITION, 0);
-			currentEventId = args.getLong(ARG_EVENT_ID, 0);
-			currentSeverity = args.getInt(ARG_SEVERITY, Severities.ALL.getNumber());
+			mCurrentPosition = args.getInt(ARG_EVENT_POSITION, 0);
+			mCurrentEventId = args.getLong(ARG_EVENT_ID, 0);
+			mCurrentSeverity = args.getInt(ARG_SEVERITY, TriggerSeverities.ALL.getNumber());
 		}
 		
 		setupListViewPager();
@@ -140,9 +104,9 @@ public class EventsListFragment extends SherlockFragment {
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putInt(ARG_EVENT_POSITION, currentPosition);
-		outState.putLong(ARG_EVENT_ID, currentEventId);
-		outState.putInt(ARG_SEVERITY, currentSeverity);
+		outState.putInt(ARG_EVENT_POSITION, mCurrentPosition);
+		outState.putLong(ARG_EVENT_ID, mCurrentEventId);
+		outState.putInt(ARG_SEVERITY, mCurrentSeverity);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -198,7 +162,7 @@ public class EventsListFragment extends SherlockFragment {
 		Log.d(TAG,
 				"EventCategoryFragment:selectEvent(" + position + ")");
 		f.selectEvent(position);
-		currentPosition = position;
+		mCurrentPosition = position;
 	}
 
 }

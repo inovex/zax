@@ -13,9 +13,9 @@ import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.activities.fragments.EventsListFragment.Severities;
 import com.inovex.zabbixmobile.model.DataAccess;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.TriggerSeverities;
 import com.inovex.zabbixmobile.view.EventsArrayAdapter;
 
 public class EventsListPage extends SherlockListFragment {
@@ -28,9 +28,9 @@ public class EventsListPage extends SherlockListFragment {
 
 	private OnEventSelectedListener mCallbackMain;
 	
-	private String title;
-	private int severity;
-	private int itemSelected;
+	private String mTitle;
+	private int mSeverity;
+	private int mItemSelected;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -50,11 +50,11 @@ public class EventsListPage extends SherlockListFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(savedInstanceState != null) {
-			title = savedInstanceState.getString(ARG_TITLE);
-			if(title == null)
-				title = Severities.ALL.getName();
-			severity = savedInstanceState.getInt(ARG_SEVERITY, Severities.ALL.getNumber());
-			itemSelected = savedInstanceState.getInt(ARG_ITEM_SELECTED, 0);
+			mTitle = savedInstanceState.getString(ARG_TITLE);
+			if(mTitle == null)
+				mTitle = TriggerSeverities.ALL.getName();
+			mSeverity = savedInstanceState.getInt(ARG_SEVERITY, TriggerSeverities.ALL.getNumber());
+			mItemSelected = savedInstanceState.getInt(ARG_ITEM_SELECTED, 0);
 		}
 	}
 
@@ -67,16 +67,16 @@ public class EventsListPage extends SherlockListFragment {
 		DataAccess dataAccess = DataAccess.getInstance(getSherlockActivity());
 		
 		Bundle args = getArguments();
-		title = args.getString(ARG_TITLE);
-		if(title == null)
-			title = Severities.ALL.getName();
-		severity = args.getInt(ARG_SEVERITY, Severities.ALL.getNumber());
-		itemSelected = args.getInt(ARG_ITEM_SELECTED, 0);
+		mTitle = args.getString(ARG_TITLE);
+		if(mTitle == null)
+			mTitle = TriggerSeverities.ALL.getName();
+		mSeverity = args.getInt(ARG_SEVERITY, TriggerSeverities.ALL.getNumber());
+		mItemSelected = args.getInt(ARG_ITEM_SELECTED, 0);
 		try {
 			List<Event> events;
 			
-			Log.d(TAG, "category name: " + title);
-			events = dataAccess.getEventsBySeverity(severity);
+			Log.d(TAG, "category name: " + mTitle);
+			events = dataAccess.getEventsBySeverity(mSeverity);
 			EventsArrayAdapter adapter = new EventsArrayAdapter(getSherlockActivity(),
 					R.layout.events_list_item, events);
 			this.setListAdapter(adapter);
@@ -91,9 +91,9 @@ public class EventsListPage extends SherlockListFragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putString(ARG_TITLE, title);
-		outState.putInt(ARG_SEVERITY, severity);
-		outState.putInt(ARG_ITEM_SELECTED, itemSelected);
+		outState.putString(ARG_TITLE, mTitle);
+		outState.putInt(ARG_SEVERITY, mSeverity);
+		outState.putInt(ARG_ITEM_SELECTED, mItemSelected);
 	}
 
 	@Override
@@ -110,15 +110,15 @@ public class EventsListPage extends SherlockListFragment {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Log.d(TAG, "onListItemClick(l, v, " + position + ", " + id
-				+ "). severity: " + severity);
+				+ "). severity: " + mSeverity);
 		getArguments().putInt(ARG_ITEM_SELECTED, position);
-		mCallbackMain.onEventSelected(position, severity, id);
+		mCallbackMain.onEventSelected(position, mSeverity, id);
 	}
 
 	public void selectEvent(int position) {
 		getListView().setItemChecked(position, true);
 		getListView().setSelection(position);
-		itemSelected = position;
+		mItemSelected = position;
 		getArguments().putInt(ARG_ITEM_SELECTED, position);
 	}
 
