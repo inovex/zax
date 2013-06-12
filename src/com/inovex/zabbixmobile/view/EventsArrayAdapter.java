@@ -52,7 +52,7 @@ public class EventsArrayAdapter extends ArrayAdapter<Event> {
 		Trigger t = e.getTrigger();
 		if(t == null)
 			throw new RuntimeException("No trigger defined for Event with ID " + e.getId());
-		title.setText(String.valueOf("id: " + e.getId() + " status: " + t.getStatus() + " severity: " + t.getPriority()));
+		title.setText(String.valueOf("id: " + e.getId()));
 		description.setText(String.valueOf(t.getDescription()));
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 				SimpleDateFormat.SHORT, SimpleDateFormat.SHORT, Locale.getDefault());
@@ -66,82 +66,4 @@ public class EventsArrayAdapter extends ArrayAdapter<Event> {
 		return mObjects.get(position).getId();
 	}
 
-	@Override
-	public Filter getFilter() {
-		Filter f = new SeverityFilter();
-		return f;
-	}
-
-	private class SeverityFilter extends Filter {
-		@Override
-		protected FilterResults performFiltering(CharSequence prefix) {
-			FilterResults results = new FilterResults();
-
-			List<Event> mOriginalValues = mObjects;
-			// if (mOriginalValues == null) {
-			// synchronized (mObjects) {
-			// mOriginalValues = new ArrayList<Event>(mObjects);
-			// }
-			// }
-
-			if (prefix == null || prefix.length() == 0) {
-				List<Event> list;
-				synchronized (mObjects) {
-					list = new ArrayList<Event>(mOriginalValues);
-				}
-				results.values = list;
-				results.count = list.size();
-			} else {
-				String prefixString = prefix.toString().toLowerCase();
-
-				ArrayList<Event> values;
-				synchronized (mObjects) {
-					values = new ArrayList<Event>(mOriginalValues);
-				}
-
-				final int count = values.size();
-				final ArrayList<Event> newValues = new ArrayList<Event>();
-
-				for (int i = 0; i < count; i++) {
-					final Event value = values.get(i);
-					final String valueText = value.toString().toLowerCase();
-
-					// First match against the whole, non-splitted value
-					if (String.valueOf(value.getValue()).startsWith(
-							prefixString)) {
-						newValues.add(value);
-					} else {
-						final String[] words = valueText.split(" ");
-						final int wordCount = words.length;
-
-						// Start at index 0, in case valueText starts with
-						// space(s)
-						for (int k = 0; k < wordCount; k++) {
-							if (words[k].startsWith(prefixString)) {
-								newValues.add(value);
-								break;
-							}
-						}
-					}
-				}
-
-				results.values = newValues;
-				results.count = newValues.size();
-			}
-
-			return results;
-		}
-
-		@Override
-		protected void publishResults(CharSequence constraint,
-				FilterResults results) {
-			// noinspection unchecked
-			mObjects = (List<Event>) results.values;
-			if (results.count > 0) {
-				notifyDataSetChanged();
-			} else {
-				notifyDataSetInvalidated();
-			}
-		}
-	}
 }

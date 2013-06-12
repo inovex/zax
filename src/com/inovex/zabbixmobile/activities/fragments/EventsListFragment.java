@@ -19,28 +19,42 @@ import com.inovex.zabbixmobile.R;
 
 public class EventsListFragment extends SherlockFragment {
 	
-	protected static final String TAG = EventsListFragment.class.getSimpleName();
-	ViewPager mEventCategoryPager;
-	EventListPagerAdapter mEventCategoryPagerAdapter;
-	TabPageIndicator mEventCategoryTabIndicator;
+	public static final String TAG = EventsListFragment.class.getSimpleName();
+	public static final String ARG_EVENT_POSITION = "event_position";
+	public static final String ARG_EVENT_ID = "event_id";
+	public static final String ARG_SEVERITY = "severity";
+	
+	private int currentPosition = 0;
+	private long currentEventId = 0;
+	private int currentSeverity = Severities.ALL.getNumber();
+	
+	ViewPager mEventsListPager;
+	EventListPagerAdapter mEventsListPagerAdapter;
+	TabPageIndicator mEventListTabIndicator;
 	
 	public enum Severities {
-		ALL("all", -1),
-		DISASTER("disaster", 5),
-		HIGH("high", 4),
-		AVERAGE("average", 3),
-		WARNING("warning", 2),
-		INFORMATION("information", 1),
-		NOT_CLASSIFIED("not classified", 0);
+		ALL("all", -1, 0),
+		DISASTER("disaster", 5, 1),
+		HIGH("high", 4, 2),
+		AVERAGE("average", 3, 3),
+		WARNING("warning", 2, 4),
+		INFORMATION("information", 1, 5),
+		NOT_CLASSIFIED("not classified", 0, 6);
 		
 		private final String name;
 		private final int number;
+		private final int position;
 		
-		Severities(String name, int n) {
+		Severities(String name, int n, int position) {
 			this.name = name;
 			number = n;
+			this.position= position; 
 		}
 		
+		public int getPosition() {
+			return position;
+		}
+
 		public String getName() {
 			return name;
 		}
@@ -49,11 +63,14 @@ public class EventsListFragment extends SherlockFragment {
 			return number;
 		}
 		
+		public static Severities getSeverityByNumber(int n) {
+			return ALL;
+		}
+		
 	}
 
 	class EventListPagerAdapter extends FragmentStatePagerAdapter {
 
-		String[] categoryNames = new String[] {"all", "disaster", "high", "warning", "information", "not classified"};
 		ArrayList<EventsListPage> fragments = new ArrayList<EventsListPage>();
 
 		public EventListPagerAdapter(FragmentManager fm) {
@@ -79,7 +96,7 @@ public class EventsListFragment extends SherlockFragment {
 
 		@Override
 		public int getCount() {
-			return categoryNames.length;
+			return Severities.values().length;
 		}
 
 		@Override
@@ -105,35 +122,56 @@ public class EventsListFragment extends SherlockFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		
-		setupCategoryViewPager();
+		if (savedInstanceState != null) {
+			currentPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
+			currentEventId = savedInstanceState.getLong(ARG_EVENT_ID, 0);
+			currentSeverity = savedInstanceState.getInt(ARG_SEVERITY, Severities.ALL.getNumber());
+		}
+
+		Bundle args = getArguments();
+		if (args != null) {
+			currentPosition = args.getInt(ARG_EVENT_POSITION, 0);
+			currentEventId = args.getLong(ARG_EVENT_ID, 0);
+			currentSeverity = args.getInt(ARG_SEVERITY, Severities.ALL.getNumber());
+		}
+		
+		setupListViewPager();
 	}
 	
-	private void setupCategoryViewPager() {
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putInt(ARG_EVENT_POSITION, currentPosition);
+		outState.putLong(ARG_EVENT_ID, currentEventId);
+		outState.putInt(ARG_SEVERITY, currentSeverity);
+		super.onSaveInstanceState(outState);
+	}
+
+	private void setupListViewPager() {
 		// Set up the ViewPager, attaching the adapter and setting up a listener
 		// for when the
 		// user swipes between sections.
-		mEventCategoryPagerAdapter = new EventListPagerAdapter(
+		mEventsListPagerAdapter = new EventListPagerAdapter(
 				getChildFragmentManager());
-		mEventCategoryPager = (ViewPager) getView().findViewById(
+		mEventsListPager = (ViewPager) getView().findViewById(
 				R.id.events_list_viewpager);
-		mEventCategoryPager.setAdapter(mEventCategoryPagerAdapter);
-		mEventCategoryPager.setOffscreenPageLimit(1);
+		mEventsListPager.setAdapter(mEventsListPagerAdapter);
+		mEventsListPager.setOffscreenPageLimit(1);
 
 		// Bind the tab indicator to the adapter
-		mEventCategoryTabIndicator = (TabPageIndicator) getView().findViewById(
+		mEventListTabIndicator = (TabPageIndicator) getView().findViewById(
 				R.id.events_list_tabindicator);
-		mEventCategoryTabIndicator.setViewPager(mEventCategoryPager);
-
-		mEventCategoryTabIndicator
+		mEventListTabIndicator.setViewPager(mEventsListPager);
+		
+		mEventListTabIndicator
 				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
 						Log.d(TAG,
 								"EventCategoryFragment:onPageSelected("
 										+ position + ")");
-						EventsListPage p = (EventsListPage) mEventCategoryPagerAdapter
-								.instantiateItem(mEventCategoryPager,
-										mEventCategoryPager.getCurrentItem());
+						EventsListPage p = (EventsListPage) mEventsListPagerAdapter
+								.instantiateItem(mEventsListPager,
+										mEventsListPager.getCurrentItem());
 //						mCallbackMain.onCategorySelected(position,
 //								p.getSelectedEventNumber());
 //						categoryNumber = position;
@@ -148,6 +186,19 @@ public class EventsListFragment extends SherlockFragment {
 					public void onPageScrolled(int arg0, float arg1, int arg2) {
 					}
 				});
+		
+	}
+	
+	public void selectEvent(int position) {
+		if (mEventsListPager == null)
+			return;
+		EventsListPage f = (EventsListPage) mEventsListPagerAdapter
+				.instantiateItem(mEventsListPager,
+						mEventsListPager.getCurrentItem());
+		Log.d(TAG,
+				"EventCategoryFragment:selectEvent(" + position + ")");
+		f.selectEvent(position);
+		currentPosition = position;
 	}
 
 }

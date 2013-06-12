@@ -1,13 +1,11 @@
-	package com.inovex.zabbixmobile.activities;
+package com.inovex.zabbixmobile.activities;
 
-import java.sql.SQLException;
-
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -15,45 +13,28 @@ import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListFragment;
+import com.inovex.zabbixmobile.activities.fragments.EventsListFragment.Severities;
 import com.inovex.zabbixmobile.activities.fragments.OnEventSelectedListener;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
-import com.inovex.zabbixmobile.model.Event;
-import com.inovex.zabbixmobile.model.MockDatabaseHelper;
-import com.inovex.zabbixmobile.model.Trigger;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.Dao;
 
-public class EventsActivity extends SherlockFragmentActivity implements OnEventSelectedListener {
+public class EventsActivity extends SherlockFragmentActivity implements
+		OnEventSelectedListener {
 
 	private static final String TAG = EventsActivity.class.getSimpleName();
-
-	private static final String FRAGMENT_EVENTS_LIST = "fragment_event_list";
 
 	private DatabaseHelper databaseHelper = null;
 	private FragmentManager fragmentManager;
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if (databaseHelper != null) {
-			OpenHelperManager.releaseHelper();
-			databaseHelper = null;
-		}
-	}
+	private int eventPosition;
 
-	private DatabaseHelper getHelper() {
-		if (databaseHelper == null) {
-			databaseHelper = OpenHelperManager.getHelper(this,
-					MockDatabaseHelper.class);
-		}
-		return databaseHelper;
-	}
+	private int severity = Severities.ALL.getNumber();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_events);
-		
+
 		fragmentManager = getSupportFragmentManager();
 
 		ActionBar actionBar = getSupportActionBar();
@@ -62,53 +43,69 @@ public class EventsActivity extends SherlockFragmentActivity implements OnEventS
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(true);
 
-		LinearLayout baseLayout = (LinearLayout) findViewById(R.id.layout_events);
-		
-		FragmentTransaction ft = fragmentManager.beginTransaction();
-		ft.add(R.id.layout_events, new EventsListFragment(), FRAGMENT_EVENTS_LIST);
-		ft.commit();
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			FragmentTransaction ft = fragmentManager.beginTransaction();
+			EventsListFragment listFragment = (EventsListFragment) fragmentManager
+					.findFragmentByTag(EventsListFragment.TAG);
+			if (listFragment != null) {
+				// if the fragment exists already, destroy it
+				ft.remove(listFragment);
+			}
+			EventsDetailsFragment detailsFragment = (EventsDetailsFragment) fragmentManager
+					.findFragmentByTag(EventsDetailsFragment.TAG);
+			if (detailsFragment != null) {
+				// if the fragment exists already, destroy it
+				ft.remove(detailsFragment);
+			}
 
-//		TextView textView = new TextView(this);
-//		textView.setText("Events activity");
-//		baseLayout.addView(textView);
-//		
-//		getHelper();
-//		
-//		try {
-//			TextView textView2 = new TextView(this);
-//			doAccountDatabaseStuff(textView2);
-//			baseLayout.addView(textView2);
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+			ft.commit();
+			fragmentManager.executePendingTransactions();
 
-	}
-	
-	private void doAccountDatabaseStuff(TextView tv) throws SQLException {
+			ft = fragmentManager.beginTransaction();
 
-		// clear database
-		databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), 0, 0);
-		
-		StringBuilder sb = new StringBuilder();
-		
-//		Event e = new Event(0, 0, System.currentTimeMillis(), 1, false, false);
-//		databaseHelper.getDao(Event.class).create(e);
+			// add list and details fragment
+			Bundle listArgs = new Bundle();
+			listArgs.putInt(EventsListFragment.ARG_SEVERITY, severity);
+			listArgs.putInt(EventsListFragment.ARG_EVENT_POSITION, eventPosition);
+			listFragment = new EventsListFragment();
+			ft.add(R.id.events_fragment_left, listFragment,
+					EventsListFragment.TAG);
 
-		sb.append("Events:\n");
-		Dao<Event, Integer> eventDao = databaseHelper.getDao(Event.class);
+			detailsFragment = new EventsDetailsFragment();
+			Bundle detailsArgs = new Bundle();
+			detailsArgs.putInt(EventsDetailsFragment.ARG_EVENT_POSITION,
+					eventPosition);
+			detailsArgs.putInt(EventsDetailsFragment.ARG_SEVERITY, severity);
+			detailsFragment.setArguments(detailsArgs);
+			ft.add(R.id.events_fragment_right, new EventsDetailsFragment(),
+					EventsDetailsFragment.TAG);
+			ft.commit();
+		} else {
 
-		for (Event event : eventDao) {
-			sb.append(event + "\n\n");
+			FragmentTransaction ft = fragmentManager.beginTransaction();
+			EventsListFragment listFragment = (EventsListFragment) fragmentManager
+					.findFragmentByTag(EventsListFragment.TAG);
+			if (listFragment != null) {
+				// if the fragment exists already, destroy it
+				ft.remove(listFragment);
+			}
+
+			EventsDetailsFragment detailsFragment = (EventsDetailsFragment) fragmentManager
+					.findFragmentByTag(EventsDetailsFragment.TAG);
+			if (detailsFragment != null) {
+				// if the fragment exists already, destroy it
+				ft.remove(detailsFragment);
+			}
+
+			ft.commit();
+			fragmentManager.executePendingTransactions();
+
+			ft = fragmentManager.beginTransaction();
+			ft.add(R.id.events_layout, new EventsListFragment(),
+					EventsListFragment.TAG);
+			ft.commit();
 		}
-		
-		sb.append("\n\nTriggers:\n");
-		Dao<Trigger, Integer> triggerDao = databaseHelper.getDao(Trigger.class);
 
-		for (Trigger trigger : triggerDao) {
-			sb.append(trigger + "\n\n");
-		}
-		tv.setText(sb.toString());
 	}
 
 	@Override
@@ -127,24 +124,39 @@ public class EventsActivity extends SherlockFragmentActivity implements OnEventS
 
 	@Override
 	public void onEventSelected(int position, int severity, long id) {
-		Log.d(TAG, "event selected: " + id + ",severity: " + severity + "(position: " + position + ")");
-		EventsDetailsFragment f = new EventsDetailsFragment();
-		Bundle args = new Bundle();
-		args.putLong(EventsDetailsFragment.ARG_EVENT_ID, id);
-		args.putInt(EventsDetailsFragment.ARG_EVENT_POSITION, position);
-		args.putInt(EventsDetailsFragment.ARG_SEVERITY, severity);
-		f.setArguments(args);
-		FragmentTransaction ft = fragmentManager.beginTransaction();
-		ft.remove(fragmentManager.findFragmentByTag(FRAGMENT_EVENTS_LIST));
-		ft.add(R.id.layout_events, f);
-		ft.addToBackStack(null);
-		ft.commit();
+		Log.d(TAG, "event selected: " + id + ",severity: " + severity
+				+ "(position: " + position + ")");
+		this.eventPosition = position;
+		this.severity = severity;
+
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			EventsDetailsFragment detailsFragment = (EventsDetailsFragment) fragmentManager
+					.findFragmentByTag(EventsDetailsFragment.TAG);
+			detailsFragment.selectEvent(position);
+			
+			EventsListFragment listFragment = (EventsListFragment) fragmentManager
+					.findFragmentByTag(EventsListFragment.TAG);
+			
+		} else {
+			EventsDetailsFragment f = new EventsDetailsFragment();
+			Bundle args = new Bundle();
+			args.putLong(EventsDetailsFragment.ARG_EVENT_ID, id);
+			args.putInt(EventsDetailsFragment.ARG_EVENT_POSITION, position);
+			args.putInt(EventsDetailsFragment.ARG_SEVERITY, severity);
+			f.setArguments(args);
+			
+			FragmentTransaction ft = fragmentManager.beginTransaction();
+			ft.remove(fragmentManager.findFragmentByTag(EventsListFragment.TAG));
+			ft.add(R.id.events_layout, f);
+			ft.addToBackStack(null);
+			ft.commit();
+		}
 	}
 
 	@Override
 	public void onEventClicked(int position) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

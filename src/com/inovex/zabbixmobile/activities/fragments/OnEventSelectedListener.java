@@ -4,5 +4,4 @@ package com.inovex.zabbixmobile.activities.fragments;
 public interface OnEventSelectedListener {
 	public void onEventSelected(int position, int severity, long id);
 
-	public void onEventClicked(int position);
 }

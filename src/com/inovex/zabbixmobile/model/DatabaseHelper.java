@@ -102,10 +102,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 	
-	public List<Event> getAllEvents() throws SQLException {
-		return getDao(Event.class).queryForAll();
-	}
-
 	@Override
 	public void close() {
 		super.close();

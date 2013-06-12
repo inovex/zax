@@ -64,15 +64,8 @@ public class EventsListPage extends SherlockListFragment {
 		View rootView = super.onCreateView(inflater, container,
 				savedInstanceState);
 
-		// this selects simple_list_item_activated_1 only for API > 11 and
-		// landscape orientation; otherwise simple_list_item_1
-		int listItemLayout = R.layout.simple_list_item;
-//		this.setListAdapter(new ArrayAdapter<String>(getSherlockActivity(),
-//				listItemLayout, new String[] { "1", "2", "3" }));
 		DataAccess dataAccess = DataAccess.getInstance(getSherlockActivity());
-//		DatabaseHelper databaseHelper = OpenHelperManager.getHelper(getSherlockActivity(),
-//				MockDatabaseHelper.class);
-//		databaseHelper.onUpgrade(databaseHelper.getWritableDatabase(), 0, 1);
+		
 		Bundle args = getArguments();
 		title = args.getString(ARG_TITLE);
 		if(title == null)
@@ -87,7 +80,6 @@ public class EventsListPage extends SherlockListFragment {
 			EventsArrayAdapter adapter = new EventsArrayAdapter(getSherlockActivity(),
 					R.layout.events_list_item, events);
 			this.setListAdapter(adapter);
-//			adapter.getFilter().filter("1");
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -107,6 +99,7 @@ public class EventsListPage extends SherlockListFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
 	}
 
@@ -120,7 +113,13 @@ public class EventsListPage extends SherlockListFragment {
 				+ "). severity: " + severity);
 		getArguments().putInt(ARG_ITEM_SELECTED, position);
 		mCallbackMain.onEventSelected(position, severity, id);
-//		mCallbackMain.onEventClicked(position);
+	}
+
+	public void selectEvent(int position) {
+		getListView().setItemChecked(position, true);
+		getListView().setSelection(position);
+		itemSelected = position;
+		getArguments().putInt(ARG_ITEM_SELECTED, position);
 	}
 
 }

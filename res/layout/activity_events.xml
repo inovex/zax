@@ -7,7 +7,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" 
-    android:id="@+id/layout_events"
+    android:id="@+id/events_layout"
     android:orientation="vertical">
 
 </LinearLayout>
