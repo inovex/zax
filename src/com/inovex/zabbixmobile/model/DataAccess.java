@@ -7,6 +7,7 @@ import java.util.List;
 import android.content.Context;
 import android.util.Log;
 
+import com.inovex.zabbixmobile.activities.fragments.EventsListFragment.Severities;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.dao.Dao;
 
@@ -66,6 +67,8 @@ public class DataAccess {
 	 * @throws SQLException
 	 */
 	public List<Event> getEventsBySeverity(int severity) throws SQLException {
+		if(severity == Severities.ALL.getNumber())
+			return getAllEvents();
 		// TODO: replace this with a JOIN
 		List<Event> events;
 		if(eventCache != null) {

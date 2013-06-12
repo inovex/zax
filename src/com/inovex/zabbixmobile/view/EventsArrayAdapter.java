@@ -52,7 +52,7 @@ public class EventsArrayAdapter extends ArrayAdapter<Event> {
 		Trigger t = e.getTrigger();
 		if(t == null)
 			throw new RuntimeException("No trigger defined for Event with ID " + e.getId());
-		title.setText(String.valueOf("status: " + t.getStatus() + " severity: " + t.getPriority()));
+		title.setText(String.valueOf("id: " + e.getId() + " status: " + t.getStatus() + " severity: " + t.getPriority()));
 		description.setText(String.valueOf(t.getDescription()));
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 				SimpleDateFormat.SHORT, SimpleDateFormat.SHORT, Locale.getDefault());

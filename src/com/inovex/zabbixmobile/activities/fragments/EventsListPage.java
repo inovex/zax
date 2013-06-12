@@ -83,11 +83,7 @@ public class EventsListPage extends SherlockListFragment {
 			List<Event> events;
 			
 			Log.d(TAG, "category name: " + title);
-			if(severity == Severities.ALL.getNumber()) {
-				events = dataAccess.getAllEvents();
-			} else {
-				events = dataAccess.getEventsBySeverity(severity);
-			}
+			events = dataAccess.getEventsBySeverity(severity);
 			EventsArrayAdapter adapter = new EventsArrayAdapter(getSherlockActivity(),
 					R.layout.events_list_item, events);
 			this.setListAdapter(adapter);

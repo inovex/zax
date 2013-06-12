@@ -131,6 +131,7 @@ public class EventsActivity extends SherlockFragmentActivity implements OnEventS
 		EventsDetailsFragment f = new EventsDetailsFragment();
 		Bundle args = new Bundle();
 		args.putLong(EventsDetailsFragment.ARG_EVENT_ID, id);
+		args.putInt(EventsDetailsFragment.ARG_EVENT_POSITION, position);
 		args.putInt(EventsDetailsFragment.ARG_SEVERITY, severity);
 		f.setArguments(args);
 		FragmentTransaction ft = fragmentManager.beginTransaction();
