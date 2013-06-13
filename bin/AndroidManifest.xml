@@ -37,7 +37,7 @@
             android:label="@string/activity_screens" >
         </activity>
 
-        <service android:name="com.inovex.zabbixmobile.api.ZabbixDataService" >
+        <service android:name="com.inovex.zabbixmobile.data.ZabbixDataService" >
         </service>
 
     </application>

@@ -1,10 +1,12 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
-import java.sql.SQLException;
-import java.util.List;
-
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,19 +15,24 @@ import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.model.DataAccess;
-import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.data.OnEventListLoadedListener;
+import com.inovex.zabbixmobile.data.ZabbixDataService;
+import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
 import com.inovex.zabbixmobile.view.EventsArrayAdapter;
 
-public class EventsListPage extends SherlockListFragment {
+public class EventsListPage extends SherlockListFragment implements
+		ServiceConnection, OnEventListLoadedListener {
 
 	private static final String TAG = EventsListPage.class.getSimpleName();
 
 	private OnEventSelectedListener mCallbackMain;
+	private ZabbixDataService mZabbixDataService;
 
 	private TriggerSeverities mSeverity;
 	private int mItemSelected;
+
+	private EventsArrayAdapter mListAdapter;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -39,6 +46,22 @@ public class EventsListPage extends SherlockListFragment {
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnEventSelectedListener.");
 		}
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		// we need to do this after the view was created!!
+		Intent intent = new Intent(getSherlockActivity(),
+				ZabbixDataService.class);
+		getSherlockActivity().bindService(intent, this,
+				Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		getSherlockActivity().unbindService(this);
 	}
 
 	@Override
@@ -60,21 +83,8 @@ public class EventsListPage extends SherlockListFragment {
 		View rootView = super.onCreateView(inflater, container,
 				savedInstanceState);
 
-		DataAccess dataAccess = DataAccess.getInstance(getSherlockActivity());
-
-		try {
-			List<Event> events;
-
-			Log.d(TAG, "category name: " + mSeverity.getName());
-			events = dataAccess.getEventsBySeverity(mSeverity);
-			EventsArrayAdapter adapter = new EventsArrayAdapter(
-					getSherlockActivity(), R.layout.events_list_item, events);
-			this.setListAdapter(adapter);
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// DataAccess dataAccess =
+		// DataAccess.getInstance(getSherlockActivity());
 		return rootView;
 	}
 
@@ -117,6 +127,31 @@ public class EventsListPage extends SherlockListFragment {
 
 	public void setItemSelected(int itemSelected) {
 		this.mItemSelected = itemSelected;
+	}
+
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		ZabbixDataBinder binder = (ZabbixDataBinder) service;
+		mZabbixDataService = binder.getService();
+
+		Log.d(TAG, "category name: " + mSeverity.getName());
+		mListAdapter = new EventsArrayAdapter(getSherlockActivity(),
+				R.layout.events_list_item);
+		setListAdapter(mListAdapter);
+		mZabbixDataService.loadEventsBySeverity(mSeverity, mListAdapter, this);
+
+	}
+
+	@Override
+	public void onServiceDisconnected(ComponentName name) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onEventListLoaded() {
+		mListAdapter.notifyDataSetChanged();
+
 	}
 
 }
