@@ -1,17 +1,14 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.os.IBinder;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,25 +17,29 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.model.DataAccess;
-import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.data.OnDataAccessFinishedListener;
+import com.inovex.zabbixmobile.data.ZabbixDataService;
+import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
+import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
 import com.viewpagerindicator.CirclePageIndicator;
 
-public class EventsDetailsFragment extends SherlockFragment {
+public class EventsDetailsFragment extends SherlockFragment implements
+		ServiceConnection, OnDataAccessFinishedListener {
 
 	public static final String TAG = EventsDetailsFragment.class
 			.getSimpleName();
 
 	ViewPager mDetailsPager;
-	EventsDetailsPagerAdapter mCurrentDetailsPagerAdapter;
-	SparseArray<EventsDetailsPagerAdapter> mEventDetailsPagerAdapters = new SparseArray<EventsDetailsPagerAdapter>();
+	EventsDetailsPagerAdapter mDetailsPagerAdapter;
 
 	private OnEventSelectedListener mCallbackMain;
 	private int mPosition = 0;
 	private long mEventId = 0;
 	private TriggerSeverities mSeverity = TriggerSeverities.ALL;
 	private CirclePageIndicator mDetailsCircleIndicator;
+
+	private ZabbixDataService mZabbixDataService;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -52,6 +53,22 @@ public class EventsDetailsFragment extends SherlockFragment {
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnEventSelectedListener.");
 		}
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		// we need to do this after the view was created!!
+		Intent intent = new Intent(getSherlockActivity(),
+				ZabbixDataService.class);
+		getSherlockActivity().bindService(intent, this,
+				Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		getSherlockActivity().unbindService(this);
 	}
 
 	@Override
@@ -80,9 +97,9 @@ public class EventsDetailsFragment extends SherlockFragment {
 		// TriggerSeverities.ALL.getNumber());
 		// }
 
-		setupDetailsViewPager();
-
-		mDetailsCircleIndicator.setCurrentItem(mPosition);
+//		setupDetailsViewPager();
+//
+//		mDetailsCircleIndicator.setCurrentItem(mPosition);
 
 		// selectCategory(severity, eventNumber);
 	}
@@ -96,13 +113,8 @@ public class EventsDetailsFragment extends SherlockFragment {
 	}
 
 	private void setupDetailsViewPager() {
-		mDetailsPager = (ViewPager) getView().findViewById(
-				R.id.details_view_pager);
 
-		mCurrentDetailsPagerAdapter = new EventsDetailsPagerAdapter(
-				getChildFragmentManager());
-
-		mDetailsPager.setAdapter(mCurrentDetailsPagerAdapter);
+		mDetailsPager.setAdapter(mDetailsPagerAdapter);
 
 		// Bind the title indicator to the adapter
 		mDetailsCircleIndicator = (CirclePageIndicator) getView().findViewById(
@@ -161,55 +173,33 @@ public class EventsDetailsFragment extends SherlockFragment {
 		this.mSeverity = severity;
 	}
 
-	class EventsDetailsPagerAdapter extends FragmentStatePagerAdapter implements
-			OnEventSelectedListener {
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		// We've bound to LocalService, cast the IBinder and get
+		// LocalService instance
+		ZabbixDataBinder binder = (ZabbixDataBinder) service;
+		mZabbixDataService = binder.getService();
 
-		private List<Event> events;
-		private ArrayList<EventsDetailsPage> fragments = new ArrayList<EventsDetailsPage>();
+		mDetailsPager = (ViewPager) getView().findViewById(
+				R.id.details_view_pager);
 
-		public EventsDetailsPagerAdapter(FragmentManager fm) {
-			super(fm);
-			Log.d(TAG, "creating DetailsPagerAdapter for severity " + mSeverity);
+		mDetailsPagerAdapter = new EventsDetailsPagerAdapter(
+				this.getSherlockActivity(), getChildFragmentManager(),
+				mSeverity);
+		
+		mZabbixDataService.loadEventsBySeverity(mSeverity,
+				mDetailsPagerAdapter, this);
+	}
 
-			fragments.clear();
-			DataAccess dataAccess = DataAccess
-					.getInstance(getSherlockActivity());
-			try {
-				events = dataAccess.getEventsBySeverity(mSeverity);
-				EventsDetailsPage f;
-				Event event;
-				for (int i = 0; i < events.size(); i++) {
-					Log.d(TAG,
-							"Creating page for event " + i + ": "
-									+ events.toString());
-					f = new EventsDetailsPage();
-					event = events.get(i);
-					f.setEventId(event.getId());
-					fragments.add(f);
-				}
-				notifyDataSetChanged();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+	@Override
+	public void onServiceDisconnected(ComponentName name) {
 
-		@Override
-		public Fragment getItem(int i) {
-			return fragments.get(i);
-		}
+	}
 
-		@Override
-		public int getCount() {
-			return fragments.size();
-		}
+	@Override
+	public void onDataAccessFinished() {
+		setupDetailsViewPager();
 
-		@Override
-		public void onEventSelected(int position, TriggerSeverities severity,
-				long id) {
-			// TODO Auto-generated method stub
-
-		}
-
+		mDetailsCircleIndicator.setCurrentItem(mPosition);
 	}
 }

@@ -16,7 +16,7 @@ import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.MockDatabaseHelper;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
-import com.inovex.zabbixmobile.view.EventsListAdapter;
+import com.inovex.zabbixmobile.view.IEventsListAdapter;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteBaseService;
 import com.j256.ormlite.dao.Dao;
@@ -54,7 +54,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 		// set up SQLite connection using OrmLite
 		mDatabaseHelper = OpenHelperManager.getHelper(this,
 				MockDatabaseHelper.class);
-//		mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0, 1);
+		mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0, 1);
 		super.onCreate();
 	}
 
@@ -96,6 +96,21 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	}
 
 	/**
+	 * Loads all events with a given severity without providing a callback. See
+	 * {@link ZabbixDataService#loadEventsBySeverity(TriggerSeverities, IEventsListAdapter, OnDataAccessFinishedListener)}
+	 * .
+	 * 
+	 * @param severity
+	 *            severity of the events to be retrieved
+	 * @param adapter
+	 *            list adapter to be updated with the results
+	 */
+	public void loadEventsBySeverity(final TriggerSeverities severity,
+			final IEventsListAdapter adapter) {
+		loadEventsBySeverity(severity, adapter, null);
+	}
+
+	/**
 	 * Loads all events with a given severity from the database asynchronously.
 	 * After loading the events, the given list adapter is updated and the
 	 * callback is notified of the changed adapter.
@@ -107,25 +122,37 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	 * @param callback
 	 *            callback to be notified of the changed list adapter
 	 */
-	public void loadEventsBySeverity(final TriggerSeverities severity, final EventsListAdapter adapter) {
+	public void loadEventsBySeverity(final TriggerSeverities severity,
+			final IEventsListAdapter adapter,
+			final OnDataAccessFinishedListener callback) {
 
 		new AsyncTask<Void, Void, Void>() {
 
+			private List<Event> events;
+
 			@Override
 			protected Void doInBackground(Void... params) {
-				List<Event> events = new ArrayList<Event>();
+				events = new ArrayList<Event>();
 				try {
 					events = getEventsBySeverity(severity);
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				adapter.addAll(events);
-				adapter.notifyDataSetChanged();
+
 				return null;
 			}
 
-		}.doInBackground();
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+				adapter.addAll(events);
+				adapter.notifyDataSetChanged();
+				if (callback != null)
+					callback.onDataAccessFinished();
+			}
+
+		}.execute();
 
 	}
 
@@ -140,39 +167,6 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	private Event getEventById(long id) throws SQLException {
 		Dao<Event, Long> dao = mDatabaseHelper.getDao(Event.class);
 		return dao.queryForId(id);
-	}
-
-	/**
-	 * Asynchronously loads the event with the given ID from the database.
-	 * 
-	 * @param eventId
-	 *            ID of the queried event
-	 * @param callback
-	 *            callback to be notified when the event has been loaded
-	 * @return
-	 */
-	public Event loadEventById(final long eventId,
-			final OnEventLoadedListener callback) {
-
-		new AsyncTask<Void, Void, Void>() {
-
-			@Override
-			protected Void doInBackground(Void... params) {
-				try {
-					Event e = getEventById(eventId);
-					if (e == null)
-						throw new RuntimeException("Event with ID " + eventId
-								+ " could not be retrieved from the database");
-					callback.onEventLoaded(e);
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				return null;
-			}
-
-		}.doInBackground();
-		return null;
 	}
 
 }

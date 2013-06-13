@@ -1,7 +1,5 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;

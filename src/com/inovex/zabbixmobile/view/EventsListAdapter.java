@@ -17,7 +17,8 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Trigger;
 
-public class EventsListAdapter extends BaseAdapter {
+public class EventsListAdapter extends BaseAdapter implements
+		IEventsListAdapter {
 
 	private Context mContext;
 	private int mTextViewResourceId;
@@ -96,12 +97,7 @@ public class EventsListAdapter extends BaseAdapter {
 		return mObjects.get(position).getId();
 	}
 
-	/**
-	 * Adds a collection of events to this adapter.
-	 * 
-	 * @param collection
-	 *            the collection to be added
-	 */
+	@Override
 	public void addAll(Collection<? extends Event> collection) {
 		mObjects.addAll(collection);
 	}

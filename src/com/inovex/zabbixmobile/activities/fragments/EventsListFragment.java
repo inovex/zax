@@ -118,9 +118,10 @@ public class EventsListFragment extends SherlockFragment {
 						Log.d(TAG,
 								"EventCategoryFragment:onPageSelected("
 										+ position + ")");
-						EventsListPage p = (EventsListPage) mEventsListPagerAdapter
-								.instantiateItem(mEventsListPager,
-										mEventsListPager.getCurrentItem());
+						// EventsListPage p = (EventsListPage)
+						// mEventsListPagerAdapter
+						// .instantiateItem(mEventsListPager,
+						// mEventsListPager.getCurrentItem());
 //						mCallbackMain.onCategorySelected(position,
 //								p.getSelectedEventNumber());
 //						categoryNumber = position;
