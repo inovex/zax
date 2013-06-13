@@ -99,10 +99,4 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 	
-	@Override
-	public void close() {
-		super.close();
-		mEventDao = null;
-	}
-	
 }

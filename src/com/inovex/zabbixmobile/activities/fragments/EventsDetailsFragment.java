@@ -138,7 +138,7 @@ public class EventsDetailsFragment extends SherlockFragment {
 					public void onPageSelected(int position) {
 						Log.d(TAG, "detail page selected: " + position);
 
-						mCallbackMain.onEventSelected(position);
+//						mCallbackMain.onEventSelected(position);
 					}
 
 				});
@@ -236,12 +236,6 @@ public class EventsDetailsFragment extends SherlockFragment {
 		@Override
 		public int getCount() {
 			return fragments.size();
-		}
-
-		@Override
-		public void onEventClicked(int position) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override

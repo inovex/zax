@@ -40,12 +40,6 @@
         <service android:name="com.inovex.zabbixmobile.api.ZabbixService" >
         </service>
 
-        <provider
-            android:name="ZabbixContentProvider"
-            android:authorities="com.inovex.zabbixmobile.ZabbixContentProvider"
-            android:enabled="true"
-            android:exported="false" >
-        </provider>
     </application>
 
 </manifest>

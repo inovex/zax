@@ -22,6 +22,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.inovex.zabbixmobile.activities.EventsActivity"
+            android:label="@string/activity_events" >
+        </activity>
+        
+        <activity
+            android:name="com.inovex.zabbixmobile.activities.ChecksActivity"
+            android:label="@string/activity_checks" >
+        </activity>
+        
+        <activity
+            android:name="com.inovex.zabbixmobile.activities.ScreensActivity"
+            android:label="@string/activity_screens" >
+        </activity>
+
+        <service android:name="com.inovex.zabbixmobile.api.ZabbixService" >
+        </service>
+
     </application>
 
 </manifest>

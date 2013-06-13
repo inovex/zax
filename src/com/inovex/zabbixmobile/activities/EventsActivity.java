@@ -152,10 +152,4 @@ public class EventsActivity extends SherlockFragmentActivity implements
 		}
 	}
 
-	@Override
-	public void onEventClicked(int position) {
-		// TODO Auto-generated method stub
-
-	}
-
 }
