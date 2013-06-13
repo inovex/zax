@@ -107,7 +107,6 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	 *            callback to be notified of the changed list adapter
 	 */
 	public void loadEventsBySeverity(final TriggerSeverities severity,
-			final EventsArrayAdapter adapter,
 			final OnEventListLoadedListener callback) {
 
 		new AsyncTask<Void, Void, Void>() {
@@ -121,8 +120,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				adapter.addAll(events);
-				callback.onEventListLoaded();
+				callback.onEventListLoaded(events);
 				return null;
 			}
 
@@ -154,7 +152,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	 */
 	public Event loadEventById(final long eventId,
 			final OnEventLoadedListener callback) {
-		
+
 		new AsyncTask<Void, Void, Void>() {
 
 			@Override

@@ -1,5 +1,7 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -18,6 +20,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.OnEventListLoadedListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
+import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
 import com.inovex.zabbixmobile.view.EventsArrayAdapter;
 
@@ -134,11 +137,11 @@ public class EventsListPage extends SherlockListFragment implements
 		ZabbixDataBinder binder = (ZabbixDataBinder) service;
 		mZabbixDataService = binder.getService();
 
-		Log.d(TAG, "category name: " + mSeverity.getName());
+		Log.d(TAG, "severity name: " + mSeverity.getName());
 		mListAdapter = new EventsArrayAdapter(getSherlockActivity(),
 				R.layout.events_list_item);
 		setListAdapter(mListAdapter);
-		mZabbixDataService.loadEventsBySeverity(mSeverity, mListAdapter, this);
+		mZabbixDataService.loadEventsBySeverity(mSeverity, this);
 
 	}
 
@@ -149,7 +152,8 @@ public class EventsListPage extends SherlockListFragment implements
 	}
 
 	@Override
-	public void onEventListLoaded() {
+	public void onEventListLoaded(List<Event> events) {
+		mListAdapter.addAll(events);
 		mListAdapter.notifyDataSetChanged();
 
 	}
