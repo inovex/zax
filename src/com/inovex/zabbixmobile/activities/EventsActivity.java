@@ -1,7 +1,12 @@
 package com.inovex.zabbixmobile.activities;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -13,6 +18,8 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListFragment;
 import com.inovex.zabbixmobile.activities.fragments.OnEventSelectedListener;
+import com.inovex.zabbixmobile.data.ZabbixDataService;
+import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
 
 public class EventsActivity extends SherlockFragmentActivity implements
@@ -24,6 +31,35 @@ public class EventsActivity extends SherlockFragmentActivity implements
 
 	private int mEventPosition;
 	private TriggerSeverities mSeverity = TriggerSeverities.ALL;
+	
+	private ZabbixDataService mZabbixService;
+
+	private boolean mZabbixServiceBound = false;
+	
+	/** Defines callbacks for service binding, passed to bindService() */
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			// We've bound to LocalService, cast the IBinder and get
+			// LocalService instance
+			ZabbixDataBinder binder = (ZabbixDataBinder) service;
+			mZabbixService = binder.getService();
+			mZabbixServiceBound = true;
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			mZabbixServiceBound = false;
+		}
+	};
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Intent intent = new Intent(this, ZabbixDataService.class);
+		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +134,12 @@ public class EventsActivity extends SherlockFragmentActivity implements
 		}
 
 	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		unbindService(mConnection);
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -126,6 +168,9 @@ public class EventsActivity extends SherlockFragmentActivity implements
 					.findFragmentByTag(EventsDetailsFragment.TAG);
 			detailsFragment.selectEvent(position);
 
+			EventsListFragment listFragment = (EventsListFragment) mFragmentManager
+					.findFragmentByTag(EventsListFragment.TAG);
+
 		} else {
 			EventsDetailsFragment detailsFragment = new EventsDetailsFragment();
 			detailsFragment.setEventId(id);
@@ -140,5 +185,5 @@ public class EventsActivity extends SherlockFragmentActivity implements
 			ft.commit();
 		}
 	}
-
+	
 }

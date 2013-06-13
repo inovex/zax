@@ -11,7 +11,13 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Trigger;
+import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
 
+/**
+ * Represents one page of the event details view pager (see
+ * {@link EventsDetailsPagerAdapter} ). Shows the details of a specific event.
+ * 
+ */
 public class EventsDetailsPage extends SherlockFragment {
 
 	private Event mEvent;
@@ -28,14 +34,14 @@ public class EventsDetailsPage extends SherlockFragment {
 		View rootView = inflater.inflate(R.layout.page_events_details, null);
 		// if (savedInstanceState != null)
 		// mEventId = savedInstanceState.getLong(ARG_EVENT_ID, -1);
-		
+
 		return rootView;
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("Event: \n\n");
 		sb.append("ID: " + mEvent.getId() + "\n");

@@ -24,6 +24,11 @@ import com.inovex.zabbixmobile.model.TriggerSeverities;
 import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
 import com.viewpagerindicator.CirclePageIndicator;
 
+/**
+ * Fragment which displays event details using a ViewPager (adapter:
+ * {@link EventsDetailsPagerAdapter}).
+ * 
+ */
 public class EventsDetailsFragment extends SherlockFragment implements
 		ServiceConnection, OnDataAccessFinishedListener {
 
@@ -97,11 +102,6 @@ public class EventsDetailsFragment extends SherlockFragment implements
 		// TriggerSeverities.ALL.getNumber());
 		// }
 
-//		setupDetailsViewPager();
-//
-//		mDetailsCircleIndicator.setCurrentItem(mPosition);
-
-		// selectCategory(severity, eventNumber);
 	}
 
 	@Override
@@ -150,15 +150,8 @@ public class EventsDetailsFragment extends SherlockFragment implements
 	public void selectEvent(int position) {
 		Log.d(TAG, "EventDetailsFragment:selectEvent(" + position + ")");
 		if (mDetailsCircleIndicator != null) {
-			// mDetailsPager.setCurrentItem(position);
 			mDetailsCircleIndicator.setCurrentItem(position);
 		}
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		super.onCreateOptionsMenu(menu, inflater);
-		// inflater.inflate(R.menu.fragment_events_details, menu);
 	}
 
 	public void setPosition(int position) {
@@ -186,7 +179,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 		mDetailsPagerAdapter = new EventsDetailsPagerAdapter(
 				this.getSherlockActivity(), getChildFragmentManager(),
 				mSeverity);
-		
+
 		mZabbixDataService.loadEventsBySeverity(mSeverity,
 				mDetailsPagerAdapter, this);
 	}

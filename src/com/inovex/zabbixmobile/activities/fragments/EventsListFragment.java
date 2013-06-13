@@ -17,18 +17,23 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
 import com.viewpagerindicator.TabPageIndicator;
 
+/**
+ * Fragment displaying several lists of events (one for each severity) using a
+ * view pager (adapter: {@link EventsListFragment.EventListPagerAdapter}).
+ * 
+ */
 public class EventsListFragment extends SherlockFragment {
-	
+
 	public static final String TAG = EventsListFragment.class.getSimpleName();
-	
+
 	private int mCurrentPosition = 0;
 	private long mCurrentEventId = 0;
 	private TriggerSeverities mCurrentSeverity = TriggerSeverities.ALL;
-	
+
 	ViewPager mEventsListPager;
 	EventListPagerAdapter mEventsListPagerAdapter;
 	TabPageIndicator mEventListTabIndicator;
-	
+
 	class EventListPagerAdapter extends FragmentStatePagerAdapter {
 
 		ArrayList<EventsListPage> fragments = new ArrayList<EventsListPage>();
@@ -39,7 +44,7 @@ public class EventsListFragment extends SherlockFragment {
 			for (TriggerSeverities s : TriggerSeverities.values()) {
 				f = new EventsListPage();
 				f.setSeverity(s);
-				
+
 				fragments.add(f);
 			}
 		}
@@ -61,7 +66,7 @@ public class EventsListFragment extends SherlockFragment {
 			return f.getTitle();
 		}
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -70,28 +75,29 @@ public class EventsListFragment extends SherlockFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_events_list, container,
-				false);
+		return inflater
+				.inflate(R.layout.fragment_events_list, container, false);
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		
-//		if (savedInstanceState != null) {
-//			mCurrentPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
-//			mCurrentEventId = savedInstanceState.getLong(ARG_EVENT_ID, 0);
-//			mCurrentSeverity = savedInstanceState.getInt(ARG_SEVERITY, TriggerSeverities.ALL.getNumber());
-//		}
+
+		// if (savedInstanceState != null) {
+		// mCurrentPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
+		// mCurrentEventId = savedInstanceState.getLong(ARG_EVENT_ID, 0);
+		// mCurrentSeverity = savedInstanceState.getInt(ARG_SEVERITY,
+		// TriggerSeverities.ALL.getNumber());
+		// }
 
 		setupListViewPager();
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-//		outState.putInt(ARG_EVENT_POSITION, mCurrentPosition);
-//		outState.putLong(ARG_EVENT_ID, mCurrentEventId);
-//		outState.putInt(ARG_SEVERITY, mCurrentSeverity);
+		// outState.putInt(ARG_EVENT_POSITION, mCurrentPosition);
+		// outState.putLong(ARG_EVENT_ID, mCurrentEventId);
+		// outState.putInt(ARG_SEVERITY, mCurrentSeverity);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -110,21 +116,20 @@ public class EventsListFragment extends SherlockFragment {
 		mEventListTabIndicator = (TabPageIndicator) getView().findViewById(
 				R.id.events_list_tabindicator);
 		mEventListTabIndicator.setViewPager(mEventsListPager);
-		
+
 		mEventListTabIndicator
 				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
-						Log.d(TAG,
-								"EventCategoryFragment:onPageSelected("
-										+ position + ")");
+						Log.d(TAG, "EventCategoryFragment:onPageSelected("
+								+ position + ")");
 						// EventsListPage p = (EventsListPage)
 						// mEventsListPagerAdapter
 						// .instantiateItem(mEventsListPager,
 						// mEventsListPager.getCurrentItem());
-//						mCallbackMain.onCategorySelected(position,
-//								p.getSelectedEventNumber());
-//						categoryNumber = position;
+						// mCallbackMain.onCategorySelected(position,
+						// p.getSelectedEventNumber());
+						// categoryNumber = position;
 
 					}
 
@@ -136,9 +141,9 @@ public class EventsListFragment extends SherlockFragment {
 					public void onPageScrolled(int arg0, float arg1, int arg2) {
 					}
 				});
-		
+
 	}
-	
+
 	public void selectEvent(int position) {
 		if (mEventsListPager == null)
 			return;

@@ -20,6 +20,11 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
 import com.inovex.zabbixmobile.view.EventsListAdapter;
 
+/**
+ * Represents one page of the event list view pager (see
+ * {@link EventsListFragment.EventListPagerAdapter} ). Shows a list of events
+ * for a specific severity.
+ */
 public class EventsListPage extends SherlockListFragment implements
 		ServiceConnection {
 
@@ -133,7 +138,8 @@ public class EventsListPage extends SherlockListFragment implements
 		ZabbixDataBinder binder = (ZabbixDataBinder) service;
 		mZabbixDataService = binder.getService();
 
-		Log.d(TAG, "severity name: " + mSeverity.getName());
+		Log.d(TAG, "service connected: " + mZabbixDataService + " - binder: "
+				+ binder);
 		mListAdapter = new EventsListAdapter(getSherlockActivity(),
 				R.layout.events_list_item);
 		setListAdapter(mListAdapter);

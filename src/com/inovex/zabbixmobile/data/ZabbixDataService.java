@@ -54,7 +54,8 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 		// set up SQLite connection using OrmLite
 		mDatabaseHelper = OpenHelperManager.getHelper(this,
 				MockDatabaseHelper.class);
-		mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0, 1);
+//		mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0, 1);
+		Log.d(TAG, "onCreate");
 		super.onCreate();
 	}
 
