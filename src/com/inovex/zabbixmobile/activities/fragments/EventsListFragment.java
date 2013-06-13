@@ -13,21 +13,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.viewpagerindicator.TabPageIndicator;
-
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
+import com.viewpagerindicator.TabPageIndicator;
 
 public class EventsListFragment extends SherlockFragment {
 	
 	public static final String TAG = EventsListFragment.class.getSimpleName();
-	public static final String ARG_EVENT_POSITION = "event_position";
-	public static final String ARG_EVENT_ID = "event_id";
-	public static final String ARG_SEVERITY = "severity";
 	
 	private int mCurrentPosition = 0;
 	private long mCurrentEventId = 0;
-	private int mCurrentSeverity = TriggerSeverities.ALL.getNumber();
+	private TriggerSeverities mCurrentSeverity = TriggerSeverities.ALL;
 	
 	ViewPager mEventsListPager;
 	EventListPagerAdapter mEventsListPagerAdapter;
@@ -42,11 +38,7 @@ public class EventsListFragment extends SherlockFragment {
 			EventsListPage f;
 			for (TriggerSeverities s : TriggerSeverities.values()) {
 				f = new EventsListPage();
-				Bundle args = new Bundle();
-				args.putInt(EventsListPage.ARG_SEVERITY, s.getNumber());
-				args.putString(EventsListPage.ARG_TITLE,
-						s.getName());
-				f.setArguments(args);
+				f.setSeverity(s);
 				
 				fragments.add(f);
 			}
@@ -86,27 +78,20 @@ public class EventsListFragment extends SherlockFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		
-		if (savedInstanceState != null) {
-			mCurrentPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
-			mCurrentEventId = savedInstanceState.getLong(ARG_EVENT_ID, 0);
-			mCurrentSeverity = savedInstanceState.getInt(ARG_SEVERITY, TriggerSeverities.ALL.getNumber());
-		}
+//		if (savedInstanceState != null) {
+//			mCurrentPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
+//			mCurrentEventId = savedInstanceState.getLong(ARG_EVENT_ID, 0);
+//			mCurrentSeverity = savedInstanceState.getInt(ARG_SEVERITY, TriggerSeverities.ALL.getNumber());
+//		}
 
-		Bundle args = getArguments();
-		if (args != null) {
-			mCurrentPosition = args.getInt(ARG_EVENT_POSITION, 0);
-			mCurrentEventId = args.getLong(ARG_EVENT_ID, 0);
-			mCurrentSeverity = args.getInt(ARG_SEVERITY, TriggerSeverities.ALL.getNumber());
-		}
-		
 		setupListViewPager();
 	}
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putInt(ARG_EVENT_POSITION, mCurrentPosition);
-		outState.putLong(ARG_EVENT_ID, mCurrentEventId);
-		outState.putInt(ARG_SEVERITY, mCurrentSeverity);
+//		outState.putInt(ARG_EVENT_POSITION, mCurrentPosition);
+//		outState.putLong(ARG_EVENT_ID, mCurrentEventId);
+//		outState.putInt(ARG_SEVERITY, mCurrentSeverity);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -159,10 +144,21 @@ public class EventsListFragment extends SherlockFragment {
 		EventsListPage f = (EventsListPage) mEventsListPagerAdapter
 				.instantiateItem(mEventsListPager,
 						mEventsListPager.getCurrentItem());
-		Log.d(TAG,
-				"EventCategoryFragment:selectEvent(" + position + ")");
+		Log.d(TAG, "EventCategoryFragment:selectEvent(" + position + ")");
 		f.selectEvent(position);
 		mCurrentPosition = position;
+	}
+
+	public void setCurrentPosition(int currentPosition) {
+		this.mCurrentPosition = currentPosition;
+	}
+
+	public void setCurrentEventId(long currentEventId) {
+		this.mCurrentEventId = currentEventId;
+	}
+
+	public void setCurrentSeverity(TriggerSeverities currentSeverity) {
+		this.mCurrentSeverity = currentSeverity;
 	}
 
 }

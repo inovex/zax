@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.widget.LinearLayout;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -14,9 +13,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListFragment;
 import com.inovex.zabbixmobile.activities.fragments.OnEventSelectedListener;
-import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 public class EventsActivity extends SherlockFragmentActivity implements
 		OnEventSelectedListener {
@@ -27,7 +24,7 @@ public class EventsActivity extends SherlockFragmentActivity implements
 
 	private int mEventPosition;
 
-	private int mSeverity = TriggerSeverities.ALL.getNumber();
+	private TriggerSeverities mSeverity = TriggerSeverities.ALL;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,19 +60,15 @@ public class EventsActivity extends SherlockFragmentActivity implements
 			ft = mFragmentManager.beginTransaction();
 
 			// add list and details fragment
-			Bundle listArgs = new Bundle();
-			listArgs.putInt(EventsListFragment.ARG_SEVERITY, mSeverity);
-			listArgs.putInt(EventsListFragment.ARG_EVENT_POSITION, mEventPosition);
 			listFragment = new EventsListFragment();
+			listFragment.setCurrentPosition(mEventPosition);
+			listFragment.setCurrentSeverity(mSeverity);
 			ft.add(R.id.events_fragment_left, listFragment,
 					EventsListFragment.TAG);
 
 			detailsFragment = new EventsDetailsFragment();
-			Bundle detailsArgs = new Bundle();
-			detailsArgs.putInt(EventsDetailsFragment.ARG_EVENT_POSITION,
-					mEventPosition);
-			detailsArgs.putInt(EventsDetailsFragment.ARG_SEVERITY, mSeverity);
-			detailsFragment.setArguments(detailsArgs);
+			detailsFragment.setPosition(mEventPosition);
+			detailsFragment.setSeverity(mSeverity);
 			ft.add(R.id.events_fragment_right, new EventsDetailsFragment(),
 					EventsDetailsFragment.TAG);
 			ft.commit();
@@ -122,7 +115,8 @@ public class EventsActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
-	public void onEventSelected(int position, int severity, long id) {
+	public void onEventSelected(int position, TriggerSeverities severity,
+			long id) {
 		Log.d(TAG, "event selected: " + id + ",severity: " + severity
 				+ "(position: " + position + ")");
 		this.mEventPosition = position;
@@ -132,21 +126,20 @@ public class EventsActivity extends SherlockFragmentActivity implements
 			EventsDetailsFragment detailsFragment = (EventsDetailsFragment) mFragmentManager
 					.findFragmentByTag(EventsDetailsFragment.TAG);
 			detailsFragment.selectEvent(position);
-			
+
 			EventsListFragment listFragment = (EventsListFragment) mFragmentManager
 					.findFragmentByTag(EventsListFragment.TAG);
-			
+
 		} else {
-			EventsDetailsFragment f = new EventsDetailsFragment();
-			Bundle args = new Bundle();
-			args.putLong(EventsDetailsFragment.ARG_EVENT_ID, id);
-			args.putInt(EventsDetailsFragment.ARG_EVENT_POSITION, position);
-			args.putInt(EventsDetailsFragment.ARG_SEVERITY, severity);
-			f.setArguments(args);
-			
+			EventsDetailsFragment detailsFragment = new EventsDetailsFragment();
+			detailsFragment.setEventId(id);
+			detailsFragment.setPosition(position);
+			detailsFragment.setSeverity(severity);
+
 			FragmentTransaction ft = mFragmentManager.beginTransaction();
-			ft.remove(mFragmentManager.findFragmentByTag(EventsListFragment.TAG));
-			ft.add(R.id.events_layout, f);
+			ft.remove(mFragmentManager
+					.findFragmentByTag(EventsListFragment.TAG));
+			ft.add(R.id.events_layout, detailsFragment);
 			ft.addToBackStack(null);
 			ft.commit();
 		}

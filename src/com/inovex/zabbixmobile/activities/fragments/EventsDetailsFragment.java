@@ -15,7 +15,6 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
@@ -30,9 +29,6 @@ public class EventsDetailsFragment extends SherlockFragment {
 
 	public static final String TAG = EventsDetailsFragment.class
 			.getSimpleName();
-	public static final String ARG_EVENT_POSITION = "event_position";
-	public static final String ARG_EVENT_ID = "event_id";
-	public static final String ARG_SEVERITY = "severity";
 
 	ViewPager mDetailsPager;
 	EventsDetailsPagerAdapter mCurrentDetailsPagerAdapter;
@@ -41,7 +37,7 @@ public class EventsDetailsFragment extends SherlockFragment {
 	private OnEventSelectedListener mCallbackMain;
 	private int mPosition = 0;
 	private long mEventId = 0;
-	private int mSeverity = TriggerSeverities.ALL.getNumber();
+	private TriggerSeverities mSeverity = TriggerSeverities.ALL;
 	private CirclePageIndicator mDetailsCircleIndicator;
 
 	@Override
@@ -77,21 +73,15 @@ public class EventsDetailsFragment extends SherlockFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		if (savedInstanceState != null) {
-			mPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
-			mEventId = savedInstanceState.getLong(ARG_EVENT_ID, 0);
-			mSeverity = savedInstanceState.getInt(ARG_SEVERITY, TriggerSeverities.ALL.getNumber());
-		}
+		// if (savedInstanceState != null) {
+		// mPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
+		// mEventId = savedInstanceState.getLong(ARG_EVENT_ID, 0);
+		// mSeverity = savedInstanceState.getInt(ARG_SEVERITY,
+		// TriggerSeverities.ALL.getNumber());
+		// }
 
-		Bundle args = getArguments();
-		if (args != null) {
-			mPosition = args.getInt(ARG_EVENT_POSITION, 0);
-			mEventId = args.getLong(ARG_EVENT_ID, 0);
-			mSeverity = args.getInt(ARG_SEVERITY, TriggerSeverities.ALL.getNumber());
-		}
-		
 		setupDetailsViewPager();
-		
+
 		mDetailsCircleIndicator.setCurrentItem(mPosition);
 
 		// selectCategory(severity, eventNumber);
@@ -99,9 +89,9 @@ public class EventsDetailsFragment extends SherlockFragment {
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putInt(ARG_EVENT_POSITION, mPosition);
-		outState.putLong(ARG_EVENT_ID, mEventId);
-		outState.putInt(ARG_SEVERITY, mSeverity);
+		// outState.putInt(ARG_EVENT_POSITION, mPosition);
+		// outState.putLong(ARG_EVENT_ID, mEventId);
+		// outState.putInt(ARG_SEVERITY, mSeverity);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -138,46 +128,10 @@ public class EventsDetailsFragment extends SherlockFragment {
 					public void onPageSelected(int position) {
 						Log.d(TAG, "detail page selected: " + position);
 
-//						mCallbackMain.onEventSelected(position);
+						// mCallbackMain.onEventSelected(position);
 					}
 
 				});
-
-	}
-
-	// TODO: replace; possibly obsolete...
-	private void selectCategory(int category, int selectedEvent) {
-		Log.d(TAG, "EventDetailsFragment.selectCategory(" + category + ", "
-				+ selectedEvent + ")");
-
-		if (getView() != null) {
-			mDetailsPager = (ViewPager) getView().findViewById(
-					R.id.details_view_pager);
-			// view was already created
-
-			if (mEventDetailsPagerAdapters.size() > category
-					&& mEventDetailsPagerAdapters.get(category) != null)
-				mCurrentDetailsPagerAdapter = mEventDetailsPagerAdapters
-						.get(category);
-			else {
-				mCurrentDetailsPagerAdapter = new EventsDetailsPagerAdapter(
-						getChildFragmentManager());
-				mEventDetailsPagerAdapters.put(category,
-						mCurrentDetailsPagerAdapter);
-			}
-
-			mDetailsPager.setAdapter(mCurrentDetailsPagerAdapter);
-
-			mDetailsCircleIndicator.setViewPager(mDetailsPager);
-
-			// mDetailsPager.setCurrentItem(selectedEvent);
-			mDetailsCircleIndicator.setCurrentItem(selectedEvent);
-		} else {
-			// view was not yet created -> set arguments to update status upon
-			// creation
-			mSeverity = category;
-			mEventId = selectedEvent;
-		}
 
 	}
 
@@ -193,6 +147,18 @@ public class EventsDetailsFragment extends SherlockFragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		// inflater.inflate(R.menu.fragment_events_details, menu);
+	}
+
+	public void setPosition(int position) {
+		this.mPosition = position;
+	}
+
+	public void setEventId(long eventId) {
+		this.mEventId = eventId;
+	}
+
+	public void setSeverity(TriggerSeverities severity) {
+		this.mSeverity = severity;
 	}
 
 	class EventsDetailsPagerAdapter extends FragmentStatePagerAdapter implements
@@ -213,12 +179,12 @@ public class EventsDetailsFragment extends SherlockFragment {
 				EventsDetailsPage f;
 				Event event;
 				for (int i = 0; i < events.size(); i++) {
-					Log.d(TAG, "Creating page for event " + i + ": " + events.toString());
+					Log.d(TAG,
+							"Creating page for event " + i + ": "
+									+ events.toString());
 					f = new EventsDetailsPage();
 					event = events.get(i);
-					Bundle args = new Bundle();
-					args.putLong(EventsDetailsPage.ARG_EVENT_ID, event.getId());
-					f.setArguments(args);
+					f.setEventId(event.getId());
 					fragments.add(f);
 				}
 				notifyDataSetChanged();
@@ -239,7 +205,8 @@ public class EventsDetailsFragment extends SherlockFragment {
 		}
 
 		@Override
-		public void onEventSelected(int position, int severity, long id) {
+		public void onEventSelected(int position, TriggerSeverities severity,
+				long id) {
 			// TODO Auto-generated method stub
 
 		}

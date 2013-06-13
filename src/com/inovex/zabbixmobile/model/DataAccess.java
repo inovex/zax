@@ -61,12 +61,12 @@ public class DataAccess {
 	 * Returns a list of events for a given trigger severity.
 	 * 
 	 * @param severity
-	 *            the severity (range 0-5)
+	 *            the severity
 	 * @return list of events with the given severity
 	 * @throws SQLException
 	 */
-	public List<Event> getEventsBySeverity(int severity) throws SQLException {
-		if(severity == TriggerSeverities.ALL.getNumber())
+	public List<Event> getEventsBySeverity(TriggerSeverities severity) throws SQLException {
+		if(severity == TriggerSeverities.ALL)
 			return getAllEvents();
 		// TODO: replace this with a JOIN
 		List<Event> events;
@@ -81,7 +81,7 @@ public class DataAccess {
 			t = e.getTrigger();
 			if (t == null)
 				break;
-			if (t.getPriority() == severity)
+			if (t.getPriority() == severity.getNumber())
 				eventsBySeverity.add(e);
 		}
 		return eventsBySeverity;

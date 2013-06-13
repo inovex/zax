@@ -17,9 +17,8 @@ import com.inovex.zabbixmobile.model.Trigger;
 
 public class EventsDetailsPage extends SherlockFragment {
 
-	public static final String ARG_EVENT_ID = "event_id";
-
 	private long mEventId;
+	private String mTitle = "";
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -31,11 +30,8 @@ public class EventsDetailsPage extends SherlockFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.page_events_details, null);
-		if (savedInstanceState != null)
-			mEventId = savedInstanceState.getLong(ARG_EVENT_ID, -1);
-		Bundle args = getArguments();
-		if (args != null)
-			mEventId = args.getLong(ARG_EVENT_ID, -1);
+//		if (savedInstanceState != null)
+//			mEventId = savedInstanceState.getLong(ARG_EVENT_ID, -1);
 
 		DataAccess dataAccess = DataAccess.getInstance(getSherlockActivity());
 		StringBuilder sb = new StringBuilder();
@@ -70,13 +66,20 @@ public class EventsDetailsPage extends SherlockFragment {
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putLong(ARG_EVENT_ID, mEventId);
+//		outState.putLong(ARG_EVENT_ID, mEventId);
+		super.onSaveInstanceState(outState);
+	}
+
+	public void setEventId(long eventId) {
+		this.mEventId = eventId;
+	}
+
+	public void setTitle(String title) {
+		this.mTitle = title;
 	}
 
 	public String getTitle() {
-		System.out.println("Dummy: getTitle()");
-		Bundle args = this.getArguments();
-		return args.getString(ARG_EVENT_ID);
+		return mTitle;
 	}
 
 }

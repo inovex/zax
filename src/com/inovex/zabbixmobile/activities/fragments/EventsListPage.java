@@ -21,15 +21,10 @@ import com.inovex.zabbixmobile.view.EventsArrayAdapter;
 public class EventsListPage extends SherlockListFragment {
 
 	private static final String TAG = EventsListPage.class.getSimpleName();
-	
-	public static final String ARG_TITLE = "title";
-	public static final String ARG_SEVERITY = "severity";
-	private static final String ARG_ITEM_SELECTED = "item_selected";
 
 	private OnEventSelectedListener mCallbackMain;
-	
-	private String mTitle;
-	private int mSeverity;
+
+	private TriggerSeverities mSeverity;
 	private int mItemSelected;
 
 	@Override
@@ -45,17 +40,18 @@ public class EventsListPage extends SherlockListFragment {
 					+ " must implement OnEventSelectedListener.");
 		}
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if(savedInstanceState != null) {
-			mTitle = savedInstanceState.getString(ARG_TITLE);
-			if(mTitle == null)
-				mTitle = TriggerSeverities.ALL.getName();
-			mSeverity = savedInstanceState.getInt(ARG_SEVERITY, TriggerSeverities.ALL.getNumber());
-			mItemSelected = savedInstanceState.getInt(ARG_ITEM_SELECTED, 0);
-		}
+		// if(savedInstanceState != null) {
+		// mTitle = savedInstanceState.getString(ARG_TITLE);
+		// if(mTitle == null)
+		// mTitle = TriggerSeverities.ALL.getName();
+		// mSeverity = savedInstanceState.getInt(ARG_SEVERITY,
+		// TriggerSeverities.ALL.getNumber());
+		// mItemSelected = savedInstanceState.getInt(ARG_ITEM_SELECTED, 0);
+		// }
 	}
 
 	@Override
@@ -65,22 +61,16 @@ public class EventsListPage extends SherlockListFragment {
 				savedInstanceState);
 
 		DataAccess dataAccess = DataAccess.getInstance(getSherlockActivity());
-		
-		Bundle args = getArguments();
-		mTitle = args.getString(ARG_TITLE);
-		if(mTitle == null)
-			mTitle = TriggerSeverities.ALL.getName();
-		mSeverity = args.getInt(ARG_SEVERITY, TriggerSeverities.ALL.getNumber());
-		mItemSelected = args.getInt(ARG_ITEM_SELECTED, 0);
+
 		try {
 			List<Event> events;
-			
-			Log.d(TAG, "category name: " + mTitle);
+
+			Log.d(TAG, "category name: " + mSeverity.getName());
 			events = dataAccess.getEventsBySeverity(mSeverity);
-			EventsArrayAdapter adapter = new EventsArrayAdapter(getSherlockActivity(),
-					R.layout.events_list_item, events);
+			EventsArrayAdapter adapter = new EventsArrayAdapter(
+					getSherlockActivity(), R.layout.events_list_item, events);
 			this.setListAdapter(adapter);
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -91,9 +81,9 @@ public class EventsListPage extends SherlockListFragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putString(ARG_TITLE, mTitle);
-		outState.putInt(ARG_SEVERITY, mSeverity);
-		outState.putInt(ARG_ITEM_SELECTED, mItemSelected);
+		// outState.putString(ARG_TITLE, mTitle);
+		// outState.putInt(ARG_SEVERITY, mSeverity);
+		// outState.putInt(ARG_ITEM_SELECTED, mItemSelected);
 	}
 
 	@Override
@@ -104,14 +94,14 @@ public class EventsListPage extends SherlockListFragment {
 	}
 
 	public CharSequence getTitle() {
-		return getArguments().getString(ARG_TITLE);
+		return mSeverity.getName();
 	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Log.d(TAG, "onListItemClick(l, v, " + position + ", " + id
 				+ "). severity: " + mSeverity);
-		getArguments().putInt(ARG_ITEM_SELECTED, position);
+		mItemSelected = position;
 		mCallbackMain.onEventSelected(position, mSeverity, id);
 	}
 
@@ -119,7 +109,14 @@ public class EventsListPage extends SherlockListFragment {
 		getListView().setItemChecked(position, true);
 		getListView().setSelection(position);
 		mItemSelected = position;
-		getArguments().putInt(ARG_ITEM_SELECTED, position);
+	}
+
+	public void setSeverity(TriggerSeverities severity) {
+		this.mSeverity = severity;
+	}
+
+	public void setItemSelected(int itemSelected) {
+		this.mItemSelected = itemSelected;
 	}
 
 }
