@@ -17,15 +17,13 @@ import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.data.OnEventListLoadedListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
-import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
-import com.inovex.zabbixmobile.view.EventsArrayAdapter;
+import com.inovex.zabbixmobile.view.EventsListAdapter;
 
 public class EventsListPage extends SherlockListFragment implements
-		ServiceConnection, OnEventListLoadedListener {
+		ServiceConnection {
 
 	private static final String TAG = EventsListPage.class.getSimpleName();
 
@@ -35,7 +33,7 @@ public class EventsListPage extends SherlockListFragment implements
 	private TriggerSeverities mSeverity;
 	private int mItemSelected;
 
-	private EventsArrayAdapter mListAdapter;
+	private EventsListAdapter mListAdapter;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -138,23 +136,16 @@ public class EventsListPage extends SherlockListFragment implements
 		mZabbixDataService = binder.getService();
 
 		Log.d(TAG, "severity name: " + mSeverity.getName());
-		mListAdapter = new EventsArrayAdapter(getSherlockActivity(),
+		mListAdapter = new EventsListAdapter(getSherlockActivity(),
 				R.layout.events_list_item);
 		setListAdapter(mListAdapter);
-		mZabbixDataService.loadEventsBySeverity(mSeverity, this);
+		mZabbixDataService.loadEventsBySeverity(mSeverity, mListAdapter);
 
 	}
 
 	@Override
 	public void onServiceDisconnected(ComponentName name) {
 		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onEventListLoaded(List<Event> events) {
-		mListAdapter.addAll(events);
-		mListAdapter.notifyDataSetChanged();
 
 	}
 

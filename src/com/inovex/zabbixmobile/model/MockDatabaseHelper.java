@@ -29,8 +29,6 @@ public class MockDatabaseHelper extends DatabaseHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		super.onCreate(db, connectionSource);
-		// reset database
-		// super.onUpgrade(getWritableDatabase(), 0, 1);
 		try {
 			Dao<Event, Integer> eventDao = getDao(Event.class);
 			Dao<Trigger, Integer> triggerDao = getDao(Trigger.class);
@@ -63,34 +61,34 @@ public class MockDatabaseHelper extends DatabaseHelper {
 			Trigger[] triggers = new Trigger[] {
 					new Trigger(14062, "Sample trigger #1", "{13513}>0",
 							"Comments...", System.currentTimeMillis()
-									- (3600 * 1000 * 12), 2, 0, 1, "URL", false),
+									- (3600 * 1000 * 12), TriggerSeverities.AVERAGE, 0, 1, "URL", false),
 					new Trigger(14063, "Sample trigger #2", "{1}>0",
 							"Comments...", System.currentTimeMillis()
-									- (3600 * 1000 * 10), 3, 0, 1, "URL", false),
+									- (3600 * 1000 * 10), TriggerSeverities.DISASTER, 0, 1, "URL", false),
 					new Trigger(14064, "Sample trigger #3", "{32415}>0",
 							"Comments...", System.currentTimeMillis()
-									- (3600 * 1000 * 7), 5, 0, 1, "URL", false),
+									- (3600 * 1000 * 7), TriggerSeverities.HIGH, 0, 1, "URL", false),
 					new Trigger(14065, "Sample trigger #4", "{13518}>0",
 							"Comments...", System.currentTimeMillis()
-									- (3600 * 1000 * 5), 4, 1, 1, "URL", false),
+									- (3600 * 1000 * 5), TriggerSeverities.NOT_CLASSIFIED, 1, 1, "URL", false),
 					new Trigger(14066, "Sample trigger #5", "{12}>0",
 							"Comments...", System.currentTimeMillis()
-									- (3600 * 1000 * 9), 1, 0, 1, "URL", false),
+									- (3600 * 1000 * 9), TriggerSeverities.WARNING, 0, 1, "URL", false),
 					new Trigger(14067, "Sample trigger #6", "{13518}>0",
 							"Comments...", System.currentTimeMillis()
-									- (3600 * 1000 * 4), 4, 1, 1, "URL", false),
+									- (3600 * 1000 * 4), TriggerSeverities.AVERAGE, 1, 1, "URL", false),
 					new Trigger(14068, "Sample trigger #7", "{431}>0",
 							"Comments...", System.currentTimeMillis()
-									- (3600 * 1000 * 3), 2, 1, 1, "URL", false),
+									- (3600 * 1000 * 3), TriggerSeverities.HIGH, 1, 1, "URL", false),
 					new Trigger(14069, "Sample trigger #8", "{13518}>0",
 							"Comments...", System.currentTimeMillis()
-									- (3600 * 1000 * 2), 4, 0, 1, "URL", false),
+									- (3600 * 1000 * 2), TriggerSeverities.INFORMATION, 0, 1, "URL", false),
 					new Trigger(14070, "Sample trigger #9", "{123}>0",
 							"Comments...", System.currentTimeMillis()
-									- (3600 * 1000 * 0), 3, 1, 1, "URL", false),
+									- (3600 * 1000 * 0), TriggerSeverities.HIGH, 1, 1, "URL", false),
 					new Trigger(14071, "Sample trigger #10", "{13518}>0",
 							"Comments...", System.currentTimeMillis()
-									- (3600 * 1000 * 8), 0, 0, 1, "URL", false)
+									- (3600 * 1000 * 8), TriggerSeverities.INFORMATION, 0, 1, "URL", false)
 
 			};
 			int i = 0;

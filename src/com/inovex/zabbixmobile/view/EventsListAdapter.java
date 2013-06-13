@@ -17,7 +17,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Trigger;
 
-public class EventsArrayAdapter extends BaseAdapter {
+public class EventsListAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private int mTextViewResourceId;
@@ -30,7 +30,7 @@ public class EventsArrayAdapter extends BaseAdapter {
 	 * @param context
 	 * @param textViewResourceId
 	 */
-	public EventsArrayAdapter(Context context, int textViewResourceId) {
+	public EventsListAdapter(Context context, int textViewResourceId) {
 		super();
 		this.mTextViewResourceId = textViewResourceId;
 		this.mObjects = new ArrayList<Event>();
@@ -46,7 +46,7 @@ public class EventsArrayAdapter extends BaseAdapter {
 	 * @param textViewResourceId
 	 * @param objects
 	 */
-	public EventsArrayAdapter(Context context, int textViewResourceId,
+	public EventsListAdapter(Context context, int textViewResourceId,
 			Collection<Event> objects) {
 		this(context, textViewResourceId);
 		this.mObjects.addAll(objects);

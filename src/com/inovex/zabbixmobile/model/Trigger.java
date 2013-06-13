@@ -23,9 +23,9 @@ public class Trigger {
 	@DatabaseField
 	String comments;
 	@DatabaseField
-	Date lastchange;
+	Date lastChange;
 	@DatabaseField
-	int priority;
+	TriggerSeverities priority;
 	@DatabaseField
 	int status;
 	@DatabaseField
@@ -33,7 +33,7 @@ public class Trigger {
 	@DatabaseField
 	String url;
 	@DatabaseField
-	boolean value_changed;
+	boolean valueChanged;
 	
 //	@ForeignCollectionField(eager = false)
 	ForeignCollection<Host> hosts;
@@ -45,20 +45,20 @@ public class Trigger {
 	}
 
 	public Trigger(long id, String description, String expression,
-			String comments, long lastchange, int priority, int status,
-			int value, String url, boolean value_changed) {
+			String comments, long lastChange, TriggerSeverities priority, int status,
+			int value, String url, boolean valueChanged) {
 		this.id = id;
 		this.description = description;
 		this.expression = expression;
 		this.comments = comments;
 		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(lastchange);
-		this.lastchange = cal.getTime();
+		cal.setTimeInMillis(lastChange);
+		this.lastChange = cal.getTime();
 		this.priority = priority;
 		this.status = status;
 		this.value = value;
 		this.url = url;
-		this.value_changed = value_changed;
+		this.valueChanged = valueChanged;
 	}
 
 	public long getId() {
@@ -78,10 +78,10 @@ public class Trigger {
 	}
 
 	public Date getLastchange() {
-		return lastchange;
+		return lastChange;
 	}
 
-	public int getPriority() {
+	public TriggerSeverities getPriority() {
 		return priority;
 	}
 
@@ -97,8 +97,8 @@ public class Trigger {
 		return url;
 	}
 
-	public boolean isValue_changed() {
-		return value_changed;
+	public boolean isValueChanged() {
+		return valueChanged;
 	}
 
 	public ForeignCollection<Host> getHosts() {
@@ -118,12 +118,12 @@ public class Trigger {
 		sb.append(", ").append("comments=").append(comments);
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 				SimpleDateFormat.DEFAULT, SimpleDateFormat.DEFAULT, Locale.US);
-		sb.append(", ").append("lastchange=").append(dateFormatter.format(lastchange));
+		sb.append(", ").append("lastchange=").append(dateFormatter.format(lastChange));
 		sb.append(", ").append("priority=").append(priority);
 		sb.append(", ").append("status=").append(status);
 		sb.append(", ").append("value=").append(value);
 		sb.append(", ").append("url=").append(url);
-		sb.append(", ").append("value_changed=").append(value_changed);
+		sb.append(", ").append("valueChanged=").append(valueChanged);
 		return sb.toString();
 	}
 

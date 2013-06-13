@@ -35,4 +35,8 @@ public enum TriggerSeverities {
 		return ALL;
 	}
 	
+	public String toString() {
+		return "{" + name + ", " + number + ", " + position + "}";
+	}
+	
 }

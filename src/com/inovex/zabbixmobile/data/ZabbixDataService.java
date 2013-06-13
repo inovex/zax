@@ -16,7 +16,7 @@ import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.MockDatabaseHelper;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
-import com.inovex.zabbixmobile.view.EventsArrayAdapter;
+import com.inovex.zabbixmobile.view.EventsListAdapter;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteBaseService;
 import com.j256.ormlite.dao.Dao;
@@ -54,6 +54,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 		// set up SQLite connection using OrmLite
 		mDatabaseHelper = OpenHelperManager.getHelper(this,
 				MockDatabaseHelper.class);
+//		mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0, 1);
 		super.onCreate();
 	}
 
@@ -87,7 +88,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 			t = e.getTrigger();
 			if (t == null)
 				break;
-			if (t.getPriority() == severity.getNumber())
+			if (t.getPriority() == severity)
 				eventsBySeverity.add(e);
 		}
 		events = eventsBySeverity;
@@ -106,8 +107,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	 * @param callback
 	 *            callback to be notified of the changed list adapter
 	 */
-	public void loadEventsBySeverity(final TriggerSeverities severity,
-			final OnEventListLoadedListener callback) {
+	public void loadEventsBySeverity(final TriggerSeverities severity, final EventsListAdapter adapter) {
 
 		new AsyncTask<Void, Void, Void>() {
 
@@ -120,7 +120,8 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				callback.onEventListLoaded(events);
+				adapter.addAll(events);
+				adapter.notifyDataSetChanged();
 				return null;
 			}
 

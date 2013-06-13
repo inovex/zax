@@ -81,7 +81,7 @@ public class DataAccess {
 			t = e.getTrigger();
 			if (t == null)
 				break;
-			if (t.getPriority() == severity.getNumber())
+			if (t.getPriority() == severity)
 				eventsBySeverity.add(e);
 		}
 		return eventsBySeverity;
