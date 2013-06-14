@@ -11,6 +11,7 @@ import android.util.Log;
 import com.inovex.zabbixmobile.R;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -97,6 +98,39 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * Retrieves all events with the given severity from the database.
+	 * 
+	 * @param severity
+	 * @return list of events with a matching severity
+	 * @throws SQLException
+	 */
+	public List<Event> getEventsBySeverity(TriggerSeverities severity)
+			throws SQLException {
+		Dao<Event, Long> eventDao = getDao(Event.class);
+		if (severity == TriggerSeverities.ALL)
+			return eventDao.queryForAll();
+		// filter events by trigger severity
+		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
+		QueryBuilder<Trigger, Long> triggerQuery = triggerDao.queryBuilder();
+		triggerQuery.where().eq(Trigger.COLUMN_NAME_PRIORITY, severity);
+		QueryBuilder<Event, Long> eventQuery = eventDao.queryBuilder();
+		return eventQuery.join(triggerQuery).query();
+	}
+
+	/**
+	 * Returns the ID of an event.
+	 * 
+	 * @param id
+	 *            ID of the desired event
+	 * @return the corresponding event
+	 * @throws SQLException
+	 */
+	public Event getEventById(long id) throws SQLException {
+		Dao<Event, Long> dao = getDao(Event.class);
+		return dao.queryForId(id);
 	}
 	
 }

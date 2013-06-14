@@ -13,6 +13,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "triggers")
 public class Trigger {
 
+	public static final String COLUMN_NAME_PRIORITY = "priority";
+
 	@DatabaseField(id = true)
 	long id;
 	@DatabaseField
@@ -23,7 +25,7 @@ public class Trigger {
 	String comments;
 	@DatabaseField
 	Date lastChange;
-	@DatabaseField
+	@DatabaseField(columnName = COLUMN_NAME_PRIORITY, index = true)
 	TriggerSeverities priority;
 	@DatabaseField
 	int status;
@@ -33,10 +35,10 @@ public class Trigger {
 	String url;
 	@DatabaseField
 	boolean valueChanged;
-	
-//	@ForeignCollectionField(eager = false)
+
+	// @ForeignCollectionField(eager = false)
 	ForeignCollection<Host> hosts;
-//	@ForeignCollectionField(eager = false)
+	// @ForeignCollectionField(eager = false)
 	ForeignCollection<Item> items;
 
 	public Trigger() {
@@ -44,8 +46,8 @@ public class Trigger {
 	}
 
 	public Trigger(long id, String description, String expression,
-			String comments, long lastChange, TriggerSeverities priority, int status,
-			int value, String url, boolean valueChanged) {
+			String comments, long lastChange, TriggerSeverities priority,
+			int status, int value, String url, boolean valueChanged) {
 		this.id = id;
 		this.description = description;
 		this.expression = expression;
@@ -117,7 +119,8 @@ public class Trigger {
 		sb.append(", ").append("comments=").append(comments);
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 				SimpleDateFormat.DEFAULT, SimpleDateFormat.DEFAULT, Locale.US);
-		sb.append(", ").append("lastchange=").append(dateFormatter.format(lastChange));
+		sb.append(", ").append("lastchange=")
+				.append(dateFormatter.format(lastChange));
 		sb.append(", ").append("priority=").append(priority);
 		sb.append(", ").append("status=").append(status);
 		sb.append(", ").append("value=").append(value);

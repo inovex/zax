@@ -19,14 +19,12 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.MockDatabaseHelper;
-import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
 import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.view.EventsListAdapter;
-import com.inovex.zabbixmobile.view.IEventsListAdapter;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteBaseService;
-import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.SelectArg;
 
 public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 
@@ -78,8 +76,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 		// set up SQLite connection using OrmLite
 		mDatabaseHelper = OpenHelperManager.getHelper(this,
 				MockDatabaseHelper.class);
-		// mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0,
-		// 1);
+		mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0, 1);
 		Log.d(TAG, "onCreate");
 
 		// set up adapters
@@ -98,33 +95,6 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	public int getRandomNumber() {
 		Log.d(TAG, "ZabbixService:getRandomNumber() [" + this.toString() + "]");
 		return new Random().nextInt(100);
-	}
-
-	/**
-	 * Retrieves all events with the given severity from the database.
-	 * 
-	 * @param severity
-	 * @return list of events with a matching severity
-	 * @throws SQLException
-	 */
-	private List<Event> getEventsBySeverity(TriggerSeverities severity)
-			throws SQLException {
-		List<Event> events;
-		events = mDatabaseHelper.getDao(Event.class).queryForAll();
-		if (severity == TriggerSeverities.ALL)
-			return events;
-		// filter events by trigger severity
-		List<Event> eventsBySeverity = new ArrayList<Event>();
-		Trigger t;
-		for (Event e : events) {
-			t = e.getTrigger();
-			if (t == null)
-				break;
-			if (t.getPriority() == severity)
-				eventsBySeverity.add(e);
-		}
-		events = eventsBySeverity;
-		return events;
 	}
 
 	/**
@@ -150,7 +120,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 			protected Void doInBackground(Void... params) {
 				events = new ArrayList<Event>();
 				try {
-					events = getEventsBySeverity(severity);
+					events = mDatabaseHelper.getEventsBySeverity(severity);
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -199,7 +169,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 			protected Void doInBackground(Void... params) {
 				events = new ArrayList<Event>();
 				try {
-					events = getEventsBySeverity(severity);
+					events = mDatabaseHelper.getEventsBySeverity(severity);
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -220,19 +190,6 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 
 		}.execute();
 
-	}
-
-	/**
-	 * Returns the ID of an event.
-	 * 
-	 * @param id
-	 *            ID of the desired event
-	 * @return the corresponding event
-	 * @throws SQLException
-	 */
-	private Event getEventById(long id) throws SQLException {
-		Dao<Event, Long> dao = mDatabaseHelper.getDao(Event.class);
-		return dao.queryForId(id);
 	}
 
 	public void setActivityContext(Context context) {
