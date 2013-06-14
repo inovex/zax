@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -21,7 +20,7 @@ public class EventsDetailsPagerAdapter extends FragmentStatePagerAdapter impleme
 
 	private List<Event> events;
 
-	public EventsDetailsPagerAdapter(Context context, FragmentManager fm, TriggerSeverities severity) {
+	public EventsDetailsPagerAdapter(FragmentManager fm, TriggerSeverities severity) {
 		super(fm);
 		Log.d(EventsDetailsFragment.TAG, "creating DetailsPagerAdapter for severity " + severity);
 		
@@ -51,6 +50,10 @@ public class EventsDetailsPagerAdapter extends FragmentStatePagerAdapter impleme
 	@Override
 	public void addAll(Collection<? extends Event> events) {
 		this.events.addAll(events);
+	}
+
+	public void clear() {
+		events.clear();
 	}
 
 }

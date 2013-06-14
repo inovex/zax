@@ -31,7 +31,7 @@ public class EventsActivity extends SherlockFragmentActivity implements
 
 	private int mEventPosition;
 	private TriggerSeverities mSeverity = TriggerSeverities.ALL;
-	
+
 	private ZabbixDataService mZabbixService;
 
 	/** Defines callbacks for service binding, passed to bindService() */
@@ -44,6 +44,70 @@ public class EventsActivity extends SherlockFragmentActivity implements
 			ZabbixDataBinder binder = (ZabbixDataBinder) service;
 			mZabbixService = binder.getService();
 			mZabbixService.setActivityContext(EventsActivity.this);
+
+			// after the service is started, we can create the child fragments
+			// (this can't be done earlier because the fragments' initialization
+			// requires the service to be set up.
+			mFragmentManager = getSupportFragmentManager();
+
+			if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+				FragmentTransaction ft = mFragmentManager.beginTransaction();
+				EventsListFragment listFragment = (EventsListFragment) mFragmentManager
+						.findFragmentByTag(EventsListFragment.TAG);
+				if (listFragment != null) {
+					// if the fragment exists already, destroy it
+					ft.remove(listFragment);
+				}
+				EventsDetailsFragment detailsFragment = (EventsDetailsFragment) mFragmentManager
+						.findFragmentByTag(EventsDetailsFragment.TAG);
+				if (detailsFragment != null) {
+					// if the fragment exists already, destroy it
+					ft.remove(detailsFragment);
+				}
+
+				ft.commit();
+				mFragmentManager.executePendingTransactions();
+
+				ft = mFragmentManager.beginTransaction();
+
+				// add list and details fragment
+				listFragment = new EventsListFragment();
+				listFragment.setCurrentPosition(mEventPosition);
+				listFragment.setCurrentSeverity(mSeverity);
+				ft.add(R.id.events_fragment_left, listFragment,
+						EventsListFragment.TAG);
+
+				detailsFragment = new EventsDetailsFragment();
+				detailsFragment.setPosition(mEventPosition);
+				detailsFragment.setSeverity(mSeverity);
+				ft.add(R.id.events_fragment_right, new EventsDetailsFragment(),
+						EventsDetailsFragment.TAG);
+				ft.commit();
+			} else {
+
+				FragmentTransaction ft = mFragmentManager.beginTransaction();
+				EventsListFragment listFragment = (EventsListFragment) mFragmentManager
+						.findFragmentByTag(EventsListFragment.TAG);
+				if (listFragment != null) {
+					// if the fragment exists already, destroy it
+					ft.remove(listFragment);
+				}
+
+				EventsDetailsFragment detailsFragment = (EventsDetailsFragment) mFragmentManager
+						.findFragmentByTag(EventsDetailsFragment.TAG);
+				if (detailsFragment != null) {
+					// if the fragment exists already, destroy it
+					ft.remove(detailsFragment);
+				}
+
+				ft.commit();
+				mFragmentManager.executePendingTransactions();
+
+				ft = mFragmentManager.beginTransaction();
+				ft.add(R.id.events_layout, new EventsListFragment(),
+						EventsListFragment.TAG);
+				ft.commit();
+			}
 		}
 
 		@Override
@@ -63,75 +127,14 @@ public class EventsActivity extends SherlockFragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_events);
 
-		mFragmentManager = getSupportFragmentManager();
-
 		ActionBar actionBar = getSupportActionBar();
 
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(true);
 
-		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			FragmentTransaction ft = mFragmentManager.beginTransaction();
-			EventsListFragment listFragment = (EventsListFragment) mFragmentManager
-					.findFragmentByTag(EventsListFragment.TAG);
-			if (listFragment != null) {
-				// if the fragment exists already, destroy it
-				ft.remove(listFragment);
-			}
-			EventsDetailsFragment detailsFragment = (EventsDetailsFragment) mFragmentManager
-					.findFragmentByTag(EventsDetailsFragment.TAG);
-			if (detailsFragment != null) {
-				// if the fragment exists already, destroy it
-				ft.remove(detailsFragment);
-			}
-
-			ft.commit();
-			mFragmentManager.executePendingTransactions();
-
-			ft = mFragmentManager.beginTransaction();
-
-			// add list and details fragment
-			listFragment = new EventsListFragment();
-			listFragment.setCurrentPosition(mEventPosition);
-			listFragment.setCurrentSeverity(mSeverity);
-			ft.add(R.id.events_fragment_left, listFragment,
-					EventsListFragment.TAG);
-
-			detailsFragment = new EventsDetailsFragment();
-			detailsFragment.setPosition(mEventPosition);
-			detailsFragment.setSeverity(mSeverity);
-			ft.add(R.id.events_fragment_right, new EventsDetailsFragment(),
-					EventsDetailsFragment.TAG);
-			ft.commit();
-		} else {
-
-			FragmentTransaction ft = mFragmentManager.beginTransaction();
-			EventsListFragment listFragment = (EventsListFragment) mFragmentManager
-					.findFragmentByTag(EventsListFragment.TAG);
-			if (listFragment != null) {
-				// if the fragment exists already, destroy it
-				ft.remove(listFragment);
-			}
-
-			EventsDetailsFragment detailsFragment = (EventsDetailsFragment) mFragmentManager
-					.findFragmentByTag(EventsDetailsFragment.TAG);
-			if (detailsFragment != null) {
-				// if the fragment exists already, destroy it
-				ft.remove(detailsFragment);
-			}
-
-			ft.commit();
-			mFragmentManager.executePendingTransactions();
-
-			ft = mFragmentManager.beginTransaction();
-			ft.add(R.id.events_layout, new EventsListFragment(),
-					EventsListFragment.TAG);
-			ft.commit();
-		}
-
 	}
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();
@@ -182,5 +185,5 @@ public class EventsActivity extends SherlockFragmentActivity implements
 			ft.commit();
 		}
 	}
-	
+
 }

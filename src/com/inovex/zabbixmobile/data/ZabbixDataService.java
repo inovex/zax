@@ -41,6 +41,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
+	private FragmentManager mEventsDetailsFragmentManager;
 
 	/**
 	 * Class used for the client Binder. Because we know this service always
@@ -59,14 +60,8 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	}
 
 	public EventsDetailsPagerAdapter getEventsDetailsPagerAdapter(
-			TriggerSeverities severity, FragmentManager fm, Context context) {
-		EventsDetailsPagerAdapter adapter = mEventsDetailsPagerAdapters
-				.get(severity);
-		if (adapter == null) {
-			adapter = new EventsDetailsPagerAdapter(context, fm, severity);
-			mEventsDetailsPagerAdapters.put(severity, adapter);
-		}
-		return adapter;
+			TriggerSeverities severity) {
+		return mEventsDetailsPagerAdapters.get(severity);
 	}
 
 	@Override
@@ -133,39 +128,23 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	}
 
 	/**
-	 * Loads all events with a given severity without providing a callback. See
-	 * {@link ZabbixDataService#loadEventsBySeverity(TriggerSeverities, IEventsListAdapter, OnDataAccessFinishedListener)}
-	 * .
-	 * 
-	 * @param severity
-	 *            severity of the events to be retrieved
-	 * @param adapter
-	 *            list adapter to be updated with the results
-	 */
-	public void loadEventsBySeverity(final TriggerSeverities severity,
-			final IEventsListAdapter adapter) {
-		loadEventsBySeverity(severity, adapter, null);
-	}
-
-	/**
 	 * Loads all events with a given severity from the database asynchronously.
 	 * After loading the events, the given list adapter is updated and the
 	 * callback is notified of the changed adapter.
 	 * 
 	 * @param severity
 	 *            severity of the events to be retrieved
-	 * @param adapter
-	 *            list adapter to be updated with the results
 	 * @param callback
 	 *            callback to be notified of the changed list adapter
 	 */
-	public void loadEventsBySeverity(final TriggerSeverities severity,
-			final IEventsListAdapter adapter,
+	public void loadEventsForViewPager(final TriggerSeverities severity,
 			final OnDataAccessFinishedListener callback) {
 
 		new AsyncTask<Void, Void, Void>() {
 
 			private List<Event> events;
+			private EventsDetailsPagerAdapter adapter = mEventsDetailsPagerAdapters
+					.get(severity);
 
 			@Override
 			protected Void doInBackground(Void... params) {
@@ -183,6 +162,9 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
+				// TODO: update the data set instead of removing and re-adding
+				// all items
+				adapter.clear();
 				adapter.addAll(events);
 				adapter.notifyDataSetChanged();
 				if (callback != null)
@@ -205,7 +187,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	 * @param callback
 	 *            callback to be notified of the changed list adapter
 	 */
-	public void loadEventsBySeverity(final TriggerSeverities severity) {
+	public void loadEventsForList(final TriggerSeverities severity) {
 
 		new AsyncTask<Void, Void, Void>() {
 
@@ -255,11 +237,23 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 
 	public void setActivityContext(Context context) {
 		this.mActivityContext = context;
-		this.mInflater = (LayoutInflater) mActivityContext.getSystemService(LAYOUT_INFLATER_SERVICE);
+		this.mInflater = (LayoutInflater) mActivityContext
+				.getSystemService(LAYOUT_INFLATER_SERVICE);
 		// now that we got the context, we can create the adapters
 		for (TriggerSeverities s : TriggerSeverities.values()) {
-			mEventsListAdapters.put(s, new EventsListAdapter(
-					mInflater, R.layout.events_list_item));
+			mEventsListAdapters.put(s, new EventsListAdapter(mInflater,
+					R.layout.events_list_item));
+		}
+
+	}
+
+	public void setEventsDetailsFragmentManager(FragmentManager fm) {
+		this.mEventsDetailsFragmentManager = fm;
+
+		// now that we've got the FragmentManager, we can create the adapters
+		for (TriggerSeverities s : TriggerSeverities.values()) {
+			mEventsDetailsPagerAdapters.put(s, new EventsDetailsPagerAdapter(
+					fm, s));
 		}
 	}
 
