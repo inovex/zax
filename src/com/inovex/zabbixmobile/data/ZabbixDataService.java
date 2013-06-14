@@ -99,56 +99,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 
 	/**
 	 * Loads all events with a given severity from the database asynchronously.
-	 * After loading the events, the given list adapter is updated and the
-	 * callback is notified of the changed adapter.
-	 * 
-	 * @param severity
-	 *            severity of the events to be retrieved
-	 * @param callback
-	 *            callback to be notified of the changed list adapter
-	 */
-	public void loadEventsForViewPager(final TriggerSeverities severity,
-			final OnDataAccessFinishedListener callback) {
-
-		new AsyncTask<Void, Void, Void>() {
-
-			private List<Event> events;
-			private EventsDetailsPagerAdapter adapter = mEventsDetailsPagerAdapters
-					.get(severity);
-
-			@Override
-			protected Void doInBackground(Void... params) {
-				events = new ArrayList<Event>();
-				try {
-					events = mDatabaseHelper.getEventsBySeverity(severity);
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(Void result) {
-				super.onPostExecute(result);
-				// TODO: update the data set instead of removing and re-adding
-				// all items
-				adapter.clear();
-				adapter.addAll(events);
-				adapter.notifyDataSetChanged();
-				if (callback != null)
-					callback.onDataAccessFinished();
-			}
-
-		}.execute();
-
-	}
-
-	/**
-	 * Loads all events with a given severity from the database asynchronously.
-	 * After loading the events, the given list adapter is updated and the
-	 * callback is notified of the changed adapter.
+	 * After loading the events, the list and details adapters are updated.
 	 * 
 	 * @param severity
 	 *            severity of the events to be retrieved
@@ -157,12 +108,14 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	 * @param callback
 	 *            callback to be notified of the changed list adapter
 	 */
-	public void loadEventsForList(final TriggerSeverities severity) {
+	public void loadEventsBySeverity(final TriggerSeverities severity) {
 
 		new AsyncTask<Void, Void, Void>() {
 
 			private List<Event> events;
 			private EventsListAdapter adapter = mEventsListAdapters
+					.get(severity);
+			private EventsDetailsPagerAdapter detailsAdapter = mEventsDetailsPagerAdapters
 					.get(severity);
 
 			@Override
@@ -186,6 +139,10 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 				adapter.clear();
 				adapter.addAll(events);
 				adapter.notifyDataSetChanged();
+
+				detailsAdapter.clear();
+				detailsAdapter.addAll(events);
+				detailsAdapter.notifyDataSetChanged();
 			}
 
 		}.execute();
@@ -200,18 +157,10 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 		for (TriggerSeverities s : TriggerSeverities.values()) {
 			mEventsListAdapters.put(s, new EventsListAdapter(mInflater,
 					R.layout.events_list_item));
+			mEventsDetailsPagerAdapters
+					.put(s, new EventsDetailsPagerAdapter(s));
 		}
 
-	}
-
-	public void setEventsDetailsFragmentManager(FragmentManager fm) {
-		this.mEventsDetailsFragmentManager = fm;
-
-		// now that we've got the FragmentManager, we can create the adapters
-		for (TriggerSeverities s : TriggerSeverities.values()) {
-			mEventsDetailsPagerAdapters.put(s, new EventsDetailsPagerAdapter(
-					fm, s));
-		}
 	}
 
 }

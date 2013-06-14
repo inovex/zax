@@ -30,7 +30,7 @@ import com.viewpagerindicator.CirclePageIndicator;
  * 
  */
 public class EventsDetailsFragment extends SherlockFragment implements
-		ServiceConnection, OnDataAccessFinishedListener {
+		ServiceConnection {
 
 	public static final String TAG = EventsDetailsFragment.class
 			.getSimpleName();
@@ -112,15 +112,27 @@ public class EventsDetailsFragment extends SherlockFragment implements
 		super.onSaveInstanceState(outState);
 	}
 
+	/**
+	 * Performs the setup of the view pager used to swipe between details pages.
+	 */
 	private void setupDetailsViewPager() {
 
+		// retrieve the pager adapter from ZabbixDataService and set its
+		// fragment manager
+		mDetailsPagerAdapter = mZabbixDataService
+				.getEventsDetailsPagerAdapter(mSeverity);
+		mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
+
+		// initialize the view pager
+		mDetailsPager = (ViewPager) getView().findViewById(
+				R.id.details_view_pager);
 		mDetailsPager.setAdapter(mDetailsPagerAdapter);
 
-		// Bind the title indicator to the adapter
+		// Initialize the circle indicator
 		mDetailsCircleIndicator = (CirclePageIndicator) getView().findViewById(
 				R.id.details_circle_page_indicator);
 		mDetailsCircleIndicator.setViewPager(mDetailsPager);
-
+		mDetailsCircleIndicator.setCurrentItem(mPosition);
 		mDetailsCircleIndicator
 				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -173,16 +185,8 @@ public class EventsDetailsFragment extends SherlockFragment implements
 		ZabbixDataBinder binder = (ZabbixDataBinder) service;
 		mZabbixDataService = binder.getService();
 
-		mDetailsPager = (ViewPager) getView().findViewById(
-				R.id.details_view_pager);
+		setupDetailsViewPager();
 
-		mZabbixDataService
-				.setEventsDetailsFragmentManager(getChildFragmentManager());
-
-		mDetailsPagerAdapter = mZabbixDataService
-				.getEventsDetailsPagerAdapter(mSeverity);
-
-		mZabbixDataService.loadEventsForViewPager(mSeverity, this);
 	}
 
 	@Override
@@ -190,10 +194,4 @@ public class EventsDetailsFragment extends SherlockFragment implements
 
 	}
 
-	@Override
-	public void onDataAccessFinished() {
-		setupDetailsViewPager();
-
-		mDetailsCircleIndicator.setCurrentItem(mPosition);
-	}
 }

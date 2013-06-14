@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,7 +34,7 @@ public class EventsListFragment extends SherlockFragment {
 	EventListPagerAdapter mEventsListPagerAdapter;
 	TabPageIndicator mEventListTabIndicator;
 
-	class EventListPagerAdapter extends FragmentStatePagerAdapter {
+	class EventListPagerAdapter extends FragmentPagerAdapter {
 
 		ArrayList<EventsListPage> fragments = new ArrayList<EventsListPage>();
 

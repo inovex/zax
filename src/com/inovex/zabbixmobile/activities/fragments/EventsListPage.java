@@ -139,7 +139,7 @@ public class EventsListPage extends SherlockListFragment implements
 		Log.d(TAG, "service connected: " + mZabbixDataService + " - binder: "
 				+ binder);
 		setListAdapter(mZabbixDataService.getEventsListAdapter(mSeverity));
-		mZabbixDataService.loadEventsForList(mSeverity);
+		mZabbixDataService.loadEventsBySeverity(mSeverity);
 
 	}
 
