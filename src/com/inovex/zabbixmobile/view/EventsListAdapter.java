@@ -101,5 +101,9 @@ public class EventsListAdapter extends BaseAdapter implements
 	public void addAll(Collection<? extends Event> collection) {
 		mObjects.addAll(collection);
 	}
+	
+	public void clear() {
+		mObjects.clear();
+	}
 
 }

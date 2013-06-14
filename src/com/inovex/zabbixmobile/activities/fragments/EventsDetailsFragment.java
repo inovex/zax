@@ -176,9 +176,8 @@ public class EventsDetailsFragment extends SherlockFragment implements
 		mDetailsPager = (ViewPager) getView().findViewById(
 				R.id.details_view_pager);
 
-		mDetailsPagerAdapter = new EventsDetailsPagerAdapter(
-				this.getSherlockActivity(), getChildFragmentManager(),
-				mSeverity);
+		mDetailsPagerAdapter = mZabbixDataService.getEventsDetailsPagerAdapter(
+				mSeverity, getChildFragmentManager(), getSherlockActivity());
 
 		mZabbixDataService.loadEventsBySeverity(mSeverity,
 				mDetailsPagerAdapter, this);

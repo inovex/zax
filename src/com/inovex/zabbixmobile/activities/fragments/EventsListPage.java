@@ -36,8 +36,6 @@ public class EventsListPage extends SherlockListFragment implements
 	private TriggerSeverities mSeverity;
 	private int mItemSelected;
 
-	private EventsListAdapter mListAdapter;
-
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -140,10 +138,8 @@ public class EventsListPage extends SherlockListFragment implements
 
 		Log.d(TAG, "service connected: " + mZabbixDataService + " - binder: "
 				+ binder);
-		mListAdapter = new EventsListAdapter(getSherlockActivity(),
-				R.layout.events_list_item);
-		setListAdapter(mListAdapter);
-		mZabbixDataService.loadEventsBySeverity(mSeverity, mListAdapter);
+		setListAdapter(mZabbixDataService.getEventsListAdapter(mSeverity));
+		mZabbixDataService.loadEventsBySeverity(mSeverity);
 
 	}
 
