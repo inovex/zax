@@ -20,7 +20,6 @@ import com.inovex.zabbixmobile.model.Trigger;
 public class EventsListAdapter extends BaseAdapter implements
 		IEventsListAdapter {
 
-	private Context mContext;
 	private int mTextViewResourceId;
 	private ArrayList<Event> mObjects;
 	private LayoutInflater mInflater;
@@ -28,28 +27,26 @@ public class EventsListAdapter extends BaseAdapter implements
 	/**
 	 * Constructor.
 	 * 
-	 * @param context
+	 * @param inflater
 	 * @param textViewResourceId
 	 */
-	public EventsListAdapter(Context context, int textViewResourceId) {
+	public EventsListAdapter(LayoutInflater inflater, int textViewResourceId) {
 		super();
 		this.mTextViewResourceId = textViewResourceId;
 		this.mObjects = new ArrayList<Event>();
-		this.mContext = context;
-		this.mInflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		this.mInflater = inflater;
 	}
 
 	/**
 	 * Constructor with an initial collection of events.
 	 * 
-	 * @param context
+	 * @param inflater
 	 * @param textViewResourceId
 	 * @param objects
 	 */
-	public EventsListAdapter(Context context, int textViewResourceId,
+	public EventsListAdapter(LayoutInflater inflater, int textViewResourceId,
 			Collection<Event> objects) {
-		this(context, textViewResourceId);
+		this(inflater, textViewResourceId);
 		this.mObjects.addAll(objects);
 	}
 

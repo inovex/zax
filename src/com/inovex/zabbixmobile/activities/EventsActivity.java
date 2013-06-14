@@ -34,8 +34,6 @@ public class EventsActivity extends SherlockFragmentActivity implements
 	
 	private ZabbixDataService mZabbixService;
 
-	private boolean mZabbixServiceBound = false;
-	
 	/** Defines callbacks for service binding, passed to bindService() */
 	private ServiceConnection mConnection = new ServiceConnection() {
 
@@ -45,12 +43,11 @@ public class EventsActivity extends SherlockFragmentActivity implements
 			// LocalService instance
 			ZabbixDataBinder binder = (ZabbixDataBinder) service;
 			mZabbixService = binder.getService();
-			mZabbixServiceBound = true;
+			mZabbixService.setActivityContext(EventsActivity.this);
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
-			mZabbixServiceBound = false;
 		}
 	};
 

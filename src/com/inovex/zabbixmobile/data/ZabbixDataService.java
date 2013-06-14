@@ -13,6 +13,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
@@ -37,6 +38,9 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 
 	private HashMap<TriggerSeverities, EventsListAdapter> mEventsListAdapters;
 	private HashMap<TriggerSeverities, EventsDetailsPagerAdapter> mEventsDetailsPagerAdapters;
+
+	private Context mActivityContext;
+	private LayoutInflater mInflater;
 
 	/**
 	 * Class used for the client Binder. Because we know this service always
@@ -86,9 +90,6 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 		// set up adapters
 		mEventsListAdapters = new HashMap<TriggerSeverities, EventsListAdapter>(
 				TriggerSeverities.values().length);
-		for(TriggerSeverities s : TriggerSeverities.values()) {
-			mEventsListAdapters.put(s, new EventsListAdapter(getApplicationContext(), R.layout.events_list_item));
-		}
 		mEventsDetailsPagerAdapters = new HashMap<TriggerSeverities, EventsDetailsPagerAdapter>(
 				TriggerSeverities.values().length);
 
@@ -250,6 +251,16 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	private Event getEventById(long id) throws SQLException {
 		Dao<Event, Long> dao = mDatabaseHelper.getDao(Event.class);
 		return dao.queryForId(id);
+	}
+
+	public void setActivityContext(Context context) {
+		this.mActivityContext = context;
+		this.mInflater = (LayoutInflater) mActivityContext.getSystemService(LAYOUT_INFLATER_SERVICE);
+		// now that we got the context, we can create the adapters
+		for (TriggerSeverities s : TriggerSeverities.values()) {
+			mEventsListAdapters.put(s, new EventsListAdapter(
+					mInflater, R.layout.events_list_item));
+		}
 	}
 
 }
