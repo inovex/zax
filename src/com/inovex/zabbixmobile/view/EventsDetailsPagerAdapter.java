@@ -19,7 +19,7 @@ import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
 
 public class EventsDetailsPagerAdapter extends PagerAdapter implements
-		OnEventSelectedListener, IEventsListAdapter {
+		OnEventSelectedListener {
 
 	private List<Event> events;
 	private static final String TAG = EventsDetailsPagerAdapter.class
@@ -170,7 +170,6 @@ public class EventsDetailsPagerAdapter extends PagerAdapter implements
 
 	}
 
-	@Override
 	public void addAll(Collection<? extends Event> events) {
 		this.events.addAll(events);
 	}

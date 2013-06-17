@@ -18,8 +18,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Trigger;
 
-public class EventsListAdapter extends BaseAdapter implements
-		IEventsListAdapter {
+public class EventsListAdapter extends BaseAdapter {
 
 	private int mTextViewResourceId;
 	private ArrayList<Event> mObjects;
@@ -95,7 +94,6 @@ public class EventsListAdapter extends BaseAdapter implements
 		return mObjects.get(position).getId();
 	}
 
-	@Override
 	public void addAll(Collection<? extends Event> collection) {
 		mObjects.addAll(collection);
 	}
