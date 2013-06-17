@@ -39,7 +39,6 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
-	private FragmentManager mEventsDetailsFragmentManager;
 
 	/**
 	 * Class used for the client Binder. Because we know this service always
@@ -47,8 +46,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	 */
 	public class ZabbixDataBinder extends Binder {
 		public ZabbixDataService getService() {
-			// Return this instance of LocalService so clients can call public
-			// methods
+			// Return this service instance so clients can call public methods
 			return ZabbixDataService.this;
 		}
 	}
@@ -84,6 +82,13 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 				TriggerSeverities.values().length);
 		mEventsDetailsPagerAdapters = new HashMap<TriggerSeverities, EventsDetailsPagerAdapter>(
 				TriggerSeverities.values().length);
+
+		for (TriggerSeverities s : TriggerSeverities.values()) {
+			mEventsListAdapters.put(s, new EventsListAdapter(this,
+					R.layout.events_list_item));
+			mEventsDetailsPagerAdapters
+					.put(s, new EventsDetailsPagerAdapter(s));
+		}
 
 	}
 
@@ -153,18 +158,20 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 
 	}
 
+	/**
+	 * Sets the activity context, which is needed to inflate layout elements.
+	 * 
+	 * @param context
+	 *            the context
+	 */
 	public void setActivityContext(Context context) {
 		this.mActivityContext = context;
 		this.mInflater = (LayoutInflater) mActivityContext
 				.getSystemService(LAYOUT_INFLATER_SERVICE);
-		// now that we got the context, we can create the adapters
-		for (TriggerSeverities s : TriggerSeverities.values()) {
-			mEventsListAdapters.put(s, new EventsListAdapter(mInflater,
-					R.layout.events_list_item));
-			mEventsDetailsPagerAdapters
-					.put(s, new EventsDetailsPagerAdapter(s));
-		}
+	}
 
+	public LayoutInflater getInflater() {
+		return mInflater;
 	}
 
 }

@@ -14,6 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Trigger;
 
@@ -22,19 +23,19 @@ public class EventsListAdapter extends BaseAdapter implements
 
 	private int mTextViewResourceId;
 	private ArrayList<Event> mObjects;
-	private LayoutInflater mInflater;
+	private ZabbixDataService mZabbixDataService;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param inflater
+	 * @param service
 	 * @param textViewResourceId
 	 */
-	public EventsListAdapter(LayoutInflater inflater, int textViewResourceId) {
+	public EventsListAdapter(ZabbixDataService service, int textViewResourceId) {
 		super();
 		this.mTextViewResourceId = textViewResourceId;
 		this.mObjects = new ArrayList<Event>();
-		this.mInflater = inflater;
+		this.mZabbixDataService = service;
 	}
 
 	/**
@@ -44,9 +45,9 @@ public class EventsListAdapter extends BaseAdapter implements
 	 * @param textViewResourceId
 	 * @param objects
 	 */
-	public EventsListAdapter(LayoutInflater inflater, int textViewResourceId,
+	public EventsListAdapter(ZabbixDataService service, int textViewResourceId,
 			Collection<Event> objects) {
-		this(inflater, textViewResourceId);
+		this(service, textViewResourceId);
 		this.mObjects.addAll(objects);
 	}
 
@@ -55,7 +56,7 @@ public class EventsListAdapter extends BaseAdapter implements
 		View row = convertView;
 
 		if (row == null) {
-			row = mInflater.inflate(mTextViewResourceId, parent, false);
+			row = mZabbixDataService.getInflater().inflate(mTextViewResourceId, parent, false);
 
 		}
 
