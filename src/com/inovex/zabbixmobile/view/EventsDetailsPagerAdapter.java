@@ -175,6 +175,9 @@ public class EventsDetailsPagerAdapter extends PagerAdapter implements
 		this.events.addAll(events);
 	}
 
+	/**
+	 * Clears the collection of events.
+	 */
 	public void clear() {
 		events.clear();
 	}

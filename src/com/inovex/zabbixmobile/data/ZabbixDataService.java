@@ -136,13 +136,17 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 				super.onPostExecute(result);
 				// TODO: update the data set instead of removing and re-adding
 				// all items
-				adapter.clear();
-				adapter.addAll(events);
-				adapter.notifyDataSetChanged();
+				if (adapter != null) {
+					adapter.clear();
+					adapter.addAll(events);
+					adapter.notifyDataSetChanged();
+				}
 
-				detailsAdapter.clear();
-				detailsAdapter.addAll(events);
-				detailsAdapter.notifyDataSetChanged();
+				if (detailsAdapter != null) {
+					detailsAdapter.clear();
+					detailsAdapter.addAll(events);
+					detailsAdapter.notifyDataSetChanged();
+				}
 			}
 
 		}.execute();
