@@ -4,12 +4,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
+import android.widget.ViewFlipper;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -27,12 +28,16 @@ public class EventsActivity extends SherlockFragmentActivity implements
 
 	private static final String TAG = EventsActivity.class.getSimpleName();
 
-	private FragmentManager mFragmentManager;
-
 	private int mEventPosition;
 	private TriggerSeverities mSeverity = TriggerSeverities.ALL;
 
 	private ZabbixDataService mZabbixService;
+
+	private FragmentManager mFragmentManager;
+	
+	private ViewFlipper mFlipper;
+	private EventsDetailsFragment mDetailsFragment;
+	private EventsListFragment mListFragment;
 
 	/** Defines callbacks for service binding, passed to bindService() */
 	private ServiceConnection mConnection = new ServiceConnection() {
@@ -45,69 +50,6 @@ public class EventsActivity extends SherlockFragmentActivity implements
 			mZabbixService = binder.getService();
 			mZabbixService.setActivityContext(EventsActivity.this);
 
-			// after the service is started, we can create the child fragments
-			// (this can't be done earlier because the fragments' initialization
-			// requires the service to be set up.
-			mFragmentManager = getSupportFragmentManager();
-
-			if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-				FragmentTransaction ft = mFragmentManager.beginTransaction();
-				EventsListFragment listFragment = (EventsListFragment) mFragmentManager
-						.findFragmentByTag(EventsListFragment.TAG);
-				if (listFragment != null) {
-					// if the fragment exists already, destroy it
-					ft.remove(listFragment);
-				}
-				EventsDetailsFragment detailsFragment = (EventsDetailsFragment) mFragmentManager
-						.findFragmentByTag(EventsDetailsFragment.TAG);
-				if (detailsFragment != null) {
-					// if the fragment exists already, destroy it
-					ft.remove(detailsFragment);
-				}
-
-				ft.commit();
-				mFragmentManager.executePendingTransactions();
-
-				ft = mFragmentManager.beginTransaction();
-
-				// add list and details fragment
-				listFragment = new EventsListFragment();
-				listFragment.setCurrentPosition(mEventPosition);
-				listFragment.setCurrentSeverity(mSeverity);
-				ft.add(R.id.events_fragment_left, listFragment,
-						EventsListFragment.TAG);
-
-				detailsFragment = new EventsDetailsFragment();
-				detailsFragment.setPosition(mEventPosition);
-				detailsFragment.setSeverity(mSeverity);
-				ft.add(R.id.events_fragment_right, new EventsDetailsFragment(),
-						EventsDetailsFragment.TAG);
-				ft.commit();
-			} else {
-
-				FragmentTransaction ft = mFragmentManager.beginTransaction();
-				EventsListFragment listFragment = (EventsListFragment) mFragmentManager
-						.findFragmentByTag(EventsListFragment.TAG);
-				if (listFragment != null) {
-					// if the fragment exists already, destroy it
-					ft.remove(listFragment);
-				}
-
-				EventsDetailsFragment detailsFragment = (EventsDetailsFragment) mFragmentManager
-						.findFragmentByTag(EventsDetailsFragment.TAG);
-				if (detailsFragment != null) {
-					// if the fragment exists already, destroy it
-					ft.remove(detailsFragment);
-				}
-
-				ft.commit();
-				mFragmentManager.executePendingTransactions();
-
-				ft = mFragmentManager.beginTransaction();
-				ft.add(R.id.events_layout, new EventsListFragment(),
-						EventsListFragment.TAG);
-				ft.commit();
-			}
 		}
 
 		@Override
@@ -133,6 +75,18 @@ public class EventsActivity extends SherlockFragmentActivity implements
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(true);
 
+	}
+
+	@Override
+	public View onCreateView(String name, Context context, AttributeSet attrs) {
+		View rootView = super.onCreateView(name, context, attrs);
+		mFragmentManager = getSupportFragmentManager();
+		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
+		mDetailsFragment = (EventsDetailsFragment) mFragmentManager
+				.findFragmentById(R.id.events_details);
+		mListFragment = (EventsListFragment) mFragmentManager
+				.findFragmentById(R.id.events_list);
+		return rootView;
 	}
 
 	@Override
@@ -163,26 +117,20 @@ public class EventsActivity extends SherlockFragmentActivity implements
 		this.mEventPosition = position;
 		this.mSeverity = severity;
 
-		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			EventsDetailsFragment detailsFragment = (EventsDetailsFragment) mFragmentManager
-					.findFragmentByTag(EventsDetailsFragment.TAG);
-			detailsFragment.selectEvent(position);
+		mDetailsFragment.selectEvent(position, severity, id);
+		if (mFlipper != null)
+			mFlipper.showNext();
 
-			EventsListFragment listFragment = (EventsListFragment) mFragmentManager
-					.findFragmentByTag(EventsListFragment.TAG);
+	}
 
+	@Override
+	public void onBackPressed() {
+		if (mDetailsFragment.isVisible() && mFlipper != null) {
+			Log.d(TAG, "DetailsFragment is visible.");
+			mFlipper.showPrevious();
 		} else {
-			EventsDetailsFragment detailsFragment = new EventsDetailsFragment();
-			detailsFragment.setEventId(id);
-			detailsFragment.setPosition(position);
-			detailsFragment.setSeverity(severity);
-
-			FragmentTransaction ft = mFragmentManager.beginTransaction();
-			ft.remove(mFragmentManager
-					.findFragmentByTag(EventsListFragment.TAG));
-			ft.add(R.id.events_layout, detailsFragment);
-			ft.addToBackStack(null);
-			ft.commit();
+			Log.d(TAG, "DetailsFragment is not visible.");
+			super.onBackPressed();
 		}
 	}
 

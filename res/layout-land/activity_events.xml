@@ -5,15 +5,17 @@
     android:id="@+id/events_layout"
     android:baselineAligned="false">
     
-    <LinearLayout
-        android:id="@+id/events_fragment_left"
+    <fragment
+        class="com.inovex.zabbixmobile.activities.fragments.EventsListFragment"
+        android:id="@+id/events_list"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1" 
         android:orientation="vertical" />
     
-    <LinearLayout
-        android:id="@+id/events_fragment_right"
+    <fragment
+        class="com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment"
+        android:id="@+id/events_details"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

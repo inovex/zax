@@ -42,6 +42,7 @@ public class EventsDetailsPage extends SherlockFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
+		// TODO: on orientation change, mEvent is not set -> NullPointerException
 		StringBuilder sb = new StringBuilder();
 		sb.append("Event: \n\n");
 		sb.append("ID: " + mEvent.getId() + "\n");

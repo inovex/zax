@@ -14,10 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.data.OnDataAccessFinishedListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.TriggerSeverities;
@@ -49,6 +46,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+		Log.d(TAG, "onAttach");
 
 		// This makes sure that the container activity has implemented
 		// the callback interface. If not, it throws an exception
@@ -63,6 +61,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 	@Override
 	public void onStart() {
 		super.onStart();
+		Log.d(TAG, "onStart");
 		// we need to do this after the view was created!!
 		Intent intent = new Intent(getSherlockActivity(),
 				ZabbixDataService.class);
@@ -80,6 +79,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+		Log.d(TAG, "onCreate");
 		// setRetainInstance(true);
 	}
 
@@ -88,6 +88,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_events_details,
 				container, false);
+		Log.d(TAG, "onCreateView");
 		return rootView;
 	}
 
@@ -95,6 +96,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
+		Log.d(TAG, "onViewCreated");
 		// if (savedInstanceState != null) {
 		// mPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
 		// mEventId = savedInstanceState.getLong(ARG_EVENT_ID, 0);
@@ -116,6 +118,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 	 * Performs the setup of the view pager used to swipe between details pages.
 	 */
 	private void setupDetailsViewPager() {
+		Log.d(TAG, "setupViewPager");
 
 		// retrieve the pager adapter from ZabbixDataService and set its
 		// fragment manager
@@ -159,29 +162,52 @@ public class EventsDetailsFragment extends SherlockFragment implements
 
 	}
 
-	public void selectEvent(int position) {
+	/**
+	 * Selects an event which shall be displayed in the view pager.
+	 * 
+	 * @param position
+	 *            list position
+	 * @param severity
+	 *            severity (this is used to retrieve the correct pager adapter
+	 * @param id
+	 *            item identifier
+	 */
+	public void selectEvent(int position, TriggerSeverities severity, long id) {
 		Log.d(TAG, "EventDetailsFragment:selectEvent(" + position + ")");
+		setSeverity(severity);
+		setPosition(position);
+		setEventId(id);
+	}
+
+	/**
+	 * Sets the current severity and updates the pager adapter.
+	 * 
+	 * @param severity
+	 *            current severity
+	 */
+	private void setSeverity(TriggerSeverities severity) {
+		this.mSeverity = severity;
+		mDetailsPagerAdapter = mZabbixDataService
+				.getEventsDetailsPagerAdapter(mSeverity);
+		// the adapter could be fresh -> set fragment manager
+		mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
+		mDetailsPager.setAdapter(mDetailsPagerAdapter);
+	}
+
+	private void setPosition(int position) {
+		this.mPosition = position;
 		if (mDetailsCircleIndicator != null) {
 			mDetailsCircleIndicator.setCurrentItem(position);
 		}
 	}
 
-	public void setPosition(int position) {
-		this.mPosition = position;
-	}
-
-	public void setEventId(long eventId) {
+	private void setEventId(long eventId) {
 		this.mEventId = eventId;
-	}
-
-	public void setSeverity(TriggerSeverities severity) {
-		this.mSeverity = severity;
 	}
 
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
-		// We've bound to LocalService, cast the IBinder and get
-		// LocalService instance
+		Log.d(TAG, "onServiceConnected");
 		ZabbixDataBinder binder = (ZabbixDataBinder) service;
 		mZabbixDataService = binder.getService();
 
