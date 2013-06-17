@@ -26,7 +26,7 @@ public class Trigger {
 	@DatabaseField
 	Date lastChange;
 	@DatabaseField(columnName = COLUMN_NAME_PRIORITY, index = true)
-	TriggerSeverities priority;
+	TriggerSeverity priority;
 	@DatabaseField
 	int status;
 	@DatabaseField
@@ -46,7 +46,7 @@ public class Trigger {
 	}
 
 	public Trigger(long id, String description, String expression,
-			String comments, long lastChange, TriggerSeverities priority,
+			String comments, long lastChange, TriggerSeverity priority,
 			int status, int value, String url, boolean valueChanged) {
 		this.id = id;
 		this.description = description;
@@ -82,7 +82,7 @@ public class Trigger {
 		return lastChange;
 	}
 
-	public TriggerSeverities getPriority() {
+	public TriggerSeverity getPriority() {
 		return priority;
 	}
 

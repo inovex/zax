@@ -21,7 +21,7 @@ import com.inovex.zabbixmobile.activities.fragments.EventsListFragment;
 import com.inovex.zabbixmobile.activities.fragments.OnEventSelectedListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
-import com.inovex.zabbixmobile.model.TriggerSeverities;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public class EventsActivity extends SherlockFragmentActivity implements
 		OnEventSelectedListener {
@@ -29,7 +29,7 @@ public class EventsActivity extends SherlockFragmentActivity implements
 	private static final String TAG = EventsActivity.class.getSimpleName();
 
 	private int mEventPosition;
-	private TriggerSeverities mSeverity = TriggerSeverities.ALL;
+	private TriggerSeverity mSeverity = TriggerSeverity.ALL;
 
 	private ZabbixDataService mZabbixService;
 
@@ -110,7 +110,7 @@ public class EventsActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
-	public void onEventSelected(int position, TriggerSeverities severity,
+	public void onEventSelected(int position, TriggerSeverity severity,
 			long id) {
 		Log.d(TAG, "event selected: " + id + ",severity: " + severity
 				+ "(position: " + position + ")");

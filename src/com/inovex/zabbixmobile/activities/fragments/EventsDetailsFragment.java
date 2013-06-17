@@ -17,7 +17,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
-import com.inovex.zabbixmobile.model.TriggerSeverities;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -38,7 +38,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 	private OnEventSelectedListener mCallbackMain;
 	private int mPosition = 0;
 	private long mEventId = 0;
-	private TriggerSeverities mSeverity = TriggerSeverities.ALL;
+	private TriggerSeverity mSeverity = TriggerSeverity.ALL;
 	private CirclePageIndicator mDetailsCircleIndicator;
 
 	private ZabbixDataService mZabbixDataService;
@@ -172,7 +172,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 	 * @param id
 	 *            item identifier
 	 */
-	public void selectEvent(int position, TriggerSeverities severity, long id) {
+	public void selectEvent(int position, TriggerSeverity severity, long id) {
 		Log.d(TAG, "EventDetailsFragment:selectEvent(" + position + ")");
 		setSeverity(severity);
 		setPosition(position);
@@ -185,7 +185,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 	 * @param severity
 	 *            current severity
 	 */
-	private void setSeverity(TriggerSeverities severity) {
+	private void setSeverity(TriggerSeverity severity) {
 		this.mSeverity = severity;
 		mDetailsPagerAdapter = mZabbixDataService
 				.getEventsDetailsPagerAdapter(mSeverity);

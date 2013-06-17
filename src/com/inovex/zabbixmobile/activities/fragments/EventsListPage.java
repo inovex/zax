@@ -17,7 +17,7 @@ import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
-import com.inovex.zabbixmobile.model.TriggerSeverities;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.view.EventsListAdapter;
 
 /**
@@ -33,7 +33,7 @@ public class EventsListPage extends SherlockListFragment implements
 	private OnEventSelectedListener mCallbackMain;
 	private ZabbixDataService mZabbixDataService;
 
-	private TriggerSeverities mSeverity;
+	private TriggerSeverity mSeverity;
 	private int mItemSelected;
 
 	@Override
@@ -123,7 +123,7 @@ public class EventsListPage extends SherlockListFragment implements
 		mItemSelected = position;
 	}
 
-	public void setSeverity(TriggerSeverities severity) {
+	public void setSeverity(TriggerSeverity severity) {
 		this.mSeverity = severity;
 	}
 

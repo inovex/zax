@@ -107,10 +107,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @return list of events with a matching severity
 	 * @throws SQLException
 	 */
-	public List<Event> getEventsBySeverity(TriggerSeverities severity)
+	public List<Event> getEventsBySeverity(TriggerSeverity severity)
 			throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
-		if (severity == TriggerSeverities.ALL)
+		if (severity == TriggerSeverity.ALL)
 			return eventDao.queryForAll();
 		// filter events by trigger severity
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);

@@ -1,6 +1,6 @@
 package com.inovex.zabbixmobile.model;
 
-public enum TriggerSeverities {
+public enum TriggerSeverity {
 	ALL("all", -1, 0),
 	DISASTER("disaster", 5, 1),
 	HIGH("high", 4, 2),
@@ -13,7 +13,7 @@ public enum TriggerSeverities {
 	private final int number;
 	private final int position;
 	
-	TriggerSeverities(String name, int n, int position) {
+	TriggerSeverity(String name, int n, int position) {
 		this.name = name;
 		number = n;
 		this.position= position; 
@@ -31,7 +31,7 @@ public enum TriggerSeverities {
 		return number;
 	}
 	
-	public static TriggerSeverities getSeverityByNumber(int n) {
+	public static TriggerSeverity getSeverityByNumber(int n) {
 		return ALL;
 	}
 	

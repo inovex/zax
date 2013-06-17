@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 
@@ -19,12 +18,11 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.MockDatabaseHelper;
-import com.inovex.zabbixmobile.model.TriggerSeverities;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.view.EventsListAdapter;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteBaseService;
-import com.j256.ormlite.stmt.SelectArg;
 
 public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 
@@ -34,8 +32,8 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 
 	private DatabaseHelper mDatabaseHelper;
 
-	private HashMap<TriggerSeverities, EventsListAdapter> mEventsListAdapters;
-	private HashMap<TriggerSeverities, EventsDetailsPagerAdapter> mEventsDetailsPagerAdapters;
+	private HashMap<TriggerSeverity, EventsListAdapter> mEventsListAdapters;
+	private HashMap<TriggerSeverity, EventsDetailsPagerAdapter> mEventsDetailsPagerAdapters;
 
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
@@ -51,12 +49,12 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 		}
 	}
 
-	public EventsListAdapter getEventsListAdapter(TriggerSeverities severity) {
+	public EventsListAdapter getEventsListAdapter(TriggerSeverity severity) {
 		return mEventsListAdapters.get(severity);
 	}
 
 	public EventsDetailsPagerAdapter getEventsDetailsPagerAdapter(
-			TriggerSeverities severity) {
+			TriggerSeverity severity) {
 		return mEventsDetailsPagerAdapters.get(severity);
 	}
 
@@ -78,12 +76,12 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 		Log.d(TAG, "onCreate");
 
 		// set up adapters
-		mEventsListAdapters = new HashMap<TriggerSeverities, EventsListAdapter>(
-				TriggerSeverities.values().length);
-		mEventsDetailsPagerAdapters = new HashMap<TriggerSeverities, EventsDetailsPagerAdapter>(
-				TriggerSeverities.values().length);
+		mEventsListAdapters = new HashMap<TriggerSeverity, EventsListAdapter>(
+				TriggerSeverity.values().length);
+		mEventsDetailsPagerAdapters = new HashMap<TriggerSeverity, EventsDetailsPagerAdapter>(
+				TriggerSeverity.values().length);
 
-		for (TriggerSeverities s : TriggerSeverities.values()) {
+		for (TriggerSeverity s : TriggerSeverity.values()) {
 			mEventsListAdapters.put(s, new EventsListAdapter(this,
 					R.layout.events_list_item));
 			mEventsDetailsPagerAdapters
@@ -113,7 +111,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	 * @param callback
 	 *            callback to be notified of the changed list adapter
 	 */
-	public void loadEventsBySeverity(final TriggerSeverities severity) {
+	public void loadEventsBySeverity(final TriggerSeverity severity) {
 
 		new AsyncTask<Void, Void, Void>() {
 

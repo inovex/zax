@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsPage;
 import com.inovex.zabbixmobile.activities.fragments.OnEventSelectedListener;
 import com.inovex.zabbixmobile.model.Event;
-import com.inovex.zabbixmobile.model.TriggerSeverities;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public class EventsDetailsPagerAdapter extends PagerAdapter implements
 		OnEventSelectedListener {
@@ -31,12 +31,12 @@ public class EventsDetailsPagerAdapter extends PagerAdapter implements
 
 	private Fragment mCurrentPrimaryItem = null;
 
-	public EventsDetailsPagerAdapter(TriggerSeverities severity) {
+	public EventsDetailsPagerAdapter(TriggerSeverity severity) {
 		this(null, severity);
 	}
 
 	public EventsDetailsPagerAdapter(FragmentManager fm,
-			TriggerSeverities severity) {
+			TriggerSeverity severity) {
 		mFragmentManager = fm;
 		Log.d(TAG, "creating DetailsPagerAdapter for severity " + severity);
 
@@ -164,7 +164,7 @@ public class EventsDetailsPagerAdapter extends PagerAdapter implements
 	}
 
 	@Override
-	public void onEventSelected(int position, TriggerSeverities severity,
+	public void onEventSelected(int position, TriggerSeverity severity,
 			long id) {
 		// TODO Auto-generated method stub
 

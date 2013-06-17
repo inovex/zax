@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.model.TriggerSeverities;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TabPageIndicator;
 
 /**
@@ -28,7 +28,7 @@ public class EventsListFragment extends SherlockFragment {
 
 	private int mCurrentPosition = 0;
 	private long mCurrentEventId = 0;
-	private TriggerSeverities mCurrentSeverity = TriggerSeverities.ALL;
+	private TriggerSeverity mCurrentSeverity = TriggerSeverity.ALL;
 
 	ViewPager mEventsListPager;
 	EventListPagerAdapter mEventsListPagerAdapter;
@@ -41,7 +41,7 @@ public class EventsListFragment extends SherlockFragment {
 		public EventListPagerAdapter(FragmentManager fm) {
 			super(fm);
 			EventsListPage f;
-			for (TriggerSeverities s : TriggerSeverities.values()) {
+			for (TriggerSeverity s : TriggerSeverity.values()) {
 				f = new EventsListPage();
 				f.setSeverity(s);
 
@@ -57,7 +57,7 @@ public class EventsListFragment extends SherlockFragment {
 
 		@Override
 		public int getCount() {
-			return TriggerSeverities.values().length;
+			return TriggerSeverity.values().length;
 		}
 
 		@Override
@@ -163,7 +163,7 @@ public class EventsListFragment extends SherlockFragment {
 		this.mCurrentEventId = currentEventId;
 	}
 
-	public void setCurrentSeverity(TriggerSeverities currentSeverity) {
+	public void setCurrentSeverity(TriggerSeverity currentSeverity) {
 		this.mCurrentSeverity = currentSeverity;
 	}
 
