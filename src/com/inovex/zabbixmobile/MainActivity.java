@@ -1,7 +1,11 @@
 package com.inovex.zabbixmobile;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -15,10 +19,14 @@ import com.actionbarsherlock.view.Menu;
 import com.inovex.zabbixmobile.activities.ChecksActivity;
 import com.inovex.zabbixmobile.activities.EventsActivity;
 import com.inovex.zabbixmobile.activities.ScreensActivity;
+import com.inovex.zabbixmobile.data.ZabbixDataService;
+import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 
-public class MainActivity extends SherlockFragmentActivity {
+public class MainActivity extends SherlockFragmentActivity implements ServiceConnection {
 
 	protected static final String TAG = MainActivity.class.getSimpleName();
+	
+	private ZabbixDataService mZabbixService;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +76,32 @@ public class MainActivity extends SherlockFragmentActivity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getSupportMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	/** Defines callbacks for service binding, passed to bindService() */
+	@Override
+	public void onServiceConnected(ComponentName className, IBinder service) {
+		ZabbixDataBinder binder = (ZabbixDataBinder) service;
+		mZabbixService = binder.getService();
+		mZabbixService.setActivityContext(MainActivity.this);
+
+	}
+
+	@Override
+	public void onServiceDisconnected(ComponentName arg0) {
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Intent intent = new Intent(this, ZabbixDataService.class);
+		bindService(intent, this, Context.BIND_AUTO_CREATE);
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		unbindService(this);
 	}
 
 }

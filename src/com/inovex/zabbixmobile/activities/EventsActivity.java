@@ -43,8 +43,6 @@ public class EventsActivity extends SherlockFragmentActivity implements
 	/** Defines callbacks for service binding, passed to bindService() */
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
-		// We've bound to LocalService, cast the IBinder and get
-		// LocalService instance
 		ZabbixDataBinder binder = (ZabbixDataBinder) service;
 		mZabbixService = binder.getService();
 		mZabbixService.setActivityContext(EventsActivity.this);
