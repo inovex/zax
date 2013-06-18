@@ -34,7 +34,7 @@ import com.inovex.zabbixmobile.view.EventsListAdapter;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteBaseService;
 
-public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
+public class ZabbixDataService extends OrmLiteBaseService<DatabaseHelper> {
 
 	private static final String TAG = ZabbixDataService.class.getSimpleName();
 	// Binder given to clients
