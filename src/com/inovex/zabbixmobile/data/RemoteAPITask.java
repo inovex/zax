@@ -1,9 +1,9 @@
 package com.inovex.zabbixmobile.data;
 
+import android.os.AsyncTask;
+
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
-
-import android.os.AsyncTask;
 
 public abstract class RemoteAPITask extends AsyncTask<Void, Void, Void> {
 	

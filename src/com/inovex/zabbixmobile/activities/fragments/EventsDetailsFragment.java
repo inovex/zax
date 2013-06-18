@@ -39,6 +39,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 	private int mPosition = 0;
 	private long mEventId = 0;
 	private TriggerSeverity mSeverity = TriggerSeverity.ALL;
+	// TODO: Replace with an indicator capable of handling many events
 	private CirclePageIndicator mDetailsCircleIndicator;
 
 	private ZabbixDataService mZabbixDataService;

@@ -1,5 +1,10 @@
 package com.inovex.zabbixmobile.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import android.util.SparseArray;
+
 public enum TriggerSeverity {
 	ALL("all", -1, 0),
 	DISASTER("disaster", 5, 1),
@@ -12,6 +17,14 @@ public enum TriggerSeverity {
 	private final String name;
 	private final int number;
 	private final int position;
+	private static final SparseArray<TriggerSeverity> values;
+	
+	static {
+		values = new SparseArray<TriggerSeverity>(TriggerSeverity.values().length);
+		for(TriggerSeverity t : TriggerSeverity.values()) {
+			values.put(t.getNumber(), t);
+		}
+	}
 	
 	TriggerSeverity(String name, int n, int position) {
 		this.name = name;
@@ -32,7 +45,7 @@ public enum TriggerSeverity {
 	}
 	
 	public static TriggerSeverity getSeverityByNumber(int n) {
-		return ALL;
+		return values.get(n);
 	}
 	
 	public String toString() {

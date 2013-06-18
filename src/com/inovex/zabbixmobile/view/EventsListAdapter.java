@@ -3,6 +3,7 @@ package com.inovex.zabbixmobile.view;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Locale;
 
@@ -74,10 +75,12 @@ public class EventsListAdapter extends BaseAdapter {
 			description.setText(String.valueOf(t.getDescription()));
 		
 		title.setText(String.valueOf("id: " + e.getId()));
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(e.getClock());
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 				SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
 				Locale.getDefault());
-		clock.setText(String.valueOf(dateFormatter.format(e.getClock())));
+		clock.setText(String.valueOf(dateFormatter.format(cal.getTime())));
 
 		return row;
 	}

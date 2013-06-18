@@ -14,6 +14,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -66,6 +67,8 @@ import android.util.Log;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.Trigger;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
 
@@ -343,7 +346,7 @@ public class ZabbixRemoteAPI {
 			}
 
 			JsonFactory jsonFac = new JsonFactory();
-			JsonParser jp = jsonFac.createJsonParser(resp.getEntity().getContent());
+			JsonParser jp = jsonFac.createParser(resp.getEntity().getContent());
 			// store the last stream to close it if an exception will be thrown
 			lastStream = jp;
 			if (jp.nextToken() != JsonToken.START_OBJECT) {
@@ -592,7 +595,7 @@ public class ZabbixRemoteAPI {
 				.put("output", "extend")
 				.put("limit", ZabbixConfig.EVENTS_GET_LIMIT)
 //				.put(isVersion2?"selectHosts":"select_hosts", "extend")
-//				.put(isVersion2?"selectTriggers":"select_triggers", "extend")
+				.put(isVersion2?"selectTriggers":"select_triggers", "extend")
 				.put("source", 0)
 				.put("time_from", (new Date().getTime()/1000) - ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT);
 			if (!isVersion2) {
@@ -631,11 +634,17 @@ public class ZabbixRemoteAPI {
 //					e.set(EventData.COLUMN_HOSTS, hostnames);
 				} else if (propName.equals("triggers")) {
 //					// import triggers
-//					importTriggers(eventReader.getJsonArrayOrObjectReader());
+					List<Trigger> triggers = importTriggers(eventReader.getJsonArrayOrObjectReader());
+					if(triggers.size() > 0)
+						e.setTrigger(triggers.get(0));
+					if(triggers.size() > 1) {
+						Log.w(TAG, "More than one trigger found for event " + e.getDetailedString());
+					}
 				} else if (propName.equals(Event.COLUMN_ID)) {
 					e.setId(Long.parseLong(eventReader.getText()));
 				} else if (propName.equals(Event.COLUMN_CLOCK)) {
-					e.setClock(Long.parseLong(eventReader.getText()));
+					// The unit of Zabbix timestamps is seconds, we need milliseconds
+					e.setClock(Long.parseLong(eventReader.getText()) * 1000);
 				} else if (propName.equals(Event.COLUMN_OBJECT_ID)) {
 					e.setObjectId(Long.parseLong(eventReader.getText()));
 				} else if (propName.equals(Event.COLUMN_ACK)) {
@@ -1213,13 +1222,11 @@ public class ZabbixRemoteAPI {
 //	 * @throws IOException
 //	 * @throws HttpAuthorizationRequiredException
 //	 * @throws NoAPIAccessException
+//	 * @throws SQLException 
 //	 */
-//	public void importTriggers() throws JSONException, IOException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException {
-//		if (!isCached(TriggerData.TABLE_NAME, null)) {
+//	public void importTriggers() throws JSONException, IOException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException, SQLException {
 //			// clear triggers
-//			zabbixLocalDB.delete(TriggerData.TABLE_NAME, null, null);
-//
-//			_startTransaction();
+//		databaseHelper.clearTriggers();
 //
 //			long min = (new Date().getTime()/1000)-ZabbixConfig.STATUS_SHOW_TRIGGER_TIME;
 //			JsonArrayOrObjectReader triggers = _queryStream(
@@ -1239,52 +1246,56 @@ public class ZabbixRemoteAPI {
 //			importTriggers(triggers);
 //			triggers.close();
 //
-//			setCached(TriggerData.TABLE_NAME, null, ZabbixConfig.CACHE_LIFETIME_TRIGGERS);
-//			_endTransaction();
-//		}
 //	}
-//
-//	private void importTriggers(JsonArrayOrObjectReader jsonArray) throws JsonParseException, IOException {
-//		JsonObjectReader triggerReader;
-//		while ((triggerReader = jsonArray.next()) != null) {
-//			TriggerData t = new TriggerData();
-//			while (triggerReader.nextValueToken()) {
-//				String propName = triggerReader.getCurrentName();
-//				if (propName.equals(TriggerData.COLUMN_TRIGGERID)) {
-//					t.set(TriggerData.COLUMN_TRIGGERID, Long.parseLong(triggerReader.getText()));
-//				} else if (propName.equals(TriggerData.COLUMN_COMMENTS)) {
-//					t.set(TriggerData.COLUMN_COMMENTS, triggerReader.getText());
-//				} else if (propName.equals(TriggerData.COLUMN_DESCRIPTION)) {
-//					t.set(TriggerData.COLUMN_DESCRIPTION, triggerReader.getText());
-//				} else if (propName.equals(TriggerData.COLUMN_EXPRESSION)) {
-//					t.set(TriggerData.COLUMN_EXPRESSION, triggerReader.getText());
-//				} else if (propName.equals(TriggerData.COLUMN_LASTCHANGE)) {
-//					t.set(TriggerData.COLUMN_LASTCHANGE, Integer.parseInt(triggerReader.getText()));
-//				} else if (propName.equals(TriggerData.COLUMN_PRIORITY)) {
-//					t.set(TriggerData.COLUMN_PRIORITY, Integer.parseInt(triggerReader.getText()));
-//				} else if (propName.equals(TriggerData.COLUMN_STATUS)) {
-//					t.set(TriggerData.COLUMN_STATUS, Integer.parseInt(triggerReader.getText()));
-//				} else if (propName.equals(TriggerData.COLUMN_VALUE)) {
-//					t.set(TriggerData.COLUMN_VALUE, Integer.parseInt(triggerReader.getText()));
-//				} else if (propName.equals(TriggerData.COLUMN_URL)) {
-//					t.set(TriggerData.COLUMN_URL, triggerReader.getText());
-//				} else if (propName.equals("hosts")) {
+
+	private List<Trigger> importTriggers(JsonArrayOrObjectReader jsonArray) throws JsonParseException, IOException, SQLException {
+		List<Trigger> triggerCollection = new ArrayList<Trigger>();
+		JsonObjectReader triggerReader;
+		while ((triggerReader = jsonArray.next()) != null) {
+			Trigger t = new Trigger();
+			while (triggerReader.nextValueToken()) {
+				String propName = triggerReader.getCurrentName();
+				if (propName.equals(Trigger.COLUMN_TRIGGERID)) {
+					t.setId(Long.parseLong(triggerReader.getText()));
+				} else if (propName.equals(Trigger.COLUMN_COMMENTS)) {
+					t.setComments(triggerReader.getText());
+				} else if (propName.equals(Trigger.COLUMN_DESCRIPTION)) {
+					t.setDescription(triggerReader.getText());
+				} else if (propName.equals(Trigger.COLUMN_EXPRESSION)) {
+					t.setExpression(triggerReader.getText());
+				} else if (propName.equals(Trigger.COLUMN_LASTCHANGE)) {
+					t.setLastChange(Long.parseLong(triggerReader.getText()));
+				} else if (propName.equals(Trigger.COLUMN_PRIORITY)) {
+					t.setPriority(TriggerSeverity.getSeverityByNumber(Integer.parseInt(triggerReader.getText())));
+				} else if (propName.equals(Trigger.COLUMN_STATUS)) {
+					t.setStatus(Integer.parseInt(triggerReader.getText()));
+				} else if (propName.equals(Trigger.COLUMN_VALUE)) {
+					t.setValue(Integer.parseInt(triggerReader.getText()));
+				} else if (propName.equals(Trigger.COLUMN_URL)) {
+					t.setUrl(triggerReader.getText());
+				} else if (propName.equals("hosts")) {
 //					Object[] hostsCache = importHosts(triggerReader.getJsonArrayOrObjectReader(), null);
 //					t.set(TriggerData.COLUMN_HOSTS, hostsCache[0]);
 //					t.set(TriggerData.COLUMN_HOSTID, hostsCache[1]);
-//				} else if (propName.equals("groups")) {
+				} else if (propName.equals("groups")) {
 //					importHostGroups(triggerReader.getJsonArrayOrObjectReader());
-//				} else if (propName.equals("items")) {
-//					// store the first item id
+				} else if (propName.equals("items")) {
+					// store the first item id
 //					t.set(TriggerData.COLUMN_ITEMID, importItems(triggerReader.getJsonArrayOrObjectReader(), 1, true));
-//				} else {
-//					triggerReader.nextProperty();
-//				}
+				} else {
+					triggerReader.nextProperty();
+				}
+			}
+			triggerCollection.add(t);
+//			if(triggerCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+//				databaseHelper.insertTriggers(triggerCollection);
+//				triggerCollection = new ArrayList<Trigger>(RECORDS_PER_INSERT_BATCH);
 //			}
-//			t.insert(zabbixLocalDB, TriggerData.COLUMN_TRIGGERID);
-//			_commitTransactionIfRecommended();
-//		}
-//	}
+		}
+//		databaseHelper.insertTriggers(triggerCollection);
+		return triggerCollection;
+		
+	}
 //
 //	public void importTriggersByItemId(String itemid) throws JSONException, IOException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException {
 //		if (!isCached(TriggerData.TABLE_NAME, "itemid="+itemid)) {

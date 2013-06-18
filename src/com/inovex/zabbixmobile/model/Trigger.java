@@ -13,28 +13,33 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "triggers")
 public class Trigger {
 
-	public static final String COLUMN_NAME_PRIORITY = "priority";
-
-	@DatabaseField(id = true)
+	public static final String COLUMN_TRIGGERID = "triggerid";
+	@DatabaseField(id = true, columnName = COLUMN_TRIGGERID)
 	long id;
-	@DatabaseField
+	public static final String COLUMN_DESCRIPTION = "description";
+	@DatabaseField(columnName = COLUMN_DESCRIPTION)
 	String description;
-	@DatabaseField
+	public static final String COLUMN_EXPRESSION = "expression";
+	@DatabaseField(columnName = COLUMN_EXPRESSION)
 	String expression;
-	@DatabaseField
+	public static final String COLUMN_COMMENTS = "comments";
+	@DatabaseField(columnName = COLUMN_COMMENTS)
 	String comments;
-	@DatabaseField
+	public static final String COLUMN_LASTCHANGE = "lastchange";
+	@DatabaseField(columnName = COLUMN_LASTCHANGE)
 	Date lastChange;
-	@DatabaseField(columnName = COLUMN_NAME_PRIORITY, index = true)
+	public static final String COLUMN_PRIORITY = "priority";
+	@DatabaseField(columnName = COLUMN_PRIORITY, index = true)
 	TriggerSeverity priority;
-	@DatabaseField
+	public static final String COLUMN_STATUS = "status";
+	@DatabaseField(columnName = COLUMN_STATUS)
 	int status;
-	@DatabaseField
+	public static final String COLUMN_VALUE = "value";
+	@DatabaseField(columnName = COLUMN_VALUE)
 	int value;
-	@DatabaseField
+	public static final String COLUMN_URL = "url";
+	@DatabaseField(columnName = COLUMN_URL)
 	String url;
-	@DatabaseField
-	boolean valueChanged;
 
 	// @ForeignCollectionField(eager = false)
 	ForeignCollection<Host> hosts;
@@ -47,7 +52,7 @@ public class Trigger {
 
 	public Trigger(long id, String description, String expression,
 			String comments, long lastChange, TriggerSeverity priority,
-			int status, int value, String url, boolean valueChanged) {
+			int status, int value, String url) {
 		this.id = id;
 		this.description = description;
 		this.expression = expression;
@@ -59,7 +64,6 @@ public class Trigger {
 		this.status = status;
 		this.value = value;
 		this.url = url;
-		this.valueChanged = valueChanged;
 	}
 
 	public long getId() {
@@ -98,16 +102,58 @@ public class Trigger {
 		return url;
 	}
 
-	public boolean isValueChanged() {
-		return valueChanged;
-	}
-
 	public ForeignCollection<Host> getHosts() {
 		return hosts;
 	}
 
 	public ForeignCollection<Item> getItems() {
 		return items;
+	}
+
+	public Date getLastChange() {
+		return lastChange;
+	}
+
+	public void setLastChange(Date lastChange) {
+		this.lastChange = lastChange;
+	}
+
+	public void setLastChange(long lastChange) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(lastChange);
+		this.lastChange = cal.getTime();
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setExpression(String expression) {
+		this.expression = expression;
+	}
+
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+
+	public void setPriority(TriggerSeverity priority) {
+		this.priority = priority;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public void setValue(int value) {
+		this.value = value;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	@Override
@@ -125,7 +171,6 @@ public class Trigger {
 		sb.append(", ").append("status=").append(status);
 		sb.append(", ").append("value=").append(value);
 		sb.append(", ").append("url=").append(url);
-		sb.append(", ").append("valueChanged=").append(valueChanged);
 		return sb.toString();
 	}
 

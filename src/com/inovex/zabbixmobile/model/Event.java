@@ -23,9 +23,10 @@ public class Event {
 	public static final String COLUMN_TRIGGER = "triggerid";
 	@DatabaseField(canBeNull = true, foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	Trigger trigger;
+	// Caution: This is the timestamp in milliseconds!
 	public static final String COLUMN_CLOCK = "clock";
 	@DatabaseField(columnName = COLUMN_CLOCK)
-	Date clock;
+	long clock;
 	public static final String COLUMN_VALUE = "value";
 	@DatabaseField(columnName = COLUMN_VALUE)
 	int value;
@@ -36,13 +37,11 @@ public class Event {
 	public Event() {
 	}
 
-	public Event(long id, long objectId, long timestamp, int value,
+	public Event(long id, long objectId, long clock, int value,
 			boolean acknowledged) {
 		this.id = id;
 		this.objectId = objectId;
-		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(timestamp);
-		this.clock = cal.getTime();
+		this.clock = clock;
 		this.value = value;
 		this.acknowledged = acknowledged;
 	}
@@ -55,9 +54,12 @@ public class Event {
 		StringBuilder sb = new StringBuilder();
 		sb.append("id=").append(id);
 		sb.append(", ").append("source=").append(objectId);
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(clock);
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 				SimpleDateFormat.DEFAULT, SimpleDateFormat.DEFAULT);
-		sb.append(", ").append("date=").append(dateFormatter.format(clock));
+		sb.append(", ").append("date=")
+				.append(dateFormatter.format(cal.getTime()));
 		sb.append(", ").append("value=").append(value);
 		sb.append(", ").append("acknowledged=").append(acknowledged);
 		sb.append(", ").append("trigger={").append(trigger).append("}");
@@ -76,7 +78,7 @@ public class Event {
 		return trigger;
 	}
 
-	public Date getClock() {
+	public long getClock() {
 		return clock;
 	}
 
@@ -92,14 +94,8 @@ public class Event {
 		this.objectId = objectId;
 	}
 
-	public void setClock(Date clock) {
-		this.clock = clock;
-	}
-
 	public void setClock(long clock) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(clock);
-		this.clock = cal.getTime();
+		this.clock = clock;
 	}
 
 	public void setValue(int value) {

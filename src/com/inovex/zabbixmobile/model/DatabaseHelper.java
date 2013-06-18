@@ -27,7 +27,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	// name of the database file for your application -- change to something
 	// appropriate for your app
-	private static final String DATABASE_NAME = "zabbixMobile.db";
+	private static final String DATABASE_NAME = "zabbixmobile.db";
 	// any time you make changes to your database objects, you may have to
 	// increase the database version
 	private static final int DATABASE_VERSION = 1;
@@ -110,7 +110,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		// filter events by trigger severity
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
 		QueryBuilder<Trigger, Long> triggerQuery = triggerDao.queryBuilder();
-		triggerQuery.where().eq(Trigger.COLUMN_NAME_PRIORITY, severity);
+		triggerQuery.where().eq(Trigger.COLUMN_PRIORITY, severity);
 		QueryBuilder<Event, Long> eventQuery = eventDao.queryBuilder();
 		return eventQuery.join(triggerQuery).query();
 	}
@@ -130,6 +130,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	
 	public void insertEvents(Collection<Event> events) throws SQLException {
 		Dao<Event,Long> eventDao = getDao(Event.class);
+		Dao<Trigger,Long> triggerDao = getDao(Trigger.class);
 		DatabaseConnection conn = eventDao.startThreadConnection();
 		Savepoint savePoint = null;
 		try {
@@ -137,7 +138,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			int j = 0;
 			for (Event e : events) {
 				j++;
-				eventDao.create(e);
+				eventDao.createOrUpdate(e);
+				Trigger t = e.getTrigger();
+				if(t != null) {
+					triggerDao.createOrUpdate(t);
+				}
 				if (j % 50 == 0) {
 					conn.commit(savePoint);
 					savePoint = conn.setSavePoint(null);
@@ -154,6 +159,32 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	}
 	
+	public void insertTriggers(Collection<Trigger> triggers) throws SQLException {
+		Dao<Trigger,Long> triggerDao = getDao(Trigger.class);
+		DatabaseConnection conn = triggerDao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+			conn.setSavePoint(null);
+			int j = 0;
+			for (Trigger e : triggers) {
+				j++;
+				triggerDao.createOrUpdate(e);
+				if (j % 50 == 0) {
+					conn.commit(savePoint);
+					savePoint = conn.setSavePoint(null);
+				}
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} finally {
+			// commit at the end
+			conn.commit(savePoint);
+			triggerDao.endThreadConnection(conn);
+		}
+
+	}
+	
 	private void startTransaction() {
 		// TODO Auto-generated method stub
 		
@@ -162,6 +193,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void clearEvents() throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		eventDao.deleteBuilder().delete();
+	}
+	
+	public void clearTriggers() throws SQLException {
+		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
+		triggerDao.deleteBuilder().delete();
 	}
 	
 }

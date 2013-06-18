@@ -10,6 +10,7 @@ import java.util.Random;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -34,7 +35,7 @@ import com.inovex.zabbixmobile.view.EventsListAdapter;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteBaseService;
 
-public class ZabbixDataService extends OrmLiteBaseService<DatabaseHelper> {
+public class ZabbixDataService extends Service {
 
 	private static final String TAG = ZabbixDataService.class.getSimpleName();
 	// Binder given to clients

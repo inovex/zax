@@ -59,43 +59,43 @@ public class MockDatabaseHelper extends DatabaseHelper {
 					new Trigger(14062, "Sample trigger #1", "{13513}>0",
 							"Comments...", System.currentTimeMillis()
 									- (3600 * 1000 * 12),
-							TriggerSeverity.AVERAGE, 0, 1, "URL", false),
+							TriggerSeverity.AVERAGE, 0, 1, "URL"),
 					new Trigger(14063, "Sample trigger #2", "{1}>0",
 							"Comments...", System.currentTimeMillis()
 									- (3600 * 1000 * 10),
-							TriggerSeverity.DISASTER, 0, 1, "URL", false),
+							TriggerSeverity.DISASTER, 0, 1, "URL"),
 					new Trigger(14064, "Sample trigger #3", "{32415}>0",
 							"Comments...", System.currentTimeMillis()
 									- (3600 * 1000 * 7), TriggerSeverity.HIGH,
-							0, 1, "URL", false),
+							0, 1, "URL"),
 					new Trigger(14065, "Sample trigger #4", "{13518}>0",
 							"Comments...", System.currentTimeMillis()
 									- (3600 * 1000 * 5),
-							TriggerSeverity.NOT_CLASSIFIED, 1, 1, "URL", false),
+							TriggerSeverity.NOT_CLASSIFIED, 1, 1, "URL"),
 					new Trigger(14066, "Sample trigger #5", "{12}>0",
 							"Comments...", System.currentTimeMillis()
 									- (3600 * 1000 * 9),
-							TriggerSeverity.WARNING, 0, 1, "URL", false),
+							TriggerSeverity.WARNING, 0, 1, "URL"),
 					new Trigger(14067, "Sample trigger #6", "{13518}>0",
 							"Comments...", System.currentTimeMillis()
 									- (3600 * 1000 * 4),
-							TriggerSeverity.AVERAGE, 1, 1, "URL", false),
+							TriggerSeverity.AVERAGE, 1, 1, "URL"),
 					new Trigger(14068, "Sample trigger #7", "{431}>0",
 							"Comments...", System.currentTimeMillis()
 									- (3600 * 1000 * 3), TriggerSeverity.HIGH,
-							1, 1, "URL", false),
+							1, 1, "URL"),
 					new Trigger(14069, "Sample trigger #8", "{13518}>0",
 							"Comments...", System.currentTimeMillis()
 									- (3600 * 1000 * 2),
-							TriggerSeverity.INFORMATION, 0, 1, "URL", false),
+							TriggerSeverity.INFORMATION, 0, 1, "URL"),
 					new Trigger(14070, "Sample trigger #9", "{123}>0",
 							"Comments...", System.currentTimeMillis()
 									- (3600 * 1000 * 0), TriggerSeverity.HIGH,
-							1, 1, "URL", false),
+							1, 1, "URL"),
 					new Trigger(14071, "Sample trigger #10", "{13518}>0",
 							"Comments...", System.currentTimeMillis()
 									- (3600 * 1000 * 8),
-							TriggerSeverity.INFORMATION, 0, 1, "URL", false)
+							TriggerSeverity.INFORMATION, 0, 1, "URL")
 
 			};
 			int i = 0;
