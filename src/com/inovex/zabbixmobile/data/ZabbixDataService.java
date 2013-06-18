@@ -1,20 +1,30 @@
 package com.inovex.zabbixmobile.data;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.data.ZabbixRemoteAPI.HttpAuthorizationRequiredException;
+import com.inovex.zabbixmobile.data.ZabbixRemoteAPI.NoAPIAccessException;
+import com.inovex.zabbixmobile.data.ZabbixRemoteAPI.PreconditionFailedException;
+import com.inovex.zabbixmobile.exceptions.FatalException;
+import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.MockDatabaseHelper;
@@ -37,6 +47,9 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
+	private ZabbixRemoteAPI mRemoteAPI;
+
+	protected boolean loggedIn;
 
 	/**
 	 * Class used for the client Binder. Because we know this service always
@@ -71,9 +84,34 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 		super.onCreate();
 		// set up SQLite connection using OrmLite
 		mDatabaseHelper = OpenHelperManager.getHelper(this,
-				MockDatabaseHelper.class);
+				DatabaseHelper.class);
+		mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0, 1);
 		Log.d(TAG, "onCreate");
-		
+		mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
+				mDatabaseHelper);
+
+		// authenticate
+		RemoteAPITask loginTask = new RemoteAPITask() {
+
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				try {
+					mRemoteAPI.authenticate();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+				loggedIn = true;
+			}
+
+		};
+		loginTask.execute();
+
 		// set up adapters
 		mEventsListAdapters = new HashMap<TriggerSeverity, EventsListAdapter>(
 				TriggerSeverity.values().length);
@@ -112,7 +150,7 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 	 */
 	public void loadEventsBySeverity(final TriggerSeverity severity) {
 
-		new AsyncTask<Void, Void, Void>() {
+		new RemoteAPITask() {
 
 			private List<Event> events;
 			private EventsListAdapter adapter = mEventsListAdapters
@@ -121,16 +159,20 @@ public class ZabbixDataService extends OrmLiteBaseService<MockDatabaseHelper> {
 					.get(severity);
 
 			@Override
-			protected Void doInBackground(Void... params) {
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				try {
+					mRemoteAPI.importEvents();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				events = new ArrayList<Event>();
 				try {
 					events = mDatabaseHelper.getEventsBySeverity(severity);
-				} catch (SQLException e1) {
+				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					e.printStackTrace();
 				}
-
-				return null;
 			}
 
 			@Override

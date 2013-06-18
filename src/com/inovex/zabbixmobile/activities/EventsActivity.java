@@ -24,7 +24,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public class EventsActivity extends SherlockFragmentActivity implements
-		OnEventSelectedListener {
+		OnEventSelectedListener, ServiceConnection {
 
 	private static final String TAG = EventsActivity.class.getSimpleName();
 
@@ -34,49 +34,45 @@ public class EventsActivity extends SherlockFragmentActivity implements
 	private ZabbixDataService mZabbixService;
 
 	private FragmentManager mFragmentManager;
-	
+
 	private ViewFlipper mFlipper;
 	private EventsDetailsFragment mDetailsFragment;
 	private EventsListFragment mListFragment;
+	private ActionBar mActionBar;
 
 	/** Defines callbacks for service binding, passed to bindService() */
-	private ServiceConnection mConnection = new ServiceConnection() {
+	@Override
+	public void onServiceConnected(ComponentName className, IBinder service) {
+		// We've bound to LocalService, cast the IBinder and get
+		// LocalService instance
+		ZabbixDataBinder binder = (ZabbixDataBinder) service;
+		mZabbixService = binder.getService();
+		mZabbixService.setActivityContext(EventsActivity.this);
 
-		@Override
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			// We've bound to LocalService, cast the IBinder and get
-			// LocalService instance
-			ZabbixDataBinder binder = (ZabbixDataBinder) service;
-			mZabbixService = binder.getService();
-			mZabbixService.setActivityContext(EventsActivity.this);
+	}
 
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName arg0) {
-		}
-	};
-
-	private ActionBar mActionBar;
+	@Override
+	public void onServiceDisconnected(ComponentName arg0) {
+	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 		Intent intent = new Intent(this, ZabbixDataService.class);
-		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+		bindService(intent, this, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_events);
-		
+
 		mActionBar = getSupportActionBar();
 
 		mActionBar.setHomeButtonEnabled(true);
 		mActionBar.setDisplayHomeAsUpEnabled(true);
 		mActionBar.setDisplayShowTitleEnabled(true);
-		
+
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
 		mDetailsFragment = (EventsDetailsFragment) mFragmentManager
@@ -89,7 +85,7 @@ public class EventsActivity extends SherlockFragmentActivity implements
 	@Override
 	protected void onStop() {
 		super.onStop();
-		unbindService(mConnection);
+		unbindService(this);
 	}
 
 	@Override
@@ -107,8 +103,7 @@ public class EventsActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
-	public void onEventSelected(int position, TriggerSeverity severity,
-			long id) {
+	public void onEventSelected(int position, TriggerSeverity severity, long id) {
 		Log.d(TAG, "event selected: " + id + ",severity: " + severity
 				+ "(position: " + position + ")");
 		this.mEventPosition = position;

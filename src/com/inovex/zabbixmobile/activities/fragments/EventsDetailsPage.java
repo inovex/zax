@@ -46,7 +46,7 @@ public class EventsDetailsPage extends SherlockFragment {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Event: \n\n");
 		sb.append("ID: " + mEvent.getId() + "\n");
-		sb.append("source: " + mEvent.getSource() + "\n");
+		sb.append("source: " + mEvent.getObjectId() + "\n");
 		sb.append("value: " + mEvent.getValue() + "\n");
 		sb.append("clock: " + mEvent.getClock() + "\n");
 		Trigger t = mEvent.getTrigger();

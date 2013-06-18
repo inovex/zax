@@ -14,7 +14,7 @@ public class MockDatabaseHelper extends DatabaseHelper {
 
 	// name of the database file for your application -- change to something
 	// appropriate for your app
-	private static final String DATABASE_NAME = "zabbixmobile.db";
+	private static final String DATABASE_NAME = "zabbixmobile_test.db";
 	// any time you make changes to your database objects, you may have to
 	// increase the database version
 	private static final int DATABASE_VERSION = 1;
@@ -23,9 +23,6 @@ public class MockDatabaseHelper extends DatabaseHelper {
 	public MockDatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION,
 				R.raw.ormlite_config);
-		// initialize database
-		onUpgrade(getWritableDatabase(), 0, 1);
-
 	}
 
 	@Override
@@ -36,25 +33,25 @@ public class MockDatabaseHelper extends DatabaseHelper {
 			Dao<Trigger,Long> triggerDao = getDao(Trigger.class);
 			Event[] events = new Event[] {
 					new Event(12345, 0, System.currentTimeMillis()
-							- (3600 * 1000 * 12), 1, false, false),
+							- (3600 * 1000 * 12), 1, false),
 					new Event(13467, 0, System.currentTimeMillis()
-							- (3600 * 1000 * 10), 0, true, false),
+							- (3600 * 1000 * 10), 0, true),
 					new Event(17231, 0, System.currentTimeMillis()
-							- (3600 * 1000 * 7), 1, false, true),
+							- (3600 * 1000 * 7), 1, false),
 					new Event(19865, 0, System.currentTimeMillis()
-							- (3600 * 1000 * 5), 0, false, false),
+							- (3600 * 1000 * 5), 0, false),
 					new Event(14562, 0, System.currentTimeMillis()
-							- (3600 * 1000 * 9), 1, true, true),
+							- (3600 * 1000 * 9), 1, true),
 					new Event(19872, 0, System.currentTimeMillis()
-							- (3600 * 1000 * 4), 0, false, false),
+							- (3600 * 1000 * 4), 0, false),
 					new Event(20616, 0, System.currentTimeMillis()
-							- (3600 * 1000 * 3), 1, true, false),
+							- (3600 * 1000 * 3), 1, true),
 					new Event(21576, 0, System.currentTimeMillis()
-							- (3600 * 1000 * 2), 0, false, true),
+							- (3600 * 1000 * 2), 0, false),
 					new Event(25821, 0, System.currentTimeMillis()
-							- (3600 * 1000 * 0), 1, true, true),
+							- (3600 * 1000 * 0), 1, true),
 					new Event(14529, 0, System.currentTimeMillis()
-							- (3600 * 1000 * 8), 0, false, false) };
+							- (3600 * 1000 * 8), 0, false) };
 			for (Event e : events) {
 				eventDao.create(e);
 			}

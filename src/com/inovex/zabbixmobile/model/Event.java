@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -15,35 +14,37 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "events")
 public class Event {
 
-	@DatabaseField(id = true)
+	public static final String COLUMN_ID = "eventid";
+	@DatabaseField(id = true, columnName = COLUMN_ID)
 	long id;
-	@DatabaseField
-	int source;
-	@DatabaseField(canBeNull = true, foreign = true)
+	public static final String COLUMN_OBJECT_ID = "objectid";
+	@DatabaseField(columnName = COLUMN_OBJECT_ID)
+	long objectId;
+	public static final String COLUMN_TRIGGER = "triggerid";
+	@DatabaseField(canBeNull = true, foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	Trigger trigger;
-	@DatabaseField
+	public static final String COLUMN_CLOCK = "clock";
+	@DatabaseField(columnName = COLUMN_CLOCK)
 	Date clock;
-	@DatabaseField
+	public static final String COLUMN_VALUE = "value";
+	@DatabaseField(columnName = COLUMN_VALUE)
 	int value;
-	@DatabaseField
+	public static final String COLUMN_ACK = "acknowledged";
+	@DatabaseField(columnName = COLUMN_ACK)
 	boolean acknowledged;
-	@DatabaseField
-	boolean value_changed;
 
-	Event() {
-		// needed by ormlite
+	public Event() {
 	}
 
-	public Event(long id, int source, long timestamp, int value,
-			boolean acknowledged, boolean value_changed) {
+	public Event(long id, long objectId, long timestamp, int value,
+			boolean acknowledged) {
 		this.id = id;
-		this.source = source;
+		this.objectId = objectId;
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(timestamp);
 		this.clock = cal.getTime();
 		this.value = value;
 		this.acknowledged = acknowledged;
-		this.value_changed = value_changed;
 	}
 
 	public void setTrigger(Trigger t) {
@@ -53,13 +54,12 @@ public class Event {
 	public String getDetailedString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("id=").append(id);
-		sb.append(", ").append("source=").append(source);
+		sb.append(", ").append("source=").append(objectId);
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 				SimpleDateFormat.DEFAULT, SimpleDateFormat.DEFAULT);
 		sb.append(", ").append("date=").append(dateFormatter.format(clock));
 		sb.append(", ").append("value=").append(value);
 		sb.append(", ").append("acknowledged=").append(acknowledged);
-		sb.append(", ").append("value_changed=").append(value_changed);
 		sb.append(", ").append("trigger={").append(trigger).append("}");
 		return sb.toString();
 	}
@@ -68,8 +68,8 @@ public class Event {
 		return id;
 	}
 
-	public int getSource() {
-		return source;
+	public long getObjectId() {
+		return objectId;
 	}
 
 	public Trigger getTrigger() {
@@ -84,12 +84,34 @@ public class Event {
 		return value;
 	}
 
-	public boolean isAcknowledged() {
-		return acknowledged;
+	public void setId(long id) {
+		this.id = id;
 	}
 
-	public boolean isValue_changed() {
-		return value_changed;
+	public void setObjectId(long objectId) {
+		this.objectId = objectId;
+	}
+
+	public void setClock(Date clock) {
+		this.clock = clock;
+	}
+
+	public void setClock(long clock) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(clock);
+		this.clock = cal.getTime();
+	}
+
+	public void setValue(int value) {
+		this.value = value;
+	}
+
+	public void setAcknowledged(boolean acknowledged) {
+		this.acknowledged = acknowledged;
+	}
+
+	public boolean isAcknowledged() {
+		return acknowledged;
 	}
 
 	@Override
