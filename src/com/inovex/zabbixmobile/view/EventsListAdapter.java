@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
-import android.content.Context;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -20,6 +19,7 @@ import com.inovex.zabbixmobile.model.Trigger;
 
 public class EventsListAdapter extends BaseAdapter {
 
+	private static final String TAG = EventsListAdapter.class.getSimpleName();
 	private int mTextViewResourceId;
 	private ArrayList<Event> mObjects;
 	private ZabbixDataService mZabbixDataService;
@@ -66,11 +66,14 @@ public class EventsListAdapter extends BaseAdapter {
 
 		Event e = getItem(position);
 		Trigger t = e.getTrigger();
-		if (t == null)
-			throw new RuntimeException("No trigger defined for Event with ID "
+		if (t == null) {
+			description.setText("no trigger defined.");
+			Log.d(TAG, "No trigger defined for Event with ID "
 					+ e.getId());
+		} else 
+			description.setText(String.valueOf(t.getDescription()));
+		
 		title.setText(String.valueOf("id: " + e.getId()));
-		description.setText(String.valueOf(t.getDescription()));
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 				SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
 				Locale.getDefault());

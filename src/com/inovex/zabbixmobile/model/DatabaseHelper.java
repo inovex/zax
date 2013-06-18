@@ -1,6 +1,8 @@
 package com.inovex.zabbixmobile.model;
 
 import java.sql.SQLException;
+import java.sql.Savepoint;
+import java.util.Collection;
 import java.util.List;
 
 import android.content.Context;
@@ -13,6 +15,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.table.TableUtils;
 
 /**
@@ -28,11 +31,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// any time you make changes to your database objects, you may have to
 	// increase the database version
 	private static final int DATABASE_VERSION = 1;
-
-	public DatabaseHelper(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION,
-				R.raw.ormlite_config);
-	}
+	private static final String TAG = DatabaseHelper.class.getSimpleName();
 
 	/**
 	 * Pass-through constructor to be used by subclasses (specifically
@@ -67,15 +66,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			throw new RuntimeException(e);
 		}
 
-		/*
-		 * // here we try inserting data in the on-create as a test
-		 * RuntimeExceptionDao<SimpleData, Integer> dao = getSimpleDataDao();
-		 * long millis = System.currentTimeMillis(); // create some entries in
-		 * the onCreate SimpleData simple = new SimpleData(millis);
-		 * dao.create(simple); simple = new SimpleData(millis + 1);
-		 * dao.create(simple); Log.i(DatabaseHelper.class.getName(),
-		 * "created new entries in onCreate: " + millis);
-		 */
 	}
 
 	/**
@@ -109,7 +99,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	public List<Event> getEventsBySeverity(TriggerSeverity severity)
 			throws SQLException {
-		Dao<Event, Long> eventDao = getDao(Event.class);
+		Dao<Event,Long> eventDao = getDao(Event.class);
 		if (severity == TriggerSeverity.ALL)
 			return eventDao.queryForAll();
 		// filter events by trigger severity
@@ -121,7 +111,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Returns the ID of an event.
+	 * Returns an event given its ID.
 	 * 
 	 * @param id
 	 *            ID of the desired event
@@ -129,8 +119,34 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @throws SQLException
 	 */
 	public Event getEventById(long id) throws SQLException {
-		Dao<Event, Long> dao = getDao(Event.class);
-		return dao.queryForId(id);
+		Dao<Event,Long> eventDao = getDao(Event.class);
+		return eventDao.queryForId(id);
+	}
+	
+	public void insertEvents(Collection<Event> events) throws SQLException {
+		Dao<Event,Long> eventDao = getDao(Event.class);
+		DatabaseConnection conn = eventDao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+			conn.setSavePoint(null);
+			int j = 0;
+			for (Event e : events) {
+				j++;
+				eventDao.create(e);
+				if (j % 50 == 0) {
+					conn.commit(savePoint);
+					savePoint = conn.setSavePoint(null);
+				}
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} finally {
+			// commit at the end
+			conn.commit(savePoint);
+			eventDao.endThreadConnection(conn);
+		}
+
 	}
 	
 }

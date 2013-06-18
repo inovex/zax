@@ -57,6 +57,8 @@ public class EventsActivity extends SherlockFragmentActivity implements
 		}
 	};
 
+	private ActionBar mActionBar;
+
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -68,25 +70,20 @@ public class EventsActivity extends SherlockFragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_events);
+		
+		mActionBar = getSupportActionBar();
 
-		ActionBar actionBar = getSupportActionBar();
-
-		actionBar.setHomeButtonEnabled(true);
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setDisplayShowTitleEnabled(true);
-
-	}
-
-	@Override
-	public View onCreateView(String name, Context context, AttributeSet attrs) {
-		View rootView = super.onCreateView(name, context, attrs);
+		mActionBar.setHomeButtonEnabled(true);
+		mActionBar.setDisplayHomeAsUpEnabled(true);
+		mActionBar.setDisplayShowTitleEnabled(true);
+		
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
 		mDetailsFragment = (EventsDetailsFragment) mFragmentManager
 				.findFragmentById(R.id.events_details);
 		mListFragment = (EventsListFragment) mFragmentManager
 				.findFragmentById(R.id.events_list);
-		return rootView;
+
 	}
 
 	@Override
