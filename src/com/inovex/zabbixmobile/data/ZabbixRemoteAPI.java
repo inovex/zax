@@ -596,7 +596,6 @@ public class ZabbixRemoteAPI {
 		} catch (JSONException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
-		throw new FatalException(Type.HTTP_AUTHORIZATION_REQUIRED);
 
 	}
 
