@@ -180,6 +180,12 @@ public class ZabbixRemoteAPI {
 		try {
 			SharedPreferences prefs = PreferenceManager
 					.getDefaultSharedPreferences(context);
+			
+			params = new BasicHttpParams();
+			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+			SchemeRegistry registry = new SchemeRegistry();
+			
 			if (prefs.getBoolean("zabbix_trust_all_ssl_ca", false)) {
 				KeyStore trustStore = KeyStore.getInstance(KeyStore
 						.getDefaultType());
@@ -188,17 +194,14 @@ public class ZabbixRemoteAPI {
 				SSLSocketFactory sf = new CustomSSLSocketFactory(trustStore);
 				sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
-				params = new BasicHttpParams();
-				HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-				HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-
-				SchemeRegistry registry = new SchemeRegistry();
 				registry.register(new Scheme("http", PlainSocketFactory
 						.getSocketFactory(), 80));
 				registry.register(new Scheme("https", sf, 443));
-
-				ccm = new ThreadSafeClientConnManager(params, registry);
+			} else {
+				registry.register(new Scheme("http", PlainSocketFactory
+						.getSocketFactory(), 80));
 			}
+			ccm = new ThreadSafeClientConnManager(params, registry);
 		} catch (Exception e) {
 			// ignore for unit test
 		}
