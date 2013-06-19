@@ -32,6 +32,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	// increase the database version
 	private static final int DATABASE_VERSION = 1;
 	private static final String TAG = DatabaseHelper.class.getSimpleName();
+	private DatabaseConnection mThreadConnection;
+	private Savepoint mSavePoint;
+	private int mTransactionSize;
 
 	/**
 	 * Pass-through constructor to be used by subclasses (specifically
@@ -47,7 +50,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			CursorFactory factory, int databaseVersion, int configField) {
 		super(context, databaseName, factory, databaseVersion, configField);
 	}
-	
+
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION,
 				R.raw.ormlite_config);
@@ -104,7 +107,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	public List<Event> getEventsBySeverity(TriggerSeverity severity)
 			throws SQLException {
-		Dao<Event,Long> eventDao = getDao(Event.class);
+		Dao<Event, Long> eventDao = getDao(Event.class);
 		if (severity == TriggerSeverity.ALL)
 			return eventDao.queryForAll();
 		// filter events by trigger severity
@@ -124,43 +127,52 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @throws SQLException
 	 */
 	public Event getEventById(long id) throws SQLException {
-		Dao<Event,Long> eventDao = getDao(Event.class);
+		Dao<Event, Long> eventDao = getDao(Event.class);
 		return eventDao.queryForId(id);
 	}
-	
+
+	public void insertEvent(Event event) throws SQLException {
+		Dao<Event, Long> eventDao = getDao(Event.class);
+		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
+		eventDao.createOrUpdate(event);
+		Trigger t = event.getTrigger();
+		if (t != null) {
+			triggerDao.createOrUpdate(t);
+		}
+		mTransactionSize++;
+
+	}
+
 	public void insertEvents(Collection<Event> events) throws SQLException {
-		Dao<Event,Long> eventDao = getDao(Event.class);
-		Dao<Trigger,Long> triggerDao = getDao(Trigger.class);
-		DatabaseConnection conn = eventDao.startThreadConnection();
+		Dao<Event, Long> eventDao = getDao(Event.class);
+		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
+		mThreadConnection = eventDao.startThreadConnection();
 		Savepoint savePoint = null;
 		try {
-			conn.setSavePoint(null);
-			int j = 0;
+			
 			for (Event e : events) {
-				j++;
 				eventDao.createOrUpdate(e);
 				Trigger t = e.getTrigger();
-				if(t != null) {
+				if (t != null) {
 					triggerDao.createOrUpdate(t);
 				}
-				if (j % 50 == 0) {
-					conn.commit(savePoint);
-					savePoint = conn.setSavePoint(null);
-				}
 			}
+
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} finally {
 			// commit at the end
-			conn.commit(savePoint);
-			eventDao.endThreadConnection(conn);
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			eventDao.endThreadConnection(mThreadConnection);
 		}
 
 	}
 	
-	public void insertTriggers(Collection<Trigger> triggers) throws SQLException {
-		Dao<Trigger,Long> triggerDao = getDao(Trigger.class);
+	public void insertTriggers(Collection<Trigger> triggers)
+			throws SQLException {
+		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
 		DatabaseConnection conn = triggerDao.startThreadConnection();
 		Savepoint savePoint = null;
 		try {
@@ -184,20 +196,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 
 	}
-	
-	private void startTransaction() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	public void clearEvents() throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		eventDao.deleteBuilder().delete();
 	}
-	
+
 	public void clearTriggers() throws SQLException {
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
 		triggerDao.deleteBuilder().delete();
 	}
-	
+
 }

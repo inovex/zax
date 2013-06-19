@@ -61,10 +61,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.exceptions.FatalException;
+import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Trigger;
@@ -154,7 +157,7 @@ public class ZabbixRemoteAPI {
 		public static final long STATUS_SHOW_TRIGGER_TIME = 14*24*60*60;
 		public static final int HTTP_CONNECTION_TIMEOUT = 30000;
 	}
-
+	
 	private final DefaultHttpClient httpClient;
 	private final DatabaseHelper databaseHelper;
 	private String url;
@@ -240,8 +243,10 @@ public class ZabbixRemoteAPI {
 	 * @throws JSONException
 	 * @throws HttpAuthorizationRequiredException
 	 * @throws NoAPIAccessException
+	 * @throws FatalException 
+	 * @throws ZabbixLoginRequiredException 
 	 */
-	private JSONObject _queryBuffer(String method, JSONObject params) throws ClientProtocolException, IOException, JSONException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException {
+	private JSONObject _queryBuffer(String method, JSONObject params) throws ClientProtocolException, IOException, JSONException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException, ZabbixLoginRequiredException, FatalException {
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
 
@@ -321,8 +326,10 @@ public class ZabbixRemoteAPI {
 	 * @throws IOException
 	 * @throws HttpAuthorizationRequiredException
 	 * @throws NoAPIAccessException
+	 * @throws FatalException 
+	 * @throws ZabbixLoginRequiredException 
 	 */
-	private JsonArrayOrObjectReader _queryStream(String method, JSONObject params) throws JSONException, IOException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException {
+	private JsonArrayOrObjectReader _queryStream(String method, JSONObject params) throws JSONException, IOException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException, ZabbixLoginRequiredException, FatalException {
 		// http request
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
@@ -412,8 +419,10 @@ public class ZabbixRemoteAPI {
 	 * @throws JSONException
 	 * @throws HttpAuthorizationRequiredException
 	 * @throws NoAPIAccessException
+	 * @throws FatalException 
+	 * @throws ZabbixLoginRequiredException 
 	 */
-	public boolean acknowledgeEvent(String eventid, String comment) throws ClientProtocolException, IOException, JSONException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException {
+	public boolean acknowledgeEvent(String eventid, String comment) throws ClientProtocolException, IOException, JSONException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException, ZabbixLoginRequiredException, FatalException {
 		// for GUI unit test, just return true
 		if (comment != null && comment.equals("__UNIT_TEST__RETURN_TRUE__")) return true;
 
@@ -435,13 +444,10 @@ public class ZabbixRemoteAPI {
 	/**
 	 * zabbix auth. user and pwd from app preferences
 	 * @return true success
-	 * @throws ClientProtocolException
-	 * @throws IOException
-	 * @throws JSONException
-	 * @throws HttpAuthorizationRequiredException
-	 * @throws NoAPIAccessException
+	 * @throws ZabbixLoginRequiredException 
+	 * @throws FatalException 
 	 */
-	public boolean authenticate() throws ClientProtocolException, IOException, JSONException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException {
+	public boolean authenticate() throws ZabbixLoginRequiredException, FatalException {
 //		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 //		String url = prefs.getString("zabbix_url", "").trim();
 //		String user = prefs.getString("zabbix_username", "").trim();
@@ -467,16 +473,43 @@ public class ZabbixRemoteAPI {
 		} catch (RuntimeException e) {
 			// wrong password. token remains null
 			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			throw new FatalException(e);
+		} catch (IOException e) {
+			throw new FatalException(e);
+		} catch (HttpAuthorizationRequiredException e) {
+			throw new FatalException(e);
+		} catch (NoAPIAccessException e) {
+			throw new FatalException(e);
+		} catch (PreconditionFailedException e) {
+			throw new FatalException(e);
 		}
 		if (token != null) {
 			// get API version
-			JSONObject result = _queryBuffer(
-					"apiinfo.version"
-					, new JSONObject()
-			);
-			apiVersion = result.getString("result");
-			isVersion2 = (apiVersion.equals("1.4") || apiVersion.startsWith("2"));
-			Log.i("ZabbixService", "Zabbix API Version: " + apiVersion);
+			JSONObject result;
+			try {
+				result = _queryBuffer(
+						"apiinfo.version"
+						, new JSONObject()
+				);
+				apiVersion = result.getString("result");
+				isVersion2 = (apiVersion.equals("1.4") || apiVersion.startsWith("2"));
+				Log.i("ZabbixService", "Zabbix API Version: " + apiVersion);
+			} catch (ClientProtocolException e) {
+				throw new FatalException(e);
+			} catch (IOException e) {
+				throw new FatalException(e);
+			} catch (JSONException e) {
+				throw new FatalException(e);
+			} catch (HttpAuthorizationRequiredException e) {
+				throw new FatalException(e);
+			} catch (NoAPIAccessException e) {
+				throw new FatalException(e);
+			} catch (PreconditionFailedException e) {
+				throw new FatalException(e);
+			}
+		} else {
+			throw new ZabbixLoginRequiredException();
 		}
 		return token != null;
 	}
@@ -586,29 +619,31 @@ public class ZabbixRemoteAPI {
 	 * @throws HttpAuthorizationRequiredException
 	 * @throws NoAPIAccessException
 	 * @throws SQLException 
+	 * @throws FatalException 
+	 * @throws ZabbixLoginRequiredException 
 	 */
-	public void importEvents() throws ClientProtocolException, IOException, JSONException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException, SQLException {
+	public void importEvents() throws ClientProtocolException, IOException, JSONException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException, SQLException, ZabbixLoginRequiredException, FatalException {
 
 			int numEvents = ZabbixConfig.EVENTS_GET_LIMIT;
 
-			JSONObject params = new JSONObject()
-				.put("output", "extend")
-				.put("limit", ZabbixConfig.EVENTS_GET_LIMIT)
+		JSONObject params = new JSONObject()
+			.put("output", "extend")
+			.put("limit", ZabbixConfig.EVENTS_GET_LIMIT)
 //				.put(isVersion2?"selectHosts":"select_hosts", "extend")
-				.put(isVersion2?"selectTriggers":"select_triggers", "extend")
-				.put("source", 0)
-				.put("time_from", (new Date().getTime()/1000) - ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT);
-			if (!isVersion2) {
-				// in Zabbix version <2.0, this is not default
-				params.put("sortfield", "clock")
-					.put("sortorder", "DESC");
-			}
-			JsonArrayOrObjectReader events = _queryStream(
-					"event.get"
-					, params
-			);
-			importEvents(events);
-			events.close();
+			.put(isVersion2?"selectTriggers":"select_triggers", "extend")
+			.put("source", 0)
+			.put("time_from", (new Date().getTime()/1000) - ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT);
+		if (!isVersion2) {
+			// in Zabbix version <2.0, this is not default
+			params.put("sortfield", "clock")
+				.put("sortorder", "DESC");
+		}
+		JsonArrayOrObjectReader events = _queryStream(
+				"event.get"
+				, params
+		);
+		importEvents(events);
+		events.close();
 
 	}
 
@@ -620,7 +655,6 @@ public class ZabbixRemoteAPI {
 	 * @throws SQLException 
 	 */
 	private void importEvents(JsonArrayOrObjectReader events) throws JsonParseException, IOException, SQLException {
-		int i=0;
 		JsonObjectReader eventReader;
 		List<Event> eventsCollection = new ArrayList<Event>(RECORDS_PER_INSERT_BATCH);
 		while ((eventReader = events.next()) != null) {
@@ -661,6 +695,7 @@ public class ZabbixRemoteAPI {
 				eventsCollection = new ArrayList<Event>(RECORDS_PER_INSERT_BATCH);
 			}
 		}
+		// insert the last batch of events
 		databaseHelper.insertEvents(eventsCollection);
 	}
 
