@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -69,6 +70,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Trigger.class);
 			TableUtils.createTable(connectionSource, Item.class);
 			TableUtils.createTable(connectionSource, Host.class);
+			TableUtils.createTable(connectionSource, Cache.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
 			throw new RuntimeException(e);
@@ -90,6 +92,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Trigger.class, true);
 			TableUtils.dropTable(connectionSource, Item.class, true);
 			TableUtils.dropTable(connectionSource, Host.class, true);
+			TableUtils.dropTable(connectionSource, Cache.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
 		} catch (SQLException e) {
@@ -149,7 +152,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		mThreadConnection = eventDao.startThreadConnection();
 		Savepoint savePoint = null;
 		try {
-			
+
 			for (Event e : events) {
 				eventDao.createOrUpdate(e);
 				Trigger t = e.getTrigger();
@@ -169,7 +172,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 
 	}
-	
+
 	public void insertTriggers(Collection<Trigger> triggers)
 			throws SQLException {
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
@@ -205,6 +208,36 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void clearTriggers() throws SQLException {
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
 		triggerDao.deleteBuilder().delete();
+	}
+
+	/**
+	 * Marks a data type cached for a certain amount of time.
+	 * 
+	 * @param type
+	 *            the data type
+	 * @throws SQLException
+	 */
+	public void setCached(CacheDataType type)
+			throws SQLException {
+		Dao<Cache, CacheDataType> cacheDao = getDao(Cache.class);
+		cacheDao.createOrUpdate(new Cache(type));
+	}
+
+	/**
+	 * Checks whether a data type is cached in the local SQLite database.
+	 * 
+	 * @param type
+	 *            the data type
+	 * @return true, if a cache entry for this data type exists and is still
+	 *         up-to-date; false, otherwise
+	 * @throws SQLException
+	 */
+	public boolean isCached(CacheDataType type) throws SQLException {
+		Dao<Cache, CacheDataType> cacheDao = getDao(Cache.class);
+		Cache c = cacheDao.queryForId(type);
+		if (c == null || c.getExpireTime() < System.currentTimeMillis())
+			return false;
+		return true;
 	}
 
 }
