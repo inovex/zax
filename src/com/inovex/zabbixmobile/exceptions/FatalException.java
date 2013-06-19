@@ -35,6 +35,11 @@ public class FatalException extends Exception {
 		this.type = type;
 	}
 	
+	public FatalException(Type type, String detailedMessage) {
+		super(detailedMessage);
+		this.type = type;
+	}
+	
 	public Type getType() {
 		return this.type;
 	}

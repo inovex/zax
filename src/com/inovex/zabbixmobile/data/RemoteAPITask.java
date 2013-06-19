@@ -25,7 +25,7 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Void, Void> {
 			executeTask();
 		} catch (ZabbixLoginRequiredException e) {
 			// TODO try to re-login
-			Log.d(TAG, "Login failed. Retrying...");
+			Log.w(TAG, "Login failed. Retrying...");
 			try {
 				retry();
 			} catch (FatalException e1) {
@@ -38,13 +38,15 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Void, Void> {
 	}
 
 	private void sendBroadcast(FatalException exception) {
+		// send broadcast with message depending on the type of exception
 		Context context = api.getContext();
 		Intent intent = new Intent();
 		intent.setAction("com.inovex.zabbixmobile.EXCEPTION");
 		intent.putExtra(ExceptionBroadcastReceiver.EXTRA_MESSAGE,
 				context.getString(exception.getMessageResourceId()));
 		context.sendBroadcast(intent);
-		Log.d(TAG, context.getString(exception.getMessageResourceId()));
+		// print stack trace to log
+		exception.printStackTrace();
 	}
 
 	private void retry() throws FatalException {

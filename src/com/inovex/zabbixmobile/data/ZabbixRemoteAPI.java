@@ -230,7 +230,7 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException 
 	 * @throws ZabbixLoginRequiredException 
 	 */
-	private JSONObject _queryBuffer(String method, JSONObject params) throws ClientProtocolException, IOException, JSONException, ZabbixLoginRequiredException, FatalException {
+	private JSONObject _queryBuffer(String method, JSONObject params) throws IOException, JSONException, ZabbixLoginRequiredException, FatalException {
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
 
@@ -244,65 +244,42 @@ public class ZabbixRemoteAPI {
 			"}";
 
 		post.setEntity(new StringEntity(json, "UTF-8"));
-		try {
-			HttpResponse resp = httpClient.execute(post);
-			if (resp.getStatusLine().getStatusCode() == 401) {
-				// http auth failed
-				throw new FatalException(Type.HTTP_AUTHORIZATION_REQUIRED);
-			} else if (resp.getStatusLine().getStatusCode() == 412) {
-					// Precondition failed / Looks like Zabbix 1.8.2
-				throw new FatalException(Type.PRECONDITION_FAILED);
-			} else if (resp.getStatusLine().getStatusCode() == 404) {
-				// file not found
-				throw new IOException(resp.getStatusLine().getStatusCode()+" "+resp.getStatusLine().getReasonPhrase());
-			} else {
-				Log.d("ZabbixService", resp.getStatusLine().getStatusCode()+" "+resp.getStatusLine().getReasonPhrase());
-			}
-			StringBuilder total = new StringBuilder();
-			BufferedReader rd = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
-			int chr;
-			while ((chr = rd.read()) != -1) {
-				total.append((char) chr);
-			}
-			JSONObject result = new JSONObject(total.toString());
-			try {
-				if (result.getJSONObject("error") != null) {
-					if (result.getJSONObject("error").getString("data").equals("No API access")) {
-						throw new FatalException(Type.NO_API_ACCESS);
-					} else if (result.getJSONObject("error").getString("data").equals("Login name or password is incorrect.")) {
-						throw new ZabbixLoginRequiredException();
-					} else
-						throw new RuntimeException(result.getJSONObject("error").toString());
-				
-				}
-				if (result.getString("data").equals("Not authorized")) {
-					// first do a new auth and then try the same api call again
-					if (authenticate() && !_notAuthorizedRetry) {
-						_notAuthorizedRetry = true;
-						JSONObject r = _queryBuffer(method, params);
-						_notAuthorizedRetry = false;
-						return r;
-					} throw new IllegalStateException(result.toString());
-				}
-			} catch (JSONException e) {
-				// ignore
-			}
-			return result;
-		} catch (SSLPeerUnverifiedException e) {
-			// SSL not trusted
-//			Intent intent = new Intent(ZabbixContentProvider.CONTENT_PROVIDER_INTENT_ACTION);
-//			intent.putExtra("flag", ZabbixContentProvider.INTENT_FLAG_SSL_NOT_TRUSTED);
-//			context.sendBroadcast(intent);
-			throw e;
-		} catch (IOException e) {
-			// internet problem
-			// send intent to GUI
-//			Intent intent = new Intent(ZabbixContentProvider.CONTENT_PROVIDER_INTENT_ACTION);
-//			intent.putExtra("flag", ZabbixContentProvider.INTENT_FLAG_CONNECTION_FAILED);
-//			intent.putExtra("value", e.getMessage());
-//			context.sendBroadcast(intent);
-			throw e;
+		HttpResponse resp = httpClient.execute(post);
+		if (resp.getStatusLine().getStatusCode() == 401) {
+			// http auth failed
+			throw new FatalException(Type.HTTP_AUTHORIZATION_REQUIRED);
+		} else if (resp.getStatusLine().getStatusCode() == 412) {
+				// Precondition failed / Looks like Zabbix 1.8.2
+			throw new FatalException(Type.PRECONDITION_FAILED);
+		} else if (resp.getStatusLine().getStatusCode() == 404) {
+			// file not found
+			throw new IOException(resp.getStatusLine().getStatusCode()+" "+resp.getStatusLine().getReasonPhrase());
+		} else {
+			Log.d("ZabbixService", resp.getStatusLine().getStatusCode()+" "+resp.getStatusLine().getReasonPhrase());
 		}
+		StringBuilder total = new StringBuilder();
+		BufferedReader rd = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
+		int chr;
+		while ((chr = rd.read()) != -1) {
+			total.append((char) chr);
+		}
+		JSONObject result = new JSONObject(total.toString());
+		try {
+			if (result.getJSONObject("error") != null) {
+				if (result.getJSONObject("error").getString("data").equals("No API access")) {
+					throw new FatalException(Type.NO_API_ACCESS);
+				} else {
+					throw new FatalException(Type.INTERNAL_ERROR, result.getJSONObject("error").toString());
+				}
+			}
+			if (result.getString("data").equals("Not authorized")) {
+				// this should lead to a retry
+				throw new ZabbixLoginRequiredException();
+			}
+		} catch (JSONException e) {
+			// ignore
+		}
+		return result;
 	}
 
 	/**
@@ -333,67 +310,53 @@ public class ZabbixRemoteAPI {
 		Log.d("ZabbixService", "_queryStream: "+json.toString());
 
 		post.setEntity(new StringEntity(json.toString(), "UTF-8"));
-		try {
-			HttpResponse resp = httpClient.execute(post);
-			if (resp.getStatusLine().getStatusCode() == 401) {
-				// http auth failed
-				throw new FatalException(Type.HTTP_AUTHORIZATION_REQUIRED);
-			}
+		HttpResponse resp = httpClient.execute(post);
+		if (resp.getStatusLine().getStatusCode() == 401) {
+			// http auth failed
+			throw new FatalException(Type.HTTP_AUTHORIZATION_REQUIRED);
+		}
 
-			JsonFactory jsonFac = new JsonFactory();
-			JsonParser jp = jsonFac.createParser(resp.getEntity().getContent());
-			// store the last stream to close it if an exception will be thrown
-			lastStream = jp;
-			if (jp.nextToken() != JsonToken.START_OBJECT) {
-				throw new IOException("Expected data to start with an Object");
-			}
-			do {
+		JsonFactory jsonFac = new JsonFactory();
+		JsonParser jp = jsonFac.createParser(resp.getEntity().getContent());
+		// store the last stream to close it if an exception will be thrown
+		lastStream = jp;
+		if (jp.nextToken() != JsonToken.START_OBJECT) {
+			throw new IOException("Expected data to start with an Object");
+		}
+		do {
+			jp.nextToken();
+			if (jp.getCurrentName().equals("error")) {
 				jp.nextToken();
-				if (jp.getCurrentName().equals("error")) {
-					jp.nextToken();
-					String errortxt = "";
-					while (jp.nextToken() != JsonToken.END_OBJECT) {
-						errortxt += jp.getText();
-					}
-					if (errortxt.contains("No API access")) {
-						throw new FatalException(Type.NO_API_ACCESS);
-					} else if (errortxt.contains("Not authorized")) {
-						// first do a new auth and then try the same api call again
-						if (authenticate() && !_notAuthorizedRetry) {
-							_notAuthorizedRetry = true;
-							JsonArrayOrObjectReader r = _queryStream(method, params);
-							_notAuthorizedRetry = false;
-							return r;
-						} else throw new IllegalStateException(errortxt);
-					} else throw new IllegalStateException("JSON API Error: "+errortxt);
+				String errortxt = "";
+				while (jp.nextToken() != JsonToken.END_OBJECT) {
+					errortxt += jp.getText();
 				}
-			} while (!jp.getCurrentName().equals("result"));
+				if (errortxt.contains("No API access")) {
+					throw new FatalException(Type.NO_API_ACCESS);
+				} else if (errortxt.contains("Not authorized")) {
+					throw new ZabbixLoginRequiredException();
+				} else {
+					throw new FatalException(Type.INTERNAL_ERROR, errortxt.toString());
+				}
+			}
+		} while (!jp.getCurrentName().equals("result"));
 
-			// result array found
-			if (jp.nextToken() != JsonToken.START_ARRAY && jp.getCurrentToken() != JsonToken.START_OBJECT) { // go inside the array
-				try {
-					Log.d("ZabbixService", "current token: "+jp.getCurrentToken());
-					Log.d("ZabbixService", "current name: "+jp.getCurrentName());
-					Log.d("ZabbixService", "get text: "+jp.getText());
-					Log.d("ZabbixService", "next value: "+jp.nextValue());
-					Log.d("ZabbixService", "next token: "+jp.nextToken());
-					Log.d("ZabbixService", "current token: "+jp.getCurrentToken());
-					Log.d("ZabbixService", "current name: "+jp.getCurrentName());
-					Log.d("ZabbixService", "get text: "+jp.getText());
-				} catch (Exception e) {}
+		// result array found
+		if (jp.nextToken() != JsonToken.START_ARRAY && jp.getCurrentToken() != JsonToken.START_OBJECT) { // go inside the array
+			try {
+				Log.d("ZabbixService", "current token: "+jp.getCurrentToken());
+				Log.d("ZabbixService", "current name: "+jp.getCurrentName());
+				Log.d("ZabbixService", "get text: "+jp.getText());
+				Log.d("ZabbixService", "next value: "+jp.nextValue());
+				Log.d("ZabbixService", "next token: "+jp.nextToken());
+				Log.d("ZabbixService", "current token: "+jp.getCurrentToken());
+				Log.d("ZabbixService", "current name: "+jp.getCurrentName());
+				Log.d("ZabbixService", "get text: "+jp.getText());
+			} catch (Exception e) {
 				throw new IOException("Expected data to start with an Array");
 			}
-			return new JsonArrayOrObjectReader(jp);
-		} catch (SSLPeerUnverifiedException e) {
-			throw e;
-		} catch (IOException e) {
-			// internet problem
-			// send intent to GUI
-//			Intent intent = new Intent(ZabbixContentProvider.CONTENT_PROVIDER_INTENT_ACTION);
-//			intent.putExtra("flag", ZabbixContentProvider.INTENT_FLAG_CONNECTION_FAILED);
-//			context.sendBroadcast(intent);
-			throw e;
 		}
+		return new JsonArrayOrObjectReader(jp);
 	}
 
 	/**
@@ -402,11 +365,6 @@ public class ZabbixRemoteAPI {
 	 * @param eventid
 	 * @param comment
 	 * @return true, success.
-	 * @throws ClientProtocolException
-	 * @throws IOException
-	 * @throws JSONException
-	 * @throws HttpAuthorizationRequiredException
-	 * @throws NoAPIAccessException
 	 * @throws FatalException 
 	 * @throws ZabbixLoginRequiredException 
 	 */
@@ -601,12 +559,6 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * import the newest events
-	 * @throws ClientProtocolException
-	 * @throws IOException
-	 * @throws JSONException
-	 * @throws HttpAuthorizationRequiredException
-	 * @throws NoAPIAccessException
-	 * @throws SQLException 
 	 * @throws FatalException 
 	 * @throws ZabbixLoginRequiredException 
 	 */
