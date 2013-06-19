@@ -21,9 +21,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.data.ZabbixRemoteAPI.HttpAuthorizationRequiredException;
-import com.inovex.zabbixmobile.data.ZabbixRemoteAPI.NoAPIAccessException;
-import com.inovex.zabbixmobile.data.ZabbixRemoteAPI.PreconditionFailedException;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
@@ -92,7 +89,7 @@ public class ZabbixDataService extends Service {
 				mDatabaseHelper);
 
 		// authenticate
-		RemoteAPITask loginTask = new RemoteAPITask() {
+		RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI) {
 
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
@@ -151,7 +148,7 @@ public class ZabbixDataService extends Service {
 	 */
 	public void loadEventsBySeverity(final TriggerSeverity severity) {
 
-		new RemoteAPITask() {
+		new RemoteAPITask(mRemoteAPI) {
 
 			private List<Event> events;
 			private EventsListAdapter adapter = mEventsListAdapters
@@ -162,17 +159,17 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
-				try {
-					mRemoteAPI.importEvents();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 				events = new ArrayList<Event>();
 				try {
-					events = mDatabaseHelper.getEventsBySeverity(severity);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					mRemoteAPI.importEvents();
+					// even if the api call is not successful, we can still use the cached events
+				} finally {
+					try {
+						events = mDatabaseHelper.getEventsBySeverity(severity);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 

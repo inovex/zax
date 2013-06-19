@@ -51,6 +51,14 @@
 
         <service android:name="com.inovex.zabbixmobile.data.ZabbixDataService" >
         </service>
+        
+        <receiver android:name="com.inovex.zabbixmobile.ExceptionBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="com.inovex.zabbixmobile.EXCEPTION" >
+                </action>
+            </intent-filter>
+        </receiver>
+        
     </application>
 
 </manifest>

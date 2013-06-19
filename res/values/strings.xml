@@ -11,5 +11,11 @@
     <string name="activity_checks">Checks</string>
     
     <string name="activity_screens">Screens</string>
+    
+    <string name="exc_http_auth_required">HTTP authorization required.</string>
+    <string name="exc_no_api_access">No API access.</string>
+    <string name="exc_precondition_failed">This version of Zabbix does not support API calls.</string>
+    <string name="exc_login_incorrect">Zabbix login incorrect.</string>
+    <string name="exc_internal_error">Internal error.</string>
 
 </resources>

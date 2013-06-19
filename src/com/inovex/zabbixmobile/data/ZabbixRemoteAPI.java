@@ -67,6 +67,7 @@ import android.util.Log;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.exceptions.FatalException;
+import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.Event;
@@ -113,27 +114,6 @@ public class ZabbixRemoteAPI {
 	}
 
 	/**
-	 * http auth is needed
-	 */
-	public class HttpAuthorizationRequiredException extends Exception {
-		private static final long serialVersionUID = 6632422081858878147L;
-	}
-
-	/**
-	 * zabbix error: no api access
-	 */
-	public class NoAPIAccessException extends Exception {
-		private static final long serialVersionUID = 6381395987443456382L;
-	}
-
-	/**
-	 * probably too old zabbix <= 1.8.2
-	 */
-	public class PreconditionFailedException extends Exception {
-		private static final long serialVersionUID = -2529885710860745023L;
-	}
-
-	/**
 	 * global constants
 	 */
 	public class ZabbixConfig {
@@ -162,7 +142,7 @@ public class ZabbixRemoteAPI {
 	private final DatabaseHelper databaseHelper;
 	private String url;
 	private String token;
-	private final Context context;
+	private final Context mContext;
 	private int _transactionStack;
 	private JsonParser lastStream;
 	private int transformProgressStart;
@@ -228,8 +208,12 @@ public class ZabbixRemoteAPI {
 		params = httpClient.getParams();
 		HttpClientParams.setRedirecting(params, true); // redirecting
 		HttpConnectionParams.setConnectionTimeout(params, ZabbixConfig.HTTP_CONNECTION_TIMEOUT);
-		this.context = context;
+		this.mContext = context;
 		this.databaseHelper = databaseHelper;
+	}
+
+	public Context getContext() {
+		return mContext;
 	}
 
 	/**
@@ -246,7 +230,7 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException 
 	 * @throws ZabbixLoginRequiredException 
 	 */
-	private JSONObject _queryBuffer(String method, JSONObject params) throws ClientProtocolException, IOException, JSONException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException, ZabbixLoginRequiredException, FatalException {
+	private JSONObject _queryBuffer(String method, JSONObject params) throws ClientProtocolException, IOException, JSONException, ZabbixLoginRequiredException, FatalException {
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
 
@@ -264,10 +248,10 @@ public class ZabbixRemoteAPI {
 			HttpResponse resp = httpClient.execute(post);
 			if (resp.getStatusLine().getStatusCode() == 401) {
 				// http auth failed
-				throw new HttpAuthorizationRequiredException();
+				throw new FatalException(Type.HTTP_AUTHORIZATION_REQUIRED);
 			} else if (resp.getStatusLine().getStatusCode() == 412) {
 					// Precondition failed / Looks like Zabbix 1.8.2
-				throw new PreconditionFailedException();
+				throw new FatalException(Type.PRECONDITION_FAILED);
 			} else if (resp.getStatusLine().getStatusCode() == 404) {
 				// file not found
 				throw new IOException(resp.getStatusLine().getStatusCode()+" "+resp.getStatusLine().getReasonPhrase());
@@ -284,8 +268,12 @@ public class ZabbixRemoteAPI {
 			try {
 				if (result.getJSONObject("error") != null) {
 					if (result.getJSONObject("error").getString("data").equals("No API access")) {
-						throw new NoAPIAccessException();
-					} else throw new RuntimeException(result.getJSONObject("error").toString());
+						throw new FatalException(Type.NO_API_ACCESS);
+					} else if (result.getJSONObject("error").getString("data").equals("Login name or password is incorrect.")) {
+						throw new ZabbixLoginRequiredException();
+					} else
+						throw new RuntimeException(result.getJSONObject("error").toString());
+				
 				}
 				if (result.getString("data").equals("Not authorized")) {
 					// first do a new auth and then try the same api call again
@@ -329,7 +317,7 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException 
 	 * @throws ZabbixLoginRequiredException 
 	 */
-	private JsonArrayOrObjectReader _queryStream(String method, JSONObject params) throws JSONException, IOException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException, ZabbixLoginRequiredException, FatalException {
+	private JsonArrayOrObjectReader _queryStream(String method, JSONObject params) throws JSONException, IOException, ZabbixLoginRequiredException, FatalException {
 		// http request
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
@@ -349,7 +337,7 @@ public class ZabbixRemoteAPI {
 			HttpResponse resp = httpClient.execute(post);
 			if (resp.getStatusLine().getStatusCode() == 401) {
 				// http auth failed
-				throw new HttpAuthorizationRequiredException();
+				throw new FatalException(Type.HTTP_AUTHORIZATION_REQUIRED);
 			}
 
 			JsonFactory jsonFac = new JsonFactory();
@@ -368,7 +356,7 @@ public class ZabbixRemoteAPI {
 						errortxt += jp.getText();
 					}
 					if (errortxt.contains("No API access")) {
-						throw new NoAPIAccessException();
+						throw new FatalException(Type.NO_API_ACCESS);
 					} else if (errortxt.contains("Not authorized")) {
 						// first do a new auth and then try the same api call again
 						if (authenticate() && !_notAuthorizedRetry) {
@@ -422,22 +410,34 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException 
 	 * @throws ZabbixLoginRequiredException 
 	 */
-	public boolean acknowledgeEvent(String eventid, String comment) throws ClientProtocolException, IOException, JSONException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException, ZabbixLoginRequiredException, FatalException {
+	public boolean acknowledgeEvent(String eventid, String comment) throws ZabbixLoginRequiredException, FatalException {
 		// for GUI unit test, just return true
 		if (comment != null && comment.equals("__UNIT_TEST__RETURN_TRUE__")) return true;
 
-		JSONObject result = _queryBuffer(
-				"event.acknowledge"
-				, new JSONObject()
-					.put("eventids", new JSONArray().put(eventid))
-					.put("message", comment)
-		);
-		// it can be an (empty) array
+		JSONObject result;
 		try {
-			return result.getJSONObject("result").getJSONArray("eventids").length() == 1;
+			result = _queryBuffer(
+					"event.acknowledge"
+					, new JSONObject()
+						.put("eventids", new JSONArray().put(eventid))
+						.put("message", comment)
+			);
+		
+			JSONObject resultObject = result.getJSONObject("result");
+			// it can be an (empty) array
+			JSONArray eventIdArray = resultObject.optJSONArray("eventids");
+			if(eventIdArray != null)
+				return (eventIdArray.length() == 1);
+			JSONObject eventIdObject = resultObject.optJSONObject("eventids");
+			if(eventIdObject != null)
+				return (eventIdObject.length() == 1);
+			return false;
+		} catch (ClientProtocolException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (IOException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (JSONException e) {
-			// or a json object
-			return result.getJSONObject("result").getJSONObject("eventids").length() == 1;
+			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
 	}
 
@@ -474,15 +474,9 @@ public class ZabbixRemoteAPI {
 			// wrong password. token remains null
 			e.printStackTrace();
 		} catch (ClientProtocolException e) {
-			throw new FatalException(e);
+			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
-			throw new FatalException(e);
-		} catch (HttpAuthorizationRequiredException e) {
-			throw new FatalException(e);
-		} catch (NoAPIAccessException e) {
-			throw new FatalException(e);
-		} catch (PreconditionFailedException e) {
-			throw new FatalException(e);
+			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
 		if (token != null) {
 			// get API version
@@ -496,17 +490,11 @@ public class ZabbixRemoteAPI {
 				isVersion2 = (apiVersion.equals("1.4") || apiVersion.startsWith("2"));
 				Log.i("ZabbixService", "Zabbix API Version: " + apiVersion);
 			} catch (ClientProtocolException e) {
-				throw new FatalException(e);
+				throw new FatalException(Type.INTERNAL_ERROR, e);
 			} catch (IOException e) {
-				throw new FatalException(e);
+				throw new FatalException(Type.INTERNAL_ERROR, e);
 			} catch (JSONException e) {
-				throw new FatalException(e);
-			} catch (HttpAuthorizationRequiredException e) {
-				throw new FatalException(e);
-			} catch (NoAPIAccessException e) {
-				throw new FatalException(e);
-			} catch (PreconditionFailedException e) {
-				throw new FatalException(e);
+				throw new FatalException(Type.INTERNAL_ERROR, e);
 			}
 		} else {
 			throw new ZabbixLoginRequiredException();
@@ -622,28 +610,41 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException 
 	 * @throws ZabbixLoginRequiredException 
 	 */
-	public void importEvents() throws ClientProtocolException, IOException, JSONException, HttpAuthorizationRequiredException, NoAPIAccessException, PreconditionFailedException, SQLException, ZabbixLoginRequiredException, FatalException {
+	public void importEvents() throws ZabbixLoginRequiredException, FatalException {
 
-			int numEvents = ZabbixConfig.EVENTS_GET_LIMIT;
+		int numEvents = ZabbixConfig.EVENTS_GET_LIMIT;
 
-		JSONObject params = new JSONObject()
-			.put("output", "extend")
-			.put("limit", ZabbixConfig.EVENTS_GET_LIMIT)
+		JSONObject params;
+		try {
+			params = new JSONObject()
+				.put("output", "extend")
+				.put("limit", ZabbixConfig.EVENTS_GET_LIMIT)
 //				.put(isVersion2?"selectHosts":"select_hosts", "extend")
-			.put(isVersion2?"selectTriggers":"select_triggers", "extend")
-			.put("source", 0)
-			.put("time_from", (new Date().getTime()/1000) - ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT);
-		if (!isVersion2) {
-			// in Zabbix version <2.0, this is not default
-			params.put("sortfield", "clock")
-				.put("sortorder", "DESC");
+				.put(isVersion2?"selectTriggers":"select_triggers", "extend")
+				.put("source", 0)
+				.put("time_from", (new Date().getTime()/1000) - ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT);
+		
+			if (!isVersion2) {
+				// in Zabbix version <2.0, this is not default
+				params.put("sortfield", "clock")
+					.put("sortorder", "DESC");
+			}
+			JsonArrayOrObjectReader events = _queryStream(
+					"event.get"
+					, params
+			);
+			importEvents(events);
+			events.close();
+		} catch(SQLException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (JsonParseException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (IOException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (JSONException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
-		JsonArrayOrObjectReader events = _queryStream(
-				"event.get"
-				, params
-		);
-		importEvents(events);
-		events.close();
+		throw new FatalException(Type.HTTP_AUTHORIZATION_REQUIRED);
 
 	}
 
@@ -1322,12 +1323,7 @@ public class ZabbixRemoteAPI {
 				}
 			}
 			triggerCollection.add(t);
-//			if(triggerCollection.size() >= RECORDS_PER_INSERT_BATCH) {
-//				databaseHelper.insertTriggers(triggerCollection);
-//				triggerCollection = new ArrayList<Trigger>(RECORDS_PER_INSERT_BATCH);
-//			}
 		}
-//		databaseHelper.insertTriggers(triggerCollection);
 		return triggerCollection;
 		
 	}
