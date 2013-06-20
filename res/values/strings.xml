@@ -13,6 +13,8 @@
     <string name="exc_no_api_access">No API access.</string>
     <string name="exc_precondition_failed">This version of Zabbix does not support API calls.</string>
     <string name="exc_login_incorrect">Zabbix login incorrect.</string>
+    <string name="exc_no_connection">Could not connect to Zabbix server. Please verify internet access.</string>
+    <string name="exc_not_found">The Zabbix server could not be contacted. Please verify the server address.</string>
     <string name="exc_internal_error">Internal error.</string>
     
     <string name="no_graph">You have to select an item from the Checks-list.</string>
@@ -52,6 +54,7 @@
     <string name="loading">Loading</string>
     <string name="fetching_remote_data">Fetching remote data ...</string>
     <string name="zabbix_login">Zabbix Login</string>
+    <string name="zabbix_login_in_progress">Logging in to Zabbix. Please wait.</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="push_notifications">Push Notifications</string>

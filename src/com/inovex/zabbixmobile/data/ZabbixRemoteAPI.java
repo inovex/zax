@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -54,7 +55,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
@@ -254,47 +254,39 @@ public class ZabbixRemoteAPI {
 				+ "," + "	\"id\" : 0" + "}";
 
 		post.setEntity(new StringEntity(json, "UTF-8"));
-		HttpResponse resp = httpClient.execute(post);
-		if (resp.getStatusLine().getStatusCode() == 401) {
-			// http auth failed
-			throw new FatalException(Type.HTTP_AUTHORIZATION_REQUIRED);
-		} else if (resp.getStatusLine().getStatusCode() == 412) {
-			// Precondition failed / Looks like Zabbix 1.8.2
-			throw new FatalException(Type.PRECONDITION_FAILED);
-		} else if (resp.getStatusLine().getStatusCode() == 404) {
-			// file not found
-			throw new IOException(resp.getStatusLine().getStatusCode() + " "
-					+ resp.getStatusLine().getReasonPhrase());
-		} else {
-			Log.d("ZabbixService", resp.getStatusLine().getStatusCode() + " "
-					+ resp.getStatusLine().getReasonPhrase());
-		}
-		StringBuilder total = new StringBuilder();
-		BufferedReader rd = new BufferedReader(new InputStreamReader(resp
-				.getEntity().getContent()));
-		int chr;
-		while ((chr = rd.read()) != -1) {
-			total.append((char) chr);
-		}
-		JSONObject result = new JSONObject(total.toString());
 		try {
-			if (result.getJSONObject("error") != null) {
-				if (result.getJSONObject("error").getString("data")
-						.equals("No API access")) {
-					throw new FatalException(Type.NO_API_ACCESS);
-				} else {
-					throw new FatalException(Type.INTERNAL_ERROR, result
-							.getJSONObject("error").toString());
+			HttpResponse resp = httpClient.execute(post);
+
+			checkHttpStatusCode(resp);
+			StringBuilder total = new StringBuilder();
+			BufferedReader rd = new BufferedReader(new InputStreamReader(resp
+					.getEntity().getContent()));
+			int chr;
+			while ((chr = rd.read()) != -1) {
+				total.append((char) chr);
+			}
+			JSONObject result = new JSONObject(total.toString());
+			try {
+				if (result.getJSONObject("error") != null) {
+					if (result.getJSONObject("error").getString("data")
+							.equals("No API access")) {
+						throw new FatalException(Type.NO_API_ACCESS);
+					} else {
+						throw new FatalException(Type.INTERNAL_ERROR, result
+								.getJSONObject("error").toString());
+					}
 				}
+				if (result.getString("data").equals("Not authorized")) {
+					// this should lead to a retry
+					throw new ZabbixLoginRequiredException();
+				}
+			} catch (JSONException e) {
+				// ignore
 			}
-			if (result.getString("data").equals("Not authorized")) {
-				// this should lead to a retry
-				throw new ZabbixLoginRequiredException();
-			}
-		} catch (JSONException e) {
-			// ignore
+			return result;
+		} catch (SocketException e) {
+			throw new FatalException(Type.NO_CONNECTION, e);
 		}
-		return result;
 	}
 
 	/**
@@ -323,58 +315,92 @@ public class ZabbixRemoteAPI {
 		Log.d("ZabbixService", "_queryStream: " + json.toString());
 
 		post.setEntity(new StringEntity(json.toString(), "UTF-8"));
-		HttpResponse resp = httpClient.execute(post);
+		try {
+			HttpResponse resp = httpClient.execute(post);
+			checkHttpStatusCode(resp);
+
+			JsonFactory jsonFac = new JsonFactory();
+			JsonParser jp = jsonFac.createParser(resp.getEntity().getContent());
+			// store the last stream to close it if an exception will be thrown
+			lastStream = jp;
+			if (jp.nextToken() != JsonToken.START_OBJECT) {
+				throw new IOException("Expected data to start with an Object");
+			}
+			do {
+				jp.nextToken();
+				if (jp.getCurrentName().equals("error")) {
+					jp.nextToken();
+					String errortxt = "";
+					while (jp.nextToken() != JsonToken.END_OBJECT) {
+						errortxt += jp.getText();
+					}
+					if (errortxt.contains("No API access")) {
+						throw new FatalException(Type.NO_API_ACCESS);
+					} else if (errortxt.contains("Not authorized")) {
+						throw new ZabbixLoginRequiredException();
+					} else {
+						throw new FatalException(Type.INTERNAL_ERROR,
+								errortxt.toString());
+					}
+				}
+			} while (!jp.getCurrentName().equals("result"));
+
+			// result array found
+			if (jp.nextToken() != JsonToken.START_ARRAY
+					&& jp.getCurrentToken() != JsonToken.START_OBJECT) { // go
+																			// inside
+																			// the
+																			// array
+				try {
+					Log.d("ZabbixService",
+							"current token: " + jp.getCurrentToken());
+					Log.d("ZabbixService",
+							"current name: " + jp.getCurrentName());
+					Log.d("ZabbixService", "get text: " + jp.getText());
+					Log.d("ZabbixService", "next value: " + jp.nextValue());
+					Log.d("ZabbixService", "next token: " + jp.nextToken());
+					Log.d("ZabbixService",
+							"current token: " + jp.getCurrentToken());
+					Log.d("ZabbixService",
+							"current name: " + jp.getCurrentName());
+					Log.d("ZabbixService", "get text: " + jp.getText());
+				} catch (Exception e) {
+					throw new IOException(
+							"Expected data to start with an Array");
+				}
+			}
+			return new JsonArrayOrObjectReader(jp);
+		} catch (SocketException e) {
+			throw new FatalException(Type.NO_CONNECTION, e);
+		}
+	}
+
+	/**
+	 * Checks the status code of an HTTP response and throws the appropriate
+	 * exception if an error occurs.
+	 * 
+	 * @param resp
+	 *            the HttpResponse to check
+	 * @throws FatalException
+	 *             if the status code indicates an error
+	 */
+	public void checkHttpStatusCode(HttpResponse resp) throws FatalException {
 		if (resp.getStatusLine().getStatusCode() == 401) {
 			// http auth failed
 			throw new FatalException(Type.HTTP_AUTHORIZATION_REQUIRED);
+		} else if (resp.getStatusLine().getStatusCode() == 412) {
+			// Precondition failed / Looks like Zabbix 1.8.2
+			throw new FatalException(Type.PRECONDITION_FAILED);
+		} else if (resp.getStatusLine().getStatusCode() == 404) {
+			// file not found
+			throw new FatalException(Type.SERVER_NOT_FOUND, resp
+					.getStatusLine().getStatusCode()
+					+ " "
+					+ resp.getStatusLine().getReasonPhrase());
+		} else {
+			Log.d("ZabbixService", resp.getStatusLine().getStatusCode() + " "
+					+ resp.getStatusLine().getReasonPhrase());
 		}
-
-		JsonFactory jsonFac = new JsonFactory();
-		JsonParser jp = jsonFac.createParser(resp.getEntity().getContent());
-		// store the last stream to close it if an exception will be thrown
-		lastStream = jp;
-		if (jp.nextToken() != JsonToken.START_OBJECT) {
-			throw new IOException("Expected data to start with an Object");
-		}
-		do {
-			jp.nextToken();
-			if (jp.getCurrentName().equals("error")) {
-				jp.nextToken();
-				String errortxt = "";
-				while (jp.nextToken() != JsonToken.END_OBJECT) {
-					errortxt += jp.getText();
-				}
-				if (errortxt.contains("No API access")) {
-					throw new FatalException(Type.NO_API_ACCESS);
-				} else if (errortxt.contains("Not authorized")) {
-					throw new ZabbixLoginRequiredException();
-				} else {
-					throw new FatalException(Type.INTERNAL_ERROR,
-							errortxt.toString());
-				}
-			}
-		} while (!jp.getCurrentName().equals("result"));
-
-		// result array found
-		if (jp.nextToken() != JsonToken.START_ARRAY
-				&& jp.getCurrentToken() != JsonToken.START_OBJECT) { // go
-																		// inside
-																		// the
-																		// array
-			try {
-				Log.d("ZabbixService", "current token: " + jp.getCurrentToken());
-				Log.d("ZabbixService", "current name: " + jp.getCurrentName());
-				Log.d("ZabbixService", "get text: " + jp.getText());
-				Log.d("ZabbixService", "next value: " + jp.nextValue());
-				Log.d("ZabbixService", "next token: " + jp.nextToken());
-				Log.d("ZabbixService", "current token: " + jp.getCurrentToken());
-				Log.d("ZabbixService", "current name: " + jp.getCurrentName());
-				Log.d("ZabbixService", "get text: " + jp.getText());
-			} catch (Exception e) {
-				throw new IOException("Expected data to start with an Array");
-			}
-		}
-		return new JsonArrayOrObjectReader(jp);
 	}
 
 	/**
@@ -428,14 +454,14 @@ public class ZabbixRemoteAPI {
 	 */
 	public boolean authenticate() throws ZabbixLoginRequiredException,
 			FatalException {
-		// SharedPreferences prefs =
-		// PreferenceManager.getDefaultSharedPreferences(context);
-		// String url = prefs.getString("zabbix_url", "").trim();
-		// String user = prefs.getString("zabbix_username", "").trim();
-		// String password = prefs.getString("zabbix_password", "");
-		String url = "http://10.10.0.21/zabbix";
-		String user = "admin";
-		String password = "zabbix";
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(getContext());
+		String url = prefs.getString("zabbix_url", "").trim();
+		String user = prefs.getString("zabbix_username", "").trim();
+		String password = prefs.getString("zabbix_password", "");
+		// String url = "http://10.10.0.21/zabbix";
+		// String user = "admin";
+		// String password = "zabbix";
 
 		this.url = url + (url.endsWith("/") ? "" : '/') + "api_jsonrpc.php";
 		Log.d("ZabbixContentProvider", url + "//" + user);
@@ -986,46 +1012,48 @@ public class ZabbixRemoteAPI {
 				String propName = hostReader.getCurrentName();
 				if (propName.equals(Host.COLUMN_ID)) {
 					h.setId(Long.parseLong(hostReader.getText()));
-//					if (firstHostId == -1) {
-//						firstHostId = (Long) h.get(HostData.COLUMN_HOSTID);
-//					}
+					// if (firstHostId == -1) {
+					// firstHostId = (Long) h.get(HostData.COLUMN_HOSTID);
+					// }
 				} else if (propName.equals(Host.COLUMN_HOST)) {
 					String host = hostReader.getText();
-//					hostnames.add(host);
+					// hostnames.add(host);
 					h.setHost(host);
 				} else if (propName.equals("groups")) {
-//					long groupid = importHostGroups(hostReader
-//							.getJsonArrayOrObjectReader());
-//					if (groupid != -1) {
-//						h.set(HostData.COLUMN_GROUPID, groupid);
-//					}
+					// long groupid = importHostGroups(hostReader
+					// .getJsonArrayOrObjectReader());
+					// if (groupid != -1) {
+					// h.set(HostData.COLUMN_GROUPID, groupid);
+					// }
 				} else {
 					hostReader.nextProperty();
 				}
 			}
 			hosts.add(h);
 			// host without group will get group #0 (other)
-//			if (h.get(HostData.COLUMN_GROUPID) == null) {
-//				h.set(HostData.COLUMN_GROUPID, 0);
-//				// create "other" hostgroup #1
-//				HostGroupData hg = new HostGroupData();
-//				hg.set(HostGroupData.COLUMN_GROUPID, 0);
-//				hg.set(HostGroupData.COLUMN_NAME, "- "
-//						+ context.getResources().getString(R.string.other)
-//						+ " -");
-//				hg.insert(zabbixLocalDB, HostGroupData.COLUMN_GROUPID);
-//			}
-//			h.insert(zabbixLocalDB, HostData.COLUMN_HOSTID);
-//			if (numHosts != null && ++i % 10 == 0) {
-//				showProgress(i * 100 / numHosts);
-//			}
-//			_commitTransactionIfRecommended();
+			// if (h.get(HostData.COLUMN_GROUPID) == null) {
+			// h.set(HostData.COLUMN_GROUPID, 0);
+			// // create "other" hostgroup #1
+			// HostGroupData hg = new HostGroupData();
+			// hg.set(HostGroupData.COLUMN_GROUPID, 0);
+			// hg.set(HostGroupData.COLUMN_NAME, "- "
+			// + context.getResources().getString(R.string.other)
+			// + " -");
+			// hg.insert(zabbixLocalDB, HostGroupData.COLUMN_GROUPID);
+			// }
+			// h.insert(zabbixLocalDB, HostData.COLUMN_HOSTID);
+			// if (numHosts != null && ++i % 10 == 0) {
+			// showProgress(i * 100 / numHosts);
+			// }
+			// _commitTransactionIfRecommended();
 		}
 
-//		return new Object[] { hostnames.toString().replaceAll("[\\[\\]]", ""),
-//				firstHostId };
+		// return new Object[] { hostnames.toString().replaceAll("[\\[\\]]",
+		// ""),
+		// firstHostId };
 		return hosts;
 	}
+
 	//
 	// public void importHostsAndGroups() throws JSONException, IOException,
 	// HttpAuthorizationRequiredException, NoAPIAccessException,

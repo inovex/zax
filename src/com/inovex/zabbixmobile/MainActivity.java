@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -109,8 +110,8 @@ public class MainActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onLoginStarted() {
 		mLoginProgress = new ProgressDialog(MainActivity.this);
-		mLoginProgress.setTitle("Zabbix login");
-		mLoginProgress.setMessage("Logging in to Zabbix. Please wait.");
+		mLoginProgress.setTitle(R.string.zabbix_login);
+		mLoginProgress.setMessage(getResources().getString(R.string.zabbix_login_in_progress));
 		mLoginProgress.setCancelable(false);
 		mLoginProgress.setIndeterminate(true);
 		mLoginProgress.show();
@@ -120,6 +121,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 	public void onLoginFinished() {
 		if(mLoginProgress != null)
 			mLoginProgress.dismiss();
+		Toast.makeText(this, R.string.zabbix_login_successful, Toast.LENGTH_LONG).show();
 	}
 
 	@Override
