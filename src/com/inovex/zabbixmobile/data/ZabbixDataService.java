@@ -1,21 +1,20 @@
 package com.inovex.zabbixmobile.data;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
-
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,16 +24,18 @@ import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.Event;
-import com.inovex.zabbixmobile.model.MockDatabaseHelper;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.view.EventsListAdapter;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.android.apptools.OrmLiteBaseService;
 
 public class ZabbixDataService extends Service {
 
 	private static final String TAG = ZabbixDataService.class.getSimpleName();
+
+	public static final String EXTRA_MESSENGER = "com.inovex.zabbixmobile.SERVICE_MESSENGER";
+	public static final int MESSAGE_LOGIN_STARTED = 1;
+	public static final int MESSAGE_LOGIN_FINISHED = 2;
 	// Binder given to clients
 	private final IBinder mBinder = new ZabbixDataBinder();
 
@@ -48,7 +49,8 @@ public class ZabbixDataService extends Service {
 	private ZabbixRemoteAPI mRemoteAPI;
 
 	protected boolean loggedIn;
-	
+	private Messenger messenger;
+
 	/**
 	 * Class used for the client Binder. Because we know this service always
 	 * runs in the same process as its clients, we don't need to deal with IPC.
@@ -74,6 +76,55 @@ public class ZabbixDataService extends Service {
 		Log.d(TAG,
 				"Binder " + this.toString() + ": intent " + intent.toString()
 						+ " bound.");
+
+		Bundle extras = intent.getExtras();
+
+		if (extras != null) {
+			messenger = (Messenger) extras.get(EXTRA_MESSENGER);
+		}
+
+		if (!loggedIn) {
+
+			if (messenger != null) {
+				Message msg = Message.obtain();
+				msg.arg1 = MESSAGE_LOGIN_STARTED;
+				try {
+					messenger.send(msg);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			// authenticate
+			RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI) {
+
+				@Override
+				protected void executeTask()
+						throws ZabbixLoginRequiredException, FatalException {
+					mRemoteAPI.authenticate();
+				}
+
+				@Override
+				protected void onPostExecute(Void result) {
+					super.onPostExecute(result);
+					loggedIn = true;
+					if (messenger != null) {
+						Message msg = Message.obtain();
+						msg.arg1 = MESSAGE_LOGIN_FINISHED;
+						try {
+							messenger.send(msg);
+						} catch (RemoteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+
+			};
+			loginTask.execute();
+		}
+
 		return mBinder;
 	}
 
@@ -87,28 +138,6 @@ public class ZabbixDataService extends Service {
 		Log.d(TAG, "onCreate");
 		mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
 				mDatabaseHelper);
-
-		// authenticate
-		RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI) {
-
-			@Override
-			protected void executeTask() throws ZabbixLoginRequiredException,
-					FatalException {
-				try {
-					mRemoteAPI.authenticate();
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-			}
-
-			@Override
-			protected void onPostExecute(Void result) {
-				super.onPostExecute(result);
-				loggedIn = true;
-			}
-
-		};
-		loginTask.execute();
 
 		// set up adapters
 		mEventsListAdapters = new HashMap<TriggerSeverity, EventsListAdapter>(
@@ -162,7 +191,8 @@ public class ZabbixDataService extends Service {
 				events = new ArrayList<Event>();
 				try {
 					mRemoteAPI.importEvents();
-					// even if the api call is not successful, we can still use the cached events
+					// even if the api call is not successful, we can still use
+					// the cached events
 				} finally {
 					try {
 						events = mDatabaseHelper.getEventsBySeverity(severity);

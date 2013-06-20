@@ -191,9 +191,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					savePoint = conn.setSavePoint(null);
 				}
 			}
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		} finally {
 			// commit at the end
 			conn.commit(savePoint);

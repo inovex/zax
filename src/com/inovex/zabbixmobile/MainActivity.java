@@ -1,11 +1,16 @@
 package com.inovex.zabbixmobile;
 
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -22,11 +27,15 @@ import com.inovex.zabbixmobile.activities.ScreensActivity;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 
-public class MainActivity extends SherlockFragmentActivity implements ServiceConnection {
+public class MainActivity extends SherlockFragmentActivity implements
+		ServiceConnection {
 
 	protected static final String TAG = MainActivity.class.getSimpleName();
-	
+
 	private ZabbixDataService mZabbixService;
+	private ProgressDialog mLoginProgress;
+
+	private Handler handler;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +86,7 @@ public class MainActivity extends SherlockFragmentActivity implements ServiceCon
 		getSupportMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
+
 	/** Defines callbacks for service binding, passed to bindService() */
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
@@ -94,10 +103,33 @@ public class MainActivity extends SherlockFragmentActivity implements ServiceCon
 	@Override
 	protected void onStart() {
 		super.onStart();
+		handler = new Handler() {
+
+			@Override
+			public void handleMessage(Message msg) {
+				super.handleMessage(msg);
+				Log.d(TAG, "received message: " + msg.toString());
+				switch(msg.arg1) {
+				case ZabbixDataService.MESSAGE_LOGIN_STARTED:
+					mLoginProgress = new ProgressDialog(MainActivity.this);
+					mLoginProgress.setTitle("Zabbix login");
+					mLoginProgress.setMessage("Logging in to Zabbix. Please wait.");
+					mLoginProgress.show();
+					break;
+				case ZabbixDataService.MESSAGE_LOGIN_FINISHED:
+					mLoginProgress.dismiss();
+					break;
+				}
+			}
+
+		};
+
 		Intent intent = new Intent(this, ZabbixDataService.class);
+		intent.putExtra(ZabbixDataService.EXTRA_MESSENGER, new Messenger(
+				handler));
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
 	}
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();
