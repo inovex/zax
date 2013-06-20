@@ -10,11 +10,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +26,13 @@ import com.inovex.zabbixmobile.view.EventsListAdapter;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 public class ZabbixDataService extends Service {
+
+	public interface OnLoginProgressListener {
+
+		public void onLoginStarted();
+		public void onLoginFinished();
+
+	}
 
 	private static final String TAG = ZabbixDataService.class.getSimpleName();
 
@@ -49,7 +52,6 @@ public class ZabbixDataService extends Service {
 	private ZabbixRemoteAPI mRemoteAPI;
 
 	protected boolean loggedIn;
-	private Messenger messenger;
 
 	/**
 	 * Class used for the client Binder. Because we know this service always
@@ -77,24 +79,16 @@ public class ZabbixDataService extends Service {
 				"Binder " + this.toString() + ": intent " + intent.toString()
 						+ " bound.");
 
-		Bundle extras = intent.getExtras();
+		return mBinder;
+	}
 
-		if (extras != null) {
-			messenger = (Messenger) extras.get(EXTRA_MESSENGER);
-		}
-
+	/**
+	 * @param loginProgressDialog
+	 * 
+	 */
+	public void performZabbixLogin(final OnLoginProgressListener listener) {
 		if (!loggedIn) {
-
-			if (messenger != null) {
-				Message msg = Message.obtain();
-				msg.arg1 = MESSAGE_LOGIN_STARTED;
-				try {
-					messenger.send(msg);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			listener.onLoginStarted();
 
 			// authenticate
 			RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI) {
@@ -109,23 +103,12 @@ public class ZabbixDataService extends Service {
 				protected void onPostExecute(Void result) {
 					super.onPostExecute(result);
 					loggedIn = true;
-					if (messenger != null) {
-						Message msg = Message.obtain();
-						msg.arg1 = MESSAGE_LOGIN_FINISHED;
-						try {
-							messenger.send(msg);
-						} catch (RemoteException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
+					listener.onLoginFinished();
 				}
 
 			};
 			loginTask.execute();
 		}
-
-		return mBinder;
 	}
 
 	@Override
