@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/zabbix_login" >
+        <EditTextPreference
+            android:defaultValue="http://zabbix.company.net/zabbix"
+            android:inputType="textUri"
+            android:key="zabbix_url"
+            android:summary="@string/url_example"
+            android:title="@string/url" >
+        </EditTextPreference>
+        <EditTextPreference
+            android:inputType="text"
+            android:key="zabbix_username"
+            android:title="@string/username" >
+        </EditTextPreference>
+        <EditTextPreference
+            android:inputType="textPassword"
+            android:key="zabbix_password"
+            android:title="@string/password" >
+        </EditTextPreference>
+
+        <CheckBoxPreference
+            android:key="zabbix_trust_all_ssl_ca"
+            android:title="@string/trust_all_ssl_certificates" />
+
+        <PreferenceScreen
+            android:summary="@string/http_auth_description"
+            android:title="@string/http_auth" >
+            <CheckBoxPreference
+                android:key="http_auth_enabled"
+                android:title="@string/enabled" >
+            </CheckBoxPreference>
+
+            <EditTextPreference
+                android:dependency="http_auth_enabled"
+                android:inputType="text"
+                android:key="http_auth_username"
+                android:title="@string/username" >
+            </EditTextPreference>
+            <EditTextPreference
+                android:dependency="http_auth_enabled"
+                android:inputType="textPassword"
+                android:key="http_auth_password"
+                android:title="@string/password" >
+            </EditTextPreference>
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+    <PreferenceScreen android:title="@string/push_notifications" >
+        <CheckBoxPreference
+            android:key="zabbix_push_enabled"
+            android:title="@string/enabled" >
+        </CheckBoxPreference>
+
+        <EditTextPreference
+            android:dependency="zabbix_push_enabled"
+            android:key="zabbix_push_subscribe_key"
+            android:title="@string/subscribe_key" >
+        </EditTextPreference>
+
+        <RingtonePreference
+            android:dependency="zabbix_push_enabled"
+            android:key="zabbix_push_ringtone"
+            android:ringtoneType="notification"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:title="@string/ringtone" >
+        </RingtonePreference>
+    </PreferenceScreen>
+
+    <PreferenceCategory android:title="@string/homescreen_widget" >
+        <EditTextPreference
+            android:defaultValue="15"
+            android:inputType="number"
+            android:key="widget_refresh_interval_mins"
+            android:title="Refresh interval (min)" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

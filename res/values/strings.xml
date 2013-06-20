@@ -3,19 +3,98 @@
 
     <string name="app_name">ZAX</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
     
     <string name="activity_events">Events</string>
-    <string name="call_service">Call Service</string>
-    
     <string name="activity_checks">Checks</string>
-    
     <string name="activity_screens">Screens</string>
+    <string name="activity_preferences">Preferences</string>
     
     <string name="exc_http_auth_required">HTTP authorization required.</string>
     <string name="exc_no_api_access">No API access.</string>
     <string name="exc_precondition_failed">This version of Zabbix does not support API calls.</string>
     <string name="exc_login_incorrect">Zabbix login incorrect.</string>
     <string name="exc_internal_error">Internal error.</string>
+    
+    <string name="no_graph">You have to select an item from the Checks-list.</string>
+    <string name="no_items_to_display">No items to display.</string>
+    <string name="trigger_details">Trigger Details</string>
+    <string name="host">Host</string>
+    <string name="trigger">Trigger</string>
+    <string name="severity">Severity</string>
+    <string name="expression">Expression</string>
+    <string name="disabled">Disabled</string>
+    <string name="details">Details</string>
+    <string name="time">Time</string>
+    <string name="status">Status</string>
+    <string name="problems">Problems</string>
+    <string name="acknowledged">Acknowledged</string>
+    <string name="preferences">Preferences</string>
+    <string name="refresh_all_data">Refresh all data</string>
+    <string name="internet_connection_failed">Internet connection failed. Please check your internet connection and try again later.</string>
+    <string name="zabbix_login_unsuccessful">Zabbix login was unsuccessful. Please check your preferences.</string>
+    <string name="zabbix_no_api_access">Zabbix server: No API access.</string>
+    <string name="priority_not_classified">Not classified</string>
+    <string name="priority_information">Information</string>
+    <string name="priority_warning">Warning</string>
+    <string name="priority_average">Average</string>
+    <string name="priority_high">High</string>
+    <string name="priority_disaster">Disaster</string>
+    <string name="zabbix_login_successful">Zabbix login was successful.</string>
+    <string name="set_preferences">You have to set the preferences.</string>
+    <string name="ok">OK</string>
+    <string name="unknown">unknown</string>
+    <string name="events">Events</string>
+    <string name="checks">Checks</string>
+    <string name="item_details">Details</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="problem">Problem</string>
+    <string name="loading">Loading</string>
+    <string name="fetching_remote_data">Fetching remote data ...</string>
+    <string name="zabbix_login">Zabbix Login</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="push_notifications">Push Notifications</string>
+    <string name="enabled">Enabled</string>
+    <string name="your_private_push_key">Your Private Push Key</string>
+    <string name="other">other</string>
+    <string name="no_history_data_found">No history data found for this item.</string>
+    <string name="failure">Failure</string>
+    <string name="url">URL</string>
+    <string name="url_example">inclusive path, e.g. http://zbx.company.com/zabbix</string>
+    <string name="http_auth">HTTP Authentication</string>
+    <string name="http_auth_description">optional: username and password</string>
+    <string name="http_auth_failed">401 Authorization Required. Please enable http authentication in the preferences.</string>
+    <string name="refresh_finished">Refresh finished</string>
+    <string name="subscribe_key">Pubnub Subscribe Key</string>
+    <string name="invalid_subscribe_key">Invalid Pubnub Subscribe Key. Go to preferences and change it or unable push notifications.</string>
+    <string name="event_details">Event Details</string>
+    <string name="show_item_details">Show Item Details</string>
+    <string name="graph_text" formatted="false">Latest data: %s at %s</string>
+    <string name="ringtone">Ringtone</string>
+    <string name="acknowledge">Acknowledge</string>
+    <string name="acknowledge_event">Acknowledge Event</string>
+    <string name="cancel">Cancel</string>
+    <string name="enter_comment">Enter comment</string>
+    <string name="could_not_acknowledge_event">Zabbix did not acknowledge event. Please check your permissions and Zabbix version (>= 1.8.4).</string>
+    <string name="no_trigger_data">No triggers found for this item.</string>
+    <string name="no_event_data">No events found for this item.</string>
+    <string name="screens">Screens</string>
+    <string name="refreshing_current_view">Refreshing current view. Please wait ...</string>
+    <string name="cannot_connect_message">This app cannot connect to Market.
+     Your version of Market may be out of date.
+     You can continue to use this app but you
+     won\'t be able to activate bonus features.</string>
+     <string name="billing_not_supported_message">The Market billing
+     service is not available at this time.  You can continue to use this app but you
+     won\'t be able to activate bonus features.</string>
+     <string name="restoring_transactions">Restoring transactions</string>
+     <string name="buy_bonus">Buy Bonus</string>
+     <string name="trust_all_ssl_certificates">Trust all SSL Certificates</string>
+     <string name="ssl_certificate_not_trusted">This SSL certificate is not trusted by this device. Please install the certificate or check \'Trust all SSL Certificates\' in the ZAX preferences.</string>
+     <string name="preconditionFailed">Zabbix: 412 Precondition Failed. This looks like version 1.8.2. ZAX requires at least 1.8.3.</string>
+     <string name="homescreen_widget">Homescreen Widget</string>
+     <string name="no_filter">No filter applied.</string>
+     <string name="filter_by_severity">Filter by severity: </string>
 
 </resources>

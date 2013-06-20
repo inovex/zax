@@ -13,13 +13,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.activities.ChecksActivity;
 import com.inovex.zabbixmobile.activities.EventsActivity;
 import com.inovex.zabbixmobile.activities.ScreensActivity;
+import com.inovex.zabbixmobile.activities.ZaxPreferenceActivity;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
@@ -72,7 +75,7 @@ public class MainActivity extends SherlockFragmentActivity implements
 		});
 
 		LinearLayout baseLayout = (LinearLayout) findViewById(R.id.layout_main);
-
+		
 	}
 
 	@Override
@@ -80,6 +83,16 @@ public class MainActivity extends SherlockFragmentActivity implements
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getSupportMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.menuitem_preferences) {
+			Intent intent = new Intent(getApplicationContext(), ZaxPreferenceActivity.class);
+			startActivityForResult(intent, 0);
+			return true;
+		}
+		return false;
 	}
 
 	/** Defines callbacks for service binding, passed to bindService() */
