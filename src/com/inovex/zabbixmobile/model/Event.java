@@ -20,8 +20,11 @@ public class Event {
 	@DatabaseField(columnName = COLUMN_OBJECT_ID)
 	long objectId;
 	public static final String COLUMN_TRIGGER = "triggerid";
-	@DatabaseField(canBeNull = true, foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	@DatabaseField(columnName = COLUMN_TRIGGER, canBeNull = true, foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	Trigger trigger;
+	public static final String COLUMN_HOST = "hostid";
+	@DatabaseField(columnName = COLUMN_HOST, canBeNull = true, foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
+	Host host;
 	// Caution: This is the timestamp in milliseconds!
 	public static final String COLUMN_CLOCK = "clock";
 	@DatabaseField(columnName = COLUMN_CLOCK)
@@ -43,10 +46,6 @@ public class Event {
 		this.clock = clock;
 		this.value = value;
 		this.acknowledged = acknowledged;
-	}
-
-	public void setTrigger(Trigger t) {
-		trigger = t;
 	}
 
 	public String getDetailedString() {
@@ -75,6 +74,18 @@ public class Event {
 
 	public Trigger getTrigger() {
 		return trigger;
+	}
+	
+	public void setTrigger(Trigger t) {
+		trigger = t;
+	}
+
+	public Host getHost() {
+		return host;
+	}
+
+	public void setHost(Host host) {
+		this.host = host;
 	}
 
 	public long getClock() {

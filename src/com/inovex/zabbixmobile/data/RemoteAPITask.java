@@ -24,7 +24,6 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Void, Void> {
 		try {
 			executeTask();
 		} catch (ZabbixLoginRequiredException e) {
-			// TODO try to re-login
 			Log.w(TAG, "Login failed. Retrying...");
 			try {
 				retry();

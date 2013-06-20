@@ -149,6 +149,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void insertEvents(Collection<Event> events) throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
+		Dao<Host, Long> hostDao = getDao(Host.class);
 		mThreadConnection = eventDao.startThreadConnection();
 		Savepoint savePoint = null;
 		try {
@@ -159,11 +160,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				if (t != null) {
 					triggerDao.createOrUpdate(t);
 				}
+				Host h = e.getHost();
+				if (t != null) {
+					hostDao.createOrUpdate(h);
+				}
 			}
 
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		} finally {
 			// commit at the end
 			savePoint = mThreadConnection.setSavePoint(null);

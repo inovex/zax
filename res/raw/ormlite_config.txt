@@ -1,5 +1,5 @@
 #
-# generated on 2013/06/19 02:46:29
+# generated on 2013/06/20 09:44:41
 #
 # --table-start--
 dataClass=com.j256.ormlite.android.DatabaseTableConfigUtil$DatabaseFieldSample
@@ -40,6 +40,14 @@ columnName=objectid
 # --field-end--
 # --field-start--
 fieldName=trigger
+columnName=triggerid
+foreign=true
+foreignAutoRefresh=true
+foreignAutoCreate=true
+# --field-end--
+# --field-start--
+fieldName=host
+columnName=hostid
 foreign=true
 foreignAutoRefresh=true
 foreignAutoCreate=true
@@ -65,10 +73,12 @@ tableName=hosts
 # --table-fields-start--
 # --field-start--
 fieldName=id
+columnName=hostid
 id=true
 # --field-end--
 # --field-start--
 fieldName=host
+columnName=host
 # --field-end--
 # --table-fields-end--
 # --table-end--

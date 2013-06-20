@@ -14,14 +14,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -45,35 +41,29 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
+import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
 
@@ -180,12 +170,12 @@ public class ZabbixRemoteAPI {
 		try {
 			SharedPreferences prefs = PreferenceManager
 					.getDefaultSharedPreferences(context);
-			
+
 			params = new BasicHttpParams();
 			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
 			SchemeRegistry registry = new SchemeRegistry();
-			
+
 			if (prefs.getBoolean("zabbix_trust_all_ssl_ca", false)) {
 				KeyStore trustStore = KeyStore.getInstance(KeyStore
 						.getDefaultType());
@@ -249,8 +239,6 @@ public class ZabbixRemoteAPI {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 * @throws JSONException
-	 * @throws HttpAuthorizationRequiredException
-	 * @throws NoAPIAccessException
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 */
@@ -317,8 +305,6 @@ public class ZabbixRemoteAPI {
 	 * @return stream im json array wrapper
 	 * @throws JSONException
 	 * @throws IOException
-	 * @throws HttpAuthorizationRequiredException
-	 * @throws NoAPIAccessException
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 */
@@ -624,7 +610,7 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject()
 					.put("output", "extend")
 					.put("limit", ZabbixConfig.EVENTS_GET_LIMIT)
-					// .put(isVersion2?"selectHosts":"select_hosts", "extend")
+					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
 					.put(isVersion2 ? "selectTriggers" : "select_triggers",
 							"extend")
 					.put("source", 0)
@@ -673,12 +659,17 @@ public class ZabbixRemoteAPI {
 			while (eventReader.nextValueToken()) {
 				String propName = eventReader.getCurrentName();
 				if (propName.equals("hosts")) {
-					// // import hosts
-					// String hostnames = (String)
-					// importHosts(eventReader.getJsonArrayOrObjectReader(),
-					// null)[0];
-					// // store hosts namen
-					// e.set(EventData.COLUMN_HOSTS, hostnames);
+					// import hosts
+					List<Host> hosts = importHosts(
+							eventReader.getJsonArrayOrObjectReader(), null);
+					// store hosts namen
+					if (hosts.size() > 0)
+						e.setHost(hosts.get(0));
+					if (hosts.size() > 1) {
+						Log.w(TAG,
+								"More than one trigger found for event "
+										+ e.getDetailedString());
+					}
 				} else if (propName.equals("triggers")) {
 					// // import triggers
 					List<Trigger> triggers = importTriggers(eventReader
@@ -970,63 +961,71 @@ public class ZabbixRemoteAPI {
 	// return firstHostGroupId;
 	// }
 	//
-	// /**
-	// * import the hosts from stream
-	// * @param jsonArray stream
-	// * @param numHosts count of hosts for progressbar. null if unknown.
-	// * @return Object[] {(String) comma-separated all Hostnames, (Long) 1.
-	// host id}
-	// * @throws JsonParseException
-	// * @throws IOException
-	// */
-	// private Object[] importHosts(JsonArrayOrObjectReader jsonArray, Integer
-	// numHosts) throws JsonParseException, IOException {
-	// List<String> hostnames = new ArrayList<String>();
-	// long firstHostId = -1;
-	// JsonObjectReader hostReader;
-	// int i=0;
-	// while ((hostReader = jsonArray.next()) != null) {
-	// HostData h = new HostData();
-	// while (hostReader.nextValueToken()) {
-	// String propName = hostReader.getCurrentName();
-	// if (propName.equals(HostData.COLUMN_HOSTID)) {
-	// h.set(HostData.COLUMN_HOSTID, Long.parseLong(hostReader.getText()));
-	// if (firstHostId == -1) {
-	// firstHostId = (Long) h.get(HostData.COLUMN_HOSTID);
-	// }
-	// } else if (propName.equals(HostData.COLUMN_HOST)) {
-	// String host = hostReader.getText();
-	// hostnames.add(host);
-	// h.set(HostData.COLUMN_HOST, host);
-	// } else if (propName.equals("groups")) {
-	// long groupid = importHostGroups(hostReader.getJsonArrayOrObjectReader());
-	// if (groupid != -1) {
-	// h.set(HostData.COLUMN_GROUPID, groupid);
-	// }
-	// } else {
-	// hostReader.nextProperty();
-	// }
-	// }
-	// // host without group will get group #0 (other)
-	// if (h.get(HostData.COLUMN_GROUPID) == null) {
-	// h.set(HostData.COLUMN_GROUPID, 0);
-	// // create "other" hostgroup #1
-	// HostGroupData hg = new HostGroupData();
-	// hg.set(HostGroupData.COLUMN_GROUPID, 0);
-	// hg.set(HostGroupData.COLUMN_NAME,
-	// "- "+context.getResources().getString(R.string.other)+" -");
-	// hg.insert(zabbixLocalDB, HostGroupData.COLUMN_GROUPID);
-	// }
-	// h.insert(zabbixLocalDB, HostData.COLUMN_HOSTID);
-	// if (numHosts != null && ++i % 10 == 0) {
-	// showProgress(i*100/numHosts);
-	// }
-	// _commitTransactionIfRecommended();
-	// }
-	//
-	// return new Object[] {hostnames.toString().replaceAll("[\\[\\]]", ""),
-	// firstHostId};
-	// }
+	/**
+	 * import the hosts from stream
+	 * 
+	 * @param jsonArray
+	 *            stream
+	 * @param numHosts
+	 *            count of hosts for progressbar. null if unknown.
+	 * @return Object[] {(String) comma-separated all Hostnames, (Long) 1. host
+	 *         id}
+	 * @throws JsonParseException
+	 * @throws IOException
+	 */
+	private List<Host> importHosts(JsonArrayOrObjectReader jsonArray,
+			Integer numHosts) throws JsonParseException, IOException {
+		List<String> hostnames = new ArrayList<String>();
+		List<Host> hosts = new ArrayList<Host>();
+		long firstHostId = -1;
+		JsonObjectReader hostReader;
+		int i = 0;
+		while ((hostReader = jsonArray.next()) != null) {
+			Host h = new Host();
+			while (hostReader.nextValueToken()) {
+				String propName = hostReader.getCurrentName();
+				if (propName.equals(Host.COLUMN_ID)) {
+					h.setId(Long.parseLong(hostReader.getText()));
+//					if (firstHostId == -1) {
+//						firstHostId = (Long) h.get(HostData.COLUMN_HOSTID);
+//					}
+				} else if (propName.equals(Host.COLUMN_HOST)) {
+					String host = hostReader.getText();
+//					hostnames.add(host);
+					h.setHost(host);
+				} else if (propName.equals("groups")) {
+//					long groupid = importHostGroups(hostReader
+//							.getJsonArrayOrObjectReader());
+//					if (groupid != -1) {
+//						h.set(HostData.COLUMN_GROUPID, groupid);
+//					}
+				} else {
+					hostReader.nextProperty();
+				}
+			}
+			hosts.add(h);
+			// host without group will get group #0 (other)
+//			if (h.get(HostData.COLUMN_GROUPID) == null) {
+//				h.set(HostData.COLUMN_GROUPID, 0);
+//				// create "other" hostgroup #1
+//				HostGroupData hg = new HostGroupData();
+//				hg.set(HostGroupData.COLUMN_GROUPID, 0);
+//				hg.set(HostGroupData.COLUMN_NAME, "- "
+//						+ context.getResources().getString(R.string.other)
+//						+ " -");
+//				hg.insert(zabbixLocalDB, HostGroupData.COLUMN_GROUPID);
+//			}
+//			h.insert(zabbixLocalDB, HostData.COLUMN_HOSTID);
+//			if (numHosts != null && ++i % 10 == 0) {
+//				showProgress(i * 100 / numHosts);
+//			}
+//			_commitTransactionIfRecommended();
+		}
+
+//		return new Object[] { hostnames.toString().replaceAll("[\\[\\]]", ""),
+//				firstHostId };
+		return hosts;
+	}
 	//
 	// public void importHostsAndGroups() throws JSONException, IOException,
 	// HttpAuthorizationRequiredException, NoAPIAccessException,

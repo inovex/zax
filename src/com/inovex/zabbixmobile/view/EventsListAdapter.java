@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.Trigger;
 
 public class EventsListAdapter extends BaseAdapter {
@@ -69,12 +70,19 @@ public class EventsListAdapter extends BaseAdapter {
 		Trigger t = e.getTrigger();
 		if (t == null) {
 			description.setText("no trigger defined.");
-			Log.d(TAG, "No trigger defined for Event with ID "
+			Log.w(TAG, "No trigger defined for Event with ID "
 					+ e.getId());
 		} else 
 			description.setText(String.valueOf(t.getDescription()));
 		
-		title.setText(String.valueOf("id: " + e.getId()));
+		Host h = e.getHost();
+		if(t == null) {
+			title.setText("");
+			Log.w(TAG, "No host defined for Event with ID "
+					+ e.getId());
+		} else
+			title.setText(h.getHost());
+		title.append(String.valueOf("[id: " + e.getId() + "]"));
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(e.getClock());
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
