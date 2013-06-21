@@ -2,6 +2,7 @@ package com.inovex.zabbixmobile.model;
 
 import java.sql.SQLException;
 import java.sql.Savepoint;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -70,6 +71,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Trigger.class);
 			TableUtils.createTable(connectionSource, Item.class);
 			TableUtils.createTable(connectionSource, Host.class);
+			TableUtils.createTable(connectionSource, HostGroup.class);
 			TableUtils.createTable(connectionSource, Cache.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
@@ -92,6 +94,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Trigger.class, true);
 			TableUtils.dropTable(connectionSource, Item.class, true);
 			TableUtils.dropTable(connectionSource, Host.class, true);
+			TableUtils.dropTable(connectionSource, HostGroup.class, true);
 			TableUtils.dropTable(connectionSource, Cache.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
@@ -119,6 +122,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		triggerQuery.where().eq(Trigger.COLUMN_PRIORITY, severity);
 		QueryBuilder<Event, Long> eventQuery = eventDao.queryBuilder();
 		return eventQuery.join(triggerQuery).query();
+	}
+	
+	public List<HostGroup> getHostGroups() throws SQLException {
+		Dao<HostGroup, Long> hostGroupDao = getDao(HostGroup.class);
+		return hostGroupDao.queryForAll();
 	}
 
 	/**
@@ -197,6 +205,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		triggerDao.deleteBuilder().delete();
 	}
 
+	public void clearHosts() throws SQLException {
+		Dao<Host, Long> hostDao = getDao(Host.class);
+		hostDao.deleteBuilder().delete();
+	}
+
+	public void clearHostGroups() throws SQLException {
+		Dao<HostGroup, Long> hostGroupDao = getDao(HostGroup.class);
+		hostGroupDao.deleteBuilder().delete();
+	}
+
 	/**
 	 * Marks a data type cached for a certain amount of time.
 	 * 
@@ -204,8 +222,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 *            the data type
 	 * @throws SQLException
 	 */
-	public void setCached(CacheDataType type)
-			throws SQLException {
+	public void setCached(CacheDataType type) throws SQLException {
 		Dao<Cache, CacheDataType> cacheDao = getDao(Cache.class);
 		cacheDao.createOrUpdate(new Cache(type));
 	}
@@ -225,6 +242,25 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		if (c == null || c.getExpireTime() < System.currentTimeMillis())
 			return false;
 		return true;
+	}
+
+	public void insertHostGroups(ArrayList<HostGroup> hostGroups)
+			throws SQLException {
+		Dao<HostGroup, Long> hostGroupDao = getDao(HostGroup.class);
+		mThreadConnection = hostGroupDao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (HostGroup group : hostGroups) {
+				hostGroupDao.createOrUpdate(group);
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			hostGroupDao.endThreadConnection(mThreadConnection);
+		}
 	}
 
 }

@@ -19,10 +19,13 @@ import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.MockDatabaseHelper;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
+import com.inovex.zabbixmobile.view.BaseServiceAdapter;
 import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.view.EventsListAdapter;
+import com.inovex.zabbixmobile.view.HostGroupsSpinnerAdapter;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 public class ZabbixDataService extends Service {
@@ -48,6 +51,8 @@ public class ZabbixDataService extends Service {
 
 	private HashMap<TriggerSeverity, EventsListAdapter> mEventsListAdapters;
 	private HashMap<TriggerSeverity, EventsDetailsPagerAdapter> mEventsDetailsPagerAdapters;
+	
+	private HostGroupsSpinnerAdapter mHostGroupSpinnerAdapter;
 
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
@@ -66,13 +71,17 @@ public class ZabbixDataService extends Service {
 		}
 	}
 
-	public EventsListAdapter getEventsListAdapter(TriggerSeverity severity) {
+	public BaseServiceAdapter<Event> getEventsListAdapter(TriggerSeverity severity) {
 		return mEventsListAdapters.get(severity);
 	}
 
 	public EventsDetailsPagerAdapter getEventsDetailsPagerAdapter(
 			TriggerSeverity severity) {
 		return mEventsDetailsPagerAdapters.get(severity);
+	}
+	
+	public HostGroupsSpinnerAdapter getHostGroupSpinnerAdapter() {
+		return mHostGroupSpinnerAdapter;
 	}
 
 	@Override
@@ -152,11 +161,12 @@ public class ZabbixDataService extends Service {
 				TriggerSeverity.values().length);
 
 		for (TriggerSeverity s : TriggerSeverity.values()) {
-			mEventsListAdapters.put(s, new EventsListAdapter(this,
-					R.layout.events_list_item));
+			mEventsListAdapters.put(s, new EventsListAdapter(this));
 			mEventsDetailsPagerAdapters
 					.put(s, new EventsDetailsPagerAdapter(s));
 		}
+		
+		mHostGroupSpinnerAdapter = new HostGroupsSpinnerAdapter(this);
 
 	}
 
@@ -186,7 +196,7 @@ public class ZabbixDataService extends Service {
 		new RemoteAPITask(mRemoteAPI) {
 
 			private List<Event> events;
-			private EventsListAdapter adapter = mEventsListAdapters
+			private BaseServiceAdapter<Event> adapter = mEventsListAdapters
 					.get(severity);
 			private EventsDetailsPagerAdapter detailsAdapter = mEventsDetailsPagerAdapters
 					.get(severity);
@@ -229,6 +239,46 @@ public class ZabbixDataService extends Service {
 
 		}.execute();
 
+	}
+	
+	public void loadHostGroups() {
+		new RemoteAPITask(mRemoteAPI) {
+
+			private List<HostGroup> hostGroups;
+			private BaseServiceAdapter<HostGroup> adapter = mHostGroupSpinnerAdapter;
+
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				hostGroups = new ArrayList<HostGroup>();
+				try {
+					mRemoteAPI.importHostsAndGroups();
+					// even if the api call is not successful, we can still use
+					// the cached events
+				} finally {
+					try {
+						hostGroups = mDatabaseHelper.getHostGroups();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+				// TODO: update the data set instead of removing and re-adding
+				// all items
+				if (adapter != null) {
+					adapter.clear();
+					adapter.addAll(hostGroups);
+					adapter.notifyDataSetChanged();
+				}
+
+			}
+
+		}.execute();
 	}
 
 	/**

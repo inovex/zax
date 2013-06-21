@@ -1,16 +1,23 @@
 package com.inovex.zabbixmobile.activities;
 
+import java.util.ArrayList;
+
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.ViewFlipper;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListFragment;
 import com.inovex.zabbixmobile.activities.fragments.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
+import com.inovex.zabbixmobile.view.HostGroupsSpinnerAdapter;
 
 public class EventsActivity extends BaseActivity implements
 		OnListItemSelectedListener {
@@ -31,6 +38,14 @@ public class EventsActivity extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_events);
 
+		// We'll be using a spinner menu
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		mActionBar.setDisplayShowTitleEnabled(false);
+
+		// SpinnerAdapter mSpinnerAdapter =
+		// ArrayAdapter.createFromResource(this, R.array.spinner_list,
+		// android.R.layout.simple_spinner_item);
+
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
 		mDetailsFragment = (EventsDetailsFragment) mFragmentManager
@@ -39,6 +54,34 @@ public class EventsActivity extends BaseActivity implements
 				.findFragmentById(R.id.events_list);
 
 	}
+	
+	
+
+	@Override
+	public void onServiceConnected(ComponentName className, IBinder service) {
+		super.onServiceConnected(className, service);
+		
+		HostGroupsSpinnerAdapter spinnerAdapter = mZabbixService.getHostGroupSpinnerAdapter();
+		
+		ActionBar.OnNavigationListener mOnNavigationListener = new ActionBar.OnNavigationListener() {
+			// Get the same strings provided for the drop-down's ArrayAdapter
+
+			@Override
+			public boolean onNavigationItemSelected(int position, long itemId) {
+				return true;
+			}
+		};
+		
+		spinnerAdapter.setTitle(getResources().getString(R.string.events));
+		
+		mActionBar.setListNavigationCallbacks(spinnerAdapter,
+				mOnNavigationListener);
+		
+		mZabbixService.loadHostGroups();
+		
+	}
+
+
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -55,7 +98,8 @@ public class EventsActivity extends BaseActivity implements
 	}
 
 	@Override
-	public void onListItemSelected(int position, TriggerSeverity severity, long id) {
+	public void onListItemSelected(int position, TriggerSeverity severity,
+			long id) {
 		Log.d(TAG, "event selected: " + id + ",severity: " + severity
 				+ "(position: " + position + ")");
 		this.mEventPosition = position;
