@@ -29,7 +29,7 @@ public class ZabbixDataService extends Service {
 	public interface OnLoginProgressListener {
 
 		public void onLoginStarted();
-		public void onLoginFinished();
+		public void onLoginFinished(boolean success);
 
 	}
 
@@ -96,13 +96,13 @@ public class ZabbixDataService extends Service {
 				protected void executeTask()
 						throws ZabbixLoginRequiredException, FatalException {
 					mRemoteAPI.authenticate();
+					loggedIn = true;
 				}
 
 				@Override
 				protected void onPostExecute(Void result) {
 					super.onPostExecute(result);
-					loggedIn = true;
-					listener.onLoginFinished();
+					listener.onLoginFinished(loggedIn);
 				}
 
 			};

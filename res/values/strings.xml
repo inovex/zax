@@ -14,7 +14,8 @@
     <string name="exc_precondition_failed">This version of Zabbix does not support API calls.</string>
     <string name="exc_login_incorrect">Zabbix login incorrect.</string>
     <string name="exc_no_connection">Could not connect to Zabbix server. Please verify internet access.</string>
-    <string name="exc_not_found">The Zabbix server could not be contacted. Please verify the server address.</string>
+    <string name="exc_connection_timeout">Connection to Zabbix server timed out. Please verify internet access.</string>
+    <string name="exc_not_found">The Zabbix server could not be contacted. Please verify that the server address is correct.</string>
     <string name="exc_internal_error">Internal error.</string>
     
     <string name="no_graph">You have to select an item from the Checks-list.</string>

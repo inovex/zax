@@ -12,6 +12,7 @@ public class FatalException extends Exception {
 		PRECONDITION_FAILED(R.string.exc_precondition_failed),
 		ZABBIX_LOGIN_INCORRECT(R.string.exc_login_incorrect),
 		NO_CONNECTION(R.string.exc_no_connection),
+		CONNECTION_TIMEOUT(R.string.exc_connection_timeout),
 		SERVER_NOT_FOUND(R.string.exc_not_found),
 		INTERNAL_ERROR(R.string.exc_internal_error);
 		

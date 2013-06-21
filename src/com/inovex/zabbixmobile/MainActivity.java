@@ -118,10 +118,11 @@ public class MainActivity extends SherlockFragmentActivity implements
 	}
 	
 	@Override
-	public void onLoginFinished() {
+	public void onLoginFinished(boolean success) {
 		if(mLoginProgress != null)
 			mLoginProgress.dismiss();
-		Toast.makeText(this, R.string.zabbix_login_successful, Toast.LENGTH_LONG).show();
+		if(success)
+			Toast.makeText(this, R.string.zabbix_login_successful, Toast.LENGTH_LONG).show();
 	}
 
 	@Override

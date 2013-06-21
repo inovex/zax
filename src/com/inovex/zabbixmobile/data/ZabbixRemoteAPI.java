@@ -30,6 +30,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -286,6 +287,8 @@ public class ZabbixRemoteAPI {
 			return result;
 		} catch (SocketException e) {
 			throw new FatalException(Type.NO_CONNECTION, e);
+		} catch (ConnectTimeoutException e) {
+			throw new FatalException(Type.CONNECTION_TIMEOUT, e);
 		}
 	}
 
@@ -372,6 +375,8 @@ public class ZabbixRemoteAPI {
 			return new JsonArrayOrObjectReader(jp);
 		} catch (SocketException e) {
 			throw new FatalException(Type.NO_CONNECTION, e);
+		} catch (ConnectTimeoutException e) {
+			throw new FatalException(Type.CONNECTION_TIMEOUT, e);
 		}
 	}
 
