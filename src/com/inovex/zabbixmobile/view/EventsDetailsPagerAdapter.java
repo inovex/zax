@@ -14,12 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsPage;
-import com.inovex.zabbixmobile.activities.fragments.OnEventSelectedListener;
+import com.inovex.zabbixmobile.activities.fragments.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public class EventsDetailsPagerAdapter extends PagerAdapter implements
-		OnEventSelectedListener {
+		OnListItemSelectedListener {
 
 	private List<Event> events;
 	private static final String TAG = EventsDetailsPagerAdapter.class
@@ -164,7 +164,7 @@ public class EventsDetailsPagerAdapter extends PagerAdapter implements
 	}
 
 	@Override
-	public void onEventSelected(int position, TriggerSeverity severity,
+	public void onListItemSelected(int position, TriggerSeverity severity,
 			long id) {
 		// TODO Auto-generated method stub
 

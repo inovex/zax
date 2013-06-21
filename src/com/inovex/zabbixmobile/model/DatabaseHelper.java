@@ -134,18 +134,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return eventDao.queryForId(id);
 	}
 
-	public void insertEvent(Event event) throws SQLException {
-		Dao<Event, Long> eventDao = getDao(Event.class);
-		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
-		eventDao.createOrUpdate(event);
-		Trigger t = event.getTrigger();
-		if (t != null) {
-			triggerDao.createOrUpdate(t);
-		}
-		mTransactionSize++;
-
-	}
-
 	public void insertEvents(Collection<Event> events) throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);

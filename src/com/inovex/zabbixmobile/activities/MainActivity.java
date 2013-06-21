@@ -1,4 +1,4 @@
-package com.inovex.zabbixmobile;
+package com.inovex.zabbixmobile.activities;
 
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -20,31 +20,27 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.inovex.zabbixmobile.activities.ChecksActivity;
-import com.inovex.zabbixmobile.activities.EventsActivity;
-import com.inovex.zabbixmobile.activities.ScreensActivity;
-import com.inovex.zabbixmobile.activities.ZaxPreferenceActivity;
+import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.R.array;
+import com.inovex.zabbixmobile.R.id;
+import com.inovex.zabbixmobile.R.layout;
+import com.inovex.zabbixmobile.R.menu;
+import com.inovex.zabbixmobile.R.string;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 
-public class MainActivity extends SherlockFragmentActivity implements
-		ServiceConnection, OnLoginProgressListener {
+public class MainActivity extends BaseActivity implements
+		OnLoginProgressListener {
 
 	protected static final String TAG = MainActivity.class.getSimpleName();
 
-	private ZabbixDataService mZabbixService;
 	private ProgressDialog mLoginProgress;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		ActionBar actionBar = getSupportActionBar();
-
-		actionBar.setHomeButtonEnabled(true);
-		actionBar.setDisplayShowTitleEnabled(true);
 
 		ListView listView = (ListView) findViewById(R.id.main_activities);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -96,12 +92,9 @@ public class MainActivity extends SherlockFragmentActivity implements
 		return false;
 	}
 
-	/** Defines callbacks for service binding, passed to bindService() */
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
-		ZabbixDataBinder binder = (ZabbixDataBinder) service;
-		mZabbixService = binder.getService();
-		mZabbixService.setActivityContext(MainActivity.this);
+		super.onServiceConnected(className, service);
 		
 		mZabbixService.performZabbixLogin(this);
 
@@ -126,24 +119,12 @@ public class MainActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
-	public void onServiceDisconnected(ComponentName arg0) {
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
+	protected void bindService() {
 
 		Intent intent = new Intent(this, ZabbixDataService.class);
-		
 		boolean useMockData = getIntent().getBooleanExtra(ZabbixDataService.EXTRA_USE_MOCK_DATA, false);
 		intent.putExtra(ZabbixDataService.EXTRA_USE_MOCK_DATA, useMockData);
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		unbindService(this);
 	}
 
 }

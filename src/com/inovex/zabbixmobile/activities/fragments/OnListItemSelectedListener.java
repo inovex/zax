@@ -3,7 +3,7 @@ package com.inovex.zabbixmobile.activities.fragments;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 // Container Activity must implement this interface
-public interface OnEventSelectedListener {
+public interface OnListItemSelectedListener {
 
 	/**
 	 * Callback method for the selection of an event.
@@ -15,7 +15,7 @@ public interface OnEventSelectedListener {
 	 * @param id
 	 *            event ID (Zabbix event_id)
 	 */
-	public void onEventSelected(int position, TriggerSeverity severity,
+	public void onListItemSelected(int position, TriggerSeverity severity,
 			long id);
 
 }

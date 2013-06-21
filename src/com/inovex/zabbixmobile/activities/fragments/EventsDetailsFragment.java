@@ -35,7 +35,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 	ViewPager mDetailsPager;
 	EventsDetailsPagerAdapter mDetailsPagerAdapter;
 
-	private OnEventSelectedListener mCallbackMain;
+	private OnListItemSelectedListener mCallbackMain;
 	private int mPosition = 0;
 	private long mEventId = 0;
 	private TriggerSeverity mSeverity = TriggerSeverity.ALL;
@@ -52,7 +52,7 @@ public class EventsDetailsFragment extends SherlockFragment implements
 		// This makes sure that the container activity has implemented
 		// the callback interface. If not, it throws an exception
 		try {
-			mCallbackMain = (OnEventSelectedListener) activity;
+			mCallbackMain = (OnListItemSelectedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnEventSelectedListener.");

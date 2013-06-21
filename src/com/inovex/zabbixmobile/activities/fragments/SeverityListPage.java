@@ -22,15 +22,15 @@ import com.inovex.zabbixmobile.view.EventsListAdapter;
 
 /**
  * Represents one page of the event list view pager (see
- * {@link EventsListFragment.EventListPagerAdapter} ). Shows a list of events
+ * {@link EventsListFragment.SeverityListPagerAdapter} ). Shows a list of events
  * for a specific severity.
  */
-public class EventsListPage extends SherlockListFragment implements
+public class SeverityListPage extends SherlockListFragment implements
 		ServiceConnection {
 
-	private static final String TAG = EventsListPage.class.getSimpleName();
+	private static final String TAG = SeverityListPage.class.getSimpleName();
 
-	private OnEventSelectedListener mCallbackMain;
+	private OnListItemSelectedListener mCallbackMain;
 	private ZabbixDataService mZabbixDataService;
 
 	private TriggerSeverity mSeverity;
@@ -43,7 +43,7 @@ public class EventsListPage extends SherlockListFragment implements
 		// This makes sure that the container activity has implemented
 		// the callback interface. If not, it throws an exception
 		try {
-			mCallbackMain = (OnEventSelectedListener) activity;
+			mCallbackMain = (OnListItemSelectedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnEventSelectedListener.");
@@ -114,7 +114,7 @@ public class EventsListPage extends SherlockListFragment implements
 		Log.d(TAG, "onListItemClick(l, v, " + position + ", " + id
 				+ "). severity: " + mSeverity);
 		mItemSelected = position;
-		mCallbackMain.onEventSelected(position, mSeverity, id);
+		mCallbackMain.onListItemSelected(position, mSeverity, id);
 	}
 
 	public void selectEvent(int position) {
