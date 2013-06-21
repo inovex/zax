@@ -19,6 +19,7 @@ import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.MockDatabaseHelper;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.view.EventsListAdapter;
@@ -29,13 +30,15 @@ public class ZabbixDataService extends Service {
 	public interface OnLoginProgressListener {
 
 		public void onLoginStarted();
+
 		public void onLoginFinished(boolean success);
 
 	}
 
 	private static final String TAG = ZabbixDataService.class.getSimpleName();
 
-	public static final String EXTRA_MESSENGER = "com.inovex.zabbixmobile.SERVICE_MESSENGER";
+	public static final String EXTRA_USE_MOCK_DATA = "use_mock_data";
+	boolean mUseMockData = false;
 	public static final int MESSAGE_LOGIN_STARTED = 1;
 	public static final int MESSAGE_LOGIN_FINISHED = 2;
 	// Binder given to clients
@@ -78,11 +81,39 @@ public class ZabbixDataService extends Service {
 				"Binder " + this.toString() + ": intent " + intent.toString()
 						+ " bound.");
 
+		if (intent.hasExtra(EXTRA_USE_MOCK_DATA)
+				&& intent.getBooleanExtra(EXTRA_USE_MOCK_DATA, false)) {
+			mUseMockData = true;
+		}
+
+		if (mDatabaseHelper == null) {
+			// set up SQLite connection using OrmLite
+			if (mUseMockData)
+				mDatabaseHelper = OpenHelperManager.getHelper(this,
+						MockDatabaseHelper.class);
+			else
+				mDatabaseHelper = OpenHelperManager.getHelper(this,
+						DatabaseHelper.class);
+			// recreate database
+			mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0,
+					1);
+			Log.d(TAG, "onCreate");
+		}
+		if (mRemoteAPI == null) {
+			mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
+					mDatabaseHelper);
+		}
+
 		return mBinder;
 	}
 
 	/**
-	 * @param loginProgressDialog
+	 * Performs the Zabbix login using the server address and credentials from
+	 * the preferences.
+	 * 
+	 * @param listener
+	 *            listener to be informed about start and end of the login
+	 *            process
 	 * 
 	 */
 	public void performZabbixLogin(final OnLoginProgressListener listener) {
@@ -113,13 +144,6 @@ public class ZabbixDataService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		// set up SQLite connection using OrmLite
-		mDatabaseHelper = OpenHelperManager.getHelper(this,
-				DatabaseHelper.class);
-		mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0, 1);
-		Log.d(TAG, "onCreate");
-		mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
-				mDatabaseHelper);
 
 		// set up adapters
 		mEventsListAdapters = new HashMap<TriggerSeverity, EventsListAdapter>(

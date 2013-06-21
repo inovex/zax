@@ -76,7 +76,7 @@ public class EventsListAdapter extends BaseAdapter {
 			description.setText(String.valueOf(t.getDescription()));
 		
 		Host h = e.getHost();
-		if(t == null) {
+		if(h == null) {
 			title.setText("");
 			Log.w(TAG, "No host defined for Event with ID "
 					+ e.getId());

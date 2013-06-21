@@ -134,6 +134,9 @@ public class MainActivity extends SherlockFragmentActivity implements
 		super.onStart();
 
 		Intent intent = new Intent(this, ZabbixDataService.class);
+		
+		boolean useMockData = getIntent().getBooleanExtra(ZabbixDataService.EXTRA_USE_MOCK_DATA, false);
+		intent.putExtra(ZabbixDataService.EXTRA_USE_MOCK_DATA, useMockData);
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
 	}
 
