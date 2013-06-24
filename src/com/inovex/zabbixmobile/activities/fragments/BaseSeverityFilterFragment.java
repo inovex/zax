@@ -24,14 +24,15 @@ public class BaseSeverityFilterFragment extends SherlockFragment {
 	private int mCurrentPosition = 0;
 	private long mCurrentEventId = 0;
 	private TriggerSeverity mCurrentSeverity = TriggerSeverity.ALL;
+	private long mCurrentHostGroup;
 
 	ViewPager mSeverityListPager;
 	SeverityListPagerAdapter mSeverityListPagerAdapter;
 	TabPageIndicator mSeverityListTabIndicator;
 
-	class SeverityListPagerAdapter extends FragmentPagerAdapter {
+	ArrayList<SeverityListPage> pages = new ArrayList<SeverityListPage>();
 
-		ArrayList<SeverityListPage> fragments = new ArrayList<SeverityListPage>();
+	class SeverityListPagerAdapter extends FragmentPagerAdapter {
 
 		public SeverityListPagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -40,14 +41,14 @@ public class BaseSeverityFilterFragment extends SherlockFragment {
 				f = new SeverityListPage();
 				f.setSeverity(s);
 
-				fragments.add(f);
+				pages.add(f);
 			}
 		}
 
 		@Override
 		public Fragment getItem(int i) {
 
-			return fragments.get(i);
+			return pages.get(i);
 		}
 
 		@Override
@@ -160,5 +161,12 @@ public class BaseSeverityFilterFragment extends SherlockFragment {
 
 	public void setCurrentSeverity(TriggerSeverity currentSeverity) {
 		this.mCurrentSeverity = currentSeverity;
+	}
+
+	public void setHostGroup(long itemId) {
+		this.mCurrentHostGroup = itemId;
+		for(SeverityListPage p : pages) {
+			p.setHostGroupId(itemId);
+		}
 	}
 }

@@ -17,6 +17,7 @@ import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
+import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.view.EventsListAdapter;
 
@@ -34,6 +35,7 @@ public class SeverityListPage extends SherlockListFragment implements
 	private ZabbixDataService mZabbixDataService;
 
 	private TriggerSeverity mSeverity;
+	private long mHostGroupId = HostGroup.GROUP_ID_ALL;
 	private int mItemSelected;
 
 	@Override
@@ -126,9 +128,17 @@ public class SeverityListPage extends SherlockListFragment implements
 	public void setSeverity(TriggerSeverity severity) {
 		this.mSeverity = severity;
 	}
+	
+	public void setHostGroupId(long hostGroupId) {
+		this.mHostGroupId = hostGroupId;
+		if(mZabbixDataService != null)
+			mZabbixDataService.loadEventsBySeverityAndHostGroup(mSeverity, mHostGroupId);
+	}
 
 	public void setItemSelected(int itemSelected) {
 		this.mItemSelected = itemSelected;
+		if(mZabbixDataService != null)
+			mZabbixDataService.loadEventsBySeverityAndHostGroup(mSeverity, mHostGroupId);
 	}
 
 	@Override
@@ -139,14 +149,13 @@ public class SeverityListPage extends SherlockListFragment implements
 		Log.d(TAG, "service connected: " + mZabbixDataService + " - binder: "
 				+ binder);
 		setListAdapter(mZabbixDataService.getEventsListAdapter(mSeverity));
-		mZabbixDataService.loadEventsBySeverity(mSeverity);
+		mZabbixDataService.loadEventsBySeverityAndHostGroup(mSeverity, mHostGroupId);
 
 	}
 
 	@Override
 	public void onServiceDisconnected(ComponentName name) {
-		// TODO Auto-generated method stub
-
+		mZabbixDataService = null;
 	}
 
 }

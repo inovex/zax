@@ -15,6 +15,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
@@ -72,6 +73,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Item.class);
 			TableUtils.createTable(connectionSource, Host.class);
 			TableUtils.createTable(connectionSource, HostGroup.class);
+			TableUtils.createTable(connectionSource,
+					TriggerHostGroupRelation.class);
 			TableUtils.createTable(connectionSource, Cache.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
@@ -95,6 +98,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Item.class, true);
 			TableUtils.dropTable(connectionSource, Host.class, true);
 			TableUtils.dropTable(connectionSource, HostGroup.class, true);
+			TableUtils.dropTable(connectionSource,
+					TriggerHostGroupRelation.class, true);
 			TableUtils.dropTable(connectionSource, Cache.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
@@ -111,19 +116,32 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @return list of events with a matching severity
 	 * @throws SQLException
 	 */
-	public List<Event> getEventsBySeverity(TriggerSeverity severity)
-			throws SQLException {
+	public List<Event> getEventsBySeverityAndHostGroupId(
+			TriggerSeverity severity, long hostGroupId) throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
-		if (severity == TriggerSeverity.ALL)
-			return eventDao.queryForAll();
-		// filter events by trigger severity
+		QueryBuilder<Event, Long> eventQuery = eventDao.queryBuilder();
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
 		QueryBuilder<Trigger, Long> triggerQuery = triggerDao.queryBuilder();
-		triggerQuery.where().eq(Trigger.COLUMN_PRIORITY, severity);
-		QueryBuilder<Event, Long> eventQuery = eventDao.queryBuilder();
-		return eventQuery.join(triggerQuery).query();
+
+		// filter events by trigger severity
+		if (!severity.equals(TriggerSeverity.ALL)) {
+			triggerQuery.where().eq(Trigger.COLUMN_PRIORITY, severity);
+		}
+
+		// filter triggers by host group ID
+		if (hostGroupId != HostGroup.GROUP_ID_ALL) {
+			Dao<TriggerHostGroupRelation, Void> hostGroupDao = getDao(TriggerHostGroupRelation.class);
+			QueryBuilder<TriggerHostGroupRelation, Void> hostGroupQuery = hostGroupDao
+					.queryBuilder();
+			hostGroupQuery.where().eq(TriggerHostGroupRelation.COLUMN_GROUPID,
+					hostGroupId);
+			triggerQuery.join(hostGroupQuery);
+		}
+
+		eventQuery.join(triggerQuery);
+		return eventQuery.query();
 	}
-	
+
 	public List<HostGroup> getHostGroups() throws SQLException {
 		Dao<HostGroup, Long> hostGroupDao = getDao(HostGroup.class);
 		return hostGroupDao.queryForAll();
@@ -155,10 +173,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				Trigger t = e.getTrigger();
 				if (t != null) {
 					triggerDao.createOrUpdate(t);
-				}
-				Host h = e.getHost();
-				if (t != null) {
-					hostDao.createOrUpdate(h);
 				}
 			}
 
@@ -193,6 +207,50 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			triggerDao.endThreadConnection(conn);
 		}
 
+	}
+
+	public void insertHostGroups(ArrayList<HostGroup> hostGroups)
+			throws SQLException {
+		Dao<HostGroup, Long> hostGroupDao = getDao(HostGroup.class);
+		mThreadConnection = hostGroupDao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (HostGroup group : hostGroups) {
+				hostGroupDao.createOrUpdate(group);
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			hostGroupDao.endThreadConnection(mThreadConnection);
+		}
+	}
+
+	public void insertTriggerHostgroupRelations(
+			List<TriggerHostGroupRelation> triggerHostGroupCollection)
+			throws SQLException {
+		Dao<TriggerHostGroupRelation, Void> dao = getDao(TriggerHostGroupRelation.class);
+		mThreadConnection = dao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (TriggerHostGroupRelation relation : triggerHostGroupCollection) {
+				try {
+					dao.createIfNotExists(relation);
+				} catch (SQLException e) {
+					// this might throw an exception if the relation exists
+					// already (however, with a different primary key) -> ignore
+				}
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			dao.endThreadConnection(mThreadConnection);
+		}
 	}
 
 	public void clearEvents() throws SQLException {
@@ -242,25 +300,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		if (c == null || c.getExpireTime() < System.currentTimeMillis())
 			return false;
 		return true;
-	}
-
-	public void insertHostGroups(ArrayList<HostGroup> hostGroups)
-			throws SQLException {
-		Dao<HostGroup, Long> hostGroupDao = getDao(HostGroup.class);
-		mThreadConnection = hostGroupDao.startThreadConnection();
-		Savepoint savePoint = null;
-		try {
-
-			for (HostGroup group : hostGroups) {
-				hostGroupDao.createOrUpdate(group);
-			}
-
-		} finally {
-			// commit at the end
-			savePoint = mThreadConnection.setSavePoint(null);
-			mThreadConnection.commit(savePoint);
-			hostGroupDao.endThreadConnection(mThreadConnection);
-		}
 	}
 
 }

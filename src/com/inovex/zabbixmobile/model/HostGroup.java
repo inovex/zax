@@ -3,6 +3,8 @@ package com.inovex.zabbixmobile.model;
 import com.j256.ormlite.field.DatabaseField;
 
 public class HostGroup {
+	
+	public static final int GROUP_ID_ALL = -1;
 
 	/** Host ID */
 	public static final String COLUMN_GROUPID = "groupid";

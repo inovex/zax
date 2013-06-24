@@ -191,7 +191,7 @@ public class ZabbixDataService extends Service {
 	 * @param callback
 	 *            callback to be notified of the changed list adapter
 	 */
-	public void loadEventsBySeverity(final TriggerSeverity severity) {
+	public void loadEventsBySeverityAndHostGroup(final TriggerSeverity severity, final long hostGroupId) {
 
 		new RemoteAPITask(mRemoteAPI) {
 
@@ -211,7 +211,7 @@ public class ZabbixDataService extends Service {
 					// the cached events
 				} finally {
 					try {
-						events = mDatabaseHelper.getEventsBySeverity(severity);
+						events = mDatabaseHelper.getEventsBySeverityAndHostGroupId(severity, hostGroupId);
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

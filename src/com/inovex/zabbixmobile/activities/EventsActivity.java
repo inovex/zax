@@ -13,6 +13,7 @@ import android.widget.ViewFlipper;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListFragment;
 import com.inovex.zabbixmobile.activities.fragments.OnListItemSelectedListener;
@@ -26,6 +27,7 @@ public class EventsActivity extends BaseActivity implements
 
 	private int mEventPosition;
 	private TriggerSeverity mSeverity = TriggerSeverity.ALL;
+	private long mHostGroupId;
 
 	private FragmentManager mFragmentManager;
 
@@ -68,6 +70,8 @@ public class EventsActivity extends BaseActivity implements
 
 			@Override
 			public boolean onNavigationItemSelected(int position, long itemId) {
+				mHostGroupId = itemId;
+				mListFragment.setHostGroup(itemId);
 				return true;
 			}
 		};

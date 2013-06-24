@@ -22,9 +22,6 @@ public class Event {
 	public static final String COLUMN_TRIGGER = "triggerid";
 	@DatabaseField(columnName = COLUMN_TRIGGER, canBeNull = true, foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	Trigger trigger;
-	public static final String COLUMN_HOST = "hostid";
-	@DatabaseField(columnName = COLUMN_HOST, canBeNull = true, foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
-	Host host;
 	// Caution: This is the timestamp in milliseconds!
 	public static final String COLUMN_CLOCK = "clock";
 	@DatabaseField(columnName = COLUMN_CLOCK)
@@ -35,6 +32,10 @@ public class Event {
 	public static final String COLUMN_ACK = "acknowledged";
 	@DatabaseField(columnName = COLUMN_ACK)
 	boolean acknowledged;
+	
+	// only local
+	@DatabaseField
+	String hostNames;
 
 	public Event() {
 	}
@@ -80,12 +81,12 @@ public class Event {
 		trigger = t;
 	}
 
-	public Host getHost() {
-		return host;
+	public String getHostNames() {
+		return hostNames;
 	}
 
-	public void setHost(Host host) {
-		this.host = host;
+	public void setHostNames(String hostNames) {
+		this.hostNames = hostNames;
 	}
 
 	public long getClock() {

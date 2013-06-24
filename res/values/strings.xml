@@ -46,6 +46,7 @@
     <string name="set_preferences">You have to set the preferences.</string>
     <string name="ok">OK</string>
     <string name="unknown">unknown</string>
+    <string name="all">all</string>
     <string name="events">Events</string>
     <string name="checks">Checks</string>
     <string name="item_details">Details</string>

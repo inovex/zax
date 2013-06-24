@@ -15,7 +15,9 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.net.ssl.SSLContext;
@@ -65,6 +67,7 @@ import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
+import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
@@ -664,7 +667,7 @@ public class ZabbixRemoteAPI {
 			}
 			JsonArrayOrObjectReader events = _queryStream("event.get", params);
 			importEvents(events);
-			events.close();
+//			events.close();
 			databaseHelper.setCached(CacheDataType.EVENT);
 		} catch (SQLException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
@@ -688,34 +691,36 @@ public class ZabbixRemoteAPI {
 	 * @throws JsonParseException
 	 * @throws IOException
 	 * @throws SQLException
+	 * @throws FatalException
+	 * @throws ZabbixLoginRequiredException
+	 * @throws JSONException
 	 */
 	private void importEvents(JsonArrayOrObjectReader events)
-			throws JsonParseException, IOException, SQLException {
+			throws JsonParseException, IOException, SQLException,
+			JSONException, ZabbixLoginRequiredException, FatalException {
 		JsonObjectReader eventReader;
 		List<Event> eventsCollection = new ArrayList<Event>(
 				RECORDS_PER_INSERT_BATCH);
+		HashSet<Long> triggerIds = new HashSet<Long>();
 		while ((eventReader = events.next()) != null) {
 			Event e = new Event();
 			while (eventReader.nextValueToken()) {
 				String propName = eventReader.getCurrentName();
 				if (propName.equals("hosts")) {
 					// import hosts
-					List<Host> hosts = importHosts(
+					String hostNames = importHosts(
 							eventReader.getJsonArrayOrObjectReader(), null);
 					// store hosts namen
-					if (hosts.size() > 0)
-						e.setHost(hosts.get(0));
-					if (hosts.size() > 1) {
-						Log.w(TAG,
-								"More than one trigger found for event "
-										+ e.getDetailedString());
-					}
+					e.setHostNames(hostNames);
 				} else if (propName.equals("triggers")) {
 					// // import triggers
 					List<Trigger> triggers = importTriggers(eventReader
 							.getJsonArrayOrObjectReader());
-					if (triggers.size() > 0)
-						e.setTrigger(triggers.get(0));
+					if (triggers.size() > 0) {
+						Trigger t = triggers.get(0);
+						e.setTrigger(t);
+						triggerIds.add(t.getId());
+					}
 					if (triggers.size() > 1) {
 						Log.w(TAG,
 								"More than one trigger found for event "
@@ -746,6 +751,8 @@ public class ZabbixRemoteAPI {
 		}
 		// insert the last batch of events
 		databaseHelper.insertEvents(eventsCollection);
+		events.close();
+		importTriggersByIds(triggerIds);
 	}
 
 	// /**
@@ -976,7 +983,7 @@ public class ZabbixRemoteAPI {
 	// }
 	// }
 
-	private long importHostGroups(JsonArrayOrObjectReader jsonArray)
+	private List<HostGroup> importHostGroups(JsonArrayOrObjectReader jsonArray)
 			throws JsonParseException, IOException, SQLException {
 		long firstHostGroupId = -1;
 		ArrayList<HostGroup> hostGroupCollection = new ArrayList<HostGroup>();
@@ -1006,7 +1013,8 @@ public class ZabbixRemoteAPI {
 		}
 		databaseHelper.insertHostGroups(hostGroupCollection);
 
-		return firstHostGroupId;
+		return hostGroupCollection;
+		// return firstHostGroupId;
 	}
 
 	/**
@@ -1022,7 +1030,7 @@ public class ZabbixRemoteAPI {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	private List<Host> importHosts(JsonArrayOrObjectReader jsonArray,
+	private String importHosts(JsonArrayOrObjectReader jsonArray,
 			Integer numHosts) throws JsonParseException, IOException,
 			SQLException {
 		List<String> hostnames = new ArrayList<String>();
@@ -1041,11 +1049,10 @@ public class ZabbixRemoteAPI {
 					// }
 				} else if (propName.equals(Host.COLUMN_HOST)) {
 					String host = hostReader.getText();
-					// hostnames.add(host);
+					hostnames.add(host);
 					h.setHost(host);
 				} else if (propName.equals("groups")) {
-					long groupid = importHostGroups(hostReader
-							.getJsonArrayOrObjectReader());
+					importHostGroups(hostReader.getJsonArrayOrObjectReader());
 					// if (groupid != -1) {
 					// h.set(HostData.COLUMN_GROUPID, groupid);
 					// }
@@ -1075,10 +1082,11 @@ public class ZabbixRemoteAPI {
 		// return new Object[] { hostnames.toString().replaceAll("[\\[\\]]",
 		// ""),
 		// firstHostId };
-		return hosts;
+		return hostnames.toString().replaceAll("[\\[\\]]", "");
 	}
 
-	public void importHostsAndGroups() throws ZabbixLoginRequiredException, FatalException {
+	public void importHostsAndGroups() throws ZabbixLoginRequiredException,
+			FatalException {
 		// if (!isCached(HostData.TABLE_NAME, null)) {
 		try {
 			databaseHelper.clearHosts();
@@ -1392,50 +1400,60 @@ public class ZabbixRemoteAPI {
 	// _endTransaction();
 	// }
 	// }
-	//
-	// /**
-	// * imports the "warning"-triggers
-	// * @throws JSONException
-	// * @throws IOException
-	// * @throws HttpAuthorizationRequiredException
-	// * @throws NoAPIAccessException
-	// * @throws SQLException
-	// */
-	// public void importTriggers() throws JSONException, IOException,
-	// HttpAuthorizationRequiredException, NoAPIAccessException,
-	// PreconditionFailedException, SQLException {
-	// // clear triggers
-	// databaseHelper.clearTriggers();
-	//
-	// long min = (new
-	// Date().getTime()/1000)-ZabbixConfig.STATUS_SHOW_TRIGGER_TIME;
-	// JsonArrayOrObjectReader triggers = _queryStream(
-	// "trigger.get"
-	// , new JSONObject()
-	// .put("output", "extend")
-	// .put("sortfield", "lastchange")
-	// .put("sortorder", "desc")
-	// .put(isVersion2?"selectHosts":"select_hosts", "extend")
-	// .put(isVersion2?"selectGroups":"select_groups", "extend")
-	// .put(isVersion2?"selectItems":"select_items", "extend")
-	// .put("lastChangeSince", min)
-	// .put("only_true", "1")
-	// .put("limit", ZabbixConfig.TRIGGER_GET_LIMIT)
-	// .put("expandDescription", true)
-	// );
-	// importTriggers(triggers);
-	// triggers.close();
-	//
-	// }
+
+	/**
+	 * imports the triggers with matching IDs.
+	 * 
+	 * @throws JSONException
+	 * @throws IOException
+	 * @throws HttpAuthorizationRequiredException
+	 * @throws NoAPIAccessException
+	 * @throws SQLException
+	 * @throws FatalException
+	 * @throws ZabbixLoginRequiredException
+	 */
+	private void importTriggersByIds(Collection<Long> triggerIds)
+			throws JSONException, IOException, SQLException,
+			ZabbixLoginRequiredException, FatalException {
+		// clear triggers
+//		databaseHelper.clearTriggers();
+
+		JSONArray ids = new JSONArray(triggerIds);
+
+		long min = (new Date().getTime() / 1000)
+				- ZabbixConfig.STATUS_SHOW_TRIGGER_TIME;
+		JsonArrayOrObjectReader triggers = _queryStream(
+				"trigger.get",
+				new JSONObject()
+						.put("output", "extend")
+						.put("triggerids", ids)
+						.put("sortfield", "lastchange")
+						.put("sortorder", "desc")
+//						.put(isVersion2 ? "selectHosts" : "select_hosts",
+//								"extend")
+						.put(isVersion2 ? "selectGroups" : "select_groups",
+								"extend")
+//						.put(isVersion2 ? "selectItems" : "select_items",
+//								"extend").put("lastChangeSince", min)
+						//.put("only_true", "1")
+						.put("limit", ZabbixConfig.TRIGGER_GET_LIMIT)
+						.put("expandDescription", true));
+		importTriggers(triggers);
+		triggers.close();
+
+	}
 
 	private List<Trigger> importTriggers(JsonArrayOrObjectReader jsonArray)
 			throws JsonParseException, IOException, SQLException {
 		List<Trigger> triggerCollection = new ArrayList<Trigger>();
+		List<TriggerHostGroupRelation> triggerHostGroupCollection = new ArrayList<TriggerHostGroupRelation>();
 		JsonObjectReader triggerReader;
 		while ((triggerReader = jsonArray.next()) != null) {
 			Trigger t = new Trigger();
 			while (triggerReader.nextValueToken()) {
 				String propName = triggerReader.getCurrentName();
+				if(propName == null)
+					continue;
 				if (propName.equals(Trigger.COLUMN_TRIGGERID)) {
 					t.setId(Long.parseLong(triggerReader.getText()));
 				} else if (propName.equals(Trigger.COLUMN_COMMENTS)) {
@@ -1462,7 +1480,14 @@ public class ZabbixRemoteAPI {
 					// t.set(TriggerData.COLUMN_HOSTS, hostsCache[0]);
 					// t.set(TriggerData.COLUMN_HOSTID, hostsCache[1]);
 				} else if (propName.equals("groups")) {
-					// importHostGroups(triggerReader.getJsonArrayOrObjectReader());
+					List<HostGroup> hostGroups = importHostGroups(triggerReader
+							.getJsonArrayOrObjectReader());
+					for (HostGroup h : hostGroups) {
+						TriggerHostGroupRelation th = new TriggerHostGroupRelation();
+						th.setTrigger(t);
+						th.setGroup(h);
+						triggerHostGroupCollection.add(th);
+					}
 				} else if (propName.equals("items")) {
 					// store the first item id
 					// t.set(TriggerData.COLUMN_ITEMID,
@@ -1474,6 +1499,9 @@ public class ZabbixRemoteAPI {
 			}
 			triggerCollection.add(t);
 		}
+		if (!triggerHostGroupCollection.isEmpty())
+			databaseHelper
+					.insertTriggerHostgroupRelations(triggerHostGroupCollection);
 		return triggerCollection;
 
 	}
