@@ -62,7 +62,6 @@ import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
-import com.inovex.zabbixmobile.model.DatabaseHelper;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
@@ -1463,7 +1462,9 @@ public class ZabbixRemoteAPI {
 				} else if (propName.equals(Trigger.COLUMN_EXPRESSION)) {
 					t.setExpression(triggerReader.getText());
 				} else if (propName.equals(Trigger.COLUMN_LASTCHANGE)) {
-					t.setLastChange(Long.parseLong(triggerReader.getText()));
+					// The unit of Zabbix timestamps is seconds, we need
+					// milliseconds
+					t.setLastChange(Long.parseLong(triggerReader.getText()) * 1000);
 				} else if (propName.equals(Trigger.COLUMN_PRIORITY)) {
 					t.setPriority(TriggerSeverity.getSeverityByNumber(Integer
 							.parseInt(triggerReader.getText())));

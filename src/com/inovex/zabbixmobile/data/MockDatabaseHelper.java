@@ -1,4 +1,4 @@
-package com.inovex.zabbixmobile.model;
+package com.inovex.zabbixmobile.data;
 
 import java.sql.SQLException;
 
@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.Trigger;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 

@@ -27,7 +27,7 @@ public class Trigger {
 	String comments;
 	public static final String COLUMN_LASTCHANGE = "lastchange";
 	@DatabaseField(columnName = COLUMN_LASTCHANGE)
-	Date lastChange;
+	long lastChange;
 	public static final String COLUMN_PRIORITY = "priority";
 	@DatabaseField(columnName = COLUMN_PRIORITY, index = true)
 	TriggerSeverity priority;
@@ -57,9 +57,7 @@ public class Trigger {
 		this.description = description;
 		this.expression = expression;
 		this.comments = comments;
-		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(lastChange);
-		this.lastChange = cal.getTime();
+		this.lastChange = lastChange;
 		this.priority = priority;
 		this.status = status;
 		this.value = value;
@@ -80,10 +78,6 @@ public class Trigger {
 
 	public String getComments() {
 		return comments;
-	}
-
-	public Date getLastchange() {
-		return lastChange;
 	}
 
 	public TriggerSeverity getPriority() {
@@ -110,18 +104,12 @@ public class Trigger {
 		return items;
 	}
 
-	public Date getLastChange() {
+	public long getLastChange() {
 		return lastChange;
 	}
 
-	public void setLastChange(Date lastChange) {
-		this.lastChange = lastChange;
-	}
-
 	public void setLastChange(long lastChange) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(lastChange);
-		this.lastChange = cal.getTime();
+		this.lastChange = lastChange;
 	}
 
 	public void setId(long id) {

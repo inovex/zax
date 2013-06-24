@@ -1,4 +1,4 @@
-package com.inovex.zabbixmobile.model;
+package com.inovex.zabbixmobile.data;
 
 import java.sql.SQLException;
 import java.sql.Savepoint;
@@ -12,6 +12,14 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.model.Cache;
+import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.Host;
+import com.inovex.zabbixmobile.model.HostGroup;
+import com.inovex.zabbixmobile.model.Item;
+import com.inovex.zabbixmobile.model.Trigger;
+import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
@@ -137,6 +145,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					hostGroupId);
 			triggerQuery.join(hostGroupQuery);
 		}
+		
+		eventQuery.orderBy(Event.COLUMN_CLOCK, false);
 
 		eventQuery.join(triggerQuery);
 		return eventQuery.query();

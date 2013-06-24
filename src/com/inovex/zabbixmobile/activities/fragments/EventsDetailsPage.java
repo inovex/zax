@@ -1,5 +1,10 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -60,7 +65,12 @@ public class EventsDetailsPage extends SherlockFragment {
 			sb.append("expression: " + t.getExpression() + "\n");
 			sb.append("URL: " + t.getUrl() + "\n");
 			sb.append("value: " + t.getValue() + "\n");
-			sb.append("lastchange: " + t.getLastchange() + "\n");
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(t.getLastChange());
+			DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
+					SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
+					Locale.getDefault());
+			sb.append("lastchange: " + String.valueOf(dateFormatter.format(cal.getTime())) + "\n");
 		}
 		TextView text = (TextView) getView().findViewById(R.id.details_text);
 		text.setText(sb.toString());
