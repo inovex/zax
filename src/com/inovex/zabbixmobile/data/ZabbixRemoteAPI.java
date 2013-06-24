@@ -72,6 +72,9 @@ import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
 
 public class ZabbixRemoteAPI {
+	private static final String ZABBIX_ERROR_NO_API_ACCESS = "No API access";
+	private static final String ZABBIX_ERROR_NOT_AUTHORIZED = "Not authorized";
+	private static final String ZABBIX_ERROR_LOGIN_INCORRECT = "Login name or password is incorrect";
 	private static final int RECORDS_PER_INSERT_BATCH = 50;
 	private static final String TAG = ZabbixRemoteAPI.class.getSimpleName();
 
@@ -273,15 +276,19 @@ public class ZabbixRemoteAPI {
 			try {
 				if (result.getJSONObject("error") != null) {
 					if (result.getJSONObject("error").getString("data")
-							.equals("No API access")) {
+							.equals(ZABBIX_ERROR_NO_API_ACCESS)) {
 						throw new FatalException(Type.NO_API_ACCESS);
-					} else {
-						throw new FatalException(Type.INTERNAL_ERROR, result
-								.getJSONObject("error").toString());
 					}
+					if (result.getJSONObject("error").getString("data")
+							.equals(ZABBIX_ERROR_LOGIN_INCORRECT))
+						throw new FatalException(Type.ZABBIX_LOGIN_INCORRECT);
+					throw new FatalException(Type.INTERNAL_ERROR, result
+							.getJSONObject("error").toString());
 				}
-				// TODO: Login credentials wrong -> catch here
-				if (result.getString("data").equals("Not authorized")) {
+				if (result.getString("data").equals(
+						ZABBIX_ERROR_LOGIN_INCORRECT))
+					throw new FatalException(Type.ZABBIX_LOGIN_INCORRECT);
+				if (result.getString("data").equals(ZABBIX_ERROR_NOT_AUTHORIZED)) {
 					// this should lead to a retry
 					throw new ZabbixLoginRequiredException();
 				}
@@ -341,9 +348,9 @@ public class ZabbixRemoteAPI {
 					while (jp.nextToken() != JsonToken.END_OBJECT) {
 						errortxt += jp.getText();
 					}
-					if (errortxt.contains("No API access")) {
+					if (errortxt.contains(ZABBIX_ERROR_NO_API_ACCESS)) {
 						throw new FatalException(Type.NO_API_ACCESS);
-					} else if (errortxt.contains("Not authorized")) {
+					} else if (errortxt.contains(ZABBIX_ERROR_NOT_AUTHORIZED)) {
 						throw new ZabbixLoginRequiredException();
 					} else {
 						throw new FatalException(Type.INTERNAL_ERROR,
@@ -666,7 +673,7 @@ public class ZabbixRemoteAPI {
 			}
 			JsonArrayOrObjectReader events = _queryStream("event.get", params);
 			importEvents(events);
-//			events.close();
+			// events.close();
 			databaseHelper.setCached(CacheDataType.EVENT);
 		} catch (SQLException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
@@ -1415,7 +1422,7 @@ public class ZabbixRemoteAPI {
 			throws JSONException, IOException, SQLException,
 			ZabbixLoginRequiredException, FatalException {
 		// clear triggers
-//		databaseHelper.clearTriggers();
+		// databaseHelper.clearTriggers();
 
 		JSONArray ids = new JSONArray(triggerIds);
 
@@ -1428,13 +1435,13 @@ public class ZabbixRemoteAPI {
 						.put("triggerids", ids)
 						.put("sortfield", "lastchange")
 						.put("sortorder", "desc")
-//						.put(isVersion2 ? "selectHosts" : "select_hosts",
-//								"extend")
+						// .put(isVersion2 ? "selectHosts" : "select_hosts",
+						// "extend")
 						.put(isVersion2 ? "selectGroups" : "select_groups",
 								"extend")
-//						.put(isVersion2 ? "selectItems" : "select_items",
-//								"extend").put("lastChangeSince", min)
-						//.put("only_true", "1")
+						// .put(isVersion2 ? "selectItems" : "select_items",
+						// "extend").put("lastChangeSince", min)
+						// .put("only_true", "1")
 						.put("limit", ZabbixConfig.TRIGGER_GET_LIMIT)
 						.put("expandDescription", true));
 		importTriggers(triggers);
@@ -1451,7 +1458,7 @@ public class ZabbixRemoteAPI {
 			Trigger t = new Trigger();
 			while (triggerReader.nextValueToken()) {
 				String propName = triggerReader.getCurrentName();
-				if(propName == null)
+				if (propName == null)
 					continue;
 				if (propName.equals(Trigger.COLUMN_TRIGGERID)) {
 					t.setId(Long.parseLong(triggerReader.getText()));
