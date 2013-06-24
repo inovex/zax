@@ -1,7 +1,7 @@
 package com.inovex.zabbixmobile.view;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.TreeSet;
 
 import android.view.LayoutInflater;
 import android.widget.BaseAdapter;
@@ -11,11 +11,11 @@ import com.inovex.zabbixmobile.data.ZabbixDataService;
 public abstract class BaseServiceAdapter<T> extends BaseAdapter {
 
 	protected ZabbixDataService mZabbixDataService;
-	protected ArrayList<T> mObjects;
+	protected TreeSet<T> mObjects;
 	
 	public BaseServiceAdapter(ZabbixDataService service) {
 		this.mZabbixDataService = service;
-		this.mObjects = new ArrayList<T>();
+		this.mObjects = new TreeSet<T>();
 	}
 	
 	public void addAll(Collection<T> collection) {
@@ -31,9 +31,10 @@ public abstract class BaseServiceAdapter<T> extends BaseAdapter {
 		return mObjects.size();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T getItem(int position) {
-		return mObjects.get(position);
+		return (T)mObjects.toArray()[position];
 	}
 
 	/**

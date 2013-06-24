@@ -146,7 +146,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			triggerQuery.join(hostGroupQuery);
 		}
 		
-		eventQuery.orderBy(Event.COLUMN_CLOCK, false);
+//		eventQuery.orderBy(Event.COLUMN_CLOCK, false);
 
 		eventQuery.join(triggerQuery);
 		return eventQuery.query();

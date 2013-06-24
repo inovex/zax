@@ -11,7 +11,7 @@ import com.j256.ormlite.table.DatabaseTable;
  * A simple demonstration object we are creating and persisting to the database.
  */
 @DatabaseTable(tableName = "events")
-public class Event {
+public class Event implements Comparable {
 
 	public static final String COLUMN_ID = "eventid";
 	@DatabaseField(id = true, columnName = COLUMN_ID)
@@ -124,5 +124,15 @@ public class Event {
 	@Override
 	public String toString() {
 		return String.valueOf(id);
+	}
+
+	@Override
+	public int compareTo(Object another) {
+		Event anotherEvent = (Event) another;
+		if(clock > anotherEvent.getClock())
+			return -1;
+		if(clock < anotherEvent.getClock())
+			return 1;
+		return 0;
 	}
 }

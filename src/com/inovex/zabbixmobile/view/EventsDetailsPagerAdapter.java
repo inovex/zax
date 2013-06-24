@@ -1,8 +1,7 @@
 package com.inovex.zabbixmobile.view;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.TreeSet;
 
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -21,7 +20,7 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
 public class EventsDetailsPagerAdapter extends PagerAdapter implements
 		OnListItemSelectedListener {
 
-	private List<Event> events;
+	private TreeSet<Event> mObjects;
 	private static final String TAG = EventsDetailsPagerAdapter.class
 			.getSimpleName();
 	private static final boolean DEBUG = false;
@@ -40,7 +39,7 @@ public class EventsDetailsPagerAdapter extends PagerAdapter implements
 		mFragmentManager = fm;
 		Log.d(TAG, "creating DetailsPagerAdapter for severity " + severity);
 
-		events = new ArrayList<Event>();
+		mObjects = new TreeSet<Event>();
 	}
 
 	public void setFragmentManager(FragmentManager fm) {
@@ -153,14 +152,14 @@ public class EventsDetailsPagerAdapter extends PagerAdapter implements
 
 	public Fragment getItem(int i) {
 		EventsDetailsPage f = new EventsDetailsPage();
-		Event event = events.get(i);
+		Event event = getEvent(i);
 		f.setEvent(event);
 		return f;
 	}
 
 	@Override
 	public int getCount() {
-		return events.size();
+		return mObjects.size();
 	}
 
 	@Override
@@ -171,14 +170,18 @@ public class EventsDetailsPagerAdapter extends PagerAdapter implements
 	}
 
 	public void addAll(Collection<? extends Event> events) {
-		this.events.addAll(events);
+		this.mObjects.addAll(events);
+	}
+	
+	public Event getEvent(int position) {
+		return (Event)mObjects.toArray()[position];
 	}
 
 	/**
 	 * Clears the collection of events.
 	 */
 	public void clear() {
-		events.clear();
+		mObjects.clear();
 	}
 
 }

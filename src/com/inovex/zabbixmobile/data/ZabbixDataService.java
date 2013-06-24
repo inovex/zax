@@ -40,8 +40,6 @@ public class ZabbixDataService extends Service {
 
 	public static final String EXTRA_USE_MOCK_DATA = "use_mock_data";
 	boolean mUseMockData = false;
-	public static final int MESSAGE_LOGIN_STARTED = 1;
-	public static final int MESSAGE_LOGIN_FINISHED = 2;
 	// Binder given to clients
 	private final IBinder mBinder = new ZabbixDataBinder();
 
@@ -223,13 +221,13 @@ public class ZabbixDataService extends Service {
 				// TODO: update the data set instead of removing and re-adding
 				// all items
 				if (adapter != null) {
-					adapter.clear();
+//					adapter.clear();
 					adapter.addAll(events);
 					adapter.notifyDataSetChanged();
 				}
 
 				if (detailsAdapter != null) {
-					detailsAdapter.clear();
+//					detailsAdapter.clear();
 					detailsAdapter.addAll(events);
 					detailsAdapter.notifyDataSetChanged();
 				}
@@ -269,7 +267,7 @@ public class ZabbixDataService extends Service {
 				// TODO: update the data set instead of removing and re-adding
 				// all items
 				if (adapter != null) {
-					adapter.clear();
+//					adapter.clear();
 					adapter.addAll(hostGroups);
 					adapter.notifyDataSetChanged();
 				}

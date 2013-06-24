@@ -14,18 +14,21 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 
 	public HostGroupsSpinnerAdapter(ZabbixDataService service) {
 		super(service);
+		mObjects.add(new HostGroup(HostGroup.GROUP_ID_ALL, mZabbixDataService
+				.getResources().getString(R.string.all)));
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 
-		View actionBarView = getInflater().inflate(R.layout.host_groups_spinner_main, null);
+		View actionBarView = getInflater().inflate(
+				R.layout.host_groups_spinner_main, null);
 		TextView title = (TextView) actionBarView
 				.findViewById(R.id.shost_groups_spinner_title);
 		title.setText(mTitle);
 		TextView subtitle = (TextView) actionBarView
 				.findViewById(R.id.host_groups_spinner_subtitle);
-		subtitle.setText(mObjects.get(position).getName());
+		subtitle.setText(getItem(position).getName());
 		return actionBarView;
 
 	}
@@ -37,19 +40,19 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 		TextView dropDownTitle = (TextView) actionBarDropDownView
 				.findViewById(R.id.host_groups_spinner_dropdown_title);
 
-		dropDownTitle.setText(mObjects.get(position).getName());
+		dropDownTitle.setText(getItem(position).getName());
 
 		return actionBarDropDownView;
 
 	}
-	
+
 	public void setTitle(String title) {
 		mTitle = title;
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return mObjects.get(position).getGroupId();
+		return getItem(position).getGroupId();
 	}
 
 	@Override
