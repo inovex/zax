@@ -1,34 +1,33 @@
 package com.inovex.zabbixmobile.activities;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.R.array;
-import com.inovex.zabbixmobile.R.id;
-import com.inovex.zabbixmobile.R.layout;
-import com.inovex.zabbixmobile.R.menu;
-import com.inovex.zabbixmobile.R.string;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
-import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
+import com.inovex.zabbixmobile.model.HostGroup;
+import com.inovex.zabbixmobile.model.Trigger;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
+import com.inovex.zabbixmobile.view.BaseServiceAdapter;
 
 public class MainActivity extends BaseActivity implements
 		OnLoginProgressListener {
@@ -37,16 +36,46 @@ public class MainActivity extends BaseActivity implements
 
 	private ProgressDialog mLoginProgress;
 
+	private ListView mProblemsList;
+	private Button mProblemsButton;
+
+	private MenuListAdapter mListAdapter;
+
+	protected class MenuListAdapter extends ArrayAdapter<String> {
+		
+		private boolean mEnabled = true;
+
+		public MenuListAdapter(Context context, int resource, String[] objects) {
+			super(context, resource, objects);
+		}
+		
+		@Override
+		public boolean isEnabled(int position) {
+			return mEnabled;
+		}
+
+		@Override
+		public boolean areAllItemsEnabled() {
+			return mEnabled;
+		}
+
+		// TODO: adjust view!
+		public void setEnabled(boolean enabled) {
+			mEnabled = enabled;
+		}
+
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
 		ListView listView = (ListView) findViewById(R.id.main_activities);
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				this, R.array.activities,
-				android.R.layout.simple_expandable_list_item_1);
-		listView.setAdapter(adapter);
+		mListAdapter = new MenuListAdapter(this,
+				android.R.layout.simple_expandable_list_item_1, getResources()
+						.getStringArray(R.array.activities));
+		listView.setAdapter(mListAdapter);
 
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -58,12 +87,9 @@ public class MainActivity extends BaseActivity implements
 					intent = new Intent(MainActivity.this, EventsActivity.class);
 					break;
 				case 1:
-					intent = new Intent(MainActivity.this, ProblemsActivity.class);
-					break;
-				case 2:
 					intent = new Intent(MainActivity.this, ChecksActivity.class);
 					break;
-				case 3:
+				case 2:
 					intent = new Intent(MainActivity.this,
 							ScreensActivity.class);
 					break;
@@ -75,7 +101,31 @@ public class MainActivity extends BaseActivity implements
 		});
 
 		LinearLayout baseLayout = (LinearLayout) findViewById(R.id.layout_main);
-		
+
+		mProblemsList = (ListView) findViewById(R.id.main_problems_list);
+		mProblemsButton = (Button) findViewById(R.id.main_problems_button);
+		disableButtons();
+
+		mProblemsButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(MainActivity.this,
+						ProblemsActivity.class);
+				MainActivity.this.startActivity(intent);
+			}
+		});
+
+	}
+
+	private void disableButtons() {
+		mProblemsButton.setEnabled(false);
+		mListAdapter.setEnabled(false);
+	}
+
+	private void enableButtons() {
+		mProblemsButton.setEnabled(true);
+		mListAdapter.setEnabled(true);
 	}
 
 	@Override
@@ -84,11 +134,12 @@ public class MainActivity extends BaseActivity implements
 		getSupportMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.menuitem_preferences) {
-			Intent intent = new Intent(getApplicationContext(), ZaxPreferenceActivity.class);
+			Intent intent = new Intent(getApplicationContext(),
+					ZaxPreferenceActivity.class);
 			startActivityForResult(intent, 0);
 			return true;
 		}
@@ -98,34 +149,49 @@ public class MainActivity extends BaseActivity implements
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		super.onServiceConnected(className, service);
-		
-		mZabbixService.performZabbixLogin(this);
+
+		if (!PreferenceManager.getDefaultSharedPreferences(this)
+				.getString("zabbix_username", "").equals("")) {
+
+			mZabbixService.performZabbixLogin(this);
+
+			BaseServiceAdapter<Trigger> adapter = mZabbixService
+					.getProblemsListAdapter(TriggerSeverity.ALL);
+			mProblemsList.setAdapter(adapter);
+			mZabbixService.loadTriggersBySeverityAndHostGroup(
+					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true);
+		}
 
 	}
-	
+
 	@Override
 	public void onLoginStarted() {
 		mLoginProgress = new ProgressDialog(MainActivity.this);
 		mLoginProgress.setTitle(R.string.zabbix_login);
-		mLoginProgress.setMessage(getResources().getString(R.string.zabbix_login_in_progress));
-		mLoginProgress.setCancelable(false);
+		mLoginProgress.setMessage(getResources().getString(
+				R.string.zabbix_login_in_progress));
+		// mLoginProgress.setCancelable(false);
 		mLoginProgress.setIndeterminate(true);
 		mLoginProgress.show();
+		disableButtons();
 	}
-	
+
 	@Override
 	public void onLoginFinished(boolean success) {
-		if(mLoginProgress != null)
+		if (mLoginProgress != null)
 			mLoginProgress.dismiss();
-		if(success)
-			Toast.makeText(this, R.string.zabbix_login_successful, Toast.LENGTH_LONG).show();
+		if (success) {
+			Toast.makeText(this, R.string.zabbix_login_successful,
+					Toast.LENGTH_LONG).show();
+			enableButtons();
+		}
 	}
 
 	@Override
 	protected void bindService() {
-
 		Intent intent = new Intent(this, ZabbixDataService.class);
-		boolean useMockData = getIntent().getBooleanExtra(ZabbixDataService.EXTRA_USE_MOCK_DATA, false);
+		boolean useMockData = getIntent().getBooleanExtra(
+				ZabbixDataService.EXTRA_USE_MOCK_DATA, false);
 		intent.putExtra(ZabbixDataService.EXTRA_USE_MOCK_DATA, useMockData);
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
 	}

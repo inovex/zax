@@ -19,6 +19,7 @@
     <string name="exc_not_found">The Zabbix server could not be contacted. Please verify that the server address is correct.</string>
     <string name="exc_internal_error">Internal error.</string>
     
+    <string name="show_more">Show more</string>
     <string name="no_graph">You have to select an item from the Checks-list.</string>
     <string name="no_items_to_display">No items to display.</string>
     <string name="trigger_details">Trigger Details</string>

@@ -2,7 +2,6 @@
 <resources>
     <string-array name="activities">
         <item >Events</item>
-        <item >Problems</item>
         <item >Checks</item>
         <item >Screens</item>
     </string-array>

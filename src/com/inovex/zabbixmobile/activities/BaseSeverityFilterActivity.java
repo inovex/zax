@@ -54,7 +54,7 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity impleme
 
 		mActionBar.setListNavigationCallbacks(mSpinnerAdapter,
 				mOnNavigationListener);
-
+		
 		mZabbixService.loadHostGroups();
 
 	}
