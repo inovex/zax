@@ -2,9 +2,9 @@ package com.inovex.zabbixmobile.model;
 
 import com.j256.ormlite.field.DatabaseField;
 
-public class HostGroup implements Comparable {
+public class HostGroup implements Comparable<HostGroup> {
 	
-	public static final int GROUP_ID_ALL = -1;
+	public static final long GROUP_ID_ALL = -1;
 
 	/** Host ID */
 	public static final String COLUMN_GROUPID = "groupid";
@@ -38,11 +38,10 @@ public class HostGroup implements Comparable {
 	}
 
 	@Override
-	public int compareTo(Object another) {
-		HostGroup anotherHostGroup = (HostGroup) another;
-		if(groupId > anotherHostGroup.getGroupId())
+	public int compareTo(HostGroup another) {
+		if(groupId > another.getGroupId())
 			return 1;
-		if(groupId < anotherHostGroup.getGroupId())
+		if(groupId < another.getGroupId())
 			return -1;
 		return 0;
 	}

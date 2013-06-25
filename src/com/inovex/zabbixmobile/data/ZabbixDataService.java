@@ -187,7 +187,7 @@ public class ZabbixDataService extends Service {
 	 * @param callback
 	 *            callback to be notified of the changed list adapter
 	 */
-	public void loadEventsBySeverityAndHostGroup(final TriggerSeverity severity, final long hostGroupId) {
+	public void loadEventsBySeverityAndHostGroup(final TriggerSeverity severity, final long hostGroupId, final boolean hostGroupChanged) {
 
 		new RemoteAPITask(mRemoteAPI) {
 
@@ -221,13 +221,15 @@ public class ZabbixDataService extends Service {
 				// TODO: update the data set instead of removing and re-adding
 				// all items
 				if (adapter != null) {
-//					adapter.clear();
+					if(hostGroupChanged)
+						adapter.clear();
 					adapter.addAll(events);
 					adapter.notifyDataSetChanged();
 				}
 
 				if (detailsAdapter != null) {
-//					detailsAdapter.clear();
+					if(hostGroupChanged)
+						detailsAdapter.clear();
 					detailsAdapter.addAll(events);
 					detailsAdapter.notifyDataSetChanged();
 				}

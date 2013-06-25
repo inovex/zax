@@ -14,8 +14,7 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 
 	public HostGroupsSpinnerAdapter(ZabbixDataService service) {
 		super(service);
-		mObjects.add(new HostGroup(HostGroup.GROUP_ID_ALL, mZabbixDataService
-				.getResources().getString(R.string.all)));
+		addBaseGroups();
 	}
 
 	@Override
@@ -58,10 +57,12 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 	@Override
 	public void clear() {
 		super.clear();
-		HostGroup hg = new HostGroup();
-		hg.setGroupId(HostGroup.GROUP_ID_ALL);
-		hg.setName(mZabbixDataService.getResources().getString(R.string.all));
-		mObjects.add(hg);
+		addBaseGroups();
+	}
+	
+	private void addBaseGroups() {
+		mObjects.add(new HostGroup(HostGroup.GROUP_ID_ALL, mZabbixDataService
+				.getResources().getString(R.string.all)));
 	}
 
 }

@@ -17,9 +17,9 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TabPageIndicator;
 
-public class BaseSeverityFilterFragment extends SherlockFragment {
+public class BaseSeverityFilterListFragment extends SherlockFragment {
 	
-	public static final String TAG = BaseSeverityFilterFragment.class.getSimpleName();
+	public static final String TAG = BaseSeverityFilterListFragment.class.getSimpleName();
 	
 	private int mCurrentPosition = 0;
 	private long mCurrentEventId = 0;

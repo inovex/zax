@@ -1,26 +1,22 @@
 package com.inovex.zabbixmobile.activities;
 
-import java.util.ArrayList;
-
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.ViewFlipper;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterFragment;
-import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
+import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListFragment;
 import com.inovex.zabbixmobile.activities.fragments.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.view.HostGroupsSpinnerAdapter;
 
-public class EventsActivity extends BaseActivity implements
+public class EventsActivity extends BaseSeverityFilterActivity implements
 		OnListItemSelectedListener {
 
 	private static final String TAG = EventsActivity.class.getSimpleName();
@@ -32,7 +28,7 @@ public class EventsActivity extends BaseActivity implements
 	private FragmentManager mFragmentManager;
 
 	private ViewFlipper mFlipper;
-	private EventsDetailsFragment mDetailsFragment;
+	private BaseSeverityFilterDetailsFragment mDetailsFragment;
 	private EventsListFragment mListFragment;
 
 	@Override
@@ -44,13 +40,9 @@ public class EventsActivity extends BaseActivity implements
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		mActionBar.setDisplayShowTitleEnabled(false);
 
-		// SpinnerAdapter mSpinnerAdapter =
-		// ArrayAdapter.createFromResource(this, R.array.spinner_list,
-		// android.R.layout.simple_spinner_item);
-
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
-		mDetailsFragment = (EventsDetailsFragment) mFragmentManager
+		mDetailsFragment = (BaseSeverityFilterDetailsFragment) mFragmentManager
 				.findFragmentById(R.id.events_details);
 		mListFragment = (EventsListFragment) mFragmentManager
 				.findFragmentById(R.id.events_list);

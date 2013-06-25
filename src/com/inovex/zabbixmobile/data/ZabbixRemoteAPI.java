@@ -288,7 +288,8 @@ public class ZabbixRemoteAPI {
 				if (result.getString("data").equals(
 						ZABBIX_ERROR_LOGIN_INCORRECT))
 					throw new FatalException(Type.ZABBIX_LOGIN_INCORRECT);
-				if (result.getString("data").equals(ZABBIX_ERROR_NOT_AUTHORIZED)) {
+				if (result.getString("data")
+						.equals(ZABBIX_ERROR_NOT_AUTHORIZED)) {
 					// this should lead to a retry
 					throw new ZabbixLoginRequiredException();
 				}
@@ -627,7 +628,7 @@ public class ZabbixRemoteAPI {
 	// }
 
 	/**
-	 * import the newest events
+	 * Import the newest events.
 	 * 
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
@@ -1491,10 +1492,7 @@ public class ZabbixRemoteAPI {
 					List<HostGroup> hostGroups = importHostGroups(triggerReader
 							.getJsonArrayOrObjectReader());
 					for (HostGroup h : hostGroups) {
-						TriggerHostGroupRelation th = new TriggerHostGroupRelation();
-						th.setTrigger(t);
-						th.setGroup(h);
-						triggerHostGroupCollection.add(th);
+						triggerHostGroupCollection.add(new TriggerHostGroupRelation(t, h));
 					}
 				} else if (propName.equals("items")) {
 					// store the first item id

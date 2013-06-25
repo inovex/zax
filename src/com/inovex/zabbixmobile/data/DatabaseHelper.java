@@ -179,7 +179,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 
 			for (Event e : events) {
-				eventDao.createOrUpdate(e);
+				synchronized(this) {
+					eventDao.createOrUpdate(e);
+				}
 				Trigger t = e.getTrigger();
 				if (t != null) {
 					triggerDao.createOrUpdate(t);

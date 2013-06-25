@@ -1,7 +1,9 @@
 package com.inovex.zabbixmobile.model;
 
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
+@DatabaseTable(tableName="trigger_hostgroup_relation")
 public class TriggerHostGroupRelation {
 
 	@DatabaseField(generatedId = true)
@@ -17,6 +19,11 @@ public class TriggerHostGroupRelation {
 	
 	public TriggerHostGroupRelation() {
 		
+	}
+	
+	public TriggerHostGroupRelation(Trigger trigger, HostGroup hostGroup) {
+		this.trigger = trigger;
+		this.group = hostGroup;
 	}
 
 	public Trigger getTrigger() {

@@ -6,7 +6,7 @@ package com.inovex.zabbixmobile.activities.fragments;
  * view pager (adapter: {@link EventsListFragment.SeverityListPagerAdapter}).
  * 
  */
-public class EventsListFragment extends BaseSeverityFilterFragment {
+public class EventsListFragment extends BaseSeverityFilterListFragment {
 
 	public static final String TAG = EventsListFragment.class.getSimpleName();
 

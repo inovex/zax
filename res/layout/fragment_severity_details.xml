@@ -1,24 +1,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/events_details_base"
+    android:id="@+id/severity_details_base"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
     <TextView 
-        android:id="@+id/events_details_text"
+        android:id="@+id/severity_details_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
     
     <android.support.v4.view.ViewPager
-        android:id="@+id/details_view_pager"
+        android:id="@+id/severity_view_pager"
         android:layout_width="match_parent"
         android:layout_height="0px"
         android:layout_weight="1" >
     </android.support.v4.view.ViewPager>
 
     <com.viewpagerindicator.CirclePageIndicator
-        android:id="@+id/details_circle_page_indicator"
+        android:id="@+id/severity_circle_page_indicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="2dip" />
