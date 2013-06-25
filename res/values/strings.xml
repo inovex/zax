@@ -5,6 +5,7 @@
     <string name="action_settings">Settings</string>
     
     <string name="activity_events">Events</string>
+    <string name="activity_problems">Problems</string>
     <string name="activity_checks">Checks</string>
     <string name="activity_screens">Screens</string>
     <string name="activity_preferences">Preferences</string>

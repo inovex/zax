@@ -678,8 +678,6 @@ public class ZabbixRemoteAPI {
 			databaseHelper.setCached(CacheDataType.EVENT);
 		} catch (SQLException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
-		} catch (JsonParseException e) {
-			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (JSONException e) {
@@ -1408,45 +1406,60 @@ public class ZabbixRemoteAPI {
 	// }
 	// }
 
+	public void importTriggers() throws ZabbixLoginRequiredException,
+			FatalException {
+		importTriggersByIds(null);
+	}
+
 	/**
 	 * imports the triggers with matching IDs.
 	 * 
+	 * @param triggerIds
+	 *            null: import all triggers
 	 * @throws JSONException
 	 * @throws IOException
-	 * @throws HttpAuthorizationRequiredException
-	 * @throws NoAPIAccessException
 	 * @throws SQLException
-	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
+	 * @throws FatalException
 	 */
 	private void importTriggersByIds(Collection<Long> triggerIds)
-			throws JSONException, IOException, SQLException,
-			ZabbixLoginRequiredException, FatalException {
+			throws ZabbixLoginRequiredException, FatalException {
 		// clear triggers
 		// databaseHelper.clearTriggers();
 
-		JSONArray ids = new JSONArray(triggerIds);
+		try {
 
-		long min = (new Date().getTime() / 1000)
-				- ZabbixConfig.STATUS_SHOW_TRIGGER_TIME;
-		JsonArrayOrObjectReader triggers = _queryStream(
-				"trigger.get",
-				new JSONObject()
-						.put("output", "extend")
-						.put("triggerids", ids)
-						.put("sortfield", "lastchange")
-						.put("sortorder", "desc")
-						// .put(isVersion2 ? "selectHosts" : "select_hosts",
-						// "extend")
-						.put(isVersion2 ? "selectGroups" : "select_groups",
-								"extend")
-						// .put(isVersion2 ? "selectItems" : "select_items",
-						// "extend").put("lastChangeSince", min)
-						// .put("only_true", "1")
-						.put("limit", ZabbixConfig.TRIGGER_GET_LIMIT)
-						.put("expandDescription", true));
-		importTriggers(triggers);
-		triggers.close();
+			long min = (new Date().getTime() / 1000)
+					- ZabbixConfig.STATUS_SHOW_TRIGGER_TIME;
+
+			JSONObject params = new JSONObject();
+			params.put("output", "extend")
+					.put("sortfield", "lastchange")
+					.put("sortorder", "desc")
+					// .put(isVersion2 ? "selectHosts" : "select_hosts",
+					// "extend")
+					.put(isVersion2 ? "selectGroups" : "select_groups",
+							"extend")
+					// .put(isVersion2 ? "selectItems" : "select_items",
+					// "extend").put("lastChangeSince", min)
+					// .put("only_true", "1")
+					.put("limit", ZabbixConfig.TRIGGER_GET_LIMIT)
+					.put("expandDescription", true);
+
+			if (triggerIds != null) {
+				params.put("triggerids", new JSONArray(triggerIds));
+			}
+			JsonArrayOrObjectReader triggers = _queryStream("trigger.get",
+					params);
+			importTriggers(triggers);
+			triggers.close();
+		} catch (SQLException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (IOException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (JSONException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		}
 
 	}
 
@@ -1492,7 +1505,8 @@ public class ZabbixRemoteAPI {
 					List<HostGroup> hostGroups = importHostGroups(triggerReader
 							.getJsonArrayOrObjectReader());
 					for (HostGroup h : hostGroups) {
-						triggerHostGroupCollection.add(new TriggerHostGroupRelation(t, h));
+						triggerHostGroupCollection
+								.add(new TriggerHostGroupRelation(t, h));
 					}
 				} else if (propName.equals("items")) {
 					// store the first item id
@@ -1504,7 +1518,13 @@ public class ZabbixRemoteAPI {
 				}
 			}
 			triggerCollection.add(t);
+			if (triggerCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+				databaseHelper.insertTriggers(triggerCollection);
+				triggerCollection = new ArrayList<Trigger>(
+						RECORDS_PER_INSERT_BATCH);
+			}
 		}
+		databaseHelper.insertTriggers(triggerCollection);
 		if (!triggerHostGroupCollection.isEmpty())
 			databaseHelper
 					.insertTriggerHostgroupRelations(triggerHostGroupCollection);

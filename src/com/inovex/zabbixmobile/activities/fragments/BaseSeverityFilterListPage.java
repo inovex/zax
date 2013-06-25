@@ -20,20 +20,19 @@ import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 /**
- * Represents one page of the event list view pager (see
- * {@link EventsListFragment.SeverityListPagerAdapter} ). Shows a list of events
+ * Represents one page of a list view pager. Shows a list of items (events/problems)
  * for a specific severity.
  */
-public class SeverityListPage extends SherlockListFragment implements
+public abstract class BaseSeverityFilterListPage extends SherlockListFragment implements
 		ServiceConnection {
 
-	private static final String TAG = SeverityListPage.class.getSimpleName();
+	private static final String TAG = BaseSeverityFilterListPage.class.getSimpleName();
 
 	private OnListItemSelectedListener mCallbackMain;
-	private ZabbixDataService mZabbixDataService;
+	protected ZabbixDataService mZabbixDataService;
 
-	private TriggerSeverity mSeverity;
-	private long mHostGroupId = HostGroup.GROUP_ID_ALL;
+	protected TriggerSeverity mSeverity;
+	protected long mHostGroupId = HostGroup.GROUP_ID_ALL;
 	private int mItemSelected;
 
 	@Override
@@ -46,7 +45,7 @@ public class SeverityListPage extends SherlockListFragment implements
 			mCallbackMain = (OnListItemSelectedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
-					+ " must implement OnEventSelectedListener.");
+					+ " must implement OnItemSelectedListener.");
 		}
 	}
 
@@ -117,7 +116,7 @@ public class SeverityListPage extends SherlockListFragment implements
 		mCallbackMain.onListItemSelected(position, mSeverity, id);
 	}
 
-	public void selectEvent(int position) {
+	public void selectItem(int position) {
 		getListView().setItemChecked(position, true);
 		getListView().setSelection(position);
 		mItemSelected = position;
@@ -129,14 +128,12 @@ public class SeverityListPage extends SherlockListFragment implements
 	
 	public void setHostGroupId(long hostGroupId) {
 		this.mHostGroupId = hostGroupId;
-		if(mZabbixDataService != null)
-			mZabbixDataService.loadEventsBySeverityAndHostGroup(mSeverity, mHostGroupId, true);
+		loadAdapterContent(true);
 	}
 
 	public void setItemSelected(int itemSelected) {
 		this.mItemSelected = itemSelected;
-		if(mZabbixDataService != null)
-			mZabbixDataService.loadEventsBySeverityAndHostGroup(mSeverity, mHostGroupId, false);
+		loadAdapterContent(false);
 	}
 
 	@Override
@@ -146,10 +143,14 @@ public class SeverityListPage extends SherlockListFragment implements
 
 		Log.d(TAG, "service connected: " + mZabbixDataService + " - binder: "
 				+ binder);
-		setListAdapter(mZabbixDataService.getEventsListAdapter(mSeverity));
-		mZabbixDataService.loadEventsBySeverityAndHostGroup(mSeverity, mHostGroupId, false);
+		setupListAdapter();
+		loadAdapterContent(false);
 
 	}
+
+	protected abstract void setupListAdapter();
+	
+	protected abstract void loadAdapterContent(boolean hostGroupChanged);
 
 	@Override
 	public void onServiceDisconnected(ComponentName name) {

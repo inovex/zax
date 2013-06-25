@@ -1,22 +1,21 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
+import com.inovex.zabbixmobile.model.Trigger;
 
-import com.inovex.zabbixmobile.model.Event;
-import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
 
 /**
  * Fragment which displays event details using a ViewPager (adapter:
  * {@link EventsDetailsPagerAdapter}).
  * 
  */
-public class EventsDetailsFragment extends BaseSeverityFilterDetailsFragment<Event> {
+public class ProblemsDetailsFragment extends BaseSeverityFilterDetailsFragment<Trigger> {
 
-	public static final String TAG = EventsDetailsFragment.class
+	public static final String TAG = ProblemsDetailsFragment.class
 			.getSimpleName();
 	@Override
 	protected void retrievePagerAdapter() {
 		mDetailsPagerAdapter = mZabbixDataService
-				.getEventsDetailsPagerAdapter(mSeverity);
+				.getProblemsDetailsPagerAdapter(mSeverity);
 	}
 
 }

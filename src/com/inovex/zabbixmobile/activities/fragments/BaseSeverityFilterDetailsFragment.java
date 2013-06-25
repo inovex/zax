@@ -18,10 +18,10 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
+import com.inovex.zabbixmobile.view.BaseSeverityPagerAdapter;
 import com.viewpagerindicator.CirclePageIndicator;
 
-public abstract class BaseSeverityFilterDetailsFragment extends SherlockFragment
+public abstract class BaseSeverityFilterDetailsFragment<T> extends SherlockFragment
 		implements ServiceConnection {
 
 	public static final String TAG = BaseSeverityFilterDetailsFragment.class
@@ -33,7 +33,7 @@ public abstract class BaseSeverityFilterDetailsFragment extends SherlockFragment
 	protected CirclePageIndicator mDetailsCircleIndicator;
 	protected ZabbixDataService mZabbixDataService;
 	private OnListItemSelectedListener mCallbackMain;
-	protected EventsDetailsPagerAdapter mDetailsPagerAdapter;
+	protected BaseSeverityPagerAdapter<T> mDetailsPagerAdapter;
 
 	@Override
 	public void onStart() {
@@ -62,8 +62,8 @@ public abstract class BaseSeverityFilterDetailsFragment extends SherlockFragment
 	 * @param id
 	 *            item identifier
 	 */
-	public void selectEvent(int position, TriggerSeverity severity, long id) {
-		Log.d(TAG, "EventDetailsFragment:selectEvent(" + position + ")");
+	public void selectItem(int position, TriggerSeverity severity, long id) {
+		Log.d(TAG, "selectItem(" + position + ")");
 		setSeverity(severity);
 		setPosition(position);
 		setCurrentItemId(id);

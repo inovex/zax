@@ -7,7 +7,7 @@
     
     <fragment
         class="com.inovex.zabbixmobile.activities.fragments.EventsListFragment"
-        android:id="@+id/events_list"
+        android:id="@+id/events_details_list"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1" 

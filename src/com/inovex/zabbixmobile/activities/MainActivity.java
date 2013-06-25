@@ -58,9 +58,12 @@ public class MainActivity extends BaseActivity implements
 					intent = new Intent(MainActivity.this, EventsActivity.class);
 					break;
 				case 1:
-					intent = new Intent(MainActivity.this, ChecksActivity.class);
+					intent = new Intent(MainActivity.this, ProblemsActivity.class);
 					break;
 				case 2:
+					intent = new Intent(MainActivity.this, ChecksActivity.class);
+					break;
+				case 3:
 					intent = new Intent(MainActivity.this,
 							ScreensActivity.class);
 					break;

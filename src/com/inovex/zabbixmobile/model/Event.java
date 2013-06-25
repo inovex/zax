@@ -128,10 +128,10 @@ public class Event implements Comparable<Event> {
 
 	@Override
 	public int compareTo(Event another) {
-		if(clock > another.getClock())
-			return -1;
+		if(id == another.getId())
+			return 0;
 		if(clock < another.getClock())
 			return 1;
-		return 0;
+		return -1;
 	}
 }

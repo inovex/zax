@@ -25,6 +25,7 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.table.TableUtils;
@@ -150,6 +151,41 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		eventQuery.join(triggerQuery);
 		return eventQuery.query();
+	}
+	
+	/**
+	 * Retrieves all events with the given severity from the database.
+	 * 
+	 * @param severity
+	 * @return list of events with a matching severity
+	 * @throws SQLException
+	 */
+	public List<Trigger> getTriggersBySeverityAndHostGroupId(
+			TriggerSeverity severity, long hostGroupId) throws SQLException {
+		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
+		QueryBuilder<Trigger, Long> triggerQuery = triggerDao.queryBuilder();
+
+		// only triggers that have actually happened at some point in time are interesting to us
+		Where<Trigger, Long> where = triggerQuery.where();
+		where.ne(Trigger.COLUMN_LASTCHANGE, 0);
+		
+		// filter events by trigger severity
+		if (!severity.equals(TriggerSeverity.ALL)) {
+			where.and();
+			where.eq(Trigger.COLUMN_PRIORITY, severity);
+		}
+		
+		// filter triggers by host group ID
+		if (hostGroupId != HostGroup.GROUP_ID_ALL) {
+			Dao<TriggerHostGroupRelation, Void> hostGroupDao = getDao(TriggerHostGroupRelation.class);
+			QueryBuilder<TriggerHostGroupRelation, Void> hostGroupQuery = hostGroupDao
+					.queryBuilder();
+			hostGroupQuery.where().eq(TriggerHostGroupRelation.COLUMN_GROUPID,
+					hostGroupId);
+			triggerQuery.join(hostGroupQuery);
+		}
+		
+		return triggerQuery.query();
 	}
 
 	public List<HostGroup> getHostGroups() throws SQLException {

@@ -2,8 +2,6 @@ package com.inovex.zabbixmobile.model;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import com.j256.ormlite.dao.ForeignCollection;
@@ -11,7 +9,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "triggers")
-public class Trigger {
+public class Trigger implements Comparable<Trigger> {
 
 	public static final String COLUMN_TRIGGERID = "triggerid";
 	@DatabaseField(id = true, columnName = COLUMN_TRIGGERID)
@@ -160,6 +158,15 @@ public class Trigger {
 		sb.append(", ").append("value=").append(value);
 		sb.append(", ").append("url=").append(url);
 		return sb.toString();
+	}
+
+	@Override
+	public int compareTo(Trigger another) {
+		if(id == another.getId())
+			return 0;
+		if(lastChange < another.getLastChange())
+			return 1;
+		return -1;
 	}
 
 }

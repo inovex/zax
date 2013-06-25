@@ -17,7 +17,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TabPageIndicator;
 
-public class BaseSeverityFilterListFragment extends SherlockFragment {
+public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	
 	public static final String TAG = BaseSeverityFilterListFragment.class.getSimpleName();
 	
@@ -30,15 +30,15 @@ public class BaseSeverityFilterListFragment extends SherlockFragment {
 	SeverityListPagerAdapter mSeverityListPagerAdapter;
 	TabPageIndicator mSeverityListTabIndicator;
 
-	ArrayList<SeverityListPage> pages = new ArrayList<SeverityListPage>();
+	ArrayList<BaseSeverityFilterListPage> pages = new ArrayList<BaseSeverityFilterListPage>();
 
 	class SeverityListPagerAdapter extends FragmentPagerAdapter {
 
 		public SeverityListPagerAdapter(FragmentManager fm) {
 			super(fm);
-			SeverityListPage f;
+			BaseSeverityFilterListPage f;
 			for (TriggerSeverity s : TriggerSeverity.values()) {
-				f = new SeverityListPage();
+				f = instantiatePage();
 				f.setSeverity(s);
 
 				pages.add(f);
@@ -58,10 +58,12 @@ public class BaseSeverityFilterListFragment extends SherlockFragment {
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			SeverityListPage f = ((SeverityListPage) getItem(position));
+			BaseSeverityFilterListPage f = ((BaseSeverityFilterListPage) getItem(position));
 			return f.getTitle();
 		}
 	}
+	
+	protected abstract BaseSeverityFilterListPage instantiatePage();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -143,11 +145,11 @@ public class BaseSeverityFilterListFragment extends SherlockFragment {
 	public void selectEvent(int position) {
 		if (mSeverityListPager == null)
 			return;
-		SeverityListPage f = (SeverityListPage) mSeverityListPagerAdapter
+		BaseSeverityFilterListPage f = (BaseSeverityFilterListPage) mSeverityListPagerAdapter
 				.instantiateItem(mSeverityListPager,
 						mSeverityListPager.getCurrentItem());
-		Log.d(TAG, "EventCategoryFragment:selectEvent(" + position + ")");
-		f.selectEvent(position);
+		Log.d(TAG, "selectEvent(" + position + ")");
+		f.selectItem(position);
 		mCurrentPosition = position;
 	}
 
@@ -165,7 +167,7 @@ public class BaseSeverityFilterListFragment extends SherlockFragment {
 
 	public void setHostGroup(long itemId) {
 		this.mCurrentHostGroup = itemId;
-		for(SeverityListPage p : pages) {
+		for(BaseSeverityFilterListPage p : pages) {
 			p.setHostGroupId(itemId);
 		}
 	}
