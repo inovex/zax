@@ -1,6 +1,7 @@
 package com.inovex.zabbixmobile.activities;
 
 import android.content.ComponentName;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -14,8 +15,8 @@ import com.inovex.zabbixmobile.activities.fragments.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.view.HostGroupsSpinnerAdapter;
 
-public abstract class BaseSeverityFilterActivity<T> extends BaseActivity implements
-		OnListItemSelectedListener {
+public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
+		implements OnListItemSelectedListener {
 
 	private static final String TAG = BaseSeverityFilterActivity.class
 			.getSimpleName();
@@ -33,11 +34,18 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity impleme
 	protected String mTitle;
 
 	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		// We'll be using a spinner menu
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		mActionBar.setDisplayShowTitleEnabled(false);
+	}
+	
+	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		super.onServiceConnected(className, service);
 
-		mSpinnerAdapter = mZabbixService
-				.getHostGroupSpinnerAdapter();
+		mSpinnerAdapter = mZabbixService.getHostGroupSpinnerAdapter();
 
 		ActionBar.OnNavigationListener mOnNavigationListener = new ActionBar.OnNavigationListener() {
 			// Get the same strings provided for the drop-down's ArrayAdapter
@@ -55,7 +63,7 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity impleme
 
 		mActionBar.setListNavigationCallbacks(mSpinnerAdapter,
 				mOnNavigationListener);
-		
+
 		mZabbixService.loadHostGroups();
 
 	}

@@ -3,7 +3,6 @@ package com.inovex.zabbixmobile.activities;
 import android.os.Bundle;
 import android.widget.ViewFlipper;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
@@ -18,10 +17,6 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_events);
 	
-		// We'll be using a spinner menu
-		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		mActionBar.setDisplayShowTitleEnabled(false);
-		
 		mTitle = getResources().getString(R.string.events);
 	
 		mFragmentManager = getSupportFragmentManager();
@@ -29,7 +24,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> {
 		mDetailsFragment = (BaseSeverityFilterDetailsFragment<Event>) mFragmentManager
 				.findFragmentById(R.id.events_details);
 		mListFragment = (BaseSeverityFilterListFragment) mFragmentManager
-				.findFragmentById(R.id.events_details_list);
+				.findFragmentById(R.id.events_list);
 	
 	}
 
