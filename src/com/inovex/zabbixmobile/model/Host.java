@@ -12,7 +12,7 @@ public class Host {
 
 	public static final String COLUMN_HOST = "host";
 	@DatabaseField(columnName = COLUMN_HOST)
-	String host;
+	String name;
 	
 	HostGroup group;
 
@@ -24,7 +24,7 @@ public class Host {
 
 	public Host(long id, String name) {
 		this.id = id;
-		this.host = name;
+		this.name = name;
 	}
 	
 	public long getId() {
@@ -35,12 +35,12 @@ public class Host {
 		this.id = id;
 	}
 
-	public String getHost() {
-		return host;
+	public String getName() {
+		return name;
 	}
 
 	public void setHost(String host) {
-		this.host = host;
+		this.name = host;
 	}
 
 	public HostGroup getGroup() {

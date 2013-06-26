@@ -12,18 +12,19 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.Cache;
+import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
+import com.inovex.zabbixmobile.model.HostHostGroupRelation;
 import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
@@ -82,8 +83,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Item.class);
 			TableUtils.createTable(connectionSource, Host.class);
 			TableUtils.createTable(connectionSource, HostGroup.class);
+			TableUtils.createTable(connectionSource, Application.class);
 			TableUtils.createTable(connectionSource,
 					TriggerHostGroupRelation.class);
+			TableUtils.createTable(connectionSource,
+					HostHostGroupRelation.class);
 			TableUtils.createTable(connectionSource, Cache.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
@@ -107,8 +111,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Item.class, true);
 			TableUtils.dropTable(connectionSource, Host.class, true);
 			TableUtils.dropTable(connectionSource, HostGroup.class, true);
+			TableUtils.dropTable(connectionSource, Application.class, true);
 			TableUtils.dropTable(connectionSource,
 					TriggerHostGroupRelation.class, true);
+			TableUtils.dropTable(connectionSource,
+					HostHostGroupRelation.class, true);
 			TableUtils.dropTable(connectionSource, Cache.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
@@ -256,6 +263,25 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 
 	}
+	
+
+	public void insertHosts(List<Host> hosts) throws SQLException {
+		Dao<Host, Long> hostDao = getDao(Host.class);
+		mThreadConnection = hostDao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (Host host : hosts) {
+				hostDao.createOrUpdate(host);
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			hostDao.endThreadConnection(mThreadConnection);
+		}		
+	}
 
 	public void insertHostGroups(ArrayList<HostGroup> hostGroups)
 			throws SQLException {
@@ -275,6 +301,32 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			hostGroupDao.endThreadConnection(mThreadConnection);
 		}
 	}
+	
+	public void insertApplications(Collection<Application> applications) throws SQLException {
+		Dao<Application, Long> appDao = getDao(Application.class);
+		Dao<Host, Long> hostDao = getDao(Host.class);
+		mThreadConnection = appDao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (Application a : applications) {
+				synchronized(this) {
+					appDao.createOrUpdate(a);
+				}
+				Host t = a.getHost();
+				if (t != null) {
+					hostDao.createOrUpdate(t);
+				}
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			appDao.endThreadConnection(mThreadConnection);
+		}
+
+	}
 
 	public void insertTriggerHostgroupRelations(
 			List<TriggerHostGroupRelation> triggerHostGroupCollection)
@@ -285,6 +337,31 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 
 			for (TriggerHostGroupRelation relation : triggerHostGroupCollection) {
+				try {
+					dao.createIfNotExists(relation);
+				} catch (SQLException e) {
+					// this might throw an exception if the relation exists
+					// already (however, with a different primary key) -> ignore
+				}
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			dao.endThreadConnection(mThreadConnection);
+		}
+	}
+	
+	public void insertHostHostgroupRelations(
+			List<HostHostGroupRelation> hostHostGroupCollection)
+			throws SQLException {
+		Dao<HostHostGroupRelation, Void> dao = getDao(HostHostGroupRelation.class);
+		mThreadConnection = dao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (HostHostGroupRelation relation : hostHostGroupCollection) {
 				try {
 					dao.createIfNotExists(relation);
 				} catch (SQLException e) {

@@ -46,6 +46,7 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity impleme
 			public boolean onNavigationItemSelected(int position, long itemId) {
 				mHostGroupId = itemId;
 				mListFragment.setHostGroup(itemId);
+				// TODO: update details fragment
 				return true;
 			}
 		};

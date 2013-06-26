@@ -1,5 +1,5 @@
 #
-# generated on 2013/06/24 04:43:17
+# generated on 2013/06/26 11:30:38
 #
 # --table-start--
 dataClass=com.j256.ormlite.android.DatabaseTableConfigUtil$DatabaseFieldSample
@@ -7,6 +7,44 @@ tableName=databasefieldsample
 # --table-fields-start--
 # --field-start--
 fieldName=field
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.Application
+tableName=applications
+# --table-fields-start--
+# --field-start--
+fieldName=id
+columnName=applicationid
+id=true
+# --field-end--
+# --field-start--
+fieldName=host
+foreign=true
+foreignAutoRefresh=true
+# --field-end--
+# --field-start--
+fieldName=name
+columnName=name
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.ApplicationItemRelation
+tableName=applicationitemrelation
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=itemId
+# --field-end--
+# --field-start--
+fieldName=applicationId
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -73,7 +111,7 @@ columnName=hostid
 id=true
 # --field-end--
 # --field-start--
-fieldName=host
+fieldName=name
 columnName=host
 # --field-end--
 # --table-fields-end--
@@ -81,7 +119,7 @@ columnName=host
 #################################
 # --table-start--
 dataClass=com.inovex.zabbixmobile.model.HostGroup
-tableName=hostgroup
+tableName=hostgroups
 # --table-fields-start--
 # --field-start--
 fieldName=groupId
@@ -91,6 +129,29 @@ id=true
 # --field-start--
 fieldName=name
 columnName=name
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.HostHostGroupRelation
+tableName=host_hostgroup_relation
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=host
+columnName=hostid
+foreign=true
+uniqueIndexName=host_group_idx
+# --field-end--
+# --field-start--
+fieldName=group
+columnName=groupid
+foreign=true
+uniqueIndexName=host_group_idx
 # --field-end--
 # --table-fields-end--
 # --table-end--

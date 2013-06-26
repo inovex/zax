@@ -1,7 +1,9 @@
 package com.inovex.zabbixmobile.model;
 
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
+@DatabaseTable(tableName="hostgroups")
 public class HostGroup implements Comparable<HostGroup> {
 	
 	public static final long GROUP_ID_ALL = -1;

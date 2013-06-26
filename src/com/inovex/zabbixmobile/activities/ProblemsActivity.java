@@ -7,7 +7,6 @@ import com.actionbarsherlock.app.ActionBar;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
-import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Trigger;
 
 public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {

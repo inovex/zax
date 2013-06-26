@@ -61,10 +61,12 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
+import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
+import com.inovex.zabbixmobile.model.HostHostGroupRelation;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
@@ -534,58 +536,110 @@ public class ZabbixRemoteAPI {
 		}
 	}
 
-	// private void importApplications(long hostid, long itemid,
-	// JsonArrayOrObjectReader jsonArray) throws JsonParseException,
-	// NumberFormatException, IOException {
-	// int num = 0;
-	// JsonObjectReader application;
-	// while ((application = jsonArray.next()) != null) {
-	// ApplicationData app = new ApplicationData();
-	// while (application.nextValueToken()) {
-	// String propName = application.getCurrentName();
-	// if (propName.equals(ApplicationData.COLUMN_APPLICATIONID)) {
-	// app.set(ApplicationData.COLUMN_APPLICATIONID,
-	// Long.parseLong(application.getText()));
-	// } else if (propName.equals(ApplicationData.COLUMN_NAME)) {
-	// app.set(ApplicationData.COLUMN_NAME, application.getText());
-	// } else if (propName.equals(ApplicationData.COLUMN_HOSTID)) {
-	// app.set(ApplicationData.COLUMN_HOSTID,
-	// Long.parseLong(application.getText()));
-	// } else {
-	// application.nextProperty();
-	// }
-	// }
-	// // create applications that does not exist
-	// app.insert(zabbixLocalDB, ApplicationData.COLUMN_APPLICATIONID);
-	// _commitTransactionIfRecommended();
-	//
-	// // create ApplicationItemRelation
-	// long appid = (Long) app.get(ApplicationData.COLUMN_APPLICATIONID);
-	// ApplicationItemRelationData rel = new ApplicationItemRelationData();
-	// rel.set(ApplicationItemRelationData.COLUMN_APPLICATIONID, appid);
-	// rel.set(ApplicationItemRelationData.COLUMN_ITEMID, itemid);
-	// rel.set(ApplicationItemRelationData.COLUMN_HOSTID, hostid);
-	// rel.insert(zabbixLocalDB);
-	// _commitTransactionIfRecommended();
-	//
-	// num++;
-	// }
-	// if (num == 0) {
-	// // if there's no application, the ID #0 must be added (for other)
-	// ApplicationItemRelationData rel = new ApplicationItemRelationData();
-	// rel.set(ApplicationItemRelationData.COLUMN_APPLICATIONID, 0);
-	// rel.set(ApplicationItemRelationData.COLUMN_ITEMID, itemid);
-	// rel.set(ApplicationItemRelationData.COLUMN_HOSTID, hostid);
-	// rel.insert(zabbixLocalDB);
-	//
-	// // if #0 "other" does not exist yet, it has to be created
-	// ApplicationData app = new ApplicationData();
-	// app.set(ApplicationData.COLUMN_APPLICATIONID, 0);
-	// app.set(ApplicationData.COLUMN_NAME,
-	// "- "+context.getResources().getString(R.string.other)+" -");
-	// app.insert(zabbixLocalDB, ApplicationData.COLUMN_APPLICATIONID);
-	// }
-	// }
+	public void importApplications() throws FatalException,
+			ZabbixLoginRequiredException {
+		JSONObject params;
+		try {
+			params = new JSONObject().put("output", "extend")
+					.put("limit", ZabbixConfig.APPLICATION_GET_LIMIT)
+					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
+//					.put(isVersion2 ? "selectItems" : "select_items", "extend")
+					.put("source", 0);
+			if (!isVersion2) {
+				// in Zabbix version <2.0, this is not default
+				params.put("sortfield", "clock").put("sortorder", "DESC");
+			}
+			JsonArrayOrObjectReader applications = _queryStream(
+					"application.get", params);
+			importApplications(applications);
+			// events.close();
+		} catch (SQLException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (IOException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (JSONException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		}
+	}
+
+	private void importApplications(JsonArrayOrObjectReader jsonArray)
+			throws JsonParseException, NumberFormatException, IOException,
+			SQLException {
+		int num = 0;
+		List<Application> applicationsCollection = new ArrayList<Application>(
+				RECORDS_PER_INSERT_BATCH);
+		JsonObjectReader application;
+		while ((application = jsonArray.next()) != null) {
+			Application app = new Application();
+			while (application.nextValueToken()) {
+				String propName = application.getCurrentName();
+				if (propName.equals(Application.COLUMN_APPLICATIONID)) {
+					app.setId(Long.parseLong(application.getText()));
+				} else if (propName.equals(Application.COLUMN_NAME)) {
+					app.setName(application.getText());
+					// } else if
+					// (propName.equals(ApplicationData.COLUMN_HOSTID)) {
+					// app.set(ApplicationData.COLUMN_HOSTID,
+					// Long.parseLong(application.getText()));
+				} else if (propName.equals("hosts")) {
+					// import hosts
+					List<Host> hosts = importHosts(application
+							.getJsonArrayOrObjectReader(), null);
+					if (hosts.size() > 0) {
+						Host t = hosts.get(0);
+						app.setHost(t);
+					}
+					if (hosts.size() > 1) {
+						Log.w(TAG,
+								"More than one host found for application "
+										+ app.getId() + ": " + app.getName());
+					}
+				} else {
+					application.nextProperty();
+				}
+			}
+			// create applications that does not exist
+			// app.insert(zabbixLocalDB, ApplicationData.COLUMN_APPLICATIONID);
+			// _commitTransactionIfRecommended();
+			//
+			// // create ApplicationItemRelation
+			// long appid = (Long)
+			// app.get(ApplicationData.COLUMN_APPLICATIONID);
+			// ApplicationItemRelationData rel = new
+			// ApplicationItemRelationData();
+			// rel.set(ApplicationItemRelationData.COLUMN_APPLICATIONID, appid);
+			// rel.set(ApplicationItemRelationData.COLUMN_ITEMID, itemid);
+			// rel.set(ApplicationItemRelationData.COLUMN_HOSTID, hostid);
+			// rel.insert(zabbixLocalDB);
+			// _commitTransactionIfRecommended();
+
+			num++;
+			applicationsCollection.add(app);
+			if (applicationsCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+				databaseHelper.insertApplications(applicationsCollection);
+				applicationsCollection = new ArrayList<Application>(
+						RECORDS_PER_INSERT_BATCH);
+			}
+		}
+		// insert the last batch of applications
+		databaseHelper.insertApplications(applicationsCollection);
+		// if (num == 0) {
+		// // if there's no application, the ID #0 must be added (for other)
+		// ApplicationItemRelationData rel = new ApplicationItemRelationData();
+		// rel.set(ApplicationItemRelationData.COLUMN_APPLICATIONID, 0);
+		// rel.set(ApplicationItemRelationData.COLUMN_ITEMID, itemid);
+		// rel.set(ApplicationItemRelationData.COLUMN_HOSTID, hostid);
+		// rel.insert(zabbixLocalDB);
+		//
+		// // if #0 "other" does not exist yet, it has to be created
+		// ApplicationData app = new ApplicationData();
+		// app.set(ApplicationData.COLUMN_APPLICATIONID, 0);
+		// app.set(ApplicationData.COLUMN_NAME, "- "
+		// + context.getResources().getString(R.string.other) + " -");
+		// app.insert(zabbixLocalDB, ApplicationData.COLUMN_APPLICATIONID);
+		// }
+	}
+
 	//
 	// /**
 	// * import the newest event of a trigger
@@ -713,7 +767,7 @@ public class ZabbixRemoteAPI {
 				String propName = eventReader.getCurrentName();
 				if (propName.equals("hosts")) {
 					// import hosts
-					String hostNames = importHosts(
+					String hostNames = importHostsReturnNames(
 							eventReader.getJsonArrayOrObjectReader(), null);
 					// store hosts namen
 					e.setHostNames(hostNames);
@@ -756,6 +810,7 @@ public class ZabbixRemoteAPI {
 		}
 		// insert the last batch of events
 		databaseHelper.insertEvents(eventsCollection);
+		// we need to close here to be able to start another import (triggers)
 		events.close();
 		importTriggersByIds(triggerIds);
 	}
@@ -1035,11 +1090,23 @@ public class ZabbixRemoteAPI {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	private String importHosts(JsonArrayOrObjectReader jsonArray,
+	private String importHostsReturnNames(JsonArrayOrObjectReader jsonArray,
 			Integer numHosts) throws JsonParseException, IOException,
 			SQLException {
+		
+		List<Host> hosts = importHosts(jsonArray, numHosts);
 		List<String> hostnames = new ArrayList<String>();
+		for(Host h : hosts) {
+			hostnames.add(h.getName());
+		}
+		return hostnames.toString().replaceAll("[\\[\\]]", "");
+	}
+	
+	private List<Host> importHosts(JsonArrayOrObjectReader jsonArray,
+			Integer numHosts) throws JsonParseException, IOException,
+			SQLException {
 		List<Host> hosts = new ArrayList<Host>();
+		List<HostHostGroupRelation> hostHostGroupCollection = new ArrayList<HostHostGroupRelation>();
 		long firstHostId = -1;
 		JsonObjectReader hostReader;
 		int i = 0;
@@ -1054,10 +1121,15 @@ public class ZabbixRemoteAPI {
 					// }
 				} else if (propName.equals(Host.COLUMN_HOST)) {
 					String host = hostReader.getText();
-					hostnames.add(host);
 					h.setHost(host);
 				} else if (propName.equals("groups")) {
-					importHostGroups(hostReader.getJsonArrayOrObjectReader());
+					List<HostGroup> groups = importHostGroups(hostReader
+							.getJsonArrayOrObjectReader());
+					for (HostGroup group : groups) {
+						// create HostHostGroupRelation
+						hostHostGroupCollection.add(new HostHostGroupRelation(
+								h, group));
+					}
 					// if (groupid != -1) {
 					// h.set(HostData.COLUMN_GROUPID, groupid);
 					// }
@@ -1082,12 +1154,22 @@ public class ZabbixRemoteAPI {
 			// showProgress(i * 100 / numHosts);
 			// }
 			// _commitTransactionIfRecommended();
+			if (hosts.size() >= RECORDS_PER_INSERT_BATCH) {
+				databaseHelper.insertHosts(hosts);
+				hosts = new ArrayList<Host>(RECORDS_PER_INSERT_BATCH);
+			}
 		}
+		// insert the last batch of events
+		databaseHelper.insertHosts(hosts);
+
+		if (!hostHostGroupCollection.isEmpty())
+			databaseHelper
+					.insertHostHostgroupRelations(hostHostGroupCollection);
 
 		// return new Object[] { hostnames.toString().replaceAll("[\\[\\]]",
 		// ""),
 		// firstHostId };
-		return hostnames.toString().replaceAll("[\\[\\]]", "");
+		return hosts;
 	}
 
 	public void importHostsAndGroups() throws ZabbixLoginRequiredException,
@@ -1114,7 +1196,7 @@ public class ZabbixRemoteAPI {
 							.put("limit", ZabbixConfig.HOST_GET_LIMIT)
 							.put(isVersion2 ? "selectGroups" : "select_groups",
 									"extend"));
-			importHosts(hosts, null);
+			importHostsReturnNames(hosts, null);
 			hosts.close();
 
 		} catch (SQLException e) {
@@ -1558,11 +1640,6 @@ public class ZabbixRemoteAPI {
 	// _endTransaction();
 	// }
 	// }
-
-	public void importHostGroups() {
-		// TODO Auto-generated method stub
-
-	}
 
 	// public boolean isCached(String kind, String filter) {
 	// SQLiteQueryBuilder sqlBuilder = new SQLiteQueryBuilder();
