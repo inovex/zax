@@ -1,14 +1,13 @@
 package com.inovex.zabbixmobile.activities;
 
-import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -70,6 +69,9 @@ public class MainActivity extends BaseActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		mActionBar.setDisplayHomeAsUpEnabled(false);
+		mActionBar.setHomeButtonEnabled(false);
 
 		ListView listView = (ListView) findViewById(R.id.main_activities);
 		mListAdapter = new MenuListAdapter(this,
@@ -158,6 +160,19 @@ public class MainActivity extends BaseActivity implements
 			BaseServiceAdapter<Trigger> adapter = mZabbixService
 					.getProblemsListAdapter(TriggerSeverity.ALL);
 			mProblemsList.setAdapter(adapter);
+			mProblemsList.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					Log.d(TAG, "onItemClick(pos: " + position + ", id: " + id);
+					Bundle args = new Bundle();
+					Intent intent = new Intent(MainActivity.this, ProblemsActivity.class);
+					intent.putExtra(ProblemsActivity.ARG_ITEM_POSITION, position);
+					intent.putExtra(ProblemsActivity.ARG_ITEM_ID, id);
+					startActivity(intent);
+				}
+			});
 			mZabbixService.loadTriggersBySeverityAndHostGroup(
 					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true);
 		}

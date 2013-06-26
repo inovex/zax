@@ -69,15 +69,15 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends SherlockFragm
 		setCurrentItemId(id);
 	}
 
-	private void setPosition(int position) {
+	public void setPosition(int position) {
 		this.mPosition = position;
 		if (mDetailsCircleIndicator != null) {
 			mDetailsCircleIndicator.setCurrentItem(position);
 		}
 	}
 
-	private void setCurrentItemId(long eventId) {
-		this.mCurrentItemId = eventId;
+	public void setCurrentItemId(long itemId) {
+		this.mCurrentItemId = itemId;
 	}
 
 	@Override

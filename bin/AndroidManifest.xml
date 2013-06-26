@@ -41,6 +41,10 @@
             android:label="@string/activity_events" >
         </activity>
         <activity
+            android:name="com.inovex.zabbixmobile.activities.ProblemsActivity"
+            android:label="@string/activity_problems" >
+        </activity>
+        <activity
             android:name="com.inovex.zabbixmobile.activities.ChecksActivity"
             android:label="@string/activity_checks" >
         </activity>
