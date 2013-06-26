@@ -10,12 +10,9 @@ import android.widget.ViewFlipper;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
-import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.activities.fragments.OnListItemSelectedListener;
-import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.view.HostGroupsSpinnerAdapter;
 
 public class ChecksActivity extends BaseActivity implements

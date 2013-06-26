@@ -543,7 +543,8 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject().put("output", "extend")
 					.put("limit", ZabbixConfig.APPLICATION_GET_LIMIT)
 					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
-//					.put(isVersion2 ? "selectItems" : "select_items", "extend")
+					// .put(isVersion2 ? "selectItems" : "select_items",
+					// "extend")
 					.put("source", 0);
 			if (!isVersion2) {
 				// in Zabbix version <2.0, this is not default
@@ -583,16 +584,15 @@ public class ZabbixRemoteAPI {
 					// Long.parseLong(application.getText()));
 				} else if (propName.equals("hosts")) {
 					// import hosts
-					List<Host> hosts = importHosts(application
-							.getJsonArrayOrObjectReader(), null);
+					List<Host> hosts = importHosts(
+							application.getJsonArrayOrObjectReader(), null);
 					if (hosts.size() > 0) {
 						Host t = hosts.get(0);
 						app.setHost(t);
 					}
 					if (hosts.size() > 1) {
-						Log.w(TAG,
-								"More than one host found for application "
-										+ app.getId() + ": " + app.getName());
+						Log.w(TAG, "More than one host found for application "
+								+ app.getId() + ": " + app.getName());
 					}
 				} else {
 					application.nextProperty();
@@ -812,7 +812,7 @@ public class ZabbixRemoteAPI {
 		databaseHelper.insertEvents(eventsCollection);
 		// we need to close here to be able to start another import (triggers)
 		events.close();
-		importTriggersByIds(triggerIds);
+		importTriggersByIds(triggerIds, false);
 	}
 
 	// /**
@@ -1093,15 +1093,15 @@ public class ZabbixRemoteAPI {
 	private String importHostsReturnNames(JsonArrayOrObjectReader jsonArray,
 			Integer numHosts) throws JsonParseException, IOException,
 			SQLException {
-		
+
 		List<Host> hosts = importHosts(jsonArray, numHosts);
 		List<String> hostnames = new ArrayList<String>();
-		for(Host h : hosts) {
+		for (Host h : hosts) {
 			hostnames.add(h.getName());
 		}
 		return hostnames.toString().replaceAll("[\\[\\]]", "");
 	}
-	
+
 	private List<Host> importHosts(JsonArrayOrObjectReader jsonArray,
 			Integer numHosts) throws JsonParseException, IOException,
 			SQLException {
@@ -1490,7 +1490,7 @@ public class ZabbixRemoteAPI {
 
 	public void importTriggers() throws ZabbixLoginRequiredException,
 			FatalException {
-		importTriggersByIds(null);
+		importTriggersByIds(null, true);
 	}
 
 	/**
@@ -1504,7 +1504,7 @@ public class ZabbixRemoteAPI {
 	 * @throws ZabbixLoginRequiredException
 	 * @throws FatalException
 	 */
-	private void importTriggersByIds(Collection<Long> triggerIds)
+	private void importTriggersByIds(Collection<Long> triggerIds, boolean onlyActive)
 			throws ZabbixLoginRequiredException, FatalException {
 		// clear triggers
 		// databaseHelper.clearTriggers();
@@ -1524,13 +1524,14 @@ public class ZabbixRemoteAPI {
 							"extend")
 					// .put(isVersion2 ? "selectItems" : "select_items",
 					// "extend").put("lastChangeSince", min)
-					// .put("only_true", "1")
 					.put("limit", ZabbixConfig.TRIGGER_GET_LIMIT)
 					.put("expandDescription", true);
 
 			if (triggerIds != null) {
 				params.put("triggerids", new JSONArray(triggerIds));
 			}
+			if(onlyActive)
+				params.put("only_true", "1");
 			JsonArrayOrObjectReader triggers = _queryStream("trigger.get",
 					params);
 			importTriggers(triggers);

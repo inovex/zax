@@ -10,6 +10,9 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "triggers")
 public class Trigger implements Comparable<Trigger> {
+	
+	public static final int VALUE_PROBLEM = 1;
+	public static final int VALUE_OK = 0;
 
 	public static final String COLUMN_TRIGGERID = "triggerid";
 	@DatabaseField(id = true, columnName = COLUMN_TRIGGERID)

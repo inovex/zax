@@ -176,6 +176,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		// interesting to us
 		Where<Trigger, Long> where = triggerQuery.where();
 		where.ne(Trigger.COLUMN_LASTCHANGE, 0);
+		
+		where.and();
+		where.eq(Trigger.COLUMN_VALUE, Trigger.VALUE_PROBLEM);
 
 		// filter events by trigger severity
 		if (!severity.equals(TriggerSeverity.ALL)) {
