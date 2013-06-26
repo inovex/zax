@@ -22,7 +22,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	public static final String TAG = BaseSeverityFilterListFragment.class.getSimpleName();
 	
 	private int mCurrentPosition = 0;
-	private long mCurrentEventId = 0;
+	private long mCurrentItemId = 0;
 	private TriggerSeverity mCurrentSeverity = TriggerSeverity.ALL;
 	private long mCurrentHostGroup;
 
@@ -142,7 +142,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 
 	}
 
-	public void selectEvent(int position) {
+	public void selectItem(int position) {
 		if (mSeverityListPager == null)
 			return;
 		BaseSeverityFilterListPage f = (BaseSeverityFilterListPage) mSeverityListPagerAdapter
@@ -157,8 +157,8 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		this.mCurrentPosition = currentPosition;
 	}
 
-	public void setCurrentEventId(long currentEventId) {
-		this.mCurrentEventId = currentEventId;
+	public void setCurrentItemId(long currentItemId) {
+		this.mCurrentItemId = currentItemId;
 	}
 
 	public void setCurrentSeverity(TriggerSeverity currentSeverity) {

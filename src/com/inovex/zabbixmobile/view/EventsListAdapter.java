@@ -13,13 +13,12 @@ import android.widget.TextView;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.Event;
-import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.Trigger;
 
 public class EventsListAdapter extends BaseServiceAdapter<Event> {
 
 	private static final String TAG = EventsListAdapter.class.getSimpleName();
-	private int mTextViewResourceId = R.layout.events_list_item;
+	private int mTextViewResourceId = R.layout.severity_list_item;
 
 	/**
 	 * Constructor.
@@ -40,10 +39,10 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 
 		}
 
-		TextView title = (TextView) row.findViewById(R.id.events_entry_host);
+		TextView title = (TextView) row.findViewById(R.id.severity_list_item_host);
 		TextView description = (TextView) row
-				.findViewById(R.id.events_entry_description);
-		TextView clock = (TextView) row.findViewById(R.id.events_entry_clock);
+				.findViewById(R.id.severity_list_item_description);
+		TextView clock = (TextView) row.findViewById(R.id.severity_list_item_clock);
 
 		Event e = getItem(position);
 		Trigger t = e.getTrigger();

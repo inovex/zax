@@ -4,7 +4,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "hosts")
-public class Host {
+public class Host implements Comparable<Host> {
 
 	public static final String COLUMN_ID = "hostid";
 	@DatabaseField(id = true, columnName = COLUMN_ID)
@@ -49,5 +49,14 @@ public class Host {
 
 	public void setGroup(HostGroup group) {
 		this.group = group;
+	}
+
+	@Override
+	public int compareTo(Host another) {
+		if(id == another.getId())
+			return 0;
+		if(id > another.getId())
+			return 1;
+		return -1;
 	}
 }

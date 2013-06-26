@@ -12,11 +12,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.inovex.zabbixmobile.activities.fragments.OnListItemSelectedListener;
+import com.inovex.zabbixmobile.activities.fragments.OnSeverityListItemSelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter
-		implements OnListItemSelectedListener {
+		implements OnSeverityListItemSelectedListener {
 	private TreeSet<T> mObjects;
 	private static final String TAG = BaseSeverityPagerAdapter.class
 			.getSimpleName();

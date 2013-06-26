@@ -35,7 +35,7 @@ public class ProblemsDetailsPage extends SherlockFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.page_events_details, null);
+		View rootView = inflater.inflate(R.layout.page_problems_details, null);
 		// if (savedInstanceState != null)
 		// mEventId = savedInstanceState.getLong(ARG_EVENT_ID, -1);
 

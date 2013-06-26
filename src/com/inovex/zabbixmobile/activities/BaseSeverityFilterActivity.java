@@ -11,12 +11,12 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
-import com.inovex.zabbixmobile.activities.fragments.OnListItemSelectedListener;
+import com.inovex.zabbixmobile.activities.fragments.OnSeverityListItemSelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.view.HostGroupsSpinnerAdapter;
 
 public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
-		implements OnListItemSelectedListener {
+		implements OnSeverityListItemSelectedListener {
 
 	private static final String TAG = BaseSeverityFilterActivity.class
 			.getSimpleName();

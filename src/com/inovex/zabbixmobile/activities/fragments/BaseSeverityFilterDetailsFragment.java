@@ -32,7 +32,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends SherlockFragm
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
 	protected CirclePageIndicator mDetailsCircleIndicator;
 	protected ZabbixDataService mZabbixDataService;
-	private OnListItemSelectedListener mCallbackMain;
+	private OnSeverityListItemSelectedListener mCallbackMain;
 	protected BaseSeverityPagerAdapter<T> mDetailsPagerAdapter;
 
 	@Override
@@ -141,7 +141,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends SherlockFragm
 		// This makes sure that the container activity has implemented
 		// the callback interface. If not, it throws an exception
 		try {
-			mCallbackMain = (OnListItemSelectedListener) activity;
+			mCallbackMain = (OnSeverityListItemSelectedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnEventSelectedListener.");
