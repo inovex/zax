@@ -719,15 +719,10 @@ public class ZabbixRemoteAPI {
 
 		try {
 			databaseHelper.clearEvents();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 
-		int numEvents = ZabbixConfig.EVENTS_GET_LIMIT;
+			int numEvents = ZabbixConfig.EVENTS_GET_LIMIT;
 
-		JSONObject params;
-		try {
+			JSONObject params;
 			params = new JSONObject()
 					.put("output", "extend")
 					.put("limit", ZabbixConfig.EVENTS_GET_LIMIT)

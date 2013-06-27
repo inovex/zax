@@ -261,7 +261,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void insertEvents(Collection<Event> events) throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
-		Dao<Host, Long> hostDao = getDao(Host.class);
 		mThreadConnection = eventDao.startThreadConnection();
 		Savepoint savePoint = null;
 		try {
@@ -299,14 +298,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		Savepoint savePoint = null;
 		try {
 			conn.setSavePoint(null);
-			int j = 0;
 			for (Trigger e : triggers) {
-				j++;
 				triggerDao.createOrUpdate(e);
-				if (j % 50 == 0) {
-					conn.commit(savePoint);
-					savePoint = conn.setSavePoint(null);
-				}
 			}
 		} finally {
 			// commit at the end
@@ -466,13 +459,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
+	 * Clears all data of a certain type from the database.
+	 * 
+	 * @param c
+	 *            class of the type
+	 * @throws SQLException
+	 */
+	private <T> void clearTable(Class<T> c) throws SQLException {
+		Dao<T, Long> dao = getDao(c);
+		dao.deleteBuilder().delete();
+	}
+	
+	/**
 	 * Removes all events from the database.
 	 * 
 	 * @throws SQLException
 	 */
 	public void clearEvents() throws SQLException {
-		Dao<Event, Long> eventDao = getDao(Event.class);
-		eventDao.deleteBuilder().delete();
+		clearTable(Event.class);
 	}
 
 	/**
@@ -480,8 +484,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @throws SQLException
 	 */
 	public void clearTriggers() throws SQLException {
-		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
-		triggerDao.deleteBuilder().delete();
+		clearTable(Trigger.class);
 	}
 
 	/**
@@ -489,8 +492,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @throws SQLException
 	 */
 	public void clearHosts() throws SQLException {
-		Dao<Host, Long> hostDao = getDao(Host.class);
-		hostDao.deleteBuilder().delete();
+		clearTable(Host.class);
 	}
 
 	/**
@@ -498,8 +500,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @throws SQLException
 	 */
 	public void clearHostGroups() throws SQLException {
-		Dao<HostGroup, Long> hostGroupDao = getDao(HostGroup.class);
-		hostGroupDao.deleteBuilder().delete();
+		clearTable(HostGroup.class);
 	}
 
 	/**
