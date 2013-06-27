@@ -10,6 +10,13 @@ import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 
+/**
+ * Represents an asynchronous Zabbix API call. This handles
+ * {@link ZabbixLoginRequiredException} by retrying the API call and
+ * {@link FatalException} by sending a broadcast containing the error message to
+ * be displayed by the UI.
+ * 
+ */
 public abstract class RemoteAPITask extends AsyncTask<Void, Void, Void> {
 
 	private static final String TAG = RemoteAPITask.class.getSimpleName();
@@ -36,6 +43,12 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Void, Void> {
 		return null;
 	}
 
+	/**
+	 * Sends a broadcast containing an exception's message resource ID.
+	 * 
+	 * @param exception
+	 *            the exception
+	 */
 	private void sendBroadcast(FatalException exception) {
 		// send broadcast with message depending on the type of exception
 		Context context = api.getContext();
@@ -48,6 +61,15 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Void, Void> {
 		exception.printStackTrace();
 	}
 
+	/**
+	 * Tries to authenticate the user and then retries the API call. Called when
+	 * authentication fails (possibly because of an expired auth token).
+	 * 
+	 * @throws FatalException
+	 *             thrown either when a {@link FatalException} occurs within the
+	 *             API call or when a {@link ZabbixLoginRequiredException}
+	 *             occurs.
+	 */
 	private void retry() throws FatalException {
 		try {
 			api.authenticate();
@@ -57,6 +79,13 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Void, Void> {
 		}
 	}
 
+	/**
+	 * This method contains the actual API call and has to be overridden by
+	 * subclasses.
+	 * 
+	 * @throws ZabbixLoginRequiredException
+	 * @throws FatalException
+	 */
 	protected abstract void executeTask() throws ZabbixLoginRequiredException,
 			FatalException;
 

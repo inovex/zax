@@ -1,13 +1,17 @@
-package com.inovex.zabbixmobile.view;
+package com.inovex.zabbixmobile.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 
+import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsPage;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
+/**
+ * Pager adapter used by {@link EventsDetailsFragment}.
+ *
+ */
 public class EventsDetailsPagerAdapter extends BaseSeverityPagerAdapter<Event> {
 
 	private static final String TAG = EventsDetailsPagerAdapter.class

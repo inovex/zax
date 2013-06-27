@@ -38,7 +38,7 @@ public class BaseActivity extends SherlockFragmentActivity implements ServiceCon
 	}
 
 	/**
-	 * 
+	 * Binds the Zabbix service.
 	 */
 	protected void bindService() {
 		Intent intent = new Intent(this, ZabbixDataService.class);

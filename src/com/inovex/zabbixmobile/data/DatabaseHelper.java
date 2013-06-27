@@ -51,7 +51,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Pass-through constructor to be used by subclasses (specifically
-	 * MockDatabaseHelper).
+	 * {@link MockDatabaseHelper}).
 	 * 
 	 * @param context
 	 * @param databaseName
@@ -69,11 +69,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				R.raw.ormlite_config);
 	}
 
-	/**
-	 * This is called when the database is first created. Usually you should
-	 * call createTable statements here to create the tables that will store
-	 * your data.
-	 */
 	@Override
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		try {
@@ -96,11 +91,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	}
 
-	/**
-	 * This is called when your application is upgraded and it has a higher
-	 * version number. This allows you to adjust the various data to match the
-	 * new version number.
-	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource,
 			int oldVersion, int newVersion) {
@@ -126,10 +116,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Retrieves all events with the given severity from the database.
+	 * Retrieves all events with the given severity and host group from the
+	 * database.
 	 * 
 	 * @param severity
-	 * @return list of events with a matching severity
+	 * @param hostGroupId
+	 * @return list of events with a matching severity and host group
 	 * @throws SQLException
 	 */
 	public List<Event> getEventsBySeverityAndHostGroupId(
@@ -161,10 +153,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Retrieves all events with the given severity from the database.
+	 * Retrieves all problems with a given severity and host group from the
+	 * database.
 	 * 
 	 * @param severity
-	 * @return list of events with a matching severity
+	 * @param hostGroupId
+	 * @return list of events with a matching severity and host group
 	 * @throws SQLException
 	 */
 	public List<Trigger> getTriggersBySeverityAndHostGroupId(
@@ -176,7 +170,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		// interesting to us
 		Where<Trigger, Long> where = triggerQuery.where();
 		where.ne(Trigger.COLUMN_LASTCHANGE, 0);
-		
+
 		where.and();
 		where.eq(Trigger.COLUMN_VALUE, Trigger.VALUE_PROBLEM);
 
@@ -199,16 +193,36 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return triggerQuery.query();
 	}
 
+	/**
+	 * Retrieves all host groups from the database.
+	 * 
+	 * @return list of all host groups
+	 * @throws SQLException
+	 */
 	public List<HostGroup> getHostGroups() throws SQLException {
 		Dao<HostGroup, Long> hostGroupDao = getDao(HostGroup.class);
 		return hostGroupDao.queryForAll();
 	}
 
+	/**
+	 * Retrieves all hosts from the database.
+	 * 
+	 * @return list of all hosts
+	 * @throws SQLException
+	 */
 	public List<Host> getHosts() throws SQLException {
 		Dao<Host, Long> hostDao = getDao(Host.class);
 		return hostDao.queryForAll();
 	}
 
+	/**
+	 * Retrieves all hosts in a specified group from the database.
+	 * 
+	 * @param hostGroupId
+	 *            ID of the host group
+	 * @return list of hosts in the specified group
+	 * @throws SQLException
+	 */
 	public List<Host> getHostsByHostGroup(long hostGroupId) throws SQLException {
 		Dao<Host, Long> hostDao = getDao(Host.class);
 		Dao<HostHostGroupRelation, Long> groupRelationDao = getDao(HostHostGroupRelation.class);
@@ -237,6 +251,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return eventDao.queryForId(id);
 	}
 
+	/**
+	 * Inserts events into the database.
+	 * 
+	 * @param events
+	 *            collection of events to be inserted
+	 * @throws SQLException
+	 */
 	public void insertEvents(Collection<Event> events) throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
@@ -264,6 +285,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	}
 
+	/**
+	 * Inserts triggers into the database.
+	 * 
+	 * @param triggers
+	 *            collection of triggers to be inserted
+	 * @throws SQLException
+	 */
 	public void insertTriggers(Collection<Trigger> triggers)
 			throws SQLException {
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
@@ -288,6 +316,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	}
 
+	/**
+	 * Inserts hosts into the database.
+	 * 
+	 * @param hosts
+	 *            collection of hosts to be inserted
+	 * @throws SQLException
+	 */
 	public void insertHosts(List<Host> hosts) throws SQLException {
 		Dao<Host, Long> hostDao = getDao(Host.class);
 		mThreadConnection = hostDao.startThreadConnection();
@@ -306,6 +341,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
+	/**
+	 * Inserts host groups into the database.
+	 * 
+	 * @param hostGroups
+	 *            collection of host groups to be inserted
+	 * @throws SQLException
+	 */
 	public void insertHostGroups(ArrayList<HostGroup> hostGroups)
 			throws SQLException {
 		Dao<HostGroup, Long> hostGroupDao = getDao(HostGroup.class);
@@ -325,6 +367,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
+	/**
+	 * Inserts applications into the database.
+	 * 
+	 * @param applications
+	 *            collection of applications to be inserted
+	 * @throws SQLException
+	 */
 	public void insertApplications(Collection<Application> applications)
 			throws SQLException {
 		Dao<Application, Long> appDao = getDao(Application.class);
@@ -352,6 +401,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	}
 
+	/**
+	 * Inserts trigger to host group relations into the database.
+	 * 
+	 * @param triggerHostGroupCollection
+	 *            collection of relations to be inserted
+	 * @throws SQLException
+	 */
 	public void insertTriggerHostgroupRelations(
 			List<TriggerHostGroupRelation> triggerHostGroupCollection)
 			throws SQLException {
@@ -377,6 +433,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
+	/**
+	 * Inserts host to host group relations into the database.
+	 * 
+	 * @param hostHostGroupCollection
+	 *            collection of relations to be inserted
+	 * @throws SQLException
+	 */
 	public void insertHostHostgroupRelations(
 			List<HostHostGroupRelation> hostHostGroupCollection)
 			throws SQLException {
@@ -402,21 +465,38 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
+	/**
+	 * Removes all events from the database.
+	 * 
+	 * @throws SQLException
+	 */
 	public void clearEvents() throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		eventDao.deleteBuilder().delete();
 	}
 
+	/**
+	 * Removes all triggers from the database.
+	 * @throws SQLException
+	 */
 	public void clearTriggers() throws SQLException {
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
 		triggerDao.deleteBuilder().delete();
 	}
 
+	/**
+	 * Removes all hosts from the database.
+	 * @throws SQLException
+	 */
 	public void clearHosts() throws SQLException {
 		Dao<Host, Long> hostDao = getDao(Host.class);
 		hostDao.deleteBuilder().delete();
 	}
 
+	/**
+	 * Removes all host groups from the database.
+	 * @throws SQLException
+	 */
 	public void clearHostGroups() throws SQLException {
 		Dao<HostGroup, Long> hostGroupDao = getDao(HostGroup.class);
 		hostGroupDao.deleteBuilder().delete();

@@ -1,8 +1,8 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 
+import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.model.Event;
-import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
 
 /**
  * Fragment which displays event details using a ViewPager (adapter:

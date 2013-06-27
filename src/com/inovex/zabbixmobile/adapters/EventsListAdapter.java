@@ -1,4 +1,4 @@
-package com.inovex.zabbixmobile.view;
+package com.inovex.zabbixmobile.adapters;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -11,14 +11,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.activities.fragments.EventsListPage;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.Event;
-import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.Trigger;
 
-public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
+/**
+ * Adapter for the events list (see {@link EventsListPage}).
+ * 
+ */
+public class EventsListAdapter extends BaseServiceAdapter<Event> {
 
-	private static final String TAG = ProblemsListAdapter.class.getSimpleName();
+	private static final String TAG = EventsListAdapter.class.getSimpleName();
 	private int mTextViewResourceId = R.layout.severity_list_item;
 
 	/**
@@ -27,7 +31,7 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 	 * @param service
 	 * @param textViewResourceId
 	 */
-	public ProblemsListAdapter(ZabbixDataService service) {
+	public EventsListAdapter(ZabbixDataService service) {
 		super(service);
 	}
 
@@ -40,26 +44,30 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 
 		}
 
-		TextView title = (TextView) row.findViewById(R.id.severity_list_item_host);
+		TextView title = (TextView) row
+				.findViewById(R.id.severity_list_item_host);
 		TextView description = (TextView) row
 				.findViewById(R.id.severity_list_item_description);
-		TextView clock = (TextView) row.findViewById(R.id.severity_list_item_clock);
+		TextView clock = (TextView) row
+				.findViewById(R.id.severity_list_item_clock);
 
-		Trigger t = getItem(position);
-		description.setText(String.valueOf(t.getDescription()));
-		
-//		String hostNames = e.getHostNames();
-//		if(hostNames == null) {
-//			title.setText("");
-//			Log.w(TAG, "No host defined for Event with ID "
-//					+ e.getId());
-//		} else
-//			title.setText(hostNames);
-		
-		title.setText("Trigger");
-		title.append(String.valueOf("[id: " + t.getId() + "]"));
+		Event e = getItem(position);
+		Trigger t = e.getTrigger();
+		if (t == null) {
+			description.setText("no trigger defined.");
+			Log.w(TAG, "No trigger defined for Event with ID " + e.getId());
+		} else
+			description.setText(String.valueOf(t.getDescription()));
+
+		String hostNames = e.getHostNames();
+		if (hostNames == null) {
+			title.setText("");
+			Log.w(TAG, "No host defined for Event with ID " + e.getId());
+		} else
+			title.setText(hostNames);
+		title.append(String.valueOf("[id: " + e.getId() + "]"));
 		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(t.getLastChange());
+		cal.setTimeInMillis(e.getClock());
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 				SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
 				Locale.getDefault());

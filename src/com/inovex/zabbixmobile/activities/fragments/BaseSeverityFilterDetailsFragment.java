@@ -15,10 +15,10 @@ import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.inovex.zabbixmobile.view.BaseSeverityPagerAdapter;
 import com.viewpagerindicator.CirclePageIndicator;
 
 public abstract class BaseSeverityFilterDetailsFragment<T> extends SherlockFragment

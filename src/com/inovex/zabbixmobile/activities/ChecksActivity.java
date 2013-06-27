@@ -13,7 +13,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.activities.fragments.OnListItemSelectedListener;
-import com.inovex.zabbixmobile.view.HostGroupsSpinnerAdapter;
+import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 
 public class ChecksActivity extends BaseActivity implements
 		OnListItemSelectedListener {
