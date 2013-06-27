@@ -1,7 +1,6 @@
 package com.inovex.zabbixmobile.activities;
 
 import android.content.ComponentName;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
@@ -12,12 +11,13 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
-import com.inovex.zabbixmobile.activities.fragments.OnSeverityListItemSelectedListener;
+import com.inovex.zabbixmobile.activities.fragments.OnListItemSelectedListener;
+import com.inovex.zabbixmobile.activities.fragments.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
-		implements OnSeverityListItemSelectedListener {
+		implements OnListItemSelectedListener, OnSeveritySelectedListener {
 
 	private static final String TAG = BaseSeverityFilterActivity.class
 			.getSimpleName();
@@ -84,16 +84,19 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
 	}
 
 	@Override
-	public void onListItemSelected(int position, TriggerSeverity severity,
-			long id) {
-		Log.d(TAG, "item selected: " + id + ",severity: " + severity
-				+ "(position: " + position + ")");
+	public void onListItemSelected(int position, long id) {
+		Log.d(TAG, "item selected: " + id + ", position: " + position);
 		this.mCurrentItemPosition = position;
-		this.mSeverity = severity;
 
-		mDetailsFragment.selectItem(position, severity, id);
+		mDetailsFragment.selectItem(position, id);
 		showDetailsFragment();
 
+	}
+
+	@Override
+	public void onSeveritySelected(TriggerSeverity severity) {
+		mSeverity = severity;
+		mDetailsFragment.setSeverity(severity);
 	}
 
 	@Override

@@ -28,7 +28,7 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment im
 
 	private static final String TAG = BaseSeverityFilterListPage.class.getSimpleName();
 
-	private OnSeverityListItemSelectedListener mCallbackMain;
+	private OnListItemSelectedListener mCallbackMain;
 	protected ZabbixDataService mZabbixDataService;
 
 	protected TriggerSeverity mSeverity;
@@ -42,10 +42,10 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment im
 		// This makes sure that the container activity has implemented
 		// the callback interface. If not, it throws an exception
 		try {
-			mCallbackMain = (OnSeverityListItemSelectedListener) activity;
+			mCallbackMain = (OnListItemSelectedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
-					+ " must implement OnSeverityItemSelectedListener.");
+					+ " must implement OnListItemSelectedListener.");
 		}
 	}
 
@@ -113,7 +113,7 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment im
 		Log.d(TAG, "onListItemClick(l, v, " + position + ", " + id
 				+ "). severity: " + mSeverity);
 		mItemSelected = position;
-		mCallbackMain.onListItemSelected(position, mSeverity, id);
+		mCallbackMain.onListItemSelected(position, id);
 	}
 
 	public void selectItem(int position) {
@@ -126,6 +126,10 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment im
 		this.mSeverity = severity;
 	}
 	
+	public TriggerSeverity getSeverity() {
+		return mSeverity;
+	}
+
 	public void setHostGroupId(long hostGroupId) {
 		this.mHostGroupId = hostGroupId;
 		loadAdapterContent(true);

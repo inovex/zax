@@ -33,7 +33,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
 	protected CirclePageIndicator mDetailsCircleIndicator;
 	protected ZabbixDataService mZabbixDataService;
-	private OnSeverityListItemSelectedListener mCallbackMain;
+	private OnListItemSelectedListener mCallbackMain;
 	protected BaseSeverityPagerAdapter<T> mDetailsPagerAdapter;
 
 	@Override
@@ -63,9 +63,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	 * @param id
 	 *            item identifier
 	 */
-	public void selectItem(int position, TriggerSeverity severity, long id) {
+	public void selectItem(int position, long id) {
 		Log.d(TAG, "selectItem(" + position + ")");
-		setSeverity(severity);
 		setPosition(position);
 		setCurrentItemId(id);
 	}
@@ -79,6 +78,23 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 	public void setCurrentItemId(long itemId) {
 		this.mCurrentItemId = itemId;
+	}
+	
+	/**
+	 * Sets the current severity and updates the pager adapter.
+	 * 
+	 * @param severity
+	 *            current severity
+	 */
+	public void setSeverity(TriggerSeverity severity) {
+		// exchange adapter if it's necessary
+//		if(severity == this.mSeverity)
+//			return;
+		this.mSeverity = severity;
+		retrievePagerAdapter();
+		// the adapter could be fresh -> set fragment manager
+		mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
+		mDetailsPager.setAdapter(mDetailsPagerAdapter);
 	}
 
 	@Override
@@ -143,7 +159,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		// This makes sure that the container activity has implemented
 		// the callback interface. If not, it throws an exception
 		try {
-			mCallbackMain = (OnSeverityListItemSelectedListener) activity;
+			mCallbackMain = (OnListItemSelectedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnEventSelectedListener.");
@@ -197,26 +213,11 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 						// change -> prevent infinite propagation
 						if (position != mPosition)
 							mCallbackMain.onListItemSelected(position,
-									mSeverity,
 									mDetailsPagerAdapter.getItemId(position));
 					}
 
 				});
 
-	}
-
-	/**
-	 * Sets the current severity and updates the pager adapter.
-	 * 
-	 * @param severity
-	 *            current severity
-	 */
-	protected void setSeverity(TriggerSeverity severity) {
-		this.mSeverity = severity;
-		retrievePagerAdapter();
-		// the adapter could be fresh -> set fragment manager
-		mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
-		mDetailsPager.setAdapter(mDetailsPagerAdapter);
 	}
 
 }

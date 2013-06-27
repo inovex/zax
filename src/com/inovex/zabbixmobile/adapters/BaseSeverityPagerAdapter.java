@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.inovex.zabbixmobile.activities.fragments.OnSeverityListItemSelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 /**
@@ -24,8 +23,7 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
  * @param <T>
  *            class of the items in this adapter's data set
  */
-public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter
-		implements OnSeverityListItemSelectedListener {
+public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter {
 	private TreeSet<T> mObjects;
 	private static final String TAG = BaseSeverityPagerAdapter.class
 			.getSimpleName();
@@ -179,13 +177,6 @@ public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter
 	@Override
 	public int getCount() {
 		return mObjects.size();
-	}
-
-	@Override
-	public void onListItemSelected(int position, TriggerSeverity severity,
-			long id) {
-		// TODO Auto-generated method stub
-
 	}
 
 	/**

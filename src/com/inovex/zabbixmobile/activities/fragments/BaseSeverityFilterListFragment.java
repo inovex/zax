@@ -2,6 +2,7 @@ package com.inovex.zabbixmobile.activities.fragments;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,6 +32,8 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	TabPageIndicator mSeverityListTabIndicator;
 
 	ArrayList<BaseSeverityFilterListPage> pages = new ArrayList<BaseSeverityFilterListPage>();
+
+	private OnSeveritySelectedListener mCallbackMain;
 
 	class SeverityListPagerAdapter extends FragmentPagerAdapter {
 
@@ -64,6 +67,18 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	}
 	
 	protected abstract BaseSeverityFilterListPage instantiatePage();
+	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		
+		try {
+			mCallbackMain = (OnSeveritySelectedListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnSeveritySelectedListener.");
+		}
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -128,6 +143,9 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 						// mCallbackMain.onCategorySelected(position,
 						// p.getSelectedEventNumber());
 						// categoryNumber = position;
+						BaseSeverityFilterListPage currentPage = (BaseSeverityFilterListPage)mSeverityListPagerAdapter.getItem(position);
+						
+						mCallbackMain.onSeveritySelected(currentPage.getSeverity());
 
 					}
 
