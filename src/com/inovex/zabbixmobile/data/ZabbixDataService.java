@@ -13,8 +13,27 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.widget.SeekBar;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.activities.BaseSeverityFilterActivity;
+import com.inovex.zabbixmobile.activities.ChecksActivity;
+import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListPage;
+import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
+import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
+import com.inovex.zabbixmobile.activities.fragments.EventsDetailsPage;
+import com.inovex.zabbixmobile.activities.fragments.EventsListFragment;
+import com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment;
+import com.inovex.zabbixmobile.activities.fragments.ProblemsListFragment;
+import com.inovex.zabbixmobile.activities.fragments.ProblemsListPage;
+import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
+import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
+import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
+import com.inovex.zabbixmobile.adapters.EventsListAdapter;
+import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
+import com.inovex.zabbixmobile.adapters.HostsListAdapter;
+import com.inovex.zabbixmobile.adapters.ProblemsDetailsPagerAdapter;
+import com.inovex.zabbixmobile.adapters.ProblemsListAdapter;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.Event;
@@ -22,14 +41,6 @@ import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.inovex.zabbixmobile.view.BaseServiceAdapter;
-import com.inovex.zabbixmobile.view.BaseSeverityPagerAdapter;
-import com.inovex.zabbixmobile.view.EventsDetailsPagerAdapter;
-import com.inovex.zabbixmobile.view.EventsListAdapter;
-import com.inovex.zabbixmobile.view.HostGroupsSpinnerAdapter;
-import com.inovex.zabbixmobile.view.HostsListAdapter;
-import com.inovex.zabbixmobile.view.ProblemsDetailsPagerAdapter;
-import com.inovex.zabbixmobile.view.ProblemsListAdapter;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 public class ZabbixDataService extends Service {
@@ -52,7 +63,10 @@ public class ZabbixDataService extends Service {
 	private DatabaseHelper mDatabaseHelper;
 
 	private HostGroupsSpinnerAdapter mHostGroupSpinnerAdapter;
-	
+
+	/**
+	 * Adapters maintained by {@link ZabbixDataService}.
+	 */
 	// Events
 	private HashMap<TriggerSeverity, EventsListAdapter> mEventsListAdapters;
 	private HashMap<TriggerSeverity, EventsDetailsPagerAdapter> mEventsDetailsPagerAdapters;
@@ -63,7 +77,7 @@ public class ZabbixDataService extends Service {
 
 	// Checks
 	private HostsListAdapter mHostsListAdapter;
-	
+
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
 	private ZabbixRemoteAPI mRemoteAPI;
@@ -81,30 +95,80 @@ public class ZabbixDataService extends Service {
 		}
 	}
 
+	/**
+	 * Returns an event list adapter.
+	 * 
+	 * See {@link EventsListPage}.
+	 * 
+	 * @param severity
+	 *            severity of the adapter
+	 * @return list adapter
+	 */
 	public BaseServiceAdapter<Event> getEventsListAdapter(
 			TriggerSeverity severity) {
 		return mEventsListAdapters.get(severity);
 	}
 
+	/**
+	 * Returns an event details adapter to be used by the view pager.
+	 * 
+	 * See {@link EventsDetailsFragment}.
+	 * 
+	 * @param severity
+	 *            severity of the adapter
+	 * @return details pager adapter
+	 */
 	public BaseSeverityPagerAdapter<Event> getEventsDetailsPagerAdapter(
 			TriggerSeverity severity) {
 		return mEventsDetailsPagerAdapters.get(severity);
 	}
 
+	/**
+	 * Returns the adapter for the host group spinner.
+	 * 
+	 * See {@link BaseSeverityFilterActivity}, {@link ChecksActivity}.
+	 * 
+	 * @return spinner adapter
+	 */
 	public HostGroupsSpinnerAdapter getHostGroupSpinnerAdapter() {
 		return mHostGroupSpinnerAdapter;
 	}
-	
+
+	/**
+	 * Returns a problems list adapter.
+	 * 
+	 * See {@link ProblemsListPage}.
+	 * 
+	 * @param severity
+	 *            severity of the adapter
+	 * @return list adapter
+	 */
 	public BaseServiceAdapter<Trigger> getProblemsListAdapter(
 			TriggerSeverity severity) {
 		return mProblemsListAdapters.get(severity);
 	}
 
+	/**
+	 * Returns a problems details adapter to be used by the view pager.
+	 * 
+	 * See {@link ProblemsDetailsFragment}.
+	 * 
+	 * @param severity
+	 *            severity of the adapter
+	 * @return details pager adapter
+	 */
 	public BaseSeverityPagerAdapter<Trigger> getProblemsDetailsPagerAdapter(
 			TriggerSeverity severity) {
 		return mProblemsDetailsPagerAdapters.get(severity);
 	}
-	
+
+	/**
+	 * Returns a host list adapter.
+	 * 
+	 * See {@link ChecksListFragment}.
+	 * 
+	 * @return host list adapter
+	 */
 	public HostsListAdapter getHostsListAdapter() {
 		return mHostsListAdapter;
 	}
@@ -191,7 +255,7 @@ public class ZabbixDataService extends Service {
 				TriggerSeverity.values().length);
 
 		mHostGroupSpinnerAdapter = new HostGroupsSpinnerAdapter(this);
-		
+
 		for (TriggerSeverity s : TriggerSeverity.values()) {
 			mEventsListAdapters.put(s, new EventsListAdapter(this));
 			mEventsDetailsPagerAdapters
@@ -203,31 +267,24 @@ public class ZabbixDataService extends Service {
 			mProblemsDetailsPagerAdapters.put(s,
 					new ProblemsDetailsPagerAdapter(s));
 		}
-		
+
 		mHostsListAdapter = new HostsListAdapter(this);
 
 	}
 
 	/**
-	 * Sample test method returning a random number.
-	 * 
-	 * @return random number
-	 */
-	public int getRandomNumber() {
-		Log.d(TAG, "ZabbixService:getRandomNumber() [" + this.toString() + "]");
-		return new Random().nextInt(100);
-	}
-
-	/**
-	 * Loads all events with a given severity from the database asynchronously.
-	 * After loading the events, the list and details adapters are updated.
+	 * Loads all events with a given severity and host group from the database
+	 * asynchronously. After loading the events, the corresponding adapters are
+	 * updated. If necessary, an import from the Zabbix API is triggered.
 	 * 
 	 * @param severity
 	 *            severity of the events to be retrieved
-	 * @param adapter
-	 *            list adapter to be updated with the results
-	 * @param callback
-	 *            callback to be notified of the changed list adapter
+	 * @param hostGroupId
+	 *            host group id by which the events will be filtered
+	 * @param hostGroupChanged
+	 *            whether the host group has changed. If this is true, the
+	 *            adapters will be cleared before being filled with entries
+	 *            matching the selected host group.
 	 */
 	public void loadEventsBySeverityAndHostGroup(
 			final TriggerSeverity severity, final long hostGroupId,
@@ -247,9 +304,9 @@ public class ZabbixDataService extends Service {
 				events = new ArrayList<Event>();
 				try {
 					mRemoteAPI.importEvents();
+				} finally {
 					// even if the api call is not successful, we can still use
 					// the cached events
-				} finally {
 					try {
 						events = mDatabaseHelper
 								.getEventsBySeverityAndHostGroupId(severity,
@@ -286,15 +343,18 @@ public class ZabbixDataService extends Service {
 	}
 
 	/**
-	 * Loads all events with a given severity from the database asynchronously.
-	 * After loading the events, the list and details adapters are updated.
+	 * Loads all triggers with a given severity and host group from the database
+	 * asynchronously. After loading the events, the corresponding adapters are
+	 * updated. If necessary, an import from the Zabbix API is triggered.
 	 * 
 	 * @param severity
 	 *            severity of the events to be retrieved
-	 * @param adapter
-	 *            list adapter to be updated with the results
-	 * @param callback
-	 *            callback to be notified of the changed list adapter
+	 * @param hostGroupId
+	 *            host group id by which the events will be filtered
+	 * @param hostGroupChanged
+	 *            whether the host group has changed. If this is true, the
+	 *            adapters will be cleared before being filled with entries
+	 *            matching the selected host group.
 	 */
 	public void loadTriggersBySeverityAndHostGroup(
 			final TriggerSeverity severity, final long hostGroupId,
@@ -313,7 +373,7 @@ public class ZabbixDataService extends Service {
 					FatalException {
 				triggers = new ArrayList<Trigger>();
 				try {
-					mRemoteAPI.importTriggers();
+					mRemoteAPI.importActiveTriggers();
 					// even if the api call is not successful, we can still use
 					// the cached events
 				} finally {
@@ -331,8 +391,6 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				// TODO: update the data set instead of removing and re-adding
-				// all items
 				if (adapter != null) {
 					if (hostGroupChanged)
 						adapter.clear();
@@ -352,6 +410,10 @@ public class ZabbixDataService extends Service {
 
 	}
 
+	/**
+	 * Loads host groups from the database (if necessary, a Zabbix API call is
+	 * triggered) and updates the host group spinner adapter.
+	 */
 	public void loadHostGroups() {
 		new RemoteAPITask(mRemoteAPI) {
 
@@ -379,20 +441,31 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				// TODO: update the data set instead of removing and re-adding
-				// all items
 				if (groupsAdapter != null) {
 					// adapter.clear();
 					groupsAdapter.addAll(hostGroups);
 					groupsAdapter.notifyDataSetChanged();
 				}
-				
+
 			}
 
 		}.execute();
 	}
-	
-	public void loadHostsByHostGroup(final long hostGroupId, final boolean hostGroupChanged) {
+
+	/**
+	 * Loads all hosts with a given host group from the database asynchronously.
+	 * After loading the events, the host list adapter is updated. If necessary,
+	 * an import from the Zabbix API is triggered.
+	 * 
+	 * @param hostGroupId
+	 *            host group id by which the events will be filtered
+	 * @param hostGroupChanged
+	 *            whether the host group has changed. If this is true, the
+	 *            adapter will be cleared before being filled with entries
+	 *            matching the selected host group.
+	 */
+	public void loadHostsByHostGroup(final long hostGroupId,
+			final boolean hostGroupChanged) {
 		new RemoteAPITask(mRemoteAPI) {
 
 			private List<Host> hosts;
@@ -408,7 +481,8 @@ public class ZabbixDataService extends Service {
 					// the cached events
 				} finally {
 					try {
-						hosts = mDatabaseHelper.getHostsByHostGroup(hostGroupId);
+						hosts = mDatabaseHelper
+								.getHostsByHostGroup(hostGroupId);
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -422,7 +496,7 @@ public class ZabbixDataService extends Service {
 				// TODO: update the data set instead of removing and re-adding
 				// all items
 				if (hostsAdapter != null) {
-					if(hostGroupChanged)
+					if (hostGroupChanged)
 						hostsAdapter.clear();
 					hostsAdapter.addAll(hosts);
 					hostsAdapter.notifyDataSetChanged();
@@ -430,9 +504,21 @@ public class ZabbixDataService extends Service {
 
 			}
 
-		}.execute();		
+		}.execute();
 	}
 
+	/**
+	 * Loads all applications with a given host group from the database
+	 * asynchronously. After loading the events, the corresponding adapters are
+	 * updated. If necessary, an import from the Zabbix API is triggered.
+	 * 
+	 * @param hostGroupId
+	 *            host group id by which the events will be filtered
+	 * @param hostGroupChanged
+	 *            whether the host group has changed. If this is true, the
+	 *            adapters will be cleared before being filled with entries
+	 *            matching the selected host group.
+	 */
 	public void loadApplications() {
 		new RemoteAPITask(mRemoteAPI) {
 
@@ -452,6 +538,8 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Sets the activity context, which is needed to inflate layout elements.
+	 * This also initializes the layout inflater
+	 * {@link ZabbixDataService#mInflater}.
 	 * 
 	 * @param context
 	 *            the context

@@ -21,12 +21,12 @@ import android.widget.Toast;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.inovex.zabbixmobile.view.BaseServiceAdapter;
 
 public class MainActivity extends BaseActivity implements
 		OnLoginProgressListener {

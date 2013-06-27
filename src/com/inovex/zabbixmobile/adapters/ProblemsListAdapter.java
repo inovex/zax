@@ -1,23 +1,26 @@
-package com.inovex.zabbixmobile.view;
+package com.inovex.zabbixmobile.adapters;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.activities.fragments.ProblemsListPage;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
-import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Trigger;
 
-public class EventsListAdapter extends BaseServiceAdapter<Event> {
+/**
+ * Adapter for the problems list (see {@link ProblemsListPage}).
+ * 
+ */
+public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 
-	private static final String TAG = EventsListAdapter.class.getSimpleName();
+	private static final String TAG = ProblemsListAdapter.class.getSimpleName();
 	private int mTextViewResourceId = R.layout.severity_list_item;
 
 	/**
@@ -26,7 +29,7 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 	 * @param service
 	 * @param textViewResourceId
 	 */
-	public EventsListAdapter(ZabbixDataService service) {
+	public ProblemsListAdapter(ZabbixDataService service) {
 		super(service);
 	}
 
@@ -44,25 +47,14 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 				.findViewById(R.id.severity_list_item_description);
 		TextView clock = (TextView) row.findViewById(R.id.severity_list_item_clock);
 
-		Event e = getItem(position);
-		Trigger t = e.getTrigger();
-		if (t == null) {
-			description.setText("no trigger defined.");
-			Log.w(TAG, "No trigger defined for Event with ID "
-					+ e.getId());
-		} else 
-			description.setText(String.valueOf(t.getDescription()));
+		Trigger t = getItem(position);
+		description.setText(String.valueOf(t.getDescription()));
 		
-		String hostNames = e.getHostNames();
-		if(hostNames == null) {
-			title.setText("");
-			Log.w(TAG, "No host defined for Event with ID "
-					+ e.getId());
-		} else
-			title.setText(hostNames);
-		title.append(String.valueOf("[id: " + e.getId() + "]"));
+		// TODO: replace with host names
+		title.setText("Trigger");
+		title.append(String.valueOf("[id: " + t.getId() + "]"));
 		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(e.getClock());
+		cal.setTimeInMillis(t.getLastChange());
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 				SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
 				Locale.getDefault());

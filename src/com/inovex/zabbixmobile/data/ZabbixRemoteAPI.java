@@ -403,7 +403,7 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException
 	 *             if the status code indicates an error
 	 */
-	public void checkHttpStatusCode(HttpResponse resp) throws FatalException {
+	private void checkHttpStatusCode(HttpResponse resp) throws FatalException {
 		if (resp.getStatusLine().getStatusCode() == 401) {
 			// http auth failed
 			throw new FatalException(Type.HTTP_AUTHORIZATION_REQUIRED);
@@ -526,7 +526,7 @@ public class ZabbixRemoteAPI {
 	/**
 	 * close the last http stream
 	 */
-	public void closeLastStream() {
+	private void closeLastStream() {
 		if (lastStream != null && !lastStream.isClosed()) {
 			try {
 				lastStream.close();
@@ -536,6 +536,12 @@ public class ZabbixRemoteAPI {
 		}
 	}
 
+	/**
+	 * Imports all applications from Zabbix.
+	 * 
+	 * @throws FatalException
+	 * @throws ZabbixLoginRequiredException
+	 */
 	public void importApplications() throws FatalException,
 			ZabbixLoginRequiredException {
 		JSONObject params;
@@ -543,7 +549,8 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject().put("output", "extend")
 					.put("limit", ZabbixConfig.APPLICATION_GET_LIMIT)
 					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
-//					.put(isVersion2 ? "selectItems" : "select_items", "extend")
+					// .put(isVersion2 ? "selectItems" : "select_items",
+					// "extend")
 					.put("source", 0);
 			if (!isVersion2) {
 				// in Zabbix version <2.0, this is not default
@@ -562,14 +569,24 @@ public class ZabbixRemoteAPI {
 		}
 	}
 
-	private void importApplications(JsonArrayOrObjectReader jsonArray)
+	/**
+	 * Imports applications from a JSON stream.
+	 * 
+	 * @param jsonReader
+	 *            JSON stream reader
+	 * @throws JsonParseException
+	 * @throws NumberFormatException
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	private void importApplications(JsonArrayOrObjectReader jsonReader)
 			throws JsonParseException, NumberFormatException, IOException,
 			SQLException {
 		int num = 0;
 		List<Application> applicationsCollection = new ArrayList<Application>(
 				RECORDS_PER_INSERT_BATCH);
 		JsonObjectReader application;
-		while ((application = jsonArray.next()) != null) {
+		while ((application = jsonReader.next()) != null) {
 			Application app = new Application();
 			while (application.nextValueToken()) {
 				String propName = application.getCurrentName();
@@ -583,16 +600,15 @@ public class ZabbixRemoteAPI {
 					// Long.parseLong(application.getText()));
 				} else if (propName.equals("hosts")) {
 					// import hosts
-					List<Host> hosts = importHosts(application
-							.getJsonArrayOrObjectReader(), null);
+					List<Host> hosts = importHostsFromStream(
+							application.getJsonArrayOrObjectReader(), null);
 					if (hosts.size() > 0) {
 						Host t = hosts.get(0);
 						app.setHost(t);
 					}
 					if (hosts.size() > 1) {
-						Log.w(TAG,
-								"More than one host found for application "
-										+ app.getId() + ": " + app.getName());
+						Log.w(TAG, "More than one host found for application "
+								+ app.getId() + ": " + app.getName());
 					}
 				} else {
 					application.nextProperty();
@@ -682,7 +698,8 @@ public class ZabbixRemoteAPI {
 	// }
 
 	/**
-	 * Import the newest events.
+	 * Import the newest events if they are not cached in the local database
+	 * already.
 	 * 
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
@@ -741,12 +758,16 @@ public class ZabbixRemoteAPI {
 	}
 
 	/**
-	 * @param events
-	 *            stream
-	 * @param numEvents
-	 *            if null, no progressbar-update AND only isert, if it does not
-	 *            exist. If !null, progressbar-update AND always insert without
-	 *            checking
+	 * Imports events from a JSON stream.
+	 * 
+	 * This method calls
+	 * {@link ZabbixRemoteAPI#importTriggersByIds(Collection, boolean)} to
+	 * import the triggers referred to by the events. The usage of
+	 * triggers.extend in the event.get method does not suffice because we need
+	 * the host groups associated with the triggers for the hostgroup filter.
+	 * 
+	 * @param jsonReader
+	 *            JSON stream reader
 	 * @throws JsonParseException
 	 * @throws IOException
 	 * @throws SQLException
@@ -754,26 +775,27 @@ public class ZabbixRemoteAPI {
 	 * @throws ZabbixLoginRequiredException
 	 * @throws JSONException
 	 */
-	private void importEvents(JsonArrayOrObjectReader events)
+	private void importEvents(JsonArrayOrObjectReader jsonReader)
 			throws JsonParseException, IOException, SQLException,
 			JSONException, ZabbixLoginRequiredException, FatalException {
 		JsonObjectReader eventReader;
 		List<Event> eventsCollection = new ArrayList<Event>(
 				RECORDS_PER_INSERT_BATCH);
 		HashSet<Long> triggerIds = new HashSet<Long>();
-		while ((eventReader = events.next()) != null) {
+		while ((eventReader = jsonReader.next()) != null) {
 			Event e = new Event();
 			while (eventReader.nextValueToken()) {
 				String propName = eventReader.getCurrentName();
 				if (propName.equals("hosts")) {
 					// import hosts
-					String hostNames = importHostsReturnNames(
+					List<Host> hosts = importHostsFromStream(
 							eventReader.getJsonArrayOrObjectReader(), null);
+					String hostNames = createHostNamesString(hosts);
 					// store hosts namen
 					e.setHostNames(hostNames);
 				} else if (propName.equals("triggers")) {
-					// // import triggers
-					List<Trigger> triggers = importTriggers(eventReader
+					// import triggers
+					List<Trigger> triggers = importTriggersFromStream(eventReader
 							.getJsonArrayOrObjectReader());
 					if (triggers.size() > 0) {
 						Trigger t = triggers.get(0);
@@ -811,8 +833,8 @@ public class ZabbixRemoteAPI {
 		// insert the last batch of events
 		databaseHelper.insertEvents(eventsCollection);
 		// we need to close here to be able to start another import (triggers)
-		events.close();
-		importTriggersByIds(triggerIds);
+		jsonReader.close();
+		importTriggersByIds(triggerIds, false);
 	}
 
 	// /**
@@ -1043,12 +1065,22 @@ public class ZabbixRemoteAPI {
 	// }
 	// }
 
-	private List<HostGroup> importHostGroups(JsonArrayOrObjectReader jsonArray)
+	/**
+	 * Imports host groups from a JSON stream.
+	 * 
+	 * @param jsonReader
+	 *            JSON stream reader
+	 * @return list of host groups parsed from jsonReader
+	 * @throws JsonParseException
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	private List<HostGroup> importHostGroups(JsonArrayOrObjectReader jsonReader)
 			throws JsonParseException, IOException, SQLException {
 		long firstHostGroupId = -1;
 		ArrayList<HostGroup> hostGroupCollection = new ArrayList<HostGroup>();
 		JsonObjectReader hostReader;
-		while ((hostReader = jsonArray.next()) != null) {
+		while ((hostReader = jsonReader.next()) != null) {
 			HostGroup h = new HostGroup();
 			while (hostReader.nextValueToken()) {
 				String propName = hostReader.getCurrentName();
@@ -1078,39 +1110,47 @@ public class ZabbixRemoteAPI {
 	}
 
 	/**
-	 * import the hosts from stream
+	 * Creates a comma-separated string containing the names of all hosts in the
+	 * given list.
 	 * 
-	 * @param jsonArray
-	 *            stream
-	 * @param numHosts
-	 *            count of hosts for progressbar. null if unknown.
-	 * @return Object[] {(String) comma-separated all Hostnames, (Long) 1. host
-	 *         id}
-	 * @throws JsonParseException
-	 * @throws IOException
-	 * @throws SQLException
+	 * @param hosts
+	 *            list of hosts
+	 * @return comma-separated host names
 	 */
-	private String importHostsReturnNames(JsonArrayOrObjectReader jsonArray,
-			Integer numHosts) throws JsonParseException, IOException,
-			SQLException {
-		
-		List<Host> hosts = importHosts(jsonArray, numHosts);
+	private String createHostNamesString(List<Host> hosts) {
+
 		List<String> hostnames = new ArrayList<String>();
-		for(Host h : hosts) {
+		for (Host h : hosts) {
 			hostnames.add(h.getName());
 		}
 		return hostnames.toString().replaceAll("[\\[\\]]", "");
 	}
-	
-	private List<Host> importHosts(JsonArrayOrObjectReader jsonArray,
-			Integer numHosts) throws JsonParseException, IOException,
-			SQLException {
+
+	/**
+	 * Imports hosts from a JSON stream and returns a string of comma-separated
+	 * host names.
+	 * 
+	 * This method also fills the host to host group relation if a host's groups
+	 * have been selected.
+	 * 
+	 * @param jsonReader
+	 *            JSON stream reader
+	 * @param numHosts
+	 *            count of hosts for progressbar; null if unknown
+	 * @return list of hosts retrieved from the stream
+	 * @throws JsonParseException
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	private List<Host> importHostsFromStream(
+			JsonArrayOrObjectReader jsonReader, Integer numHosts)
+			throws JsonParseException, IOException, SQLException {
 		List<Host> hosts = new ArrayList<Host>();
 		List<HostHostGroupRelation> hostHostGroupCollection = new ArrayList<HostHostGroupRelation>();
 		long firstHostId = -1;
 		JsonObjectReader hostReader;
 		int i = 0;
-		while ((hostReader = jsonArray.next()) != null) {
+		while ((hostReader = jsonReader.next()) != null) {
 			Host h = new Host();
 			while (hostReader.nextValueToken()) {
 				String propName = hostReader.getCurrentName();
@@ -1172,6 +1212,15 @@ public class ZabbixRemoteAPI {
 		return hosts;
 	}
 
+	/**
+	 * Imports all hosts and their host groups. This also fills the host to host
+	 * group relation table ({@link HostHostGroupRelation}.
+	 * 
+	 * ATTENTION: empty host groups are not imported!
+	 * 
+	 * @throws ZabbixLoginRequiredException
+	 * @throws FatalException
+	 */
 	public void importHostsAndGroups() throws ZabbixLoginRequiredException,
 			FatalException {
 		// if (!isCached(HostData.TABLE_NAME, null)) {
@@ -1196,7 +1245,7 @@ public class ZabbixRemoteAPI {
 							.put("limit", ZabbixConfig.HOST_GET_LIMIT)
 							.put(isVersion2 ? "selectGroups" : "select_groups",
 									"extend"));
-			importHostsReturnNames(hosts, null);
+			importHostsFromStream(hosts, null);
 			hosts.close();
 
 		} catch (SQLException e) {
@@ -1488,24 +1537,34 @@ public class ZabbixRemoteAPI {
 	// }
 	// }
 
-	public void importTriggers() throws ZabbixLoginRequiredException,
+	/**
+	 * Imports active triggers.
+	 * 
+	 * @throws ZabbixLoginRequiredException
+	 * @throws FatalException
+	 */
+	public void importActiveTriggers() throws ZabbixLoginRequiredException,
 			FatalException {
-		importTriggersByIds(null);
+		importTriggersByIds(null, true);
 	}
 
 	/**
-	 * imports the triggers with matching IDs.
+	 * Imports the triggers with matching IDs.
 	 * 
 	 * @param triggerIds
-	 *            null: import all triggers
+	 *            collection of trigger ids to be matched; null: import all
+	 *            triggers
+	 * @param onlyActive
+	 *            true: import only active triggers; false: import all
 	 * @throws JSONException
 	 * @throws IOException
 	 * @throws SQLException
 	 * @throws ZabbixLoginRequiredException
 	 * @throws FatalException
 	 */
-	private void importTriggersByIds(Collection<Long> triggerIds)
-			throws ZabbixLoginRequiredException, FatalException {
+	private void importTriggersByIds(Collection<Long> triggerIds,
+			boolean onlyActive) throws ZabbixLoginRequiredException,
+			FatalException {
 		// clear triggers
 		// databaseHelper.clearTriggers();
 
@@ -1524,16 +1583,17 @@ public class ZabbixRemoteAPI {
 							"extend")
 					// .put(isVersion2 ? "selectItems" : "select_items",
 					// "extend").put("lastChangeSince", min)
-					// .put("only_true", "1")
 					.put("limit", ZabbixConfig.TRIGGER_GET_LIMIT)
 					.put("expandDescription", true);
 
 			if (triggerIds != null) {
 				params.put("triggerids", new JSONArray(triggerIds));
 			}
+			if (onlyActive)
+				params.put("only_true", "1");
 			JsonArrayOrObjectReader triggers = _queryStream("trigger.get",
 					params);
-			importTriggers(triggers);
+			importTriggersFromStream(triggers);
 			triggers.close();
 		} catch (SQLException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
@@ -1545,12 +1605,26 @@ public class ZabbixRemoteAPI {
 
 	}
 
-	private List<Trigger> importTriggers(JsonArrayOrObjectReader jsonArray)
-			throws JsonParseException, IOException, SQLException {
+	/**
+	 * Imports triggers from a JSON stream.
+	 * 
+	 * If groups are selected, the trigger to hostgroup relation (
+	 * {@link TriggerHostGroupRelation} is filled.
+	 * 
+	 * @param jsonReader
+	 *            JSON stream reader
+	 * @return list of imported triggers
+	 * @throws JsonParseException
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	private List<Trigger> importTriggersFromStream(
+			JsonArrayOrObjectReader jsonReader) throws JsonParseException,
+			IOException, SQLException {
 		List<Trigger> triggerCollection = new ArrayList<Trigger>();
 		List<TriggerHostGroupRelation> triggerHostGroupCollection = new ArrayList<TriggerHostGroupRelation>();
 		JsonObjectReader triggerReader;
-		while ((triggerReader = jsonArray.next()) != null) {
+		while ((triggerReader = jsonReader.next()) != null) {
 			Trigger t = new Trigger();
 			while (triggerReader.nextValueToken()) {
 				String propName = triggerReader.getCurrentName();

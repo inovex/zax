@@ -1,13 +1,18 @@
-package com.inovex.zabbixmobile.view;
+package com.inovex.zabbixmobile.adapters;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.Host;
 
+/**
+ * Adapter for the list of hosts used by {@link ChecksListFragment}.
+ *
+ */
 public class HostsListAdapter extends BaseServiceAdapter<Host> {
 
 	private static final String TAG = HostsListAdapter.class.getSimpleName();

@@ -1,4 +1,4 @@
-package com.inovex.zabbixmobile.view;
+package com.inovex.zabbixmobile.adapters;
 
 import java.util.Collection;
 import java.util.TreeSet;
@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
@@ -15,6 +16,14 @@ import android.view.ViewGroup;
 import com.inovex.zabbixmobile.activities.fragments.OnSeverityListItemSelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
+/**
+ * Base class for a pager adapter containing details pages for a particular
+ * severity (see {@link TriggerSeverity}. The base functionality is similar to
+ * {@link FragmentPagerAdapter}.
+ * 
+ * @param <T>
+ *            class of the items in this adapter's data set
+ */
 public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter
 		implements OnSeverityListItemSelectedListener {
 	private TreeSet<T> mObjects;
@@ -27,10 +36,24 @@ public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter
 
 	private Fragment mCurrentPrimaryItem = null;
 
+	/**
+	 * Creates an adapter.
+	 * 
+	 * @param severity
+	 *            severity of this adapter
+	 */
 	public BaseSeverityPagerAdapter(TriggerSeverity severity) {
 		this(null, severity);
 	}
 
+	/**
+	 * Creates an adapter
+	 * 
+	 * @param fm
+	 *            the fragment manager to be used by this view pager.
+	 * @param severity
+	 *            severity of this adapter
+	 */
 	public BaseSeverityPagerAdapter(FragmentManager fm, TriggerSeverity severity) {
 		mFragmentManager = fm;
 		Log.d(TAG, "creating SeverityPagerAdapter for severity " + severity);
@@ -167,17 +190,29 @@ public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter
 
 	}
 
+	/**
+	 * Wrapper for {@link TreeSet#addAll(Collection)}.
+	 * 
+	 * @param objects
+	 */
 	public void addAll(Collection<? extends T> objects) {
 		this.mObjects.addAll(objects);
 	}
 
+	/**
+	 * Returns an item from the underlying data set.
+	 * 
+	 * @param position
+	 *            position of the item
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public T getItem(int position) {
 		return (T) mObjects.toArray()[position];
 	}
 
 	/**
-	 * Clears the collection of events.
+	 * Wrapper for {@link TreeSet#clear()}.
 	 */
 	public void clear() {
 		mObjects.clear();

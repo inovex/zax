@@ -12,8 +12,8 @@ import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
 import com.inovex.zabbixmobile.activities.fragments.OnSeverityListItemSelectedListener;
+import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.inovex.zabbixmobile.view.HostGroupsSpinnerAdapter;
 
 public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
 		implements OnSeverityListItemSelectedListener {

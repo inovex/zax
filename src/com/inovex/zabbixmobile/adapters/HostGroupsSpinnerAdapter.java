@@ -1,4 +1,4 @@
-package com.inovex.zabbixmobile.view;
+package com.inovex.zabbixmobile.adapters;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +8,11 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.HostGroup;
 
+/**
+ * Adapter for the host groups spinner, which is used to filter items by host
+ * group.
+ * 
+ */
 public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 
 	private String mTitle;
@@ -59,7 +64,10 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 		super.clear();
 		addBaseGroups();
 	}
-	
+
+	/**
+	 * Adds the base host group for the display of all items.
+	 */
 	private void addBaseGroups() {
 		mObjects.add(new HostGroup(HostGroup.GROUP_ID_ALL, mZabbixDataService
 				.getResources().getString(R.string.all)));

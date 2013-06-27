@@ -1,4 +1,4 @@
-package com.inovex.zabbixmobile.view;
+package com.inovex.zabbixmobile.adapters;
 
 import java.util.Collection;
 import java.util.TreeSet;
@@ -8,20 +8,40 @@ import android.widget.BaseAdapter;
 
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 
+/**
+ * Base class for adapters maintained by a {@link ZabbixDataService}.
+ * 
+ * @param <T>
+ *            class of the items in this adapter's data set
+ */
 public abstract class BaseServiceAdapter<T> extends BaseAdapter {
 
 	protected ZabbixDataService mZabbixDataService;
 	protected TreeSet<T> mObjects;
-	
+
+	/**
+	 * Creates an adapter.
+	 * 
+	 * @param service
+	 *            the service maintaining this adapter.
+	 */
 	public BaseServiceAdapter(ZabbixDataService service) {
 		this.mZabbixDataService = service;
 		this.mObjects = new TreeSet<T>();
 	}
-	
+
+	/**
+	 * Wrapper for {@link TreeSet#addAll(Collection)}.
+	 * 
+	 * @param collection
+	 */
 	public void addAll(Collection<T> collection) {
 		mObjects.addAll(collection);
 	}
-	
+
+	/**
+	 * Wrapper for {@link TreeSet#clear()}.
+	 */
 	public void clear() {
 		mObjects.clear();
 	}
@@ -34,10 +54,12 @@ public abstract class BaseServiceAdapter<T> extends BaseAdapter {
 	@SuppressWarnings("unchecked")
 	@Override
 	public T getItem(int position) {
-		return (T)mObjects.toArray()[position];
+		return (T) mObjects.toArray()[position];
 	}
 
 	/**
+	 * Retrieves the service's layout inflater.
+	 * 
 	 * @return
 	 */
 	protected LayoutInflater getInflater() {

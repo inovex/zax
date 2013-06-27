@@ -45,14 +45,6 @@ public class ChecksListFragment extends SherlockListFragment implements
 	}
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		setListAdapter(new ArrayAdapter<String>(getActivity(),
-				android.R.layout.simple_expandable_list_item_1, new String[] {
-						"a", "b", "c" }));
-	}
-
-	@Override
 	public void onStart() {
 		super.onStart();
 		// we need to do this after the view was created!!
@@ -78,6 +70,7 @@ public class ChecksListFragment extends SherlockListFragment implements
 
 	public void setHostGroup(long itemId) {
 		this.mHostGroupId = itemId;
+		loadAdapterContent(true);
 	}
 
 	@Override
@@ -93,7 +86,7 @@ public class ChecksListFragment extends SherlockListFragment implements
 		Log.d(TAG, "service connected: " + mZabbixDataService + " - binder: "
 				+ binder);
 		setupListAdapter();
-		loadAdapterContent(false);
+		loadAdapterContent(true);
 
 	}
 
