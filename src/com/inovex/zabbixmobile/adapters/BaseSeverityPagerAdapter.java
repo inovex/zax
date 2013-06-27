@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
+import android.text.GetChars;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +24,13 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
  * @param <T>
  *            class of the items in this adapter's data set
  */
-public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter {
+public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter  {
 	private TreeSet<T> mObjects;
 	private static final String TAG = BaseSeverityPagerAdapter.class
 			.getSimpleName();
 	private static final boolean DEBUG = false;
+	
+	private int mCurrentPosition;
 
 	private FragmentManager mFragmentManager;
 	private FragmentTransaction mCurTransaction = null;
@@ -206,4 +209,22 @@ public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter {
 	public void clear() {
 		mObjects.clear();
 	}
+
+	public int getCurrentPosition() {
+		return mCurrentPosition;
+	}
+
+	public void setCurrentPosition(int position) {
+		this.mCurrentPosition = position;
+	}
+	
+	@Override
+	public CharSequence getPageTitle(int position) {
+		if(position == mCurrentPosition - 1)
+			return "Newer";
+		else if(position == mCurrentPosition + 1)
+			return "Older";
+		return position + " of " + getCount();
+	}
+	
 }

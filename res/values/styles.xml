@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
@@ -17,6 +17,7 @@
         All customizations that are NOT specific to a particular API-level can go here.
         <item name="vpiTabPageIndicatorStyle">@style/MyTabPageIndicator</item>
         <item name="vpiCirclePageIndicatorStyle">@style/MyCirclePageIndicator</item>
+        <item name="vpiTitlePageIndicatorStyle">@style/MyTitlePageIndicator</item>
     </style>
     
     <style name="MyTabPageIndicator" parent="Widget.TabPageIndicator">
@@ -29,6 +30,23 @@
         <item name="strokeWidth">1dp</item>
         <item name="radius">4dp</item>
         <item name="centered">true</item>
+    </style>
+    
+    <style name="MyTitlePageIndicator">
+        <item name="android:textColor">@color/vpi__light_theme</item>
+        <item name="android:background">#18FF0000</item>
+        <item name="selectedColor">@color/vpi__light_theme</item>
+        <item name="footerLineHeight">0dp</item>
+        <item name="footerIndicatorHeight">0dp</item>
+        <item name="footerIndicatorStyle">none</item>
+        <item name="android:textSize">12sp</item>
+        <!-- <item name="footerColor">#FFAA2222</item>
+        <item name="footerLineHeight">1dp</item>
+        <item name="footerIndicatorHeight">3dp</item>
+        <item name="footerIndicatorStyle">underline</item>
+        <item name="android:textColor">#AA000000</item>
+        <item name="selectedColor">#FF000000</item>
+        <item name="selectedBold">true</item> -->
     </style>
 
 </resources>

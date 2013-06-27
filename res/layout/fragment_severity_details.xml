@@ -17,8 +17,8 @@
         android:layout_weight="1" >
     </android.support.v4.view.ViewPager>
 
-    <com.viewpagerindicator.CirclePageIndicator
-        android:id="@+id/severity_circle_page_indicator"
+    <com.viewpagerindicator.TitlePageIndicator
+        android:id="@+id/severity_page_indicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="2dip" />

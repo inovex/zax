@@ -14,13 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.viewpagerindicator.CirclePageIndicator;
+import com.viewpagerindicator.TitlePageIndicator;
 
 public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		SherlockFragment implements ServiceConnection {
@@ -31,7 +30,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	protected int mPosition = 0;
 	protected long mCurrentItemId = 0;
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
-	protected CirclePageIndicator mDetailsCircleIndicator;
+	protected TitlePageIndicator mDetailsPageIndicator;
 	protected ZabbixDataService mZabbixDataService;
 	private OnListItemSelectedListener mCallbackMain;
 	protected BaseSeverityPagerAdapter<T> mDetailsPagerAdapter;
@@ -71,8 +70,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 	public void setPosition(int position) {
 		this.mPosition = position;
-		if (mDetailsCircleIndicator != null) {
-			mDetailsCircleIndicator.setCurrentItem(position);
+		if (mDetailsPageIndicator != null) {
+			mDetailsPageIndicator.setCurrentItem(position);
 		}
 	}
 
@@ -185,12 +184,12 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 				R.id.severity_view_pager);
 		mDetailsPager.setAdapter(mDetailsPagerAdapter);
 
-		// Initialize the circle indicator
-		mDetailsCircleIndicator = (CirclePageIndicator) getView().findViewById(
-				R.id.severity_circle_page_indicator);
-		mDetailsCircleIndicator.setViewPager(mDetailsPager);
-		mDetailsCircleIndicator.setCurrentItem(mPosition);
-		mDetailsCircleIndicator
+		// Initialize the page indicator
+		mDetailsPageIndicator = (TitlePageIndicator) getView().findViewById(
+				R.id.severity_page_indicator);
+		mDetailsPageIndicator.setViewPager(mDetailsPager);
+		mDetailsPageIndicator.setCurrentItem(mPosition);
+		mDetailsPageIndicator
 				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
 					@Override
@@ -211,6 +210,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 						// propagate page change only if there actually was a
 						// change -> prevent infinite propagation
+						mDetailsPagerAdapter.setCurrentPosition(position);
 						if (position != mPosition)
 							mCallbackMain.onListItemSelected(position,
 									mDetailsPagerAdapter.getItemId(position));
