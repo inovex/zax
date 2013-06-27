@@ -161,10 +161,8 @@ public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter
 	 *            Position within this adapter
 	 * @return Unique identifier for the item at position
 	 */
-	public long getItemId(int position) {
-		return position;
-	}
-
+	public abstract long getItemId(int position);
+	
 	private static String makeFragmentName(int viewId, long id) {
 		return "android:switcher:" + viewId + ":" + id;
 	}

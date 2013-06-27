@@ -1,6 +1,7 @@
 package com.inovex.zabbixmobile.activities;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
@@ -40,7 +41,7 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		mActionBar.setDisplayShowTitleEnabled(false);
 	}
-	
+
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		super.onServiceConnected(className, service);
@@ -72,10 +73,10 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			try {
-				finish();
-			} catch (Throwable e) {
-				e.printStackTrace();
+			if (mDetailsFragment.isVisible() && mFlipper != null) {
+				showListFragment();
+			} else {
+				super.onBackPressed();
 			}
 			break;
 		}
@@ -91,8 +92,7 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
 		this.mSeverity = severity;
 
 		mDetailsFragment.selectItem(position, severity, id);
-		if (mFlipper != null)
-			mFlipper.showNext();
+		showDetailsFragment();
 
 	}
 
@@ -100,11 +100,27 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
 	public void onBackPressed() {
 		if (mDetailsFragment.isVisible() && mFlipper != null) {
 			Log.d(TAG, "DetailsFragment is visible.");
-			mFlipper.showPrevious();
+			showListFragment();
 		} else {
 			Log.d(TAG, "DetailsFragment is not visible.");
 			super.onBackPressed();
 		}
+	}
+
+	protected void showDetailsFragment() {
+		if (!mDetailsFragment.isVisible() && mFlipper != null) {
+			mFlipper.showNext();
+		}
+		// details fragment becomes visible -> enable menu
+		mDetailsFragment.setHasOptionsMenu(true);
+	}
+
+	protected void showListFragment() {
+		if (!mListFragment.isVisible() && mFlipper != null) {
+			mFlipper.showPrevious();
+		}
+		// details fragment becomes invisible -> disable menu
+		mDetailsFragment.setHasOptionsMenu(false);
 	}
 
 }

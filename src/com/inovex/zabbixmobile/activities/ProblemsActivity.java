@@ -1,5 +1,6 @@
 package com.inovex.zabbixmobile.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ViewFlipper;
 
@@ -35,8 +36,19 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			if (position != -1 && id != -1) {
 				mDetailsFragment.setPosition(position);
 				mDetailsFragment.setCurrentItemId(id);
-				mFlipper.showNext();
+				showDetailsFragment();
 			}
 		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		Bundle extras = getIntent().getExtras();
+		// check if the activity was started from the main activity using intent
+		// extras -> if so, we want to go back to the main activity
+		if (extras != null && extras.getInt(ARG_ITEM_POSITION, -1) != -1
+				&& extras.getLong(ARG_ITEM_ID, -1) != -1)
+			finish();
+		super.onBackPressed();
 	}
 }

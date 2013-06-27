@@ -33,5 +33,9 @@ public class ProblemsDetailsPagerAdapter extends BaseSeverityPagerAdapter<Trigge
 		f.setTrigger(trigger);
 		return f;
 	}
+	
+	public long getItemId(int position) {
+		return getItem(position).getId();
+	}
 
 }

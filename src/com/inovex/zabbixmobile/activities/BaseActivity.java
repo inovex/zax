@@ -9,6 +9,8 @@ import android.os.IBinder;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 
@@ -59,5 +61,11 @@ public class BaseActivity extends SherlockFragmentActivity implements ServiceCon
 	protected void onStop() {
 		super.onStop();
 		unbindService(this);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.main, menu);
+		return true;
 	}
 }

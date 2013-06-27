@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
@@ -21,8 +22,8 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.CirclePageIndicator;
 
-public abstract class BaseSeverityFilterDetailsFragment<T> extends SherlockFragment
-		implements ServiceConnection {
+public abstract class BaseSeverityFilterDetailsFragment<T> extends
+		SherlockFragment implements ServiceConnection {
 
 	public static final String TAG = BaseSeverityFilterDetailsFragment.class
 			.getSimpleName();
@@ -104,7 +105,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends SherlockFragm
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_severity_details,
 				container, false);
 		Log.d(TAG, "onCreateView");
@@ -114,7 +116,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends SherlockFragm
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-	
+
 		Log.d(TAG, "onViewCreated");
 		// if (savedInstanceState != null) {
 		// mPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
@@ -122,7 +124,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends SherlockFragm
 		// mSeverity = savedInstanceState.getInt(ARG_SEVERITY,
 		// TriggerSeverities.ALL.getNumber());
 		// }
-	
+
 	}
 
 	@Override
@@ -137,7 +139,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends SherlockFragm
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		Log.d(TAG, "onAttach");
-	
+
 		// This makes sure that the container activity has implemented
 		// the callback interface. If not, it throws an exception
 		try {
@@ -158,15 +160,15 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends SherlockFragm
 	 */
 	protected void setupDetailsViewPager() {
 		Log.d(TAG, "setupViewPager");
-	
+
 		retrievePagerAdapter();
 		mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
-	
+
 		// initialize the view pager
 		mDetailsPager = (ViewPager) getView().findViewById(
 				R.id.severity_view_pager);
 		mDetailsPager.setAdapter(mDetailsPagerAdapter);
-	
+
 		// Initialize the circle indicator
 		mDetailsCircleIndicator = (CirclePageIndicator) getView().findViewById(
 				R.id.severity_circle_page_indicator);
@@ -174,28 +176,33 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends SherlockFragm
 		mDetailsCircleIndicator.setCurrentItem(mPosition);
 		mDetailsCircleIndicator
 				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-	
+
 					@Override
 					public void onPageScrollStateChanged(int arg0) {
 						// TODO Auto-generated method stub
-	
+
 					}
-	
+
 					@Override
 					public void onPageScrolled(int arg0, float arg1, int arg2) {
 						// TODO Auto-generated method stub
-	
+
 					}
-	
+
 					@Override
 					public void onPageSelected(int position) {
 						Log.d(TAG, "detail page selected: " + position);
-	
-						// mCallbackMain.onEventSelected(position);
+
+						// propagate page change only if there actually was a
+						// change -> prevent infinite propagation
+						if (position != mPosition)
+							mCallbackMain.onListItemSelected(position,
+									mSeverity,
+									mDetailsPagerAdapter.getItemId(position));
 					}
-	
+
 				});
-	
+
 	}
 
 	/**
