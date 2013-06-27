@@ -51,8 +51,7 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 		description.setText(String.valueOf(t.getDescription()));
 		
 		// TODO: replace with host names
-		title.setText("Trigger");
-		title.append(String.valueOf("[id: " + t.getId() + "]"));
+		title.setText("Trigger " + "[id: " + t.getId() + "]");
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(t.getLastChange());
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(

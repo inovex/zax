@@ -61,11 +61,10 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 
 		String hostNames = e.getHostNames();
 		if (hostNames == null) {
-			title.setText("");
+			hostNames = "";
 			Log.w(TAG, "No host defined for Event with ID " + e.getId());
-		} else
-			title.setText(hostNames);
-		title.append(String.valueOf("[id: " + e.getId() + "]"));
+		}
+		title.setText(hostNames + " [id: " + e.getId() + "]");
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(e.getClock());
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
