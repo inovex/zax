@@ -81,8 +81,9 @@
     <string name="ringtone">Ringtone</string>
     <string name="acknowledge">Acknowledge</string>
     <string name="acknowledge_event">Acknowledge Event</string>
+    <string name="comment">Comment</string>
     <string name="cancel">Cancel</string>
-    <string name="enter_comment">Enter comment</string>
+    <string name="enter_comment">Please enter a comment:</string>
     <string name="could_not_acknowledge_event">Zabbix did not acknowledge event. Please check your permissions and Zabbix version (>= 1.8.4).</string>
     <string name="no_trigger_data">No triggers found for this item.</string>
     <string name="no_event_data">No events found for this item.</string>

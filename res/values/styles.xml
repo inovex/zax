@@ -34,7 +34,7 @@
     
     <style name="MyTitlePageIndicator">
         <item name="android:textColor">@color/vpi__light_theme</item>
-        <item name="android:background">#18FF0000</item>
+        <item name="android:background">#FFCCCCCC</item>
         <item name="selectedColor">@color/vpi__light_theme</item>
         <item name="footerLineHeight">0dp</item>
         <item name="footerIndicatorHeight">0dp</item>

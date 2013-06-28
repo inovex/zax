@@ -2,15 +2,14 @@ package com.inovex.zabbixmobile.util;
 
 import java.io.IOException;
 
-
 import android.util.Log;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 /**
- * json object wrapper
- * parses the attributes of json objects direct from stream
+ * json object wrapper parses the attributes of json objects direct from stream
  */
 public class JsonObjectReader {
 	private final JsonParser parser;
@@ -25,17 +24,21 @@ public class JsonObjectReader {
 
 	/**
 	 * reads the json object until its end. works recursively.
+	 * 
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
 	public void finishParsing() throws JsonParseException, IOException {
-		if (isParsed) return;
+		if (isParsed)
+			return;
 
 		int offen = 1;
 		do {
 			JsonToken tk = parser.nextToken();
-			if (tk == JsonToken.START_OBJECT) offen++;
-			else if (tk == JsonToken.END_OBJECT) offen--;
+			if (tk == JsonToken.START_OBJECT)
+				offen++;
+			else if (tk == JsonToken.END_OBJECT)
+				offen--;
 		} while (offen > 0);
 		parser.nextToken();
 		isParsed = true;
@@ -55,25 +58,28 @@ public class JsonObjectReader {
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
-	public JsonArrayOrObjectReader getJsonArrayOrObjectReader() throws JsonParseException, IOException {
+	public JsonArrayOrObjectReader getJsonArrayOrObjectReader()
+			throws JsonParseException, IOException {
 		boolean ok = false;
-		if (parser.getCurrentToken() == JsonToken.START_ARRAY || parser.getCurrentToken() == JsonToken.START_OBJECT) {
+		if (parser.getCurrentToken() == JsonToken.START_ARRAY
+				|| parser.getCurrentToken() == JsonToken.START_OBJECT) {
 			ok = true;
 		} else {
 			parser.nextToken();
-			if (parser.getCurrentToken() == JsonToken.START_ARRAY || parser.getCurrentToken() == JsonToken.START_OBJECT) {
+			if (parser.getCurrentToken() == JsonToken.START_ARRAY
+					|| parser.getCurrentToken() == JsonToken.START_OBJECT) {
 				ok = true;
 			}
 		}
 		if (!ok) {
-			Log.e("JsonObjectReader", "token: "+parser.getCurrentToken());
-			Log.e("JsonObjectReader", "name: "+parser.getCurrentName());
-			Log.e("JsonObjectReader", "text: "+parser.getText());
+			Log.e("JsonObjectReader", "token: " + parser.getCurrentToken());
+			Log.e("JsonObjectReader", "name: " + parser.getCurrentName());
+			Log.e("JsonObjectReader", "text: " + parser.getText());
 			throw new IllegalStateException();
 		}
 		return new JsonArrayOrObjectReader(parser);
 	}
-	
+
 	/**
 	 * @return value of current property as string
 	 * @throws JsonParseException
@@ -92,12 +98,15 @@ public class JsonObjectReader {
 
 	/**
 	 * skips current property
-	 * @return true, if yet another property exists. false, if the object was read to the end.
+	 * 
+	 * @return true, if yet another property exists. false, if the object was
+	 *         read to the end.
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
 	public boolean nextProperty() throws JsonParseException, IOException {
-		if (isParsed) return false;
+		if (isParsed)
+			return false;
 
 		JsonToken tk;
 		do {
@@ -115,12 +124,14 @@ public class JsonObjectReader {
 
 	/**
 	 * jumps to the next json token (low level)
+	 * 
 	 * @return false, if the object was read to the end.
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
 	public boolean nextToken() throws JsonParseException, IOException {
-		if (isParsed) return false;
+		if (isParsed)
+			return false;
 
 		JsonToken tk = parser.nextToken();
 		if (tk == JsonToken.END_OBJECT) {
@@ -131,12 +142,14 @@ public class JsonObjectReader {
 
 	/**
 	 * reads to the next property
+	 * 
 	 * @return false, if the object was read to the end
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
 	public boolean nextValueToken() throws JsonParseException, IOException {
-		if (isParsed) return false;
+		if (isParsed)
+			return false;
 
 		JsonToken tk = parser.nextToken();
 		if (tk == JsonToken.END_OBJECT) {
@@ -148,5 +161,5 @@ public class JsonObjectReader {
 		}
 		return true;
 	}
-	
+
 }

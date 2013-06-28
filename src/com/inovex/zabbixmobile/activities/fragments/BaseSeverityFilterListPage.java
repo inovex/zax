@@ -16,17 +16,19 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
+import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 /**
- * Represents one page of a list view pager. Shows a list of items (events/problems)
- * for a specific severity.
+ * Represents one page of a list view pager. Shows a list of items
+ * (events/problems) for a specific severity.
  */
-public abstract class BaseSeverityFilterListPage extends SherlockListFragment implements
-		ServiceConnection {
+public abstract class BaseSeverityFilterListPage extends SherlockListFragment
+		implements ServiceConnection {
 
-	private static final String TAG = BaseSeverityFilterListPage.class.getSimpleName();
+	private static final String TAG = BaseSeverityFilterListPage.class
+			.getSimpleName();
 
 	private OnListItemSelectedListener mCallbackMain;
 	protected ZabbixDataService mZabbixDataService;
@@ -125,7 +127,7 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment im
 	public void setSeverity(TriggerSeverity severity) {
 		this.mSeverity = severity;
 	}
-	
+
 	public TriggerSeverity getSeverity() {
 		return mSeverity;
 	}
@@ -153,7 +155,7 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment im
 	}
 
 	protected abstract void setupListAdapter();
-	
+
 	protected abstract void loadAdapterContent(boolean hostGroupChanged);
 
 	@Override

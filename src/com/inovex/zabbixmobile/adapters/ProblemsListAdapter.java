@@ -42,14 +42,16 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 
 		}
 
-		TextView title = (TextView) row.findViewById(R.id.severity_list_item_host);
+		TextView title = (TextView) row
+				.findViewById(R.id.severity_list_item_host);
 		TextView description = (TextView) row
 				.findViewById(R.id.severity_list_item_description);
-		TextView clock = (TextView) row.findViewById(R.id.severity_list_item_clock);
+		TextView clock = (TextView) row
+				.findViewById(R.id.severity_list_item_clock);
 
 		Trigger t = getItem(position);
 		description.setText(String.valueOf(t.getDescription()));
-		
+
 		// TODO: replace with host names
 		title.setText("Trigger " + "[id: " + t.getId() + "]");
 		Calendar cal = Calendar.getInstance();

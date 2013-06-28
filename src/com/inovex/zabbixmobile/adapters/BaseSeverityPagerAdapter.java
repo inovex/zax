@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
-import android.text.GetChars;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,12 +23,12 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
  * @param <T>
  *            class of the items in this adapter's data set
  */
-public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter  {
+public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter {
 	private TreeSet<T> mObjects;
 	private static final String TAG = BaseSeverityPagerAdapter.class
 			.getSimpleName();
 	private static final boolean DEBUG = false;
-	
+
 	private int mCurrentPosition;
 
 	private FragmentManager mFragmentManager;
@@ -163,7 +162,7 @@ public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter  {
 	 * @return Unique identifier for the item at position
 	 */
 	public abstract long getItemId(int position);
-	
+
 	private static String makeFragmentName(int viewId, long id) {
 		return "android:switcher:" + viewId + ":" + id;
 	}
@@ -204,6 +203,16 @@ public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter  {
 	}
 
 	/**
+	 * Returns the current item.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public T getCurrentItem() {
+		return (T) mObjects.toArray()[mCurrentPosition];
+	}
+
+	/**
 	 * Wrapper for {@link TreeSet#clear()}.
 	 */
 	public void clear() {
@@ -217,14 +226,14 @@ public abstract class BaseSeverityPagerAdapter<T> extends PagerAdapter  {
 	public void setCurrentPosition(int position) {
 		this.mCurrentPosition = position;
 	}
-	
+
 	@Override
 	public CharSequence getPageTitle(int position) {
-		if(position == mCurrentPosition - 1)
+		if (position == mCurrentPosition - 1)
 			return "Newer";
-		else if(position == mCurrentPosition + 1)
+		else if (position == mCurrentPosition + 1)
 			return "Older";
-		return position + " of " + getCount();
+		return (position + 1) + " of " + getCount();
 	}
-	
+
 }

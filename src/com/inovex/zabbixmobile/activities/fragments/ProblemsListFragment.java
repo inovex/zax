@@ -1,6 +1,5 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
-
 /**
  * Fragment displaying several lists of problems (one for each severity) using a
  * view pager.

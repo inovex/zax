@@ -10,7 +10,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "triggers")
 public class Trigger implements Comparable<Trigger> {
-	
+
 	public static final int VALUE_PROBLEM = 1;
 	public static final int VALUE_OK = 0;
 
@@ -165,9 +165,9 @@ public class Trigger implements Comparable<Trigger> {
 
 	@Override
 	public int compareTo(Trigger another) {
-		if(id == another.getId())
+		if (id == another.getId())
 			return 0;
-		if(lastChange < another.getLastChange())
+		if (lastChange < another.getLastChange())
 			return 1;
 		return -1;
 	}

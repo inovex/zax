@@ -7,8 +7,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
 /**
- * json array wrapper
- * parses a json array direct from stream
+ * json array wrapper parses a json array direct from stream
  */
 public class JsonArrayOrObjectReader {
 	private final JsonParser parser;
@@ -25,6 +24,7 @@ public class JsonArrayOrObjectReader {
 
 	/**
 	 * closes the json parser and the stream
+	 * 
 	 * @throws IOException
 	 */
 	public void close() throws IOException {
@@ -33,6 +33,7 @@ public class JsonArrayOrObjectReader {
 
 	/**
 	 * reads until the array get closed. works recursively.
+	 * 
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
@@ -41,17 +42,22 @@ public class JsonArrayOrObjectReader {
 		do {
 			JsonToken tk = parser.nextToken();
 			if (isObject) {
-				if (tk == JsonToken.START_OBJECT) offen++;
-				else if (tk == JsonToken.END_OBJECT) offen--;
+				if (tk == JsonToken.START_OBJECT)
+					offen++;
+				else if (tk == JsonToken.END_OBJECT)
+					offen--;
 			} else {
-				if (tk == JsonToken.START_ARRAY) offen++;
-				else if (tk == JsonToken.END_ARRAY) offen--;
+				if (tk == JsonToken.START_ARRAY)
+					offen++;
+				else if (tk == JsonToken.END_ARRAY)
+					offen--;
 			}
 		} while (offen > 0);
 	}
 
 	/**
 	 * reads until the next json object
+	 * 
 	 * @return json object wrapper
 	 * @throws JsonParseException
 	 * @throws IOException
@@ -59,15 +65,17 @@ public class JsonArrayOrObjectReader {
 	public JsonObjectReader next() throws JsonParseException, IOException {
 		JsonToken tk = parser.nextToken();
 		if (isObject) {
-			if (tk == JsonToken.END_OBJECT) return null;
+			if (tk == JsonToken.END_OBJECT)
+				return null;
 		} else {
-			if (tk == JsonToken.END_ARRAY) return null;
+			if (tk == JsonToken.END_ARRAY)
+				return null;
 		}
 		if (lastObject != null && !lastObject.isParsed()) {
-			throw new IllegalStateException("The last object must be read complete before the next object can be parsed.");
+			throw new IllegalStateException(
+					"The last object must be read complete before the next object can be parsed.");
 		}
 		parser.nextToken(); // { Token
 		return lastObject = new JsonObjectReader(parser);
 	}
 }
-

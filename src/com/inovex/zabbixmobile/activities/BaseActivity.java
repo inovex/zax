@@ -14,12 +14,13 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 
-public class BaseActivity extends SherlockFragmentActivity implements ServiceConnection {
+public class BaseActivity extends SherlockFragmentActivity implements
+		ServiceConnection {
 
 	protected ZabbixDataService mZabbixService;
-	
+
 	protected ActionBar mActionBar;
-	
+
 	/** Defines callbacks for service binding, passed to bindService() */
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
@@ -32,7 +33,7 @@ public class BaseActivity extends SherlockFragmentActivity implements ServiceCon
 	@Override
 	public void onServiceDisconnected(ComponentName arg0) {
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -46,7 +47,7 @@ public class BaseActivity extends SherlockFragmentActivity implements ServiceCon
 		Intent intent = new Intent(this, ZabbixDataService.class);
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
 	}
-	
+
 	@Override
 	protected void onCreate(Bundle arg0) {
 		mActionBar = getSupportActionBar();
@@ -62,7 +63,7 @@ public class BaseActivity extends SherlockFragmentActivity implements ServiceCon
 		super.onStop();
 		unbindService(this);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.main, menu);

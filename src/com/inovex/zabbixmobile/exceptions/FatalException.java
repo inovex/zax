@@ -7,28 +7,28 @@ public class FatalException extends Exception {
 	private static final long serialVersionUID = 80056965825197156L;
 
 	public enum Type {
-		HTTP_AUTHORIZATION_REQUIRED(R.string.exc_http_auth_required),
-		NO_API_ACCESS(R.string.exc_no_api_access),
-		PRECONDITION_FAILED(R.string.exc_precondition_failed),
-		ZABBIX_LOGIN_INCORRECT(R.string.exc_login_incorrect),
-		NO_CONNECTION(R.string.exc_no_connection),
-		CONNECTION_TIMEOUT(R.string.exc_connection_timeout),
-		SERVER_NOT_FOUND(R.string.exc_not_found),
-		INTERNAL_ERROR(R.string.exc_internal_error);
-		
+		HTTP_AUTHORIZATION_REQUIRED(R.string.exc_http_auth_required), NO_API_ACCESS(
+				R.string.exc_no_api_access), PRECONDITION_FAILED(
+				R.string.exc_precondition_failed), ZABBIX_LOGIN_INCORRECT(
+				R.string.exc_login_incorrect), NO_CONNECTION(
+				R.string.exc_no_connection), CONNECTION_TIMEOUT(
+				R.string.exc_connection_timeout), SERVER_NOT_FOUND(
+				R.string.exc_not_found), INTERNAL_ERROR(
+				R.string.exc_internal_error);
+
 		private int messageResourceId;
 
 		private Type(int messageResourceId) {
 			this.messageResourceId = messageResourceId;
 		}
-		
+
 		protected int getMessageResourceId() {
 			return messageResourceId;
 		}
 	};
-	
+
 	private final Type type;
-	
+
 	public FatalException(Type type) {
 		this.type = type;
 	}
@@ -37,16 +37,16 @@ public class FatalException extends Exception {
 		super(t);
 		this.type = type;
 	}
-	
+
 	public FatalException(Type type, String detailedMessage) {
 		super(detailedMessage);
 		this.type = type;
 	}
-	
+
 	public Type getType() {
 		return this.type;
 	}
-	
+
 	public int getMessageResourceId() {
 		return this.type.getMessageResourceId();
 	}

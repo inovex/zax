@@ -12,7 +12,7 @@ import com.inovex.zabbixmobile.R;
 public class ScreensActivity extends SherlockFragmentActivity {
 
 	private static final String TAG = ScreensActivity.class.getSimpleName();
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -23,13 +23,13 @@ public class ScreensActivity extends SherlockFragmentActivity {
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(true);
-		
-		LinearLayout baseLayout = (LinearLayout)findViewById(R.id.layout_screens);
-		
+
+		LinearLayout baseLayout = (LinearLayout) findViewById(R.id.layout_screens);
+
 		TextView textView = new TextView(this);
 		textView.setText("Screens activity");
 		baseLayout.addView(textView);
-		
+
 	}
 
 	@Override
@@ -45,5 +45,5 @@ public class ScreensActivity extends SherlockFragmentActivity {
 		}
 		return false;
 	}
-	
+
 }

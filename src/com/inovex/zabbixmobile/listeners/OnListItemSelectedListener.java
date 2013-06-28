@@ -1,5 +1,4 @@
-package com.inovex.zabbixmobile.activities.fragments;
-
+package com.inovex.zabbixmobile.listeners;
 
 // Container Activity must implement this interface
 public interface OnListItemSelectedListener {

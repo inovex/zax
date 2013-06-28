@@ -13,7 +13,7 @@ public class Host implements Comparable<Host> {
 	public static final String COLUMN_HOST = "host";
 	@DatabaseField(columnName = COLUMN_HOST)
 	String name;
-	
+
 	HostGroup group;
 
 	// TODO: add group ID if necessary
@@ -26,7 +26,7 @@ public class Host implements Comparable<Host> {
 		this.id = id;
 		this.name = name;
 	}
-	
+
 	public long getId() {
 		return id;
 	}
@@ -53,9 +53,9 @@ public class Host implements Comparable<Host> {
 
 	@Override
 	public int compareTo(Host another) {
-		if(id == another.getId())
+		if (id == another.getId())
 			return 0;
-		if(id > another.getId())
+		if (id > another.getId())
 			return 1;
 		return -1;
 	}

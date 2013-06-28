@@ -11,14 +11,14 @@ public class ApplicationItemRelation {
 	private long itemId;
 	@DatabaseField
 	private long applicationId;
-	
-//	@DatabaseField
-//	private long hostId;
+
+	// @DatabaseField
+	// private long hostId;
 
 	public ApplicationItemRelation() {
-		
+
 	}
-	
+
 	public ApplicationItemRelation(long itemId, long applicationId) {
 		this.itemId = itemId;
 		this.applicationId = applicationId;

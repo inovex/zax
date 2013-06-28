@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import android.app.Service;
 import android.content.Context;
@@ -13,18 +12,13 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.widget.SeekBar;
 
-import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.BaseSeverityFilterActivity;
 import com.inovex.zabbixmobile.activities.ChecksActivity;
-import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListPage;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
-import com.inovex.zabbixmobile.activities.fragments.EventsDetailsPage;
-import com.inovex.zabbixmobile.activities.fragments.EventsListFragment;
+import com.inovex.zabbixmobile.activities.fragments.EventsListPage;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment;
-import com.inovex.zabbixmobile.activities.fragments.ProblemsListFragment;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsListPage;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
@@ -526,6 +520,29 @@ public class ZabbixDataService extends Service {
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
 				mRemoteAPI.importApplications();
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+			}
+
+		}.execute();
+	}
+
+	public void acknowledgeEvent(final long eventId, final String comment) {
+		new RemoteAPITask(mRemoteAPI) {
+
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				mRemoteAPI.acknowledgeEvent(eventId, comment);
+				try {
+					mDatabaseHelper.acknowledgeEvent(eventId);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 
 			@Override

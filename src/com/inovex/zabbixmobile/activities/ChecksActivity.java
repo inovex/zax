@@ -12,8 +12,8 @@ import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
-import com.inovex.zabbixmobile.activities.fragments.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
+import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 
 public class ChecksActivity extends BaseActivity implements
 		OnListItemSelectedListener {

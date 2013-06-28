@@ -11,7 +11,7 @@ import com.inovex.zabbixmobile.model.Host;
 
 /**
  * Adapter for the list of hosts used by {@link ChecksListFragment}.
- *
+ * 
  */
 public class HostsListAdapter extends BaseServiceAdapter<Host> {
 
@@ -40,7 +40,7 @@ public class HostsListAdapter extends BaseServiceAdapter<Host> {
 		TextView title = (TextView) row.findViewById(R.id.host_entry_name);
 
 		Host h = getItem(position);
-		
+
 		title.setText(h.getName());
 
 		return row;

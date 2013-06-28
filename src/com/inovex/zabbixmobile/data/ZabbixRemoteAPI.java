@@ -432,7 +432,7 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 */
-	public boolean acknowledgeEvent(String eventid, String comment)
+	public boolean acknowledgeEvent(long eventid, String comment)
 			throws ZabbixLoginRequiredException, FatalException {
 		// for GUI unit test, just return true
 		if (comment != null && comment.equals("__UNIT_TEST__RETURN_TRUE__"))

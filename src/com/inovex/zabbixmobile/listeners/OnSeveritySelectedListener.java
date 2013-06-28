@@ -1,4 +1,4 @@
-package com.inovex.zabbixmobile.activities.fragments;
+package com.inovex.zabbixmobile.listeners;
 
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 

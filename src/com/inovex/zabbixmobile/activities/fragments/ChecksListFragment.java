@@ -5,16 +5,15 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
+import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.HostGroup;
 
 public class ChecksListFragment extends SherlockListFragment implements
@@ -91,8 +90,9 @@ public class ChecksListFragment extends SherlockListFragment implements
 	}
 
 	protected void loadAdapterContent(boolean hostGroupChanged) {
-		if(mZabbixDataService != null)
-			mZabbixDataService.loadHostsByHostGroup(mHostGroupId, hostGroupChanged);
+		if (mZabbixDataService != null)
+			mZabbixDataService.loadHostsByHostGroup(mHostGroupId,
+					hostGroupChanged);
 	}
 
 	protected void setupListAdapter() {

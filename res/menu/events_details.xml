@@ -2,8 +2,8 @@
 
     <item
         android:id="@+id/menuitem_acknowledge_event"
-        android:icon="@android:drawable/ic_menu_upload"
-        android:showAsAction="always"
+        android:icon="@drawable/menu_acknowledge"
+        android:showAsAction="always|withText"
         android:title="@string/acknowledge_event"
         android:orderInCategory="10">
     </item>

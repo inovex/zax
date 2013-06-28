@@ -11,9 +11,9 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
-import com.inovex.zabbixmobile.activities.fragments.OnListItemSelectedListener;
-import com.inovex.zabbixmobile.activities.fragments.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
+import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
+import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
@@ -88,8 +88,11 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
 		Log.d(TAG, "item selected: " + id + ", position: " + position);
 		this.mCurrentItemPosition = position;
 
-		mDetailsFragment.selectItem(position, id);
+		// Caution: details fragment must be shown before selectItem() is
+		// called! Otherwise the "acknowledge event" button might be displayed
+		// erroneously
 		showDetailsFragment();
+		mDetailsFragment.selectItem(position, id);
 
 	}
 
@@ -110,20 +113,22 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
 		}
 	}
 
+	/**
+	 * Displays the details fragment.
+	 */
 	protected void showDetailsFragment() {
 		if (!mDetailsFragment.isVisible() && mFlipper != null) {
 			mFlipper.showNext();
 		}
-		// details fragment becomes visible -> enable menu
-		mDetailsFragment.setHasOptionsMenu(true);
 	}
 
+	/**
+	 * Displays the list fragment.
+	 */
 	protected void showListFragment() {
 		if (!mListFragment.isVisible() && mFlipper != null) {
 			mFlipper.showPrevious();
 		}
-		// details fragment becomes invisible -> disable menu
-		mDetailsFragment.setHasOptionsMenu(false);
 	}
 
 }

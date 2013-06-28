@@ -10,9 +10,10 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 /**
  * Pager adapter used by {@link ProblemsDetailsFragment}.
- *
+ * 
  */
-public class ProblemsDetailsPagerAdapter extends BaseSeverityPagerAdapter<Trigger> {
+public class ProblemsDetailsPagerAdapter extends
+		BaseSeverityPagerAdapter<Trigger> {
 
 	private static final String TAG = ProblemsDetailsPagerAdapter.class
 			.getSimpleName();
@@ -33,7 +34,8 @@ public class ProblemsDetailsPagerAdapter extends BaseSeverityPagerAdapter<Trigge
 		f.setTrigger(trigger);
 		return f;
 	}
-	
+
+	@Override
 	public long getItemId(int position) {
 		return getItem(position).getId();
 	}

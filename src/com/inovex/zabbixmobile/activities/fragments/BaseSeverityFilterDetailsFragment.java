@@ -18,6 +18,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
+import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -78,7 +79,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	public void setCurrentItemId(long itemId) {
 		this.mCurrentItemId = itemId;
 	}
-	
+
 	/**
 	 * Sets the current severity and updates the pager adapter.
 	 * 
@@ -87,8 +88,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	 */
 	public void setSeverity(TriggerSeverity severity) {
 		// exchange adapter if it's necessary
-//		if(severity == this.mSeverity)
-//			return;
+		// if(severity == this.mSeverity)
+		// return;
 		this.mSeverity = severity;
 		retrievePagerAdapter();
 		// the adapter could be fresh -> set fragment manager
@@ -161,7 +162,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 			mCallbackMain = (OnListItemSelectedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
-					+ " must implement OnEventSelectedListener.");
+					+ " must implement OnListItemSelectedListener.");
 		}
 	}
 
@@ -215,9 +216,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 							mCallbackMain.onListItemSelected(position,
 									mDetailsPagerAdapter.getItemId(position));
 					}
-
 				});
-
 	}
 
 }

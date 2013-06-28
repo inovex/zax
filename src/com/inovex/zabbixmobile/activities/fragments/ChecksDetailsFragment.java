@@ -23,5 +23,5 @@ public class ChecksDetailsFragment extends SherlockFragment {
 		TextView tv = (TextView) view.findViewById(R.id.details_text);
 		tv.setText("Checks Details");
 	}
-	
+
 }

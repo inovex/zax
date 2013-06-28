@@ -10,7 +10,7 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 /**
  * Pager adapter used by {@link EventsDetailsFragment}.
- *
+ * 
  */
 public class EventsDetailsPagerAdapter extends BaseSeverityPagerAdapter<Event> {
 
@@ -33,7 +33,8 @@ public class EventsDetailsPagerAdapter extends BaseSeverityPagerAdapter<Event> {
 		f.setEvent(event);
 		return f;
 	}
-	
+
+	@Override
 	public long getItemId(int position) {
 		return getItem(position).getId();
 	}

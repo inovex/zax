@@ -13,8 +13,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.model.Event;
@@ -35,7 +33,6 @@ public class EventsDetailsPage extends SherlockFragment {
 		super.onAttach(activity);
 	}
 
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -50,7 +47,8 @@ public class EventsDetailsPage extends SherlockFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		// TODO: on orientation change, mEvent is not set -> NullPointerException
+		// TODO: on orientation change, mEvent is not set ->
+		// NullPointerException
 		StringBuilder sb = new StringBuilder();
 		sb.append("Event: \n\n");
 		sb.append("ID: " + mEvent.getId() + "\n");
@@ -73,7 +71,9 @@ public class EventsDetailsPage extends SherlockFragment {
 			DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 					SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
 					Locale.getDefault());
-			sb.append("lastchange: " + String.valueOf(dateFormatter.format(cal.getTime())) + "\n");
+			sb.append("lastchange: "
+					+ String.valueOf(dateFormatter.format(cal.getTime()))
+					+ "\n");
 		}
 		TextView text = (TextView) getView().findViewById(R.id.details_text);
 		text.setText(sb.toString());

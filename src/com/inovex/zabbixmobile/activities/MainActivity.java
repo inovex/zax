@@ -41,13 +41,13 @@ public class MainActivity extends BaseActivity implements
 	private MenuListAdapter mListAdapter;
 
 	protected class MenuListAdapter extends ArrayAdapter<String> {
-		
+
 		private boolean mEnabled = true;
 
 		public MenuListAdapter(Context context, int resource, String[] objects) {
 			super(context, resource, objects);
 		}
-		
+
 		@Override
 		public boolean isEnabled(int position) {
 			return mEnabled;
@@ -69,7 +69,7 @@ public class MainActivity extends BaseActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		mActionBar.setDisplayHomeAsUpEnabled(false);
 		mActionBar.setHomeButtonEnabled(false);
 
@@ -167,8 +167,10 @@ public class MainActivity extends BaseActivity implements
 						int position, long id) {
 					Log.d(TAG, "onItemClick(pos: " + position + ", id: " + id);
 					Bundle args = new Bundle();
-					Intent intent = new Intent(MainActivity.this, ProblemsActivity.class);
-					intent.putExtra(ProblemsActivity.ARG_ITEM_POSITION, position);
+					Intent intent = new Intent(MainActivity.this,
+							ProblemsActivity.class);
+					intent.putExtra(ProblemsActivity.ARG_ITEM_POSITION,
+							position);
 					intent.putExtra(ProblemsActivity.ARG_ITEM_ID, id);
 					startActivity(intent);
 				}

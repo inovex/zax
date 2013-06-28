@@ -458,6 +458,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
+	public void acknowledgeEvent(long eventId) throws SQLException {
+		Dao<Event, Long> eventDao = getDao(Event.class);
+		Event e = getEventById(eventId);
+		e.setAcknowledged(true);
+		eventDao.update(e);
+	}
+
 	/**
 	 * Clears all data of a certain type from the database.
 	 * 
@@ -469,7 +476,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		Dao<T, Long> dao = getDao(c);
 		dao.deleteBuilder().delete();
 	}
-	
+
 	/**
 	 * Removes all events from the database.
 	 * 
@@ -481,6 +488,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Removes all triggers from the database.
+	 * 
 	 * @throws SQLException
 	 */
 	public void clearTriggers() throws SQLException {
@@ -489,6 +497,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Removes all hosts from the database.
+	 * 
 	 * @throws SQLException
 	 */
 	public void clearHosts() throws SQLException {
@@ -497,6 +506,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Removes all host groups from the database.
+	 * 
 	 * @throws SQLException
 	 */
 	public void clearHostGroups() throws SQLException {

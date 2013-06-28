@@ -1,10 +1,9 @@
 package com.inovex.zabbixmobile.activities;
 
-import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.R.xml;
-
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+
+import com.inovex.zabbixmobile.R;
 
 public class ZaxPreferenceActivity extends PreferenceActivity {
 
@@ -14,6 +13,4 @@ public class ZaxPreferenceActivity extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.preferences);
 	}
 
-	
-	
 }

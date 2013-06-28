@@ -32,7 +32,7 @@ public class Event implements Comparable<Event> {
 	public static final String COLUMN_ACK = "acknowledged";
 	@DatabaseField(columnName = COLUMN_ACK)
 	boolean acknowledged;
-	
+
 	// only local
 	@DatabaseField
 	String hostNames;
@@ -76,7 +76,7 @@ public class Event implements Comparable<Event> {
 	public Trigger getTrigger() {
 		return trigger;
 	}
-	
+
 	public void setTrigger(Trigger t) {
 		trigger = t;
 	}
@@ -128,9 +128,9 @@ public class Event implements Comparable<Event> {
 
 	@Override
 	public int compareTo(Event another) {
-		if(id == another.getId())
+		if (id == another.getId())
 			return 0;
-		if(clock < another.getClock())
+		if (clock < another.getClock())
 			return 1;
 		return -1;
 	}

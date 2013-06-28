@@ -3,7 +3,7 @@ package com.inovex.zabbixmobile.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName="host_hostgroup_relation")
+@DatabaseTable(tableName = "host_hostgroup_relation")
 public class HostHostGroupRelation {
 
 	@DatabaseField(generatedId = true)
@@ -16,11 +16,11 @@ public class HostHostGroupRelation {
 	public static final String COLUMN_GROUPID = "groupid";
 	@DatabaseField(uniqueIndexName = "host_group_idx", foreign = true, columnName = COLUMN_GROUPID)
 	private HostGroup group;
-	
+
 	public HostHostGroupRelation() {
-		
+
 	}
-	
+
 	public HostHostGroupRelation(Host host, HostGroup hostGroup) {
 		this.host = host;
 		this.group = hostGroup;
@@ -41,6 +41,5 @@ public class HostHostGroupRelation {
 	public void setGroup(HostGroup group) {
 		this.group = group;
 	}
-	
-	
+
 }

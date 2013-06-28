@@ -2,7 +2,7 @@
 
     <item
         android:id="@+id/menuitem_clear"
-        android:icon="@android:drawable/ic_menu_rotate"
+        android:icon="@drawable/menu_refresh"
         android:showAsAction="ifRoom"
         android:title="@string/refresh_all_data"
         android:orderInCategory="30">

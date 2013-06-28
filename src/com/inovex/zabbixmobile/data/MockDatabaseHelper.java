@@ -32,8 +32,8 @@ public class MockDatabaseHelper extends DatabaseHelper {
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		super.onCreate(db, connectionSource);
 		try {
-			Dao<Event,Long> eventDao = getDao(Event.class);
-			Dao<Trigger,Long> triggerDao = getDao(Trigger.class);
+			Dao<Event, Long> eventDao = getDao(Event.class);
+			Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
 			Event[] events = new Event[] {
 					new Event(12345, 0, System.currentTimeMillis()
 							- (3600 * 1000 * 12), 1, false),
