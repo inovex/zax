@@ -568,7 +568,7 @@ public class ZabbixDataService extends Service {
 					mApplicationPagerAdapter.notifyDataSetChanged();
 					// This is ugly, but we need it to redraw the page indicator
 					if(callback != null)
-						callback.invalidateIndicatorView();
+						callback.redrawPageIndicator();
 				}
 
 			}

@@ -32,9 +32,10 @@ public class ChecksDetailsPage extends SherlockFragment {
 		// TODO: on orientation change, mEvent is not set ->
 		// NullPointerException
 		StringBuilder sb = new StringBuilder();
-		sb.append("Event: \n\n");
+		sb.append("Application: \n\n");
 		sb.append("ID: " + mApplication.getId() + "\n");
 		sb.append("name: " + mApplication.getName() + "\n");
+		sb.append("host: " + mApplication.getHost().getName() + " (" + mApplication.getHost().getId() + ")\n");
 		TextView text = (TextView) getView().findViewById(R.id.details_text);
 		text.setText(sb.toString());
 	}

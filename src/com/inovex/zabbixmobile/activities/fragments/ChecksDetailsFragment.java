@@ -89,8 +89,12 @@ public class ChecksDetailsFragment extends SherlockFragment implements
 		mZabbixDataService.loadApplicationsByHostId(mHostId, this);
 		mDetailsPageIndicator.setCurrentItem(0);
 	}
-	
-	public void invalidateIndicatorView() {
+
+	/**
+	 * Causes a redraw of the page indicator. This needs to be called when the
+	 * adapter's contents are updated.
+	 */
+	public void redrawPageIndicator() {
 		mDetailsPageIndicator.invalidate();
 	}
 
@@ -147,8 +151,7 @@ public class ChecksDetailsFragment extends SherlockFragment implements
 	}
 
 	protected void retrievePagerAdapter() {
-		mDetailsPagerAdapter = mZabbixDataService
-				.getApplicationPagerAdapter();
+		mDetailsPagerAdapter = mZabbixDataService.getApplicationPagerAdapter();
 	}
 
 }

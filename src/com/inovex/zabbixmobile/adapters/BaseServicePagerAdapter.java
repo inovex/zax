@@ -23,12 +23,12 @@ import android.view.ViewGroup;
 public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 
 	protected TreeSet<T> mObjects;
-	protected static final String TAG = BaseSeverityPagerAdapter.class
+	private static final String TAG = BaseServicePagerAdapter.class
 			.getSimpleName();
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	protected int mCurrentPosition;
 	protected FragmentManager mFragmentManager;
-	private FragmentTransaction mCurTransaction = null;
+	protected FragmentTransaction mCurTransaction = null;
 	private Fragment mCurrentPrimaryItem = null;
 	
 	public BaseServicePagerAdapter() {
@@ -137,7 +137,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 	 */
 	public abstract long getItemId(int position);
 
-	private static String makeFragmentName(int viewId, long id) {
+	protected static String makeFragmentName(int viewId, long id) {
 		return "android:switcher:" + viewId + ":" + id;
 	}
 

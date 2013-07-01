@@ -43,6 +43,11 @@ public class Application implements Comparable<Application> {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	@Override
+	public String toString() {
+		return getId() + " " + getName() + "(Host: " + host.getName() + ")";
+	}
 
 	@Override
 	public int compareTo(Application another) {

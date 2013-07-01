@@ -21,13 +21,13 @@ public class ApplicationPagerAdapter extends
 	@Override
 	public CharSequence getPageTitle(int position) {
 		return getItem(position).getName();
-//		return ((ChecksDetailsPage)getPage(position)).getTitle();
-//		return "TITLE";
+		// return ((ChecksDetailsPage)getPage(position)).getTitle();
+		// return "TITLE";
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return position;
+		return getItem(position).getId();
 	}
 
 	@Override
@@ -35,6 +35,18 @@ public class ApplicationPagerAdapter extends
 		ChecksDetailsPage p = new ChecksDetailsPage();
 		p.setApplication(getItem(position));
 		return p;
+	}
+
+	@Override
+	public void clear() {
+		super.clear();
+	}
+
+	public int getItemPosition(Object object) {
+		// This prevents caching of fragments. We need to disable caching
+		// because we have only one adapter which is reused when another host is
+		// selected.
+		return POSITION_NONE;
 	}
 
 }

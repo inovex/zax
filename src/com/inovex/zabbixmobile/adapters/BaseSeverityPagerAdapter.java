@@ -15,6 +15,9 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
  *            class of the items in this adapter's data set
  */
 public abstract class BaseSeverityPagerAdapter<T> extends BaseServicePagerAdapter<T> {
+	
+	private static final String TAG = BaseSeverityPagerAdapter.class
+			.getSimpleName();
 	/**
 	 * Creates an adapter.
 	 * 
