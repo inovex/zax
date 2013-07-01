@@ -1,5 +1,5 @@
 #
-# generated on 2013/06/28 03:39:31
+# generated on 2013/07/01 03:57:16
 #
 # --table-start--
 dataClass=com.j256.ormlite.android.DatabaseTableConfigUtil$DatabaseFieldSample
@@ -35,17 +35,23 @@ columnName=name
 #################################
 # --table-start--
 dataClass=com.inovex.zabbixmobile.model.ApplicationItemRelation
-tableName=applicationitemrelation
+tableName=application_item_relation
 # --table-fields-start--
 # --field-start--
 fieldName=id
 generatedId=true
 # --field-end--
 # --field-start--
-fieldName=itemId
+fieldName=application
+columnName=applicationid
+foreign=true
+uniqueIndexName=app_item_idx
 # --field-end--
 # --field-start--
-fieldName=applicationId
+fieldName=item
+columnName=itemid
+foreign=true
+uniqueIndexName=app_item_idx
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -163,27 +169,34 @@ tableName=items
 # --table-fields-start--
 # --field-start--
 fieldName=id
+columnName=itemid
 id=true
 # --field-end--
 # --field-start--
 fieldName=host
+columnName=hostid
 foreign=true
 foreignAutoRefresh=true
 # --field-end--
 # --field-start--
-fieldName=value_type
+fieldName=valueType
+columnName=value_type
 # --field-end--
 # --field-start--
 fieldName=description
+columnName=description
 # --field-end--
 # --field-start--
-fieldName=lastclock
+fieldName=lastClock
+columnName=lastclock
 # --field-end--
 # --field-start--
-fieldName=lastvalue
+fieldName=lastValue
+columnName=lastvalue
 # --field-end--
 # --field-start--
 fieldName=units
+columnName=units
 # --field-end--
 # --table-fields-end--
 # --table-end--

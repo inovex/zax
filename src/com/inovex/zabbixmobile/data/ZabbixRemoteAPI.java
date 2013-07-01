@@ -58,15 +58,18 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.inovex.zabbixmobile.adapters.ApplicationItemsListAdapter;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.Application;
+import com.inovex.zabbixmobile.model.ApplicationItemRelation;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.HostHostGroupRelation;
+import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
@@ -547,13 +550,13 @@ public class ZabbixRemoteAPI {
 	 */
 	public void importApplicationsByHostIds(Collection<Long> hostIds)
 			throws FatalException, ZabbixLoginRequiredException {
+		// TODO: ignore empty applications
 		JSONObject params;
 		try {
 			params = new JSONObject().put("output", "extend")
 					.put("limit", ZabbixConfig.APPLICATION_GET_LIMIT)
 					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
-					// .put(isVersion2 ? "selectItems" : "select_items",
-					// "extend")
+					.put(isVersion2 ? "selectItems" : "select_items", "extend")
 					.put("source", 0);
 			if (!isVersion2) {
 				// in Zabbix version <2.0, this is not default
@@ -563,7 +566,7 @@ public class ZabbixRemoteAPI {
 				params.put("hostids", new JSONArray(hostIds));
 			JsonArrayOrObjectReader applications = _queryStream(
 					"application.get", params);
-			importApplications(applications);
+			importApplicationsFromStream(applications);
 			// events.close();
 		} catch (SQLException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
@@ -584,13 +587,16 @@ public class ZabbixRemoteAPI {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	private void importApplications(JsonArrayOrObjectReader jsonReader)
+	private void importApplicationsFromStream(JsonArrayOrObjectReader jsonReader)
 			throws JsonParseException, NumberFormatException, IOException,
 			SQLException {
 		int num = 0;
 		List<Application> applicationsCollection = new ArrayList<Application>(
 				RECORDS_PER_INSERT_BATCH);
+		List<ApplicationItemRelation> applicationItemRelations = new ArrayList<ApplicationItemRelation>(
+				RECORDS_PER_INSERT_BATCH);
 		JsonObjectReader application;
+		List<Item> items = new ArrayList<Item>();
 		while ((application = jsonReader.next()) != null) {
 			Application app = new Application();
 			while (application.nextValueToken()) {
@@ -603,6 +609,9 @@ public class ZabbixRemoteAPI {
 					// (propName.equals(ApplicationData.COLUMN_HOSTID)) {
 					// app.set(ApplicationData.COLUMN_HOSTID,
 					// Long.parseLong(application.getText()));
+				} else if (propName.equals("items")) {
+					items = importItemsFromStream(
+							application.getJsonArrayOrObjectReader(), 0, false);
 				} else if (propName.equals("hosts")) {
 					// import hosts
 					List<Host> hosts = importHostsFromStream(
@@ -641,9 +650,20 @@ public class ZabbixRemoteAPI {
 				applicationsCollection = new ArrayList<Application>(
 						RECORDS_PER_INSERT_BATCH);
 			}
+
+			// insert application item relations
+			for(Item item : items) {
+				applicationItemRelations.add(new ApplicationItemRelation(app, item));
+			}
+			if (applicationItemRelations.size() >= RECORDS_PER_INSERT_BATCH) {
+				databaseHelper.insertApplicationItemRelations(applicationItemRelations);
+				applicationItemRelations = new ArrayList<ApplicationItemRelation>(
+						RECORDS_PER_INSERT_BATCH);
+			}
 		}
 		// insert the last batch of applications
 		databaseHelper.insertApplications(applicationsCollection);
+		databaseHelper.insertApplicationItemRelations(applicationItemRelations);
 		// if (num == 0) {
 		// // if there's no application, the ID #0 must be added (for other)
 		// ApplicationItemRelationData rel = new ApplicationItemRelationData();
@@ -1261,139 +1281,183 @@ public class ZabbixRemoteAPI {
 		// }
 	}
 
-	// /**
-	// * import items from stream.
-	// * @param items stream
-	// * @param numItems count for progressbar, if 0 no progressbarupdate
-	// * @param checkBeforeInsert if true, only make an insert if item does not
-	// exist
-	// * @return the first item id
-	// * @throws JsonParseException
-	// * @throws IOException
-	// */
-	// private long importItems(JsonArrayOrObjectReader items, int numItems,
-	// boolean checkBeforeInsert) throws JsonParseException, IOException {
-	// long firstItemId = -1;
-	// int curI=0;
-	// JsonObjectReader itemReader;
-	// while ((itemReader = items.next()) != null) {
-	// ItemData i = new ItemData();
-	// String key_ = null;
-	// while (itemReader.nextValueToken()) {
-	// String propName = itemReader.getCurrentName();
-	// if (propName.equals(ItemData.COLUMN_ITEMID)) {
-	// i.set(ItemData.COLUMN_ITEMID, Long.parseLong(itemReader.getText()));
-	// if (firstItemId == -1) {
-	// firstItemId = (Long) i.get(ItemData.COLUMN_ITEMID);
-	// }
-	// } else if (propName.equals(ItemData.COLUMN_HOSTID)) {
-	// i.set(ItemData.COLUMN_HOSTID, Long.parseLong(itemReader.getText()));
-	// } else if (propName.equals(ItemData.COLUMN_DESCRIPTION) ||
-	// propName.equals("name")) {
-	// // since zabbix 2.x is the name of the item "name"
-	// // before zabbix 2.x the name field was "description"
-	// if (isVersion2 && propName.equals("name")) {
-	// i.set(ItemData.COLUMN_DESCRIPTION, itemReader.getText());
-	// } else if (!isVersion2) {
-	// i.set(ItemData.COLUMN_DESCRIPTION, itemReader.getText());
-	// }
-	// } else if (propName.equals(ItemData.COLUMN_LASTCLOCK)) {
-	// try {
-	// i.set(ItemData.COLUMN_LASTCLOCK, Integer.parseInt(itemReader.getText()));
-	// } catch (NumberFormatException e) {
-	// // ignore
-	// }
-	// } else if (propName.equals(ItemData.COLUMN_LASTVALUE)) {
-	// i.set(ItemData.COLUMN_LASTVALUE, itemReader.getText());
-	// } else if (propName.equals(ItemData.COLUMN_UNITS)) {
-	// i.set(ItemData.COLUMN_UNITS, itemReader.getText());
-	// } else if (propName.equals("key_")) {
-	// key_ = itemReader.getText();
-	// } else if (propName.equals("applications")) {
-	// // at this point itemid and hostid is unknown
-	// // because of this, all applicationrelations will be saved with itemid
-	// and hostid "-1".
-	// // later the IDs will be replaced with the correct
-	// importApplications(-1, -1, itemReader.getJsonArrayOrObjectReader());
-	// } else {
-	// itemReader.nextProperty();
-	// }
-	// }
-	// // if applicable replace placeholder
-	// String description = (String) i.get(ItemData.COLUMN_DESCRIPTION);
-	// if (description.matches(".*\\$[0-9].*")) {
-	// if (key_ != null && key_.indexOf('[') != -1) {
-	// String[] keys = key_.substring(key_.indexOf('[')+1,
-	// key_.indexOf(']')).split(",");
-	// for (int ix=0; ix<keys.length; ix++) {
-	// description = description.replace("$"+(ix+1), keys[ix]);
-	// }
-	// }
-	// }
-	// i.set(ItemData.COLUMN_DESCRIPTION, description);
-	// if (checkBeforeInsert) {
-	// i.insert(zabbixLocalDB, ItemData.COLUMN_ITEMID);
-	// } else {
-	// i.insert(zabbixLocalDB);
-	// }
-	// if (numItems > 0 && ++curI % 10 == 0) {
-	// showProgress(curI*100/numItems);
-	// }
-	//
-	// // now the "-1" IDs of applicationsrelation will be replaced with the
-	// correct itemID
-	// ContentValues values = new ContentValues(2);
-	// values.put(ApplicationItemRelationData.COLUMN_ITEMID, (Long)
-	// i.get(ItemData.COLUMN_ITEMID));
-	// values.put(ApplicationItemRelationData.COLUMN_HOSTID, (Long)
-	// i.get(ItemData.COLUMN_HOSTID));
-	// zabbixLocalDB.update(
-	// ApplicationItemRelationData.TABLE_NAME
-	// , values
-	// , ApplicationItemRelationData.COLUMN_ITEMID+"=-1"
-	// , null
-	// );
-	// }
-	// return firstItemId;
-	// }
-	//
+	/**
+	 * import items from stream.
+	 * 
+	 * @param jsonReader
+	 *            stream
+	 * @param numItems
+	 *            count for progressbar, if 0 no progressbarupdate
+	 * @param checkBeforeInsert
+	 *            if true, only make an insert if item does not exist
+	 * @return the first item id
+	 * @throws JsonParseException
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	private List<Item> importItemsFromStream(
+			JsonArrayOrObjectReader jsonReader, int numItems,
+			boolean checkBeforeInsert) throws JsonParseException, IOException,
+			SQLException {
+		long firstItemId = -1;
+		int curI = 0;
+		JsonObjectReader itemReader;
+		List<Item> items = new ArrayList<Item>();
+		while ((itemReader = jsonReader.next()) != null) {
+			Item i = new Item();
+			String key_ = null;
+			while (itemReader.nextValueToken()) {
+				String propName = itemReader.getCurrentName();
+				if (propName.equals(Item.COLUMN_ITEMID)) {
+					i.setId(Long.parseLong(itemReader.getText()));
+					// if (firstItemId == -1) {
+					// firstItemId = (Long) i.get(Item.COLUMN_ITEMID);
+					// }
+				} else if (propName.equals(Item.COLUMN_HOSTID)) {
+					// i.setHost(Long.parseLong(itemReader.getText()));
+				} else if (propName.equals(Item.COLUMN_DESCRIPTION)
+						|| propName.equals(Item.COLUMN_DESCRIPTION_OLD)) {
+					// since zabbix 2.x is the name of the item "name"
+					// before zabbix 2.x the name field was "description"
+					if (isVersion2
+							&& propName.equals(Item.COLUMN_DESCRIPTION_OLD)) {
+						i.setDescription(itemReader.getText());
+					} else if (!isVersion2) {
+						i.setDescription(itemReader.getText());
+					}
+				} else if (propName.equals(Item.COLUMN_LASTCLOCK)) {
+					i.setLastClock(Long.parseLong(itemReader.getText()) * 1000);
+				} else if (propName.equals(Item.COLUMN_LASTVALUE)) {
+					i.setLastValue(itemReader.getText());
+				} else if (propName.equals(Item.COLUMN_UNITS)) {
+					i.setUnits(itemReader.getText());
+				} else if (propName.equals("key_")) {
+					key_ = itemReader.getText();
+				} else if (propName.equals("applications")) {
+					// at this point itemid and hostid is unknown
+					// because of this, all applicationrelations will be saved
+					// with itemid
+					// and hostid "-1".
+					// later the IDs will be replaced with the correct
+					// importApplications(-1, -1,
+					// itemReader.getJsonArrayOrObjectReader());
+				} else {
+					itemReader.nextProperty();
+				}
+			}
+			// if applicable replace placeholder
+			String description = (String) i.getDescription();
+			if (description.matches(".*\\$[0-9].*")) {
+				if (key_ != null && key_.indexOf('[') != -1) {
+					String[] keys = key_.substring(key_.indexOf('[') + 1,
+							key_.indexOf(']')).split(",");
+					for (int ix = 0; ix < keys.length; ix++) {
+						description = description.replace("$" + (ix + 1),
+								keys[ix]);
+					}
+				}
+			}
+			i.setDescription(description);
+
+			// now the "-1" IDs of applicationsrelation will be replaced with
+			// the
+			// correct itemID
+			// ContentValues values = new ContentValues(2);
+			// values.put(ApplicationItemRelationData.COLUMN_ITEMID,
+			// (Long) i.get(ItemData.COLUMN_ITEMID));
+			// values.put(ApplicationItemRelationData.COLUMN_HOSTID,
+			// (Long) i.get(ItemData.COLUMN_HOSTID));
+			// zabbixLocalDB.update(ApplicationItemRelationData.TABLE_NAME,
+			// values, ApplicationItemRelationData.COLUMN_ITEMID + "=-1",
+			// null);
+			items.add(i);
+			if (items.size() >= RECORDS_PER_INSERT_BATCH) {
+				databaseHelper.insertItems(items);
+				items = new ArrayList<Item>(RECORDS_PER_INSERT_BATCH);
+			}
+		}
+		// insert the last batch of events
+		databaseHelper.insertItems(items);
+		return items;
+	}
+
+	public void importItems(long hostid) throws FatalException,
+			ZabbixLoginRequiredException {
+		// if (!isCached(ItemData.TABLE_NAME, "hostid=" + hostid)) {
+		// zabbixLocalDB.delete(ApplicationItemRelationData.TABLE_NAME,
+		// ApplicationItemRelationData.COLUMN_HOSTID + "=" + hostid,
+		// null);
+		try {
+			databaseHelper.clearItems();
+
+			// count of items
+			// JSONObject result = _queryBuffer(
+			// "item.get",
+			// new JSONObject().put("output", "extend")
+			// .put("countOutput", 1)
+			// .put("limit", ZabbixConfig.ITEM_GET_LIMIT)
+			// .put("hostids", new JSONArray().put(hostid)));
+			// int numItems = result.getInt("result");
+			JsonArrayOrObjectReader items = _queryStream(
+					"item.get",
+					new JSONObject()
+							.put("output", "extend")
+							.put("limit", ZabbixConfig.ITEM_GET_LIMIT)
+							.put(isVersion2 ? "selectApplications"
+									: "select_applications", "extend")
+							.put("hostids", new JSONArray().put(hostid)));
+			importItemsFromStream(items, 0, false);
+			items.close();
+
+		} catch (SQLException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (JSONException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (IOException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		}
+
+		// setCached(ItemData.TABLE_NAME, "hostid=" + hostid,
+		// ZabbixConfig.CACHE_LIFETIME_ITEMS);
+		// }
+	}
+
 	// public void importItems(long hostid) throws JSONException, IOException,
 	// HttpAuthorizationRequiredException, NoAPIAccessException,
 	// PreconditionFailedException {
-	// if (!isCached(ItemData.TABLE_NAME, "hostid="+hostid)) {
+	// if (!isCached(ItemData.TABLE_NAME, "hostid=" + hostid)) {
 	// _startTransaction();
-	// zabbixLocalDB.delete(ItemData.TABLE_NAME,
-	// ItemData.COLUMN_HOSTID+"="+hostid, null);
+	// zabbixLocalDB.delete(ItemData.TABLE_NAME, ItemData.COLUMN_HOSTID
+	// + "=" + hostid, null);
 	// zabbixLocalDB.delete(ApplicationItemRelationData.TABLE_NAME,
-	// ApplicationItemRelationData.COLUMN_HOSTID+"="+hostid, null);
+	// ApplicationItemRelationData.COLUMN_HOSTID + "=" + hostid,
+	// null);
 	//
 	// // count of items
 	// JSONObject result = _queryBuffer(
-	// "item.get"
-	// , new JSONObject()
-	// .put("output", "extend")
+	// "item.get",
+	// new JSONObject().put("output", "extend")
 	// .put("countOutput", 1)
 	// .put("limit", ZabbixConfig.ITEM_GET_LIMIT)
-	// .put("hostids", new JSONArray().put(hostid))
-	// );
+	// .put("hostids", new JSONArray().put(hostid)));
 	// int numItems = result.getInt("result");
 	// JsonArrayOrObjectReader items = _queryStream(
-	// "item.get"
-	// , new JSONObject()
+	// "item.get",
+	// new JSONObject()
 	// .put("output", "extend")
 	// .put("limit", ZabbixConfig.ITEM_GET_LIMIT)
-	// .put(isVersion2?"selectApplications":"select_applications", "extend")
-	// .put("hostids", new JSONArray().put(hostid))
-	// );
+	// .put(isVersion2 ? "selectApplications"
+	// : "select_applications", "extend")
+	// .put("hostids", new JSONArray().put(hostid)));
 	// importItems(items, numItems, false);
 	// items.close();
 	//
-	// setCached(ItemData.TABLE_NAME, "hostid="+hostid,
+	// setCached(ItemData.TABLE_NAME, "hostid=" + hostid,
 	// ZabbixConfig.CACHE_LIFETIME_ITEMS);
 	// _endTransaction();
 	// }
 	// }
-	//
+
 	// private void importScreenItems(JsonArrayOrObjectReader screenItems)
 	// throws JsonParseException, NumberFormatException, IOException {
 	// JsonObjectReader screenItemReader;
@@ -1621,8 +1685,10 @@ public class ZabbixRemoteAPI {
 	private List<Trigger> importTriggersFromStream(
 			JsonArrayOrObjectReader jsonReader) throws JsonParseException,
 			IOException, SQLException {
-		List<Trigger> triggerCollection = new ArrayList<Trigger>();
-		List<TriggerHostGroupRelation> triggerHostGroupCollection = new ArrayList<TriggerHostGroupRelation>();
+		List<Trigger> triggerCollection = new ArrayList<Trigger>(
+				RECORDS_PER_INSERT_BATCH);
+		List<TriggerHostGroupRelation> triggerHostGroupCollection = new ArrayList<TriggerHostGroupRelation>(
+				RECORDS_PER_INSERT_BATCH);
 		JsonObjectReader triggerReader;
 		while ((triggerReader = jsonReader.next()) != null) {
 			Trigger t = new Trigger();
@@ -1679,11 +1745,16 @@ public class ZabbixRemoteAPI {
 				triggerCollection = new ArrayList<Trigger>(
 						RECORDS_PER_INSERT_BATCH);
 			}
+			if (triggerHostGroupCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+				databaseHelper
+						.insertTriggerHostgroupRelations(triggerHostGroupCollection);
+				triggerHostGroupCollection = new ArrayList<TriggerHostGroupRelation>(
+						RECORDS_PER_INSERT_BATCH);
+			}
 		}
 		databaseHelper.insertTriggers(triggerCollection);
-		if (!triggerHostGroupCollection.isEmpty())
-			databaseHelper
-					.insertTriggerHostgroupRelations(triggerHostGroupCollection);
+		databaseHelper
+				.insertTriggerHostgroupRelations(triggerHostGroupCollection);
 		return triggerCollection;
 
 	}

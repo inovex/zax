@@ -21,6 +21,7 @@ import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListPage;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsListPage;
+import com.inovex.zabbixmobile.adapters.ApplicationItemsListAdapter;
 import com.inovex.zabbixmobile.adapters.ApplicationPagerAdapter;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
@@ -36,6 +37,7 @@ import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
+import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -75,6 +77,7 @@ public class ZabbixDataService extends Service {
 	// Checks
 	private HostsListAdapter mHostsListAdapter;
 	private ApplicationPagerAdapter mApplicationPagerAdapter;
+	private ApplicationItemsListAdapter mApplicationItemsListAdapter;
 
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
@@ -180,6 +183,15 @@ public class ZabbixDataService extends Service {
 		return mApplicationPagerAdapter;
 	}
 
+	/**
+	 * Returns the application items adapter.
+	 * 
+	 * @return
+	 */
+	public ApplicationItemsListAdapter getApplicationItemsListAdapter() {
+		return mApplicationItemsListAdapter;
+	}
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		Log.d(TAG,
@@ -276,8 +288,8 @@ public class ZabbixDataService extends Service {
 		}
 
 		mHostsListAdapter = new HostsListAdapter(this);
-
 		mApplicationPagerAdapter = new ApplicationPagerAdapter();
+		mApplicationItemsListAdapter = new ApplicationItemsListAdapter(this);
 
 	}
 
@@ -524,14 +536,13 @@ public class ZabbixDataService extends Service {
 	 * asynchronously. After loading the events, the corresponding adapters are
 	 * updated. If necessary, an import from the Zabbix API is triggered.
 	 * 
-	 * @param hostGroupId
-	 *            host group id by which the events will be filtered
-	 * @param hostGroupChanged
-	 *            whether the host group has changed. If this is true, the
-	 *            adapters will be cleared before being filled with entries
-	 *            matching the selected host group.
+	 * @param hostId
+	 *            host id
+	 * @param callback
+	 *            Callback needed to trigger a redraw the view pager indicator
 	 */
-	public void loadApplicationsByHostId(final long hostId, final ChecksDetailsFragment callback) {
+	public void loadApplicationsByHostId(final long hostId,
+			final ChecksDetailsFragment callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
 			List<Host> hosts;
@@ -567,8 +578,53 @@ public class ZabbixDataService extends Service {
 					mApplicationPagerAdapter.addAll(applications);
 					mApplicationPagerAdapter.notifyDataSetChanged();
 					// This is ugly, but we need it to redraw the page indicator
-					if(callback != null)
+					if (callback != null)
 						callback.redrawPageIndicator();
+				}
+
+			}
+
+		}.execute();
+	}
+
+	/**
+	 * Loads all items in a given application from the database asynchronously.
+	 * After loading the events, the corresponding adapters are updated. If
+	 * necessary, an import from the Zabbix API is triggered.
+	 * 
+	 * @param hostGroupId
+	 *            host group id by which the events will be filtered
+	 * @param hostGroupChanged
+	 *            whether the host group has changed. If this is true, the
+	 *            adapters will be cleared before being filled with entries
+	 *            matching the selected host group.
+	 */
+	public void loadItemsByApplicationId(final long applicationId) {
+		new RemoteAPITask(mRemoteAPI) {
+
+			List<Item> items;
+
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+					try {
+						items = mDatabaseHelper
+								.getItemsByApplicationId(applicationId);
+
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+				// fill adapter
+				if (mApplicationItemsListAdapter != null) {
+					mApplicationItemsListAdapter.clear();
+					mApplicationItemsListAdapter.addAll(items);
+					mApplicationItemsListAdapter.notifyDataSetChanged();
 				}
 
 			}

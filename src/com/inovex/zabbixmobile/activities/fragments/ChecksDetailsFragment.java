@@ -96,6 +96,8 @@ public class ChecksDetailsFragment extends SherlockFragment implements
 	 */
 	public void redrawPageIndicator() {
 		mDetailsPageIndicator.invalidate();
+		// this is necessary to refresh the adapter 
+		mDetailsPageIndicator.onPageSelected(0);
 	}
 
 	/**
@@ -137,6 +139,9 @@ public class ChecksDetailsFragment extends SherlockFragment implements
 						@Override
 						public void onPageSelected(int position) {
 							Log.d(TAG, "detail page selected: " + position);
+							
+							mDetailsPagerAdapter.setCurrentPosition(position);
+							mZabbixDataService.loadItemsByApplicationId(mDetailsPagerAdapter.getCurrentItem().getId());
 
 							// propagate page change only if there actually was
 							// a

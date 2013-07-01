@@ -36,10 +36,9 @@ public class ApplicationPagerAdapter extends
 		p.setApplication(getItem(position));
 		return p;
 	}
-
-	@Override
-	public void clear() {
-		super.clear();
+	
+	public ChecksDetailsPage getCurrentPage() {
+		return (ChecksDetailsPage) getPage(getCurrentPosition());
 	}
 
 	public int getItemPosition(Object object) {

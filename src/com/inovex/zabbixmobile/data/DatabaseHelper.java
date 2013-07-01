@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.Application;
+import com.inovex.zabbixmobile.model.ApplicationItemRelation;
 import com.inovex.zabbixmobile.model.Cache;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.Event;
@@ -83,6 +84,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					TriggerHostGroupRelation.class);
 			TableUtils.createTable(connectionSource,
 					HostHostGroupRelation.class);
+			TableUtils.createTable(connectionSource,
+					ApplicationItemRelation.class);
 			TableUtils.createTable(connectionSource, Cache.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
@@ -106,6 +109,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					TriggerHostGroupRelation.class, true);
 			TableUtils.dropTable(connectionSource, HostHostGroupRelation.class,
 					true);
+			TableUtils.dropTable(connectionSource,
+					ApplicationItemRelation.class, true);
 			TableUtils.dropTable(connectionSource, Cache.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
@@ -261,25 +266,43 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		Dao<Application, Long> appDao = getDao(Application.class);
 		return appDao.queryForAll();
 	}
-	
+
 	/**
 	 * Queries all applications for a specified hostfrom the database.
 	 * 
-	 * @param host 
+	 * @param host
 	 * 
 	 * @return list of all applications
 	 * @throws SQLException
 	 */
-	public List<Application> getApplicationsByHost(Host host) throws SQLException {
+	public List<Application> getApplicationsByHost(Host host)
+			throws SQLException {
 		Dao<Application, Long> appDao = getDao(Application.class);
 		return appDao.queryForEq(Application.COLUMN_HOSTID, host);
 		// TODO: index on hosts in application table
 	}
-	
-	public List<Application> getApplicationsByHostId(long hostId) throws SQLException {
+
+	public List<Application> getApplicationsByHostId(long hostId)
+			throws SQLException {
 		Dao<Application, Long> appDao = getDao(Application.class);
 		return appDao.queryForEq(Application.COLUMN_HOSTID, hostId);
 		// TODO: index on hosts in application table
+	}
+	
+	public List<Item> getItemsByApplicationId(long applicationId) throws SQLException {
+		Dao<Item, Long> itemDao = getDao(Item.class);
+		Dao<ApplicationItemRelation, Long> relationDao = getDao(ApplicationItemRelation.class);
+		Dao<Application, Long> applicationDao = getDao(Application.class);
+		
+		QueryBuilder<Item, Long> itemQuery = itemDao.queryBuilder();
+		QueryBuilder<ApplicationItemRelation, Long> relationQuery = relationDao.queryBuilder();
+		QueryBuilder<Application, Long> applicationQuery = applicationDao.queryBuilder();
+		
+		applicationQuery.where().eq(Application.COLUMN_APPLICATIONID, applicationId);
+		relationQuery.join(applicationQuery);
+		
+		itemQuery.join(relationQuery);
+		return itemQuery.query();
 	}
 
 	/**
@@ -489,6 +512,68 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
+	/**
+	 * Inserts application to item relations into the database.
+	 * 
+	 * @param applicationItemRelations
+	 *            collection of relations to be inserted
+	 * @throws SQLException
+	 */
+	public void insertApplicationItemRelations(
+			List<ApplicationItemRelation> applicationItemRelations)
+			throws SQLException {
+		Dao<ApplicationItemRelation, Long> dao = getDao(ApplicationItemRelation.class);
+		mThreadConnection = dao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (ApplicationItemRelation relation : applicationItemRelations) {
+				try {
+					dao.createIfNotExists(relation);
+				} catch (SQLException e) {
+					// this might throw an exception if the relation exists
+					// already (however, with a different primary key) -> ignore
+				}
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			dao.endThreadConnection(mThreadConnection);
+		}
+	}
+
+	/**
+	 * Inserts items into the database.
+	 * 
+	 * @param itemCollection
+	 *            collection of relations to be inserted
+	 * @throws SQLException
+	 */
+	public void insertItems(List<Item> itemCollection) throws SQLException {
+		Dao<Item, Long> dao = getDao(Item.class);
+		mThreadConnection = dao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (Item item : itemCollection) {
+				try {
+					dao.createOrUpdate(item);
+				} catch (SQLException e) {
+					// this might throw an exception if the relation exists
+					// already (however, with a different primary key) -> ignore
+				}
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			dao.endThreadConnection(mThreadConnection);
+		}
+	}
+
 	public void acknowledgeEvent(long eventId) throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		Event e = getEventById(eventId);
@@ -542,6 +627,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	public void clearHostGroups() throws SQLException {
 		clearTable(HostGroup.class);
+	}
+
+	/**
+	 * Removes all items from the database.
+	 * 
+	 * @throws SQLException
+	 */
+	public void clearItems() throws SQLException {
+		clearTable(Item.class);
 	}
 
 	/**
