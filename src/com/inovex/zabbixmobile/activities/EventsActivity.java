@@ -2,6 +2,7 @@ package com.inovex.zabbixmobile.activities;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.animation.AnimationUtils;
 import android.widget.ViewFlipper;
 
 import com.inovex.zabbixmobile.R;
@@ -28,7 +29,6 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 				.findFragmentById(R.id.events_details);
 		mListFragment = (BaseSeverityFilterListFragment) mFragmentManager
 				.findFragmentById(R.id.events_list);
-
 	}
 
 	@Override

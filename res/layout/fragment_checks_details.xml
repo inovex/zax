@@ -1,5 +1,25 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/details_text"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/checks_details_base"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/details_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.viewpagerindicator.TitlePageIndicator
+        android:id="@+id/checks_page_indicator"
+        style="@style/ChecksTitlePageIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/checks_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1" >
+    </android.support.v4.view.ViewPager>
+
+</LinearLayout>

@@ -1,10 +1,16 @@
 package com.inovex.zabbixmobile.activities;
 
+import android.R;
 import android.content.ComponentName;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ViewFlipper;
 
 import com.actionbarsherlock.app.ActionBar;

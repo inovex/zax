@@ -50,7 +50,7 @@ public class EventsDetailsPage extends SherlockFragment {
 		// TODO: on orientation change, mEvent is not set ->
 		// NullPointerException
 		StringBuilder sb = new StringBuilder();
-		sb.append("Event: \n\n");
+		sb.append("Application: \n\n");
 		sb.append("ID: " + mEvent.getId() + "\n");
 		sb.append("source: " + mEvent.getObjectId() + "\n");
 		sb.append("value: " + mEvent.getValue() + "\n");

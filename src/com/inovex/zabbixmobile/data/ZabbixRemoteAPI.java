@@ -539,11 +539,14 @@ public class ZabbixRemoteAPI {
 	/**
 	 * Imports all applications from Zabbix.
 	 * 
+	 * @param hostIds
+	 *            collection of host ids to filter the applications by; null: no
+	 *            filtering
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 */
-	public void importApplications() throws FatalException,
-			ZabbixLoginRequiredException {
+	public void importApplicationsByHostIds(Collection<Long> hostIds)
+			throws FatalException, ZabbixLoginRequiredException {
 		JSONObject params;
 		try {
 			params = new JSONObject().put("output", "extend")
@@ -556,6 +559,8 @@ public class ZabbixRemoteAPI {
 				// in Zabbix version <2.0, this is not default
 				params.put("sortfield", "clock").put("sortorder", "DESC");
 			}
+			if (hostIds != null)
+				params.put("hostids", new JSONArray(hostIds));
 			JsonArrayOrObjectReader applications = _queryStream(
 					"application.get", params);
 			importApplications(applications);

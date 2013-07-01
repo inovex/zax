@@ -69,7 +69,7 @@ public class ChecksActivity extends BaseActivity implements
 		Log.d(TAG, "item selected: " + id + " position: " + position + ")");
 		this.mCurrentItemPosition = position;
 
-		// mDetailsFragment.selectItem(position, severity, id);
+		mDetailsFragment.selectItem(position, id);
 		if (mFlipper != null)
 			mFlipper.showNext();
 
@@ -111,7 +111,7 @@ public class ChecksActivity extends BaseActivity implements
 
 		mZabbixService.loadHostGroups();
 
-		mZabbixService.loadApplications();
+//		mZabbixService.loadApplications();
 
 	}
 

@@ -15,11 +15,13 @@ import android.view.LayoutInflater;
 
 import com.inovex.zabbixmobile.activities.BaseSeverityFilterActivity;
 import com.inovex.zabbixmobile.activities.ChecksActivity;
+import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListPage;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsListPage;
+import com.inovex.zabbixmobile.adapters.ApplicationPagerAdapter;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
@@ -30,6 +32,7 @@ import com.inovex.zabbixmobile.adapters.ProblemsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ProblemsListAdapter;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
+import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
@@ -56,7 +59,7 @@ public class ZabbixDataService extends Service {
 
 	private DatabaseHelper mDatabaseHelper;
 
-	private HostGroupsSpinnerAdapter mHostGroupSpinnerAdapter;
+	private HostGroupsSpinnerAdapter mHostGroupsSpinnerAdapter;
 
 	/**
 	 * Adapters maintained by {@link ZabbixDataService}.
@@ -71,6 +74,7 @@ public class ZabbixDataService extends Service {
 
 	// Checks
 	private HostsListAdapter mHostsListAdapter;
+	private ApplicationPagerAdapter mApplicationPagerAdapter;
 
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
@@ -125,7 +129,7 @@ public class ZabbixDataService extends Service {
 	 * @return spinner adapter
 	 */
 	public HostGroupsSpinnerAdapter getHostGroupSpinnerAdapter() {
-		return mHostGroupSpinnerAdapter;
+		return mHostGroupsSpinnerAdapter;
 	}
 
 	/**
@@ -165,6 +169,15 @@ public class ZabbixDataService extends Service {
 	 */
 	public HostsListAdapter getHostsListAdapter() {
 		return mHostsListAdapter;
+	}
+
+	/**
+	 * Returns the application adapter.
+	 * 
+	 * @return
+	 */
+	public ApplicationPagerAdapter getApplicationPagerAdapter() {
+		return mApplicationPagerAdapter;
 	}
 
 	@Override
@@ -248,7 +261,7 @@ public class ZabbixDataService extends Service {
 		mProblemsDetailsPagerAdapters = new HashMap<TriggerSeverity, ProblemsDetailsPagerAdapter>(
 				TriggerSeverity.values().length);
 
-		mHostGroupSpinnerAdapter = new HostGroupsSpinnerAdapter(this);
+		mHostGroupsSpinnerAdapter = new HostGroupsSpinnerAdapter(this);
 
 		for (TriggerSeverity s : TriggerSeverity.values()) {
 			mEventsListAdapters.put(s, new EventsListAdapter(this));
@@ -263,6 +276,8 @@ public class ZabbixDataService extends Service {
 		}
 
 		mHostsListAdapter = new HostsListAdapter(this);
+
+		mApplicationPagerAdapter = new ApplicationPagerAdapter();
 
 	}
 
@@ -412,7 +427,7 @@ public class ZabbixDataService extends Service {
 		new RemoteAPITask(mRemoteAPI) {
 
 			private List<HostGroup> hostGroups;
-			private BaseServiceAdapter<HostGroup> groupsAdapter = mHostGroupSpinnerAdapter;
+			private BaseServiceAdapter<HostGroup> groupsAdapter = mHostGroupsSpinnerAdapter;
 
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
@@ -450,6 +465,9 @@ public class ZabbixDataService extends Service {
 	 * Loads all hosts with a given host group from the database asynchronously.
 	 * After loading the events, the host list adapter is updated. If necessary,
 	 * an import from the Zabbix API is triggered.
+	 * 
+	 * Additionally, this method initializes {@link ApplicationPagerAdapter}s
+	 * (one for each host) if necessary.
 	 * 
 	 * @param hostGroupId
 	 *            host group id by which the events will be filtered
@@ -513,18 +531,46 @@ public class ZabbixDataService extends Service {
 	 *            adapters will be cleared before being filled with entries
 	 *            matching the selected host group.
 	 */
-	public void loadApplications() {
+	public void loadApplicationsByHostId(final long hostId, final ChecksDetailsFragment callback) {
 		new RemoteAPITask(mRemoteAPI) {
+
+			List<Host> hosts;
+			List<Application> applications;
 
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
-				mRemoteAPI.importApplications();
+				try {
+					List<Long> hostIds = new ArrayList<Long>();
+					hostIds.add(hostId);
+					// We only import applications with corresponding hosts
+					// (this way templates are ignored)
+					mRemoteAPI.importApplicationsByHostIds(hostIds);
+				} finally {
+					try {
+						applications = mDatabaseHelper
+								.getApplicationsByHostId(hostId);
+
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
+				// fill adapter
+				if (mApplicationPagerAdapter != null) {
+					mApplicationPagerAdapter.clear();
+					mApplicationPagerAdapter.addAll(applications);
+					mApplicationPagerAdapter.notifyDataSetChanged();
+					// This is ugly, but we need it to redraw the page indicator
+					if(callback != null)
+						callback.invalidateIndicatorView();
+				}
+
 			}
 
 		}.execute();
