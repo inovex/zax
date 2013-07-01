@@ -116,7 +116,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Retrieves all events with the given severity and host group from the
+	 * Queries all events with the given severity and host group from the
 	 * database.
 	 * 
 	 * @param severity
@@ -153,7 +153,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Retrieves all problems with a given severity and host group from the
+	 * Queries all problems with a given severity and host group from the
 	 * database.
 	 * 
 	 * @param severity
@@ -194,7 +194,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Retrieves all host groups from the database.
+	 * Queries all host groups from the database.
 	 * 
 	 * @return list of all host groups
 	 * @throws SQLException
@@ -205,7 +205,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Retrieves all hosts from the database.
+	 * Queries all hosts from the database.
 	 * 
 	 * @return list of all hosts
 	 * @throws SQLException
@@ -216,7 +216,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Retrieves all hosts in a specified group from the database.
+	 * Queries all hosts in a specified group from the database.
 	 * 
 	 * @param hostGroupId
 	 *            ID of the host group
@@ -249,6 +249,37 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public Event getEventById(long id) throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		return eventDao.queryForId(id);
+	}
+
+	/**
+	 * Queries all applications from the database.
+	 * 
+	 * @return list of all applications
+	 * @throws SQLException
+	 */
+	public List<Application> getApplications() throws SQLException {
+		Dao<Application, Long> appDao = getDao(Application.class);
+		return appDao.queryForAll();
+	}
+	
+	/**
+	 * Queries all applications for a specified hostfrom the database.
+	 * 
+	 * @param host 
+	 * 
+	 * @return list of all applications
+	 * @throws SQLException
+	 */
+	public List<Application> getApplicationsByHost(Host host) throws SQLException {
+		Dao<Application, Long> appDao = getDao(Application.class);
+		return appDao.queryForEq(Application.COLUMN_HOSTID, host);
+		// TODO: index on hosts in application table
+	}
+	
+	public List<Application> getApplicationsByHostId(long hostId) throws SQLException {
+		Dao<Application, Long> appDao = getDao(Application.class);
+		return appDao.queryForEq(Application.COLUMN_HOSTID, hostId);
+		// TODO: index on hosts in application table
 	}
 
 	/**
