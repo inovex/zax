@@ -1,14 +1,24 @@
 package com.inovex.zabbixmobile.data;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.model.Application;
+import com.inovex.zabbixmobile.model.ApplicationItemRelation;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.Host;
+import com.inovex.zabbixmobile.model.HostGroup;
+import com.inovex.zabbixmobile.model.HostHostGroupRelation;
+import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.model.Trigger;
+import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
@@ -55,9 +65,7 @@ public class MockDatabaseHelper extends DatabaseHelper {
 							- (3600 * 1000 * 0), 1, true),
 					new Event(14529, 0, System.currentTimeMillis()
 							- (3600 * 1000 * 8), 0, false) };
-			for (Event e : events) {
-				eventDao.create(e);
-			}
+			
 			Trigger[] triggers = new Trigger[] {
 					new Trigger(14062, "Sample trigger #1", "{13513}>0",
 							"Comments...", System.currentTimeMillis()
@@ -105,13 +113,80 @@ public class MockDatabaseHelper extends DatabaseHelper {
 			for (Trigger t : triggers) {
 				triggerDao.create(t);
 				events[i].setTrigger(t);
-				eventDao.update(events[i]);
 				i++;
+			}
+			for (Event e : events) {
+				eventDao.create(e);
 			}
 
 		} catch (SQLException e) {
 			Log.e(TAG, e.toString());
 		}
+	}
+
+	@Override
+	public void insertEvents(Collection<Event> events) throws SQLException {
+	}
+
+	@Override
+	public void insertTriggers(Collection<Trigger> triggers)
+			throws SQLException {
+	}
+
+	@Override
+	public void insertHosts(List<Host> hosts) throws SQLException {
+	}
+
+	@Override
+	public void insertHostGroups(ArrayList<HostGroup> hostGroups)
+			throws SQLException {
+	}
+
+	@Override
+	public void insertApplications(Collection<Application> applications)
+			throws SQLException {
+	}
+
+	@Override
+	public void insertTriggerHostgroupRelations(
+			List<TriggerHostGroupRelation> triggerHostGroupCollection)
+			throws SQLException {
+	}
+
+	@Override
+	public void insertHostHostgroupRelations(
+			List<HostHostGroupRelation> hostHostGroupCollection)
+			throws SQLException {
+	}
+
+	@Override
+	public void insertApplicationItemRelations(
+			List<ApplicationItemRelation> applicationItemRelations)
+			throws SQLException {
+	}
+
+	@Override
+	public void insertItems(List<Item> itemCollection) throws SQLException {
+	}
+
+	@Override
+	public void clearEvents() throws SQLException {
+	}
+
+	@Override
+	public void clearTriggers() throws SQLException {
+	}
+
+	@Override
+	public void clearHosts() throws SQLException {
+	}
+
+	@Override
+	public void clearHostGroups() throws SQLException {
+	}
+
+	@Override
+	public void clearItems() throws SQLException {
 	}
 
 }
