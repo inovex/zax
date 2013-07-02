@@ -10,9 +10,11 @@ public class ChecksItemsPagerAdapter extends
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		return getItem(position).getDescription();
-		// return ((ChecksDetailsPage)getPage(position)).getTitle();
-		// return "TITLE";
+		if(position == mCurrentPosition - 1)
+			return "previous";
+		if(position == mCurrentPosition + 1)
+			return "next";
+		return (position + 1) + "/" + getCount();
 	}
 
 	@Override

@@ -146,7 +146,7 @@ public class ChecksItemsDetailsFragment extends SherlockFragment implements
 						public void onPageSelected(int position) {
 							Log.d(TAG, "detail page selected: " + position);
 
-//							mDetailsPagerAdapter.setCurrentPosition(position);
+							mDetailsPagerAdapter.setCurrentPosition(position);
 //							mZabbixDataService
 //									.loadItemsByApplicationId(mDetailsPagerAdapter
 //											.getCurrentItem().getId());

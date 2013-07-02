@@ -65,7 +65,7 @@ public class ProblemsDetailsPage extends SherlockFragment {
 				Locale.getDefault());
 		sb.append("lastchange: "
 				+ String.valueOf(dateFormatter.format(cal.getTime())) + "\n");
-		TextView text = (TextView) getView().findViewById(R.id.details_text);
+		TextView text = (TextView) getView().findViewById(R.id.checks_title);
 		text.setText(sb.toString());
 	}
 

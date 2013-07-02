@@ -5,9 +5,11 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/details_text"
+        android:id="@+id/checks_title"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <com.viewpagerindicator.TitlePageIndicator
         android:id="@+id/checks_page_indicator"

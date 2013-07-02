@@ -193,7 +193,7 @@ public class ZabbixDataService extends Service {
 	public ChecksItemsListAdapter getChecksItemsListAdapter() {
 		return mChecksItemsListAdapter;
 	}
-	
+
 	/**
 	 * Returns the application items pager adapter.
 	 * 
@@ -201,6 +201,22 @@ public class ZabbixDataService extends Service {
 	 */
 	public ChecksItemsPagerAdapter getChecksItemsPagerAdapter() {
 		return mChecksItemsPagerAdapter;
+	}
+
+	/**
+	 * Retrieves the host with the given ID from the database.
+	 * 
+	 * @param hostId
+	 * @return
+	 */
+	public Host getHostById(long hostId) {
+		try {
+			return mDatabaseHelper.getHostsById(hostId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
@@ -490,8 +506,8 @@ public class ZabbixDataService extends Service {
 	 * After loading the events, the host list adapter is updated. If necessary,
 	 * an import from the Zabbix API is triggered.
 	 * 
-	 * Additionally, this method initializes {@link ChecksApplicationsPagerAdapter}s
-	 * (one for each host) if necessary.
+	 * Additionally, this method initializes
+	 * {@link ChecksApplicationsPagerAdapter}s (one for each host) if necessary.
 	 * 
 	 * @param hostGroupId
 	 *            host group id by which the events will be filtered
@@ -601,8 +617,10 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Loads all items in a given application from the database asynchronously.
-	 * After loading the events, the corresponding adapters are updated. If
-	 * necessary, an import from the Zabbix API is triggered.
+	 * After loading the events, the corresponding adapters are updated. An
+	 * import from Zabbix is not necessary, because the items have already been
+	 * loaded together with the applications. TODO: handle this case with cache
+	 * functionality
 	 * 
 	 * @param hostGroupId
 	 *            host group id by which the events will be filtered
@@ -619,14 +637,14 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
-					try {
-						items = mDatabaseHelper
-								.getItemsByApplicationId(applicationId);
+				try {
+					items = mDatabaseHelper
+							.getItemsByApplicationId(applicationId);
 
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 
 			@Override

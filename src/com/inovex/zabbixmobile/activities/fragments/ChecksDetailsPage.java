@@ -88,11 +88,6 @@ public class ChecksDetailsPage extends SherlockListFragment implements ServiceCo
 
 	}
 
-	public void loadAdapterContent() {
-		if (mZabbixDataService != null)
-			mZabbixDataService.loadItemsByApplicationId(mApplication.getId());
-	}
-
 	protected void setupListAdapter() {
 		setListAdapter(mZabbixDataService.getChecksItemsListAdapter());
 	}

@@ -18,6 +18,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.ChecksApplicationsPagerAdapter;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
+import com.inovex.zabbixmobile.model.Host;
 import com.viewpagerindicator.TitlePageIndicator;
 
 public class ChecksDetailsFragment extends SherlockFragment implements
@@ -45,8 +46,7 @@ public class ChecksDetailsFragment extends SherlockFragment implements
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		titleView = (TextView) view.findViewById(R.id.details_text);
-		titleView.setText("Checks Details");
+		titleView = (TextView) view.findViewById(R.id.checks_title);
 	}
 
 	@Override
@@ -81,11 +81,12 @@ public class ChecksDetailsFragment extends SherlockFragment implements
 		mZabbixDataService = null;
 	}
 
-	public void selectItem(int position, long id) {
+	public void selectHost(int position, long id) {
 		this.mPosition = position;
 		this.mHostId = id;
+		Host h = mZabbixDataService.getHostById(mHostId);
 		// update view pager
-		titleView.setText("Host ID: " + mHostId + ", position: " + mPosition);
+		titleView.setText("Host: " + h.getName());
 		mZabbixDataService.loadApplicationsByHostId(mHostId, this);
 		mDetailsPageIndicator.setCurrentItem(0);
 	}

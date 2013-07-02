@@ -78,9 +78,6 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 		if (mCurTransaction == null) {
 			mCurTransaction = mFragmentManager.beginTransaction();
 		}
-		if (DEBUG)
-			Log.v(TAG, "Detaching item #" + getItemId(position) + ": f="
-					+ object + " v=" + ((Fragment) object).getView());
 		mCurTransaction.detach((Fragment) object);
 	}
 

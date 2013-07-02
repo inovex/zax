@@ -26,7 +26,7 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 	public View getView(int position, View convertView, ViewGroup parent) {
 
 		View actionBarView = getInflater().inflate(
-				R.layout.host_groups_spinner_main, null);
+				R.layout.spinner_host_groups_main, null);
 		TextView title = (TextView) actionBarView
 				.findViewById(R.id.shost_groups_spinner_title);
 		title.setText(mTitle);
@@ -40,7 +40,7 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 	@Override
 	public View getDropDownView(int position, View convertView, ViewGroup parent) {
 		View actionBarDropDownView = getInflater().inflate(
-				R.layout.host_groups_spinner_dropdown, null);
+				R.layout.spinner_host_groups_dropdown, null);
 		TextView dropDownTitle = (TextView) actionBarDropDownView
 				.findViewById(R.id.host_groups_spinner_dropdown_title);
 

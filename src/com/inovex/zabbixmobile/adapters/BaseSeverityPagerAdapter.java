@@ -1,7 +1,5 @@
 package com.inovex.zabbixmobile.adapters;
 
-import java.util.TreeSet;
-
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 

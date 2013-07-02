@@ -18,6 +18,7 @@
 
     <com.viewpagerindicator.TitlePageIndicator
         android:id="@+id/items_page_indicator"
+        style="@style/ItemsDetailsTitlePageIndicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="2dip" />
