@@ -32,7 +32,10 @@
          get it from the ANDROID_HOME env var.
          This must be done before we load project.properties since
          the proguard config can use sdk.dir -->
+	<xmlproperty file="AndroidManifest.xml" prefix="mymanifest" collapseAttributes="true"/>
     <property environment="env" />
+ 	<property name="env.BUILD_NUMBER" value=""/>
+ 	
     <condition property="sdk.dir" value="${env.ANDROID_HOME}">
         <isset property="env.ANDROID_HOME" />
     </condition>
@@ -53,6 +56,13 @@
             message="sdk.dir is missing. Make sure to generate local.properties using 'android update project' or to inject it through the ANDROID_HOME environment variable."
             unless="sdk.dir"
     />
+
+    <target name="-set-debug-files" depends="-set-mode-check">
+
+        <property name="out.packaged.file" location="${out.absolute.dir}/${ant.project.name}-debug-unaligned.apk" />
+        <property name="out.final.file" location="${out.absolute.dir}/${ant.project.name}-d-${mymanifest.manifest.android:versionName}-${mymanifest.manifest.android:versionCode}-${env.BUILD_NUMBER}.apk" />
+        <property name="build.is.mode.set" value="true" />
+    </target>
 
     <!--
         Import per project custom build rules if present at the root of the project.
