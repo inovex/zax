@@ -4,10 +4,16 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.Application;
@@ -24,6 +30,12 @@ public class ChecksDetailsPage extends SherlockListFragment implements ServiceCo
 	
 	private ZabbixDataService mZabbixDataService;
 
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		setEmptyText(getResources().getString(R.string.empty_list_checks));
+	}
+	
 	@Override
 	public void onStart() {
 		super.onStart();

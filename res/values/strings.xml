@@ -104,5 +104,8 @@
      <string name="homescreen_widget">Homescreen Widget</string>
      <string name="no_filter">No filter applied.</string>
      <string name="filter_by_severity">Filter by severity: </string>
+     <string name="empty_list_checks">No items found for this application.</string>
+     <string name="empty_list_events">No events found for this severity.</string>
+     <string name="empty_list_problems">No problems found for this severity.</string>
 
 </resources>
