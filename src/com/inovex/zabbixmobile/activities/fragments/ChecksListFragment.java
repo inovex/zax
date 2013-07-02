@@ -13,6 +13,7 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
+import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.HostGroup;
 
@@ -25,7 +26,7 @@ public class ChecksListFragment extends SherlockListFragment implements
 	private long mCurrentItemId = 0;
 	private long mHostGroupId = HostGroup.GROUP_ID_ALL;
 
-	private OnListItemSelectedListener mCallbackMain;
+	private OnChecksItemSelectedListener mCallbackMain;
 
 	private ZabbixDataService mZabbixDataService;
 
@@ -36,10 +37,10 @@ public class ChecksListFragment extends SherlockListFragment implements
 		// This makes sure that the container activity has implemented
 		// the callback interface. If not, it throws an exception
 		try {
-			mCallbackMain = (OnListItemSelectedListener) activity;
+			mCallbackMain = (OnChecksItemSelectedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
-					+ " must implement OnListItemSelectedListener.");
+					+ " must implement OnChecksItemSelectedListener.");
 		}
 	}
 
@@ -74,7 +75,7 @@ public class ChecksListFragment extends SherlockListFragment implements
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		mCallbackMain.onListItemSelected(position, id);
+		mCallbackMain.onHostSelected(position, id);
 	}
 
 	@Override

@@ -11,12 +11,13 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsFragment;
+import com.inovex.zabbixmobile.activities.fragments.ChecksItemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
-import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
+import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 
 public class ChecksActivity extends BaseActivity implements
-		OnListItemSelectedListener {
+		OnChecksItemSelectedListener {
 
 	private static final String TAG = ChecksActivity.class.getSimpleName();
 
@@ -25,6 +26,7 @@ public class ChecksActivity extends BaseActivity implements
 	protected FragmentManager mFragmentManager;
 	protected ViewFlipper mFlipper;
 	protected ChecksDetailsFragment mDetailsFragment;
+	protected ChecksItemsDetailsFragment mItemsDetailsFragment;
 	protected ChecksListFragment mListFragment;
 
 	protected HostGroupsSpinnerAdapter mSpinnerAdapter;
@@ -43,10 +45,12 @@ public class ChecksActivity extends BaseActivity implements
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.checks_flipper);
-		mDetailsFragment = (ChecksDetailsFragment) mFragmentManager
-				.findFragmentById(R.id.checks_details);
 		mListFragment = (ChecksListFragment) mFragmentManager
 				.findFragmentById(R.id.checks_list);
+		mDetailsFragment = (ChecksDetailsFragment) mFragmentManager
+				.findFragmentById(R.id.checks_details);
+		mItemsDetailsFragment = (ChecksItemsDetailsFragment) mFragmentManager
+				.findFragmentById(R.id.checks_items_details);
 
 	}
 
@@ -65,7 +69,7 @@ public class ChecksActivity extends BaseActivity implements
 	}
 
 	@Override
-	public void onListItemSelected(int position, long id) {
+	public void onHostSelected(int position, long id) {
 		Log.d(TAG, "item selected: " + id + " position: " + position + ")");
 		this.mCurrentItemPosition = position;
 
@@ -73,6 +77,13 @@ public class ChecksActivity extends BaseActivity implements
 		if (mFlipper != null)
 			mFlipper.showNext();
 
+	}
+	
+	@Override
+	public void onItemSelected(int position, long id) {
+		mItemsDetailsFragment.selectItem(position, id);
+		if (mFlipper != null)
+			mFlipper.showNext();
 	}
 
 	@Override
@@ -111,7 +122,7 @@ public class ChecksActivity extends BaseActivity implements
 
 		mZabbixService.loadHostGroups();
 
-//		mZabbixService.loadApplications();
+		// mZabbixService.loadApplications();
 
 	}
 

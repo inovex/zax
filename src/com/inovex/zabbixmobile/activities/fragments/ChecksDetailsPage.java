@@ -1,5 +1,6 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -10,12 +11,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
+import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.inovex.zabbixmobile.model.Application;
 
 public class ChecksDetailsPage extends SherlockListFragment implements ServiceConnection {
@@ -29,6 +32,19 @@ public class ChecksDetailsPage extends SherlockListFragment implements ServiceCo
 	private long mCurrentItemId = 0;
 	
 	private ZabbixDataService mZabbixDataService;
+	private OnChecksItemSelectedListener mCallbackMain;
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+
+		try {
+			mCallbackMain = (OnChecksItemSelectedListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnChecksItemSelectedListener.");
+		}
+	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -78,7 +94,7 @@ public class ChecksDetailsPage extends SherlockListFragment implements ServiceCo
 	}
 
 	protected void setupListAdapter() {
-		setListAdapter(mZabbixDataService.getApplicationItemsListAdapter());
+		setListAdapter(mZabbixDataService.getChecksItemsListAdapter());
 	}
 
 	@Override
@@ -86,6 +102,11 @@ public class ChecksDetailsPage extends SherlockListFragment implements ServiceCo
 		mZabbixDataService = null;
 	}
 	
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		mCallbackMain.onItemSelected(position, id);
+	}
+
 	public void setApplication(Application app) {
 		this.mApplication = app;
 	}

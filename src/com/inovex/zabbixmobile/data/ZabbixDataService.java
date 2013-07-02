@@ -21,10 +21,11 @@ import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListPage;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsListPage;
-import com.inovex.zabbixmobile.adapters.ApplicationItemsListAdapter;
-import com.inovex.zabbixmobile.adapters.ApplicationPagerAdapter;
+import com.inovex.zabbixmobile.adapters.ChecksItemsListAdapter;
+import com.inovex.zabbixmobile.adapters.ChecksApplicationsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
+import com.inovex.zabbixmobile.adapters.ChecksItemsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.EventsListAdapter;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
@@ -76,8 +77,9 @@ public class ZabbixDataService extends Service {
 
 	// Checks
 	private HostsListAdapter mHostsListAdapter;
-	private ApplicationPagerAdapter mApplicationPagerAdapter;
-	private ApplicationItemsListAdapter mApplicationItemsListAdapter;
+	private ChecksApplicationsPagerAdapter mChecksApplicationsPagerAdapter;
+	private ChecksItemsListAdapter mChecksItemsListAdapter;
+	private ChecksItemsPagerAdapter mChecksItemsPagerAdapter;
 
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
@@ -179,17 +181,26 @@ public class ZabbixDataService extends Service {
 	 * 
 	 * @return
 	 */
-	public ApplicationPagerAdapter getApplicationPagerAdapter() {
-		return mApplicationPagerAdapter;
+	public ChecksApplicationsPagerAdapter getChecksApplicationsPagerAdapter() {
+		return mChecksApplicationsPagerAdapter;
 	}
 
 	/**
-	 * Returns the application items adapter.
+	 * Returns the application items list adapter.
 	 * 
 	 * @return
 	 */
-	public ApplicationItemsListAdapter getApplicationItemsListAdapter() {
-		return mApplicationItemsListAdapter;
+	public ChecksItemsListAdapter getChecksItemsListAdapter() {
+		return mChecksItemsListAdapter;
+	}
+	
+	/**
+	 * Returns the application items pager adapter.
+	 * 
+	 * @return
+	 */
+	public ChecksItemsPagerAdapter getChecksItemsPagerAdapter() {
+		return mChecksItemsPagerAdapter;
 	}
 
 	@Override
@@ -288,8 +299,9 @@ public class ZabbixDataService extends Service {
 		}
 
 		mHostsListAdapter = new HostsListAdapter(this);
-		mApplicationPagerAdapter = new ApplicationPagerAdapter();
-		mApplicationItemsListAdapter = new ApplicationItemsListAdapter(this);
+		mChecksApplicationsPagerAdapter = new ChecksApplicationsPagerAdapter();
+		mChecksItemsListAdapter = new ChecksItemsListAdapter(this);
+		mChecksItemsPagerAdapter = new ChecksItemsPagerAdapter();
 
 	}
 
@@ -478,7 +490,7 @@ public class ZabbixDataService extends Service {
 	 * After loading the events, the host list adapter is updated. If necessary,
 	 * an import from the Zabbix API is triggered.
 	 * 
-	 * Additionally, this method initializes {@link ApplicationPagerAdapter}s
+	 * Additionally, this method initializes {@link ChecksApplicationsPagerAdapter}s
 	 * (one for each host) if necessary.
 	 * 
 	 * @param hostGroupId
@@ -573,10 +585,10 @@ public class ZabbixDataService extends Service {
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
 				// fill adapter
-				if (mApplicationPagerAdapter != null) {
-					mApplicationPagerAdapter.clear();
-					mApplicationPagerAdapter.addAll(applications);
-					mApplicationPagerAdapter.notifyDataSetChanged();
+				if (mChecksApplicationsPagerAdapter != null) {
+					mChecksApplicationsPagerAdapter.clear();
+					mChecksApplicationsPagerAdapter.addAll(applications);
+					mChecksApplicationsPagerAdapter.notifyDataSetChanged();
 					// This is ugly, but we need it to redraw the page indicator
 					if (callback != null)
 						callback.redrawPageIndicator();
@@ -620,11 +632,16 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				// fill adapter
-				if (mApplicationItemsListAdapter != null) {
-					mApplicationItemsListAdapter.clear();
-					mApplicationItemsListAdapter.addAll(items);
-					mApplicationItemsListAdapter.notifyDataSetChanged();
+				// fill adapters
+				if (mChecksItemsListAdapter != null) {
+					mChecksItemsListAdapter.clear();
+					mChecksItemsListAdapter.addAll(items);
+					mChecksItemsListAdapter.notifyDataSetChanged();
+				}
+				if (mChecksItemsPagerAdapter != null) {
+					mChecksItemsPagerAdapter.clear();
+					mChecksItemsPagerAdapter.addAll(items);
+					mChecksItemsPagerAdapter.notifyDataSetChanged();
 				}
 
 			}

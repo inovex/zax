@@ -19,9 +19,9 @@ import com.inovex.zabbixmobile.model.Item;
  * Adapter for the list of items used by {@link ChecksDetailsPage}.
  * 
  */
-public class ApplicationItemsListAdapter extends BaseServiceAdapter<Item> {
+public class ChecksItemsListAdapter extends BaseServiceAdapter<Item> {
 
-	private static final String TAG = ApplicationItemsListAdapter.class.getSimpleName();
+	private static final String TAG = ChecksItemsListAdapter.class.getSimpleName();
 	private int mTextViewResourceId = R.layout.items_list_item;
 
 	/**
@@ -30,7 +30,7 @@ public class ApplicationItemsListAdapter extends BaseServiceAdapter<Item> {
 	 * @param service
 	 * @param textViewResourceId
 	 */
-	public ApplicationItemsListAdapter(ZabbixDataService service) {
+	public ChecksItemsListAdapter(ZabbixDataService service) {
 		super(service);
 	}
 

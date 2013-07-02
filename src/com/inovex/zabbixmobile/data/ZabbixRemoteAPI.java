@@ -58,7 +58,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.inovex.zabbixmobile.adapters.ApplicationItemsListAdapter;
+import com.inovex.zabbixmobile.adapters.ChecksItemsListAdapter;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
