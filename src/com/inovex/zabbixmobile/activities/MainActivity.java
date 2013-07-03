@@ -185,7 +185,7 @@ public class MainActivity extends BaseActivity {
 		boolean useMockData = getIntent().getBooleanExtra(
 				ZabbixDataService.EXTRA_USE_MOCK_DATA, false);
 		intent.putExtra(ZabbixDataService.EXTRA_USE_MOCK_DATA, useMockData);
-		bindService(intent, this, Context.BIND_AUTO_CREATE);
+		getApplicationContext().bindService(intent, this, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override

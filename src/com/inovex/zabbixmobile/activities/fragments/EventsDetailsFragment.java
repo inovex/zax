@@ -42,6 +42,7 @@ public class EventsDetailsFragment extends
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(false);
+		setRetainInstance(true);
 	}
 
 	@Override
@@ -54,11 +55,11 @@ public class EventsDetailsFragment extends
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menuitem_acknowledge_event:
-			Log.d(TAG, "Acknowledge event: " + mCurrentItemId);
+			Log.d(TAG, "Acknowledge event: " + mItemId);
 			// show dialog
 			AcknowledgeDialogFragment dialog = AcknowledgeDialogFragment
 					.getInstance();
-			dialog.setEventId(mCurrentItemId);
+			dialog.setEventId(mItemId);
 			dialog.show(getChildFragmentManager(),
 					AcknowledgeDialogFragment.TAG);
 			return true;

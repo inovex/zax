@@ -70,14 +70,14 @@ public class ChecksItemsDetailsFragment extends SherlockFragment implements
 		// we need to do this after the view was created!!
 		Intent intent = new Intent(getSherlockActivity(),
 				ZabbixDataService.class);
-		getSherlockActivity().bindService(intent, this,
+		getSherlockActivity().getApplicationContext().bindService(intent, this,
 				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		getSherlockActivity().unbindService(this);
+		getSherlockActivity().getApplicationContext().unbindService(this);
 	}
 
 	@Override

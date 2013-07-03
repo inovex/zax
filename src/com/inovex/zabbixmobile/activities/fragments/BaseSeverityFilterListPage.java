@@ -8,9 +8,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
@@ -30,12 +28,15 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment
 	private static final String TAG = BaseSeverityFilterListPage.class
 			.getSimpleName();
 
+	private static final String ARG_POSITION = "arg_position";
+	private static final String ARG_SEVERITY = "arg_severity";
+
 	private OnListItemSelectedListener mCallbackMain;
 	protected ZabbixDataService mZabbixDataService;
 
 	protected TriggerSeverity mSeverity;
 	protected long mHostGroupId = HostGroup.GROUP_ID_ALL;
-	private int mItemSelected;
+	private int mPosition;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -57,46 +58,31 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment
 		// we need to do this after the view was created!!
 		Intent intent = new Intent(getSherlockActivity(),
 				ZabbixDataService.class);
-		getSherlockActivity().bindService(intent, this,
+		getSherlockActivity().getApplicationContext().bindService(intent, this,
 				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		getSherlockActivity().unbindService(this);
+		getSherlockActivity().getApplicationContext().unbindService(this);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// if(savedInstanceState != null) {
-		// mTitle = savedInstanceState.getString(ARG_TITLE);
-		// if(mTitle == null)
-		// mTitle = TriggerSeverities.ALL.getName();
-		// mSeverity = savedInstanceState.getInt(ARG_SEVERITY,
-		// TriggerSeverities.ALL.getNumber());
-		// mItemSelected = savedInstanceState.getInt(ARG_ITEM_SELECTED, 0);
-		// }
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View rootView = super.onCreateView(inflater, container,
-				savedInstanceState);
-
-		// DataAccess dataAccess =
-		// DataAccess.getInstance(getSherlockActivity());
-		return rootView;
+		if (savedInstanceState != null) {
+			mPosition = savedInstanceState.getInt(ARG_POSITION, 0);
+			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
+					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
+		}
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		// outState.putString(ARG_TITLE, mTitle);
-		// outState.putInt(ARG_SEVERITY, mSeverity);
-		// outState.putInt(ARG_ITEM_SELECTED, mItemSelected);
+		outState.putInt(ARG_POSITION, mPosition);
+		outState.putInt(ARG_SEVERITY, mSeverity.getNumber());
 	}
 
 	@Override
@@ -114,14 +100,14 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Log.d(TAG, "onListItemClick(l, v, " + position + ", " + id
 				+ "). severity: " + mSeverity);
-		mItemSelected = position;
+		mPosition = position;
 		mCallbackMain.onListItemSelected(position, id);
 	}
 
 	public void selectItem(int position) {
 		getListView().setItemChecked(position, true);
 		getListView().setSelection(position);
-		mItemSelected = position;
+		mPosition = position;
 	}
 
 	public void setSeverity(TriggerSeverity severity) {
@@ -138,7 +124,7 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment
 	}
 
 	public void setItemSelected(int itemSelected) {
-		this.mItemSelected = itemSelected;
+		this.mPosition = itemSelected;
 		loadAdapterContent(false);
 	}
 

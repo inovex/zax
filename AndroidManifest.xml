@@ -29,7 +29,6 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.inovex.zabbixmobile.activities.MainActivity"
-            android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,33 +38,26 @@
         </activity>
         <activity
             android:name="com.inovex.zabbixmobile.activities.EventsActivity"
-            android:configChanges="keyboardHidden|orientation"
             android:label="@string/activity_events" >
         </activity>
         <activity
             android:name="com.inovex.zabbixmobile.activities.ProblemsActivity"
-            android:configChanges="keyboardHidden|orientation"
             android:label="@string/activity_problems" >
         </activity>
         <activity
             android:name="com.inovex.zabbixmobile.activities.ChecksActivity"
-            android:configChanges="keyboardHidden|orientation"
             android:label="@string/activity_checks" >
         </activity>
         <activity
             android:name="com.inovex.zabbixmobile.activities.ScreensActivity"
-            android:configChanges="keyboardHidden|orientation"
             android:label="@string/activity_screens" >
         </activity>
         <activity
             android:name="com.inovex.zabbixmobile.activities.ZaxPreferenceActivity"
-            android:configChanges="keyboardHidden|orientation"
             android:label="@string/activity_preferences" >
         </activity>
 
-        <service
-            android:name="com.inovex.zabbixmobile.data.ZabbixDataService"
-            android:configChanges="keyboardHidden|orientation" >
+        <service android:name="com.inovex.zabbixmobile.data.ZabbixDataService" >
         </service>
 
         <receiver android:name="com.inovex.zabbixmobile.ExceptionBroadcastReceiver" >

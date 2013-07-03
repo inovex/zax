@@ -219,10 +219,13 @@ public class ZabbixDataService extends Service {
 		}
 		return null;
 	}
+	
+	private int bindings = 0;
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		Log.d(TAG, "onBind");
+		bindings++;
+		Log.d(TAG, "onBind: " + bindings);
 		Log.d(TAG,
 				"Binder " + this.toString() + ": intent " + intent.toString()
 						+ " bound.");
@@ -724,7 +727,8 @@ public class ZabbixDataService extends Service {
 
 	@Override
 	public boolean onUnbind(Intent intent) {
-		Log.d(TAG, "onUnbind()");
+		bindings--;
+		Log.d(TAG, "onUnbind: " + bindings);
 		return super.onUnbind(intent);
 	}
 

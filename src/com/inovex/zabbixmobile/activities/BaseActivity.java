@@ -32,6 +32,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	/** Defines callbacks for service binding, passed to bindService() */
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
+		Log.d(TAG, "onServiceConnected()");
 		ZabbixDataBinder binder = (ZabbixDataBinder) service;
 		mZabbixService = binder.getService();
 		mZabbixService.setActivityContext(BaseActivity.this);
@@ -41,12 +42,13 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public void onServiceDisconnected(ComponentName arg0) {
+		Log.d(TAG, "onServiceDisconnected()");
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		bindService();
+//		bindService();
 	}
 
 	/**
@@ -54,23 +56,24 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	 */
 	protected void bindService() {
 		Intent intent = new Intent(this, ZabbixDataService.class);
-		bindService(intent, this, Context.BIND_AUTO_CREATE);
+		getApplicationContext().bindService(intent, this, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
 	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		bindService();
 		mActionBar = getSupportActionBar();
 
 		mActionBar.setHomeButtonEnabled(true);
 		mActionBar.setDisplayHomeAsUpEnabled(true);
 		mActionBar.setDisplayShowTitleEnabled(true);
-		super.onCreate(arg0);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		// unbindService(this);
+//		getApplicationContext().unbindService(this);
 	}
 
 	@Override
@@ -79,7 +82,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		Log.d(TAG , "onDestroy");
 		if (isFinishing()) {
 			Log.d(TAG, "unbindService");
-			unbindService(this);
+			getApplicationContext().unbindService(this);
 		}
 	}
 
