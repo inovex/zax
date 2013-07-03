@@ -1,25 +1,33 @@
 package com.inovex.zabbixmobile.activities;
 
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
+import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 
-public class BaseActivity extends SherlockFragmentActivity implements
-		ServiceConnection {
+public abstract class BaseActivity extends SherlockFragmentActivity implements
+		ServiceConnection, OnLoginProgressListener {
 
 	protected ZabbixDataService mZabbixService;
 
+	private ProgressDialog mLoginProgress;
+
 	protected ActionBar mActionBar;
+
+	private static final String TAG = BaseActivity.class.getSimpleName();
 
 	/** Defines callbacks for service binding, passed to bindService() */
 	@Override
@@ -27,6 +35,7 @@ public class BaseActivity extends SherlockFragmentActivity implements
 		ZabbixDataBinder binder = (ZabbixDataBinder) service;
 		mZabbixService = binder.getService();
 		mZabbixService.setActivityContext(BaseActivity.this);
+		mZabbixService.performZabbixLogin(this);
 
 	}
 
@@ -61,7 +70,17 @@ public class BaseActivity extends SherlockFragmentActivity implements
 	@Override
 	protected void onStop() {
 		super.onStop();
-		unbindService(this);
+		// unbindService(this);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Log.d(TAG , "onDestroy");
+		if (isFinishing()) {
+			Log.d(TAG, "unbindService");
+			unbindService(this);
+		}
 	}
 
 	@Override
@@ -69,4 +88,31 @@ public class BaseActivity extends SherlockFragmentActivity implements
 		getSupportMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+
+	@Override
+	public void onLoginStarted() {
+		disableUI();
+		mLoginProgress = new ProgressDialog(BaseActivity.this);
+		mLoginProgress.setTitle(R.string.zabbix_login);
+		mLoginProgress.setMessage(getResources().getString(
+				R.string.zabbix_login_in_progress));
+		// mLoginProgress.setCancelable(false);
+		mLoginProgress.setIndeterminate(true);
+		mLoginProgress.show();
+	}
+
+	@Override
+	public void onLoginFinished(boolean success) {
+		if (mLoginProgress != null)
+			mLoginProgress.dismiss();
+		if (success) {
+			Toast.makeText(this, R.string.zabbix_login_successful,
+					Toast.LENGTH_LONG).show();
+			enableUI();
+		}
+	}
+
+	protected abstract void disableUI();
+
+	protected abstract void enableUI();
 }

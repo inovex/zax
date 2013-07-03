@@ -51,4 +51,16 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		mDetailsFragment.setHasOptionsMenu(false);
 	}
 
+	@Override
+	protected void disableUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void enableUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

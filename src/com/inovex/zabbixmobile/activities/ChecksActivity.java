@@ -124,4 +124,16 @@ public class ChecksActivity extends BaseActivity implements
 
 	}
 
+	@Override
+	protected void disableUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void enableUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

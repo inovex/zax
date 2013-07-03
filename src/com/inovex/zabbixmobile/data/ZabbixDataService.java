@@ -8,6 +8,7 @@ import java.util.List;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -21,10 +22,10 @@ import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListPage;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsListPage;
-import com.inovex.zabbixmobile.adapters.ChecksItemsListAdapter;
-import com.inovex.zabbixmobile.adapters.ChecksApplicationsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
+import com.inovex.zabbixmobile.adapters.ChecksApplicationsPagerAdapter;
+import com.inovex.zabbixmobile.adapters.ChecksItemsListAdapter;
 import com.inovex.zabbixmobile.adapters.ChecksItemsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.EventsListAdapter;
@@ -221,6 +222,7 @@ public class ZabbixDataService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
+		Log.d(TAG, "onBind");
 		Log.d(TAG,
 				"Binder " + this.toString() + ": intent " + intent.toString()
 						+ " bound.");
@@ -241,7 +243,6 @@ public class ZabbixDataService extends Service {
 			// recreate database
 			mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0,
 					1);
-			Log.d(TAG, "onCreate");
 		}
 		if (mRemoteAPI == null) {
 			mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
@@ -288,6 +289,7 @@ public class ZabbixDataService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Log.d(TAG, "onCreate");
 
 		// set up adapters
 		mEventsListAdapters = new HashMap<TriggerSeverity, EventsListAdapter>(
@@ -706,6 +708,24 @@ public class ZabbixDataService extends Service {
 
 	public LayoutInflater getInflater() {
 		return mInflater;
+	}
+
+	@Override
+	public void onDestroy() {
+		Log.d(TAG, "onDestroy()");
+		super.onDestroy();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		Log.d(TAG, "onConfigChanged");
+		super.onConfigurationChanged(newConfig);
+	}
+
+	@Override
+	public boolean onUnbind(Intent intent) {
+		Log.d(TAG, "onUnbind()");
+		return super.onUnbind(intent);
 	}
 
 }

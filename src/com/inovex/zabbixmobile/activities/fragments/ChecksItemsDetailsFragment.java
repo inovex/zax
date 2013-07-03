@@ -47,8 +47,6 @@ public class ChecksItemsDetailsFragment extends SherlockFragment implements
 	private int mPosition = 0;
 	private long mItemId;
 
-	private TextView titleView;
-
 	protected ViewPager mDetailsPager;
 	protected TitlePageIndicator mDetailsPageIndicator;
 	protected ZabbixDataService mZabbixDataService;
@@ -63,8 +61,6 @@ public class ChecksItemsDetailsFragment extends SherlockFragment implements
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		titleView = (TextView) view.findViewById(R.id.items_details_text);
-		titleView.setText("Checks Details");
 	}
 
 	@Override

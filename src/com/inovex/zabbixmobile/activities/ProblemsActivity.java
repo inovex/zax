@@ -50,4 +50,16 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			finish();
 		super.onBackPressed();
 	}
+
+	@Override
+	protected void disableUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void enableUI() {
+		// TODO Auto-generated method stub
+		
+	}
 }
