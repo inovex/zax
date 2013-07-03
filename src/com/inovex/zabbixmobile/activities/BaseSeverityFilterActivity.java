@@ -1,16 +1,10 @@
 package com.inovex.zabbixmobile.activities;
 
-import android.R;
 import android.content.ComponentName;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ViewFlipper;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -53,7 +47,7 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
 		super.onServiceConnected(className, service);
 		Log.d(TAG, "onServiceConnected()");
 
-		mSpinnerAdapter = mZabbixService.getHostGroupSpinnerAdapter();
+		mSpinnerAdapter = mZabbixDataService.getHostGroupSpinnerAdapter();
 
 		ActionBar.OnNavigationListener mOnNavigationListener = new ActionBar.OnNavigationListener() {
 			// Get the same strings provided for the drop-down's ArrayAdapter
@@ -72,7 +66,7 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
 		mActionBar.setListNavigationCallbacks(mSpinnerAdapter,
 				mOnNavigationListener);
 
-		mZabbixService.loadHostGroups();
+		mZabbixDataService.loadHostGroups();
 
 	}
 

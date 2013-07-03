@@ -99,7 +99,7 @@ public class ChecksActivity extends BaseActivity implements
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		super.onServiceConnected(className, service);
 
-		mSpinnerAdapter = mZabbixService.getHostGroupSpinnerAdapter();
+		mSpinnerAdapter = mZabbixDataService.getHostGroupSpinnerAdapter();
 
 		ActionBar.OnNavigationListener mOnNavigationListener = new ActionBar.OnNavigationListener() {
 			// Get the same strings provided for the drop-down's ArrayAdapter
@@ -118,7 +118,7 @@ public class ChecksActivity extends BaseActivity implements
 		mActionBar.setListNavigationCallbacks(mSpinnerAdapter,
 				mOnNavigationListener);
 
-		mZabbixService.loadHostGroups();
+		mZabbixDataService.loadHostGroups();
 
 		// mZabbixService.loadApplications();
 

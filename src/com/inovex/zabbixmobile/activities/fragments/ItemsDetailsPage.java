@@ -16,7 +16,6 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.model.Item;
-import com.inovex.zabbixmobile.model.Trigger;
 
 /**
  * Represents one page of the event details view pager (see

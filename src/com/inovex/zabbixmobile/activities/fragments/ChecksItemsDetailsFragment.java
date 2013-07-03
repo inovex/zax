@@ -1,36 +1,17 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ComponentName;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.adapters.ChecksApplicationsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ChecksItemsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
-import com.inovex.zabbixmobile.data.ZabbixDataService;
-import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
-import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
-import com.inovex.zabbixmobile.model.Event;
 import com.viewpagerindicator.TitlePageIndicator;
 
 /**
@@ -38,8 +19,7 @@ import com.viewpagerindicator.TitlePageIndicator;
  * {@link EventsDetailsPagerAdapter}).
  * 
  */
-public class ChecksItemsDetailsFragment extends SherlockFragment implements
-		ServiceConnection {
+public class ChecksItemsDetailsFragment extends BaseServiceConnectedFragment {
 
 	public static final String TAG = ChecksItemsDetailsFragment.class
 			.getSimpleName();
@@ -49,7 +29,6 @@ public class ChecksItemsDetailsFragment extends SherlockFragment implements
 
 	protected ViewPager mDetailsPager;
 	protected TitlePageIndicator mDetailsPageIndicator;
-	protected ZabbixDataService mZabbixDataService;
 	protected ChecksItemsPagerAdapter mDetailsPagerAdapter;
 
 	@Override
@@ -64,35 +43,10 @@ public class ChecksItemsDetailsFragment extends SherlockFragment implements
 	}
 
 	@Override
-	public void onStart() {
-		super.onStart();
-		Log.d(TAG, "onStart");
-		// we need to do this after the view was created!!
-		Intent intent = new Intent(getSherlockActivity(),
-				ZabbixDataService.class);
-		getSherlockActivity().getApplicationContext().bindService(intent, this,
-				Context.BIND_AUTO_CREATE);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		getSherlockActivity().getApplicationContext().unbindService(this);
-	}
-
-	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
-		Log.d(TAG, "onServiceConnected");
-		ZabbixDataBinder binder = (ZabbixDataBinder) service;
-		mZabbixDataService = binder.getService();
+		super.onServiceConnected(name, service);
 
 		setupDetailsViewPager();
-
-	}
-
-	@Override
-	public void onServiceDisconnected(ComponentName name) {
-		mZabbixDataService = null;
 	}
 
 	public void selectItem(int position, long id) {

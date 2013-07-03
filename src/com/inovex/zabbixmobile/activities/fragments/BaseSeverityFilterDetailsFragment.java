@@ -2,9 +2,6 @@ package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
 import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.view.ViewPager;
@@ -13,20 +10,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
-import com.inovex.zabbixmobile.data.ZabbixDataService;
-import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TitlePageIndicator;
 
 public abstract class BaseSeverityFilterDetailsFragment<T> extends
-		SherlockFragment implements ServiceConnection {
+		BaseServiceConnectedFragment {
 
 	public static final String TAG = BaseSeverityFilterDetailsFragment.class
 			.getSimpleName();
+
 	private static final String ARG_ITEM_POSITION = "arg_item_position";
 	private static final String ARG_ITEM_ID = "arg_item_id";
 	private static final String ARG_SEVERITY = "arg_severity";
@@ -35,26 +30,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	protected long mItemId = 0;
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
 	protected TitlePageIndicator mDetailsPageIndicator;
-	protected ZabbixDataService mZabbixDataService;
 	private OnListItemSelectedListener mCallbackMain;
 	protected BaseSeverityPagerAdapter<T> mDetailsPagerAdapter;
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		Log.d(TAG, "onStart");
-		// we need to do this after the view was created!!
-		Intent intent = new Intent(getSherlockActivity(),
-				ZabbixDataService.class);
-		getSherlockActivity().getApplicationContext().bindService(intent, this,
-				Context.BIND_AUTO_CREATE);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		getSherlockActivity().getApplicationContext().unbindService(this);
-	}
 
 	/**
 	 * Selects an event which shall be displayed in the view pager.
@@ -101,21 +78,6 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	}
 
 	@Override
-	public void onServiceConnected(ComponentName name, IBinder service) {
-		Log.d(TAG, "onServiceConnected");
-		ZabbixDataBinder binder = (ZabbixDataBinder) service;
-		mZabbixDataService = binder.getService();
-
-		setupDetailsViewPager();
-
-	}
-
-	@Override
-	public void onServiceDisconnected(ComponentName name) {
-		mZabbixDataService = null;
-	}
-
-	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
@@ -144,6 +106,12 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
 		}
 
+	}
+	
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		super.onServiceConnected(name, service);
+		setupDetailsViewPager();
 	}
 
 	@Override

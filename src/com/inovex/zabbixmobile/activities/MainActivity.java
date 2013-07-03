@@ -1,6 +1,5 @@
 package com.inovex.zabbixmobile.activities;
 
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,14 +15,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
-import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
@@ -155,7 +152,7 @@ public class MainActivity extends BaseActivity {
 
 //			mZabbixService.performZabbixLogin(this);
 
-			BaseServiceAdapter<Trigger> adapter = mZabbixService
+			BaseServiceAdapter<Trigger> adapter = mZabbixDataService
 					.getProblemsListAdapter(TriggerSeverity.ALL);
 			mProblemsList.setAdapter(adapter);
 			mProblemsList.setOnItemClickListener(new OnItemClickListener() {
@@ -173,7 +170,7 @@ public class MainActivity extends BaseActivity {
 					startActivity(intent);
 				}
 			});
-			mZabbixService.loadTriggersBySeverityAndHostGroup(
+			mZabbixDataService.loadTriggersBySeverityAndHostGroup(
 					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true);
 		}
 

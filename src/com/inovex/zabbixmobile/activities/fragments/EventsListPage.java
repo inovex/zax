@@ -1,9 +1,9 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
-import com.inovex.zabbixmobile.R;
-
 import android.os.Bundle;
 import android.view.View;
+
+import com.inovex.zabbixmobile.R;
 
 public class EventsListPage extends BaseSeverityFilterListPage {
 

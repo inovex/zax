@@ -2,7 +2,6 @@ package com.inovex.zabbixmobile.activities;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.animation.AnimationUtils;
 import android.widget.ViewFlipper;
 
 import com.inovex.zabbixmobile.R;
@@ -34,7 +33,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	@Override
 	public void acknowledgeEvent(long eventId, String comment) {
 		Log.d(TAG, "acknowledgeEvent(" + eventId + ", " + comment + ")");
-		mZabbixService.acknowledgeEvent(eventId, comment);
+		mZabbixDataService.acknowledgeEvent(eventId, comment);
 	}
 
 	@Override

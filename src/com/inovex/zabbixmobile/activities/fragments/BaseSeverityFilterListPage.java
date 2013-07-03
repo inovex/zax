@@ -1,19 +1,11 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.inovex.zabbixmobile.data.ZabbixDataService;
-import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
@@ -22,8 +14,7 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
  * Represents one page of a list view pager. Shows a list of items
  * (events/problems) for a specific severity.
  */
-public abstract class BaseSeverityFilterListPage extends SherlockListFragment
-		implements ServiceConnection {
+public abstract class BaseSeverityFilterListPage extends BaseServiceConnectedListFragment {
 
 	private static final String TAG = BaseSeverityFilterListPage.class
 			.getSimpleName();
@@ -32,7 +23,6 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment
 	private static final String ARG_SEVERITY = "arg_severity";
 
 	private OnListItemSelectedListener mCallbackMain;
-	protected ZabbixDataService mZabbixDataService;
 
 	protected TriggerSeverity mSeverity;
 	protected long mHostGroupId = HostGroup.GROUP_ID_ALL;
@@ -50,22 +40,6 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnListItemSelectedListener.");
 		}
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		// we need to do this after the view was created!!
-		Intent intent = new Intent(getSherlockActivity(),
-				ZabbixDataService.class);
-		getSherlockActivity().getApplicationContext().bindService(intent, this,
-				Context.BIND_AUTO_CREATE);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		getSherlockActivity().getApplicationContext().unbindService(this);
 	}
 
 	@Override
@@ -126,27 +100,6 @@ public abstract class BaseSeverityFilterListPage extends SherlockListFragment
 	public void setItemSelected(int itemSelected) {
 		this.mPosition = itemSelected;
 		loadAdapterContent(false);
-	}
-
-	@Override
-	public void onServiceConnected(ComponentName name, IBinder service) {
-		ZabbixDataBinder binder = (ZabbixDataBinder) service;
-		mZabbixDataService = binder.getService();
-
-		Log.d(TAG, "service connected: " + mZabbixDataService + " - binder: "
-				+ binder);
-		setupListAdapter();
-		loadAdapterContent(false);
-
-	}
-
-	protected abstract void setupListAdapter();
-
-	protected abstract void loadAdapterContent(boolean hostGroupChanged);
-
-	@Override
-	public void onServiceDisconnected(ComponentName name) {
-		mZabbixDataService = null;
 	}
 
 }

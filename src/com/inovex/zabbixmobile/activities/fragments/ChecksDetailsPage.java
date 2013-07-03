@@ -1,27 +1,15 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.data.ZabbixDataService;
-import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.inovex.zabbixmobile.model.Application;
 
-public class ChecksDetailsPage extends SherlockListFragment implements ServiceConnection {
+public class ChecksDetailsPage extends BaseServiceConnectedListFragment {
 
 	private Application mApplication;
 	private String mTitle = "";
@@ -31,7 +19,6 @@ public class ChecksDetailsPage extends SherlockListFragment implements ServiceCo
 	private int mCurrentPosition = 0;
 	private long mCurrentItemId = 0;
 	
-	private ZabbixDataService mZabbixDataService;
 	private OnChecksItemSelectedListener mCallbackMain;
 
 	@Override
@@ -52,22 +39,6 @@ public class ChecksDetailsPage extends SherlockListFragment implements ServiceCo
 		setEmptyText(getResources().getString(R.string.empty_list_checks));
 	}
 	
-	@Override
-	public void onStart() {
-		super.onStart();
-		// we need to do this after the view was created!!
-		Intent intent = new Intent(getSherlockActivity(),
-				ZabbixDataService.class);
-		getSherlockActivity().getApplicationContext().bindService(intent, this,
-				Context.BIND_AUTO_CREATE);
-	}
-
-	@Override
-	public void onStop() {
-		super.onStop();
-		getSherlockActivity().getApplicationContext().unbindService(this);
-	}
-
 	public void setCurrentPosition(int currentPosition) {
 		this.mCurrentPosition = currentPosition;
 	}
@@ -77,26 +48,15 @@ public class ChecksDetailsPage extends SherlockListFragment implements ServiceCo
 	}
 
 	@Override
-	public void onServiceConnected(ComponentName name, IBinder service) {
-		ZabbixDataBinder binder = (ZabbixDataBinder) service;
-		mZabbixDataService = binder.getService();
-
-		Log.d(TAG, "service connected: " + mZabbixDataService + " - binder: "
-				+ binder);
-		setupListAdapter();
-//		loadAdapterContent();
-
-	}
-
 	protected void setupListAdapter() {
 		setListAdapter(mZabbixDataService.getChecksItemsListAdapter());
 	}
-
-	@Override
-	public void onServiceDisconnected(ComponentName name) {
-		mZabbixDataService = null;
-	}
 	
+	@Override
+	protected void loadAdapterContent(boolean hostGroupChanged) {
+		// TODO: Content should be already loaded; still, we could call the service to be sure
+	}
+
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		mCallbackMain.onItemSelected(position, id);
@@ -113,5 +73,5 @@ public class ChecksDetailsPage extends SherlockListFragment implements ServiceCo
 	public String getTitle() {
 		return mTitle;
 	}
-	
+
 }

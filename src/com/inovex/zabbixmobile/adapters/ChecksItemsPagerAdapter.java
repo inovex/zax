@@ -33,6 +33,7 @@ public class ChecksItemsPagerAdapter extends
 		return (ItemsDetailsPage) getPage(getCurrentPosition());
 	}
 
+	@Override
 	public int getItemPosition(Object object) {
 		// This prevents caching of fragments. We need to disable caching
 		// because we have only one adapter which is reused when another host is

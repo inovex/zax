@@ -21,7 +21,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 public abstract class BaseActivity extends SherlockFragmentActivity implements
 		ServiceConnection, OnLoginProgressListener {
 
-	protected ZabbixDataService mZabbixService;
+	protected ZabbixDataService mZabbixDataService;
 
 	private ProgressDialog mLoginProgress;
 
@@ -32,11 +32,11 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	/** Defines callbacks for service binding, passed to bindService() */
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
-		Log.d(TAG, "onServiceConnected()");
+		Log.d(TAG, "onServiceConnected: " + this.getLocalClassName() + " " + this.toString());
 		ZabbixDataBinder binder = (ZabbixDataBinder) service;
-		mZabbixService = binder.getService();
-		mZabbixService.setActivityContext(BaseActivity.this);
-		mZabbixService.performZabbixLogin(this);
+		mZabbixDataService = binder.getService();
+		mZabbixDataService.setActivityContext(BaseActivity.this);
+		mZabbixDataService.performZabbixLogin(this);
 
 	}
 

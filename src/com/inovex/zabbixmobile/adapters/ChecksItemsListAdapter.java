@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsPage;
-import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.Item;
 
