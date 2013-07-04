@@ -15,19 +15,39 @@ import com.inovex.zabbixmobile.adapters.ChecksApplicationsPagerAdapter;
 import com.inovex.zabbixmobile.model.Host;
 import com.viewpagerindicator.TitlePageIndicator;
 
-public class ChecksDetailsFragment extends BaseServiceConnectedFragment{
+public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 
 	public static final String TAG = ChecksDetailsFragment.class
 			.getSimpleName();
 
-	private int mPosition = 0;
+	private int mHostPosition = 0;
 	private long mHostId;
+	private static final String ARG_HOST_POSITION = "arg_host_position";
+	private static final String ARG_HOST_ID = "arg_host_id";
 
 	private TextView titleView;
 
 	protected ViewPager mDetailsPager;
 	protected TitlePageIndicator mDetailsPageIndicator;
 	protected ChecksApplicationsPagerAdapter mDetailsPagerAdapter;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (savedInstanceState != null) {
+			mHostPosition = savedInstanceState.getInt(ARG_HOST_POSITION, 0);
+			mHostId = savedInstanceState.getLong(ARG_HOST_ID, 0);
+		}
+		setRetainInstance(true);
+		Log.d(TAG, "Host position: " + mHostPosition + "; id: " + mHostId);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putInt(ARG_HOST_POSITION, mHostPosition);
+		outState.putLong(ARG_HOST_ID, mHostId);
+		super.onSaveInstanceState(outState);
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,7 +70,7 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment{
 	}
 
 	public void selectHost(int position, long id) {
-		this.mPosition = position;
+		this.mHostPosition = position;
 		this.mHostId = id;
 		Host h = mZabbixDataService.getHostById(mHostId);
 		// update view pager
@@ -65,7 +85,7 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment{
 	 */
 	public void redrawPageIndicator() {
 		mDetailsPageIndicator.invalidate();
-		// this is necessary to refresh the adapter 
+		// this is necessary to refresh the adapter
 		mDetailsPageIndicator.onPageSelected(0);
 	}
 
@@ -88,7 +108,7 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment{
 			mDetailsPageIndicator = (TitlePageIndicator) getView()
 					.findViewById(R.id.checks_page_indicator);
 			mDetailsPageIndicator.setViewPager(mDetailsPager);
-			mDetailsPageIndicator.setCurrentItem(mPosition);
+			mDetailsPageIndicator.setCurrentItem(mHostPosition);
 			mDetailsPageIndicator
 					.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -108,9 +128,11 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment{
 						@Override
 						public void onPageSelected(int position) {
 							Log.d(TAG, "detail page selected: " + position);
-							
+
 							mDetailsPagerAdapter.setCurrentPosition(position);
-							mZabbixDataService.loadItemsByApplicationId(mDetailsPagerAdapter.getCurrentItem().getId());
+							mZabbixDataService
+									.loadItemsByApplicationId(mDetailsPagerAdapter
+											.getCurrentItem().getId());
 
 							// propagate page change only if there actually was
 							// a
@@ -125,7 +147,8 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment{
 	}
 
 	protected void retrievePagerAdapter() {
-		mDetailsPagerAdapter = mZabbixDataService.getChecksApplicationsPagerAdapter();
+		mDetailsPagerAdapter = mZabbixDataService
+				.getChecksApplicationsPagerAdapter();
 	}
 
 }

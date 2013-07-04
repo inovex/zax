@@ -1,6 +1,8 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
@@ -10,6 +12,9 @@ import com.inovex.zabbixmobile.model.HostGroup;
 public class ChecksListFragment extends BaseServiceConnectedListFragment {
 
 	public static String TAG = ChecksListFragment.class.getSimpleName();
+	
+	private static final String ARG_POSITION = "arg_position";
+	private static final String ARG_ITEM_ID = "arg_item_id";
 
 	private int mCurrentPosition = 0;
 	private long mCurrentItemId = 0;
@@ -46,6 +51,8 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
+		setCurrentPosition(position);
+		setCurrentItemId(id);
 		mCallbackMain.onHostSelected(position, id);
 	}
 	
@@ -59,6 +66,23 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 		if (mZabbixDataService != null)
 			mZabbixDataService.loadHostsByHostGroup(mHostGroupId,
 					hostGroupChanged);
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if(savedInstanceState != null) {
+			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
+			mCurrentItemId = savedInstanceState.getLong(ARG_ITEM_ID);
+		}
+		Log.d(TAG, "pos: " + mCurrentPosition + "; id: " + mCurrentItemId);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putInt(ARG_POSITION, mCurrentPosition);
+		outState.putLong(ARG_ITEM_ID, mCurrentItemId);
+		super.onSaveInstanceState(outState);
 	}
 
 }

@@ -99,7 +99,7 @@ public abstract class BaseSeverityFilterListPage extends BaseServiceConnectedLis
 
 	public void setItemSelected(int itemSelected) {
 		this.mPosition = itemSelected;
-		loadAdapterContent(false);
+
 	}
 
 }

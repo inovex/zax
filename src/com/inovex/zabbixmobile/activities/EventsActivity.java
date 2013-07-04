@@ -20,7 +20,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_events);
 
-		mTitle = getResources().getString(R.string.events);
+		mSpinnerTitle = getResources().getString(R.string.events);
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
@@ -28,6 +28,11 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 				.findFragmentById(R.id.events_details);
 		mListFragment = (BaseSeverityFilterListFragment) mFragmentManager
 				.findFragmentById(R.id.events_list);
+		if(mFlipper != null)
+			Log.d(TAG, mFlipper.toString());
+		Log.d(TAG, mListFragment.toString());
+		Log.d(TAG, mDetailsFragment.toString());
+		System.out.println();
 	}
 
 	@Override

@@ -13,25 +13,19 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksItemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
-import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 
-public class ChecksActivity extends BaseActivity implements
+public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		OnChecksItemSelectedListener {
 
 	private static final String TAG = ChecksActivity.class.getSimpleName();
 
 	protected int mCurrentItemPosition;
-	protected long mHostGroupId;
 	protected FragmentManager mFragmentManager;
 	protected ViewFlipper mFlipper;
 	protected ChecksDetailsFragment mDetailsFragment;
 	protected ChecksItemsDetailsFragment mItemsDetailsFragment;
 	protected ChecksListFragment mListFragment;
-
-	protected HostGroupsSpinnerAdapter mSpinnerAdapter;
-
-	protected String mTitle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +35,7 @@ public class ChecksActivity extends BaseActivity implements
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		mActionBar.setDisplayShowTitleEnabled(false);
 
-		mTitle = getResources().getString(R.string.checks);
+		mSpinnerTitle = getResources().getString(R.string.checks);
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.checks_flipper);
@@ -51,14 +45,19 @@ public class ChecksActivity extends BaseActivity implements
 				.findFragmentById(R.id.checks_details);
 		mItemsDetailsFragment = (ChecksItemsDetailsFragment) mFragmentManager
 				.findFragmentById(R.id.checks_items_details);
-
+		Log.d(TAG, mFlipper.toString());
+		Log.d(TAG, mListFragment.toString());
+		Log.d(TAG, mDetailsFragment.toString());
+		Log.d(TAG, mItemsDetailsFragment.toString());
+		System.out.println();
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			if ((mDetailsFragment.isVisible() || mItemsDetailsFragment.isVisible()) && mFlipper != null) {
+			if ((mDetailsFragment.isVisible() || mItemsDetailsFragment
+					.isVisible()) && mFlipper != null) {
 				mFlipper.showPrevious();
 			} else
 				finish();
@@ -99,41 +98,27 @@ public class ChecksActivity extends BaseActivity implements
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		super.onServiceConnected(className, service);
 
-		mSpinnerAdapter = mZabbixDataService.getHostGroupSpinnerAdapter();
-
-		ActionBar.OnNavigationListener mOnNavigationListener = new ActionBar.OnNavigationListener() {
-			// Get the same strings provided for the drop-down's ArrayAdapter
-
-			@Override
-			public boolean onNavigationItemSelected(int position, long itemId) {
-				mHostGroupId = itemId;
-				mListFragment.setHostGroup(itemId);
-				// TODO: update details fragment
-				return true;
-			}
-		};
-
-		mSpinnerAdapter.setTitle(mTitle);
-
-		mActionBar.setListNavigationCallbacks(mSpinnerAdapter,
-				mOnNavigationListener);
-
-		mZabbixDataService.loadHostGroups();
-
 		// mZabbixService.loadApplications();
 
 	}
 
 	@Override
+	public void selectHostGroupInSpinner(int position, long itemId) {
+		super.selectHostGroupInSpinner(position, itemId);
+		mListFragment.setHostGroup(itemId);
+		// TODO: update details fragment
+	}
+
+	@Override
 	protected void disableUI() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	protected void enableUI() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

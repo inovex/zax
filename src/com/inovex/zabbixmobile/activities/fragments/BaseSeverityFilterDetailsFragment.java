@@ -82,7 +82,13 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		Log.d(TAG, "onCreate");
-		// setRetainInstance(true);
+		if (savedInstanceState != null) {
+			mPosition = savedInstanceState.getInt(ARG_ITEM_POSITION, 0);
+			mItemId = savedInstanceState.getLong(ARG_ITEM_ID, 0);
+			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
+					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
+		}
+		setRetainInstance(true);
 	}
 
 	@Override
@@ -99,13 +105,6 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		super.onViewCreated(view, savedInstanceState);
 
 		Log.d(TAG, "onViewCreated");
-		if (savedInstanceState != null) {
-			mPosition = savedInstanceState.getInt(ARG_ITEM_POSITION, 0);
-			mItemId = savedInstanceState.getLong(ARG_ITEM_ID, 0);
-			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
-					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
-		}
-
 	}
 	
 	@Override

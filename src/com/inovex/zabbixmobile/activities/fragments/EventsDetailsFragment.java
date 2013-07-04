@@ -42,7 +42,6 @@ public class EventsDetailsFragment extends
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(false);
-		setRetainInstance(true);
 	}
 
 	@Override

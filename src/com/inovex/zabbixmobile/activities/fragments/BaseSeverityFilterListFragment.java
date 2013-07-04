@@ -89,6 +89,14 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
+		if (savedInstanceState != null) {
+			setCurrentPosition(savedInstanceState.getInt(ARG_POSITION, 0));
+			setCurrentItemId(savedInstanceState.getLong(ARG_ITEM_ID, 0));
+			setCurrentSeverity(TriggerSeverity
+					.getSeverityByNumber(savedInstanceState.getInt(
+							ARG_SEVERITY, TriggerSeverity.ALL.getNumber())));
+		}
 	}
 
 	@Override
@@ -101,14 +109,6 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-
-		if (savedInstanceState != null) {
-			setCurrentPosition(savedInstanceState.getInt(ARG_POSITION, 0));
-			setCurrentItemId(savedInstanceState.getLong(ARG_ITEM_ID, 0));
-			setCurrentSeverity(TriggerSeverity
-					.getSeverityByNumber(savedInstanceState.getInt(
-							ARG_SEVERITY, TriggerSeverity.ALL.getNumber())));
-		}
 
 		setupListViewPager();
 	}
@@ -192,7 +192,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		this.mCurrentSeverity = currentSeverity;
 	}
 
-	public void setHostGroup(long itemId) {
+	public void setHostGroupId(long itemId) {
 		this.mCurrentHostGroup = itemId;
 		for (BaseSeverityFilterListPage p : pages) {
 			p.setHostGroupId(itemId);
