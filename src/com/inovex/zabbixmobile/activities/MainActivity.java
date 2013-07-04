@@ -208,8 +208,8 @@ public class MainActivity extends BaseActivity implements
 	protected void bindService() {
 		Intent intent = new Intent(this, ZabbixDataService.class);
 		boolean useMockData = getIntent().getBooleanExtra(
-				ZabbixDataService.EXTRA_USE_MOCK_DATA, false);
-		intent.putExtra(ZabbixDataService.EXTRA_USE_MOCK_DATA, useMockData);
+				ZabbixDataService.EXTRA_IS_TESTING, false);
+		intent.putExtra(ZabbixDataService.EXTRA_IS_TESTING, useMockData);
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
 	}
 
