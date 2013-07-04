@@ -8,6 +8,7 @@ import java.util.List;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -193,7 +194,7 @@ public class ZabbixDataService extends Service {
 	public ChecksItemsListAdapter getChecksItemsListAdapter() {
 		return mChecksItemsListAdapter;
 	}
-	
+
 	/**
 	 * Returns the application items pager adapter.
 	 * 
@@ -203,8 +204,28 @@ public class ZabbixDataService extends Service {
 		return mChecksItemsPagerAdapter;
 	}
 
+	/**
+	 * Retrieves the host with the given ID from the database.
+	 * 
+	 * @param hostId
+	 * @return
+	 */
+	public Host getHostById(long hostId) {
+		try {
+			return mDatabaseHelper.getHostsById(hostId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private int bindings = 0;
+
 	@Override
 	public IBinder onBind(Intent intent) {
+		bindings++;
+		Log.d(TAG, "onBind: " + bindings);
 		Log.d(TAG,
 				"Binder " + this.toString() + ": intent " + intent.toString()
 						+ " bound.");
@@ -281,6 +302,7 @@ public class ZabbixDataService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Log.d(TAG, "onCreate");
 
 		// set up adapters
 		mEventsListAdapters = new HashMap<TriggerSeverity, EventsListAdapter>(
@@ -499,8 +521,8 @@ public class ZabbixDataService extends Service {
 	 * After loading the events, the host list adapter is updated. If necessary,
 	 * an import from the Zabbix API is triggered.
 	 * 
-	 * Additionally, this method initializes {@link ChecksApplicationsPagerAdapter}s
-	 * (one for each host) if necessary.
+	 * Additionally, this method initializes
+	 * {@link ChecksApplicationsPagerAdapter}s (one for each host) if necessary.
 	 * 
 	 * @param hostGroupId
 	 *            host group id by which the events will be filtered
@@ -610,8 +632,10 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Loads all items in a given application from the database asynchronously.
-	 * After loading the events, the corresponding adapters are updated. If
-	 * necessary, an import from the Zabbix API is triggered.
+	 * After loading the events, the corresponding adapters are updated. An
+	 * import from Zabbix is not necessary, because the items have already been
+	 * loaded together with the applications. TODO: handle this case with cache
+	 * functionality
 	 * 
 	 * @param hostGroupId
 	 *            host group id by which the events will be filtered
@@ -628,14 +652,14 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
-					try {
-						items = mDatabaseHelper
-								.getItemsByApplicationId(applicationId);
+				try {
+					items = mDatabaseHelper
+							.getItemsByApplicationId(applicationId);
 
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 
 			@Override
@@ -697,6 +721,25 @@ public class ZabbixDataService extends Service {
 
 	public LayoutInflater getInflater() {
 		return mInflater;
+	}
+
+	@Override
+	public void onDestroy() {
+		Log.d(TAG, "onDestroy()");
+		super.onDestroy();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		Log.d(TAG, "onConfigChanged");
+		super.onConfigurationChanged(newConfig);
+	}
+
+	@Override
+	public boolean onUnbind(Intent intent) {
+		bindings--;
+		Log.d(TAG, "onUnbind: " + bindings);
+		return super.onUnbind(intent);
 	}
 
 }

@@ -58,11 +58,10 @@ public class ChecksActivity extends BaseActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			try {
+			if ((mDetailsFragment.isVisible() || mItemsDetailsFragment.isVisible()) && mFlipper != null) {
+				mFlipper.showPrevious();
+			} else
 				finish();
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
 			break;
 		}
 		return false;
@@ -73,12 +72,12 @@ public class ChecksActivity extends BaseActivity implements
 		Log.d(TAG, "item selected: " + id + " position: " + position + ")");
 		this.mCurrentItemPosition = position;
 
-		mDetailsFragment.selectItem(position, id);
+		mDetailsFragment.selectHost(position, id);
 		if (mFlipper != null)
 			mFlipper.showNext();
 
 	}
-	
+
 	@Override
 	public void onItemSelected(int position, long id) {
 		mItemsDetailsFragment.selectItem(position, id);
@@ -88,11 +87,10 @@ public class ChecksActivity extends BaseActivity implements
 
 	@Override
 	public void onBackPressed() {
-		if (mDetailsFragment.isVisible() && mFlipper != null) {
-			Log.d(TAG, "DetailsFragment is visible.");
+		if ((mDetailsFragment.isVisible() || mItemsDetailsFragment.isVisible())
+				&& mFlipper != null) {
 			mFlipper.showPrevious();
 		} else {
-			Log.d(TAG, "DetailsFragment is not visible.");
 			super.onBackPressed();
 		}
 	}
@@ -124,6 +122,18 @@ public class ChecksActivity extends BaseActivity implements
 
 		// mZabbixService.loadApplications();
 
+	}
+
+	@Override
+	protected void disableUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void enableUI() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

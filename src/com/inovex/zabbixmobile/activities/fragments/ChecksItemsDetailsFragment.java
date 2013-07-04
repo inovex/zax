@@ -47,8 +47,6 @@ public class ChecksItemsDetailsFragment extends SherlockFragment implements
 	private int mPosition = 0;
 	private long mItemId;
 
-	private TextView titleView;
-
 	protected ViewPager mDetailsPager;
 	protected TitlePageIndicator mDetailsPageIndicator;
 	protected ZabbixDataService mZabbixDataService;
@@ -63,8 +61,6 @@ public class ChecksItemsDetailsFragment extends SherlockFragment implements
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		titleView = (TextView) view.findViewById(R.id.items_details_text);
-		titleView.setText("Checks Details");
 	}
 
 	@Override
@@ -74,14 +70,14 @@ public class ChecksItemsDetailsFragment extends SherlockFragment implements
 		// we need to do this after the view was created!!
 		Intent intent = new Intent(getSherlockActivity(),
 				ZabbixDataService.class);
-		getSherlockActivity().bindService(intent, this,
+		getSherlockActivity().getApplicationContext().bindService(intent, this,
 				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		getSherlockActivity().unbindService(this);
+		getSherlockActivity().getApplicationContext().unbindService(this);
 	}
 
 	@Override
@@ -146,7 +142,7 @@ public class ChecksItemsDetailsFragment extends SherlockFragment implements
 						public void onPageSelected(int position) {
 							Log.d(TAG, "detail page selected: " + position);
 
-//							mDetailsPagerAdapter.setCurrentPosition(position);
+							mDetailsPagerAdapter.setCurrentPosition(position);
 //							mZabbixDataService
 //									.loadItemsByApplicationId(mDetailsPagerAdapter
 //											.getCurrentItem().getId());

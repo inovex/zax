@@ -51,6 +51,7 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseActivity
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		super.onServiceConnected(className, service);
+		Log.d(TAG, "onServiceConnected()");
 
 		mSpinnerAdapter = mZabbixService.getHostGroupSpinnerAdapter();
 

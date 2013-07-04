@@ -28,12 +28,9 @@ import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
-public class MainActivity extends BaseActivity implements
-		OnLoginProgressListener {
+public class MainActivity extends BaseActivity {
 
 	protected static final String TAG = MainActivity.class.getSimpleName();
-
-	private ProgressDialog mLoginProgress;
 
 	private ListView mProblemsList;
 	private Button mProblemsButton;
@@ -106,7 +103,6 @@ public class MainActivity extends BaseActivity implements
 
 		mProblemsList = (ListView) findViewById(R.id.main_problems_list);
 		mProblemsButton = (Button) findViewById(R.id.main_problems_button);
-		disableButtons();
 
 		mProblemsButton.setOnClickListener(new OnClickListener() {
 
@@ -120,12 +116,14 @@ public class MainActivity extends BaseActivity implements
 
 	}
 
-	private void disableButtons() {
+	@Override
+	protected void disableUI() {
 		mProblemsButton.setEnabled(false);
 		mListAdapter.setEnabled(false);
 	}
 
-	private void enableButtons() {
+	@Override
+	protected void enableUI() {
 		mProblemsButton.setEnabled(true);
 		mListAdapter.setEnabled(true);
 	}
@@ -155,7 +153,7 @@ public class MainActivity extends BaseActivity implements
 		if (!PreferenceManager.getDefaultSharedPreferences(this)
 				.getString("zabbix_username", "").equals("")) {
 
-			mZabbixService.performZabbixLogin(this);
+//			mZabbixService.performZabbixLogin(this);
 
 			BaseServiceAdapter<Trigger> adapter = mZabbixService
 					.getProblemsListAdapter(TriggerSeverity.ALL);
@@ -182,35 +180,18 @@ public class MainActivity extends BaseActivity implements
 	}
 
 	@Override
-	public void onLoginStarted() {
-		mLoginProgress = new ProgressDialog(MainActivity.this);
-		mLoginProgress.setTitle(R.string.zabbix_login);
-		mLoginProgress.setMessage(getResources().getString(
-				R.string.zabbix_login_in_progress));
-		// mLoginProgress.setCancelable(false);
-		mLoginProgress.setIndeterminate(true);
-		mLoginProgress.show();
-		disableButtons();
-	}
-
-	@Override
-	public void onLoginFinished(boolean success) {
-		if (mLoginProgress != null)
-			mLoginProgress.dismiss();
-		if (success) {
-			Toast.makeText(this, R.string.zabbix_login_successful,
-					Toast.LENGTH_LONG).show();
-			enableButtons();
-		}
-	}
-
-	@Override
 	protected void bindService() {
 		Intent intent = new Intent(this, ZabbixDataService.class);
 		boolean useMockData = getIntent().getBooleanExtra(
 				ZabbixDataService.EXTRA_IS_TESTING, false);
 		intent.putExtra(ZabbixDataService.EXTRA_IS_TESTING, useMockData);
-		bindService(intent, this, Context.BIND_AUTO_CREATE);
+		getApplicationContext().bindService(intent, this, Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Log.d(TAG, "onStart");
 	}
 
 }

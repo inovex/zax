@@ -58,14 +58,14 @@ public class ChecksDetailsPage extends SherlockListFragment implements ServiceCo
 		// we need to do this after the view was created!!
 		Intent intent = new Intent(getSherlockActivity(),
 				ZabbixDataService.class);
-		getSherlockActivity().bindService(intent, this,
+		getSherlockActivity().getApplicationContext().bindService(intent, this,
 				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		getSherlockActivity().unbindService(this);
+		getSherlockActivity().getApplicationContext().unbindService(this);
 	}
 
 	public void setCurrentPosition(int currentPosition) {
@@ -86,11 +86,6 @@ public class ChecksDetailsPage extends SherlockListFragment implements ServiceCo
 		setupListAdapter();
 //		loadAdapterContent();
 
-	}
-
-	public void loadAdapterContent() {
-		if (mZabbixDataService != null)
-			mZabbixDataService.loadItemsByApplicationId(mApplication.getId());
 	}
 
 	protected void setupListAdapter() {

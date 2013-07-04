@@ -24,6 +24,10 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	public static final String TAG = BaseSeverityFilterListFragment.class
 			.getSimpleName();
 
+	private static final String ARG_POSITION = "arg_position";
+	private static final String ARG_ITEM_ID = "arg_item_id";
+	private static final String ARG_SEVERITY = "arg_severity";
+
 	private int mCurrentPosition = 0;
 	private long mCurrentItemId = 0;
 	private TriggerSeverity mCurrentSeverity = TriggerSeverity.ALL;
@@ -98,21 +102,22 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		// if (savedInstanceState != null) {
-		// mCurrentPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
-		// mCurrentEventId = savedInstanceState.getLong(ARG_EVENT_ID, 0);
-		// mCurrentSeverity = savedInstanceState.getInt(ARG_SEVERITY,
-		// TriggerSeverities.ALL.getNumber());
-		// }
+		if (savedInstanceState != null) {
+			setCurrentPosition(savedInstanceState.getInt(ARG_POSITION, 0));
+			setCurrentItemId(savedInstanceState.getLong(ARG_ITEM_ID, 0));
+			setCurrentSeverity(TriggerSeverity
+					.getSeverityByNumber(savedInstanceState.getInt(
+							ARG_SEVERITY, TriggerSeverity.ALL.getNumber())));
+		}
 
 		setupListViewPager();
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		// outState.putInt(ARG_EVENT_POSITION, mCurrentPosition);
-		// outState.putLong(ARG_EVENT_ID, mCurrentEventId);
-		// outState.putInt(ARG_SEVERITY, mCurrentSeverity);
+		outState.putInt(ARG_POSITION, mCurrentPosition);
+		outState.putLong(ARG_ITEM_ID, mCurrentItemId);
+		outState.putInt(ARG_SEVERITY, mCurrentSeverity.getNumber());
 		super.onSaveInstanceState(outState);
 	}
 
@@ -175,15 +180,15 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		mCurrentPosition = position;
 	}
 
-	public void setCurrentPosition(int currentPosition) {
+	protected void setCurrentPosition(int currentPosition) {
 		this.mCurrentPosition = currentPosition;
 	}
 
-	public void setCurrentItemId(long currentItemId) {
+	protected void setCurrentItemId(long currentItemId) {
 		this.mCurrentItemId = currentItemId;
 	}
 
-	public void setCurrentSeverity(TriggerSeverity currentSeverity) {
+	protected void setCurrentSeverity(TriggerSeverity currentSeverity) {
 		this.mCurrentSeverity = currentSeverity;
 	}
 

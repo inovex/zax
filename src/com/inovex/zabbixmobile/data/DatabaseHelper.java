@@ -242,6 +242,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 		return hostQuery.query();
 	}
+	
+	/**
+	 * Queries a hosts by its ID.
+	 * 
+	 * @param hostId
+	 *            ID of the host group
+	 * @return hosts with the given ID
+	 * @throws SQLException
+	 */
+	public Host getHostsById(long hostId) throws SQLException {
+		Dao<Host, Long> hostDao = getDao(Host.class);
+		return hostDao.queryForId(hostId);
+	}
 
 	/**
 	 * Returns an event given its ID.

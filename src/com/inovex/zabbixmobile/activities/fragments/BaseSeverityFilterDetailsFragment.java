@@ -27,9 +27,12 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 	public static final String TAG = BaseSeverityFilterDetailsFragment.class
 			.getSimpleName();
+	private static final String ARG_ITEM_POSITION = "arg_item_position";
+	private static final String ARG_ITEM_ID = "arg_item_id";
+	private static final String ARG_SEVERITY = "arg_severity";
 	protected ViewPager mDetailsPager;
 	protected int mPosition = 0;
-	protected long mCurrentItemId = 0;
+	protected long mItemId = 0;
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
 	protected TitlePageIndicator mDetailsPageIndicator;
 	protected ZabbixDataService mZabbixDataService;
@@ -43,14 +46,14 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		// we need to do this after the view was created!!
 		Intent intent = new Intent(getSherlockActivity(),
 				ZabbixDataService.class);
-		getSherlockActivity().bindService(intent, this,
+		getSherlockActivity().getApplicationContext().bindService(intent, this,
 				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		getSherlockActivity().unbindService(this);
+		getSherlockActivity().getApplicationContext().unbindService(this);
 	}
 
 	/**
@@ -77,7 +80,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	}
 
 	public void setCurrentItemId(long itemId) {
-		this.mCurrentItemId = itemId;
+		this.mItemId = itemId;
 	}
 
 	/**
@@ -134,20 +137,20 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		super.onViewCreated(view, savedInstanceState);
 
 		Log.d(TAG, "onViewCreated");
-		// if (savedInstanceState != null) {
-		// mPosition = savedInstanceState.getInt(ARG_EVENT_POSITION, 0);
-		// mEventId = savedInstanceState.getLong(ARG_EVENT_ID, 0);
-		// mSeverity = savedInstanceState.getInt(ARG_SEVERITY,
-		// TriggerSeverities.ALL.getNumber());
-		// }
+		if (savedInstanceState != null) {
+			mPosition = savedInstanceState.getInt(ARG_ITEM_POSITION, 0);
+			mItemId = savedInstanceState.getLong(ARG_ITEM_ID, 0);
+			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
+					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
+		}
 
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		// outState.putInt(ARG_EVENT_POSITION, mPosition);
-		// outState.putLong(ARG_EVENT_ID, mEventId);
-		// outState.putInt(ARG_SEVERITY, mSeverity);
+		outState.putInt(ARG_ITEM_POSITION, mPosition);
+		outState.putLong(ARG_ITEM_ID, mItemId);
+		outState.putInt(ARG_SEVERITY, mSeverity.getNumber());
 		super.onSaveInstanceState(outState);
 	}
 
