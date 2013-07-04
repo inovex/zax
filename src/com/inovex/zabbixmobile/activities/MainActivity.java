@@ -180,8 +180,8 @@ public class MainActivity extends BaseActivity {
 	protected void bindService() {
 		Intent intent = new Intent(this, ZabbixDataService.class);
 		boolean useMockData = getIntent().getBooleanExtra(
-				ZabbixDataService.EXTRA_USE_MOCK_DATA, false);
-		intent.putExtra(ZabbixDataService.EXTRA_USE_MOCK_DATA, useMockData);
+				ZabbixDataService.EXTRA_IS_TESTING, false);
+		intent.putExtra(ZabbixDataService.EXTRA_IS_TESTING, useMockData);
 		getApplicationContext().bindService(intent, this, Context.BIND_AUTO_CREATE);
 	}
 
@@ -189,30 +189,6 @@ public class MainActivity extends BaseActivity {
 	protected void onStart() {
 		super.onStart();
 		Log.d(TAG, "onStart");
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		Log.d(TAG, "onStop");
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		Log.d(TAG, "onPause");
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		Log.d(TAG, "onDestroy");
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		Log.d(TAG, "onResume");
 	}
 
 }

@@ -72,6 +72,7 @@ import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
+import com.inovex.zabbixmobile.util.HttpClientWrapper;
 import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
 
@@ -148,7 +149,7 @@ public class ZabbixRemoteAPI {
 		public static final int HTTP_CONNECTION_TIMEOUT = 30000;
 	}
 
-	private final DefaultHttpClient httpClient;
+	private final HttpClientWrapper httpClient;
 	private final DatabaseHelper databaseHelper;
 	private String url;
 	private String token;
@@ -174,7 +175,7 @@ public class ZabbixRemoteAPI {
 	 * @param databaseHelper
 	 *            OrmLite database helper
 	 */
-	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper) {
+	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper, HttpClientWrapper httpClientMock) {
 		ClientConnectionManager ccm = null;
 		HttpParams params = null;
 
@@ -207,10 +208,14 @@ public class ZabbixRemoteAPI {
 			// ignore for unit test
 		}
 
-		if (ccm == null || params == null) {
-			httpClient = new DefaultHttpClient();
+		if (httpClientMock != null) {
+			httpClient = httpClientMock;
 		} else {
-			httpClient = new DefaultHttpClient(ccm, params);
+			if (ccm == null || params == null) {
+				httpClient = new HttpClientWrapper(new DefaultHttpClient());
+			} else {
+				httpClient = new HttpClientWrapper(new DefaultHttpClient(ccm, params));
+			}
 		}
 
 		// if applicable http auth
@@ -228,10 +233,13 @@ public class ZabbixRemoteAPI {
 			// for unit test
 		}
 
-		params = httpClient.getParams();
-		HttpClientParams.setRedirecting(params, true); // redirecting
-		HttpConnectionParams.setConnectionTimeout(params,
-				ZabbixConfig.HTTP_CONNECTION_TIMEOUT);
+		// not for testing...
+		if (httpClientMock == null) {
+			params = httpClient.getParams();
+			HttpClientParams.setRedirecting(params, true); // redirecting
+			HttpConnectionParams.setConnectionTimeout(params,
+					ZabbixConfig.HTTP_CONNECTION_TIMEOUT);
+		}
 		this.mContext = context;
 		this.databaseHelper = databaseHelper;
 	}
@@ -263,6 +271,7 @@ public class ZabbixRemoteAPI {
 				+ method + "\"," + "	\"params\" : " + params.toString() + ","
 				+ "	\"auth\" : " + (token == null ? "null" : '"' + token + '"')
 				+ "," + "	\"id\" : 0" + "}";
+		Log.d(TAG, "queryBuffer="+json);
 
 		post.setEntity(new StringEntity(json, "UTF-8"));
 		try {
@@ -1345,7 +1354,7 @@ public class ZabbixRemoteAPI {
 				}
 			}
 			// if applicable replace placeholder
-			String description = (String) i.getDescription();
+			String description = i.getDescription();
 			if (description.matches(".*\\$[0-9].*")) {
 				if (key_ != null && key_.indexOf('[') != -1) {
 					String[] keys = key_.substring(key_.indexOf('[') + 1,

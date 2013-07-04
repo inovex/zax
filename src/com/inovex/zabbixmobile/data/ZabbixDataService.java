@@ -56,8 +56,8 @@ public class ZabbixDataService extends Service {
 
 	private static final String TAG = ZabbixDataService.class.getSimpleName();
 
-	public static final String EXTRA_USE_MOCK_DATA = "use_mock_data";
-	boolean mUseMockData = false;
+	public static final String EXTRA_IS_TESTING = "is_testing";
+	boolean mIsTesting = false;
 	// Binder given to clients
 	private final IBinder mBinder = new ZabbixDataBinder();
 
@@ -230,29 +230,39 @@ public class ZabbixDataService extends Service {
 				"Binder " + this.toString() + ": intent " + intent.toString()
 						+ " bound.");
 
-		if (intent.hasExtra(EXTRA_USE_MOCK_DATA)
-				&& intent.getBooleanExtra(EXTRA_USE_MOCK_DATA, false)) {
-			mUseMockData = true;
+		if (intent.getBooleanExtra(EXTRA_IS_TESTING, false)) {
+			mIsTesting = true;
 		}
 
-		if (mDatabaseHelper == null) {
-			// set up SQLite connection using OrmLite
-			if (mUseMockData)
-				mDatabaseHelper = OpenHelperManager.getHelper(this,
-						MockDatabaseHelper.class);
-			else
-				mDatabaseHelper = OpenHelperManager.getHelper(this,
-						DatabaseHelper.class);
-			// recreate database
-			mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0,
-					1);
-		}
-		if (mRemoteAPI == null) {
-			mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
-					mDatabaseHelper);
+		if (!mIsTesting) {
+			onBind(null, null);
 		}
 
 		return mBinder;
+	}
+	
+	public void onBind(DatabaseHelper databasehelperMock, ZabbixRemoteAPI remoteAPIMock) {
+		if (mDatabaseHelper == null) {
+			// set up SQLite connection using OrmLite
+			if (databasehelperMock != null) {
+				mDatabaseHelper = databasehelperMock;
+			} else {
+				mDatabaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+				// recreate database
+				mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0,
+						1);
+			}
+			
+			Log.d(TAG, "onCreate");
+		}
+		if (mRemoteAPI == null) {
+			if (remoteAPIMock != null) {
+				mRemoteAPI = remoteAPIMock;
+			} else {
+				mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
+					mDatabaseHelper, null);
+			}
+		}
 	}
 
 	/**
@@ -347,9 +357,9 @@ public class ZabbixDataService extends Service {
 		new RemoteAPITask(mRemoteAPI) {
 
 			private List<Event> events;
-			private BaseServiceAdapter<Event> adapter = mEventsListAdapters
+			private final BaseServiceAdapter<Event> adapter = mEventsListAdapters
 					.get(severity);
-			private BaseSeverityPagerAdapter<Event> detailsAdapter = mEventsDetailsPagerAdapters
+			private final BaseSeverityPagerAdapter<Event> detailsAdapter = mEventsDetailsPagerAdapters
 					.get(severity);
 
 			@Override
@@ -417,9 +427,9 @@ public class ZabbixDataService extends Service {
 		new RemoteAPITask(mRemoteAPI) {
 
 			private List<Trigger> triggers;
-			private BaseServiceAdapter<Trigger> adapter = mProblemsListAdapters
+			private final BaseServiceAdapter<Trigger> adapter = mProblemsListAdapters
 					.get(severity);
-			private BaseSeverityPagerAdapter<Trigger> detailsAdapter = mProblemsDetailsPagerAdapters
+			private final BaseSeverityPagerAdapter<Trigger> detailsAdapter = mProblemsDetailsPagerAdapters
 					.get(severity);
 
 			@Override
@@ -472,7 +482,7 @@ public class ZabbixDataService extends Service {
 		new RemoteAPITask(mRemoteAPI) {
 
 			private List<HostGroup> hostGroups;
-			private BaseServiceAdapter<HostGroup> groupsAdapter = mHostGroupsSpinnerAdapter;
+			private final BaseServiceAdapter<HostGroup> groupsAdapter = mHostGroupsSpinnerAdapter;
 
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
@@ -526,7 +536,7 @@ public class ZabbixDataService extends Service {
 		new RemoteAPITask(mRemoteAPI) {
 
 			private List<Host> hosts;
-			private BaseServiceAdapter<Host> hostsAdapter = mHostsListAdapter;
+			private final BaseServiceAdapter<Host> hostsAdapter = mHostsListAdapter;
 
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
