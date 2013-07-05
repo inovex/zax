@@ -294,7 +294,7 @@ public class ZabbixDataService extends Service {
 				mRemoteAPI = remoteAPIMock;
 			} else {
 				mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
-						mDatabaseHelper, null);
+						mDatabaseHelper, null, null);
 			}
 		}
 	}

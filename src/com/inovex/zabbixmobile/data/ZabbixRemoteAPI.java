@@ -50,8 +50,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -72,6 +70,7 @@ import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.util.HttpClientWrapper;
 import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
@@ -151,6 +150,7 @@ public class ZabbixRemoteAPI {
 
 	private final HttpClientWrapper httpClient;
 	private final DatabaseHelper databaseHelper;
+	private final ZaxPreferences mPreferences;
 	private String url;
 	private String token;
 	private final Context mContext;
@@ -175,21 +175,23 @@ public class ZabbixRemoteAPI {
 	 * @param databaseHelper
 	 *            OrmLite database helper
 	 */
-	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper,
-			HttpClientWrapper httpClientMock) {
+	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper, HttpClientWrapper httpClientMock, ZaxPreferences prefsMock) {
 		ClientConnectionManager ccm = null;
 		HttpParams params = null;
+		if (prefsMock != null) {
+			mPreferences = prefsMock;
+		} else {
+			mPreferences = new ZaxPreferences(context);
+		}
 
 		try {
-			SharedPreferences prefs = PreferenceManager
-					.getDefaultSharedPreferences(context);
 
 			params = new BasicHttpParams();
 			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
 			SchemeRegistry registry = new SchemeRegistry();
 
-			if (prefs.getBoolean("zabbix_trust_all_ssl_ca", false)) {
+			if (mPreferences.isTrustAllSSLCA()) {
 				KeyStore trustStore = KeyStore.getInstance(KeyStore
 						.getDefaultType());
 				trustStore.load(null, null);
@@ -222,11 +224,9 @@ public class ZabbixRemoteAPI {
 
 		// if applicable http auth
 		try {
-			SharedPreferences prefs = PreferenceManager
-					.getDefaultSharedPreferences(context);
-			if (prefs.getBoolean("http_auth_enabled", false)) {
-				String user = prefs.getString("http_auth_username", "");
-				String pwd = prefs.getString("http_auth_password", "");
+			if (mPreferences.isHttpAuthEnabled()) {
+				String user = mPreferences.getHttpAuthUsername();
+				String pwd = mPreferences.getHttpAuthPassword();
 				httpClient.getCredentialsProvider().setCredentials(
 						AuthScope.ANY,
 						new UsernamePasswordCredentials(user, pwd));
@@ -486,11 +486,9 @@ public class ZabbixRemoteAPI {
 	 */
 	public boolean authenticate() throws ZabbixLoginRequiredException,
 			FatalException {
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(getContext());
-		String url = prefs.getString("zabbix_url", "").trim();
-		String user = prefs.getString("zabbix_username", "").trim();
-		String password = prefs.getString("zabbix_password", "");
+		String url = mPreferences.getZabbixUrl().trim();
+		String user = mPreferences.getUsername().trim();
+		String password = mPreferences.getPassword();
 		// String url = "http://10.10.0.21/zabbix";
 		// String user = "admin";
 		// String password = "zabbix";
