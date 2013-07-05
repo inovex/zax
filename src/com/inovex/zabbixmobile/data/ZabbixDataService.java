@@ -212,7 +212,39 @@ public class ZabbixDataService extends Service {
 	 */
 	public Host getHostById(long hostId) {
 		try {
-			return mDatabaseHelper.getHostsById(hostId);
+			return mDatabaseHelper.getHostById(hostId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Retrieves the event with the given ID from the database.
+	 * 
+	 * @param eventId
+	 * @return
+	 */
+	public Event getEventById(long eventId) {
+		try {
+			return mDatabaseHelper.getEventById(eventId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Retrieves the trigger with the given ID from the database.
+	 * 
+	 * @param triggerId
+	 * @return
+	 */
+	public Trigger getTriggerById(long triggerId) {
+		try {
+			return mDatabaseHelper.getTriggerById(triggerId);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -251,7 +251,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @return hosts with the given ID
 	 * @throws SQLException
 	 */
-	public Host getHostsById(long hostId) throws SQLException {
+	public Host getHostById(long hostId) throws SQLException {
 		Dao<Host, Long> hostDao = getDao(Host.class);
 		return hostDao.queryForId(hostId);
 	}
@@ -260,13 +260,26 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * Returns an event given its ID.
 	 * 
 	 * @param id
-	 *            ID of the desired event
+	 *            ID of the queried event
 	 * @return the corresponding event
 	 * @throws SQLException
 	 */
 	public Event getEventById(long id) throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		return eventDao.queryForId(id);
+	}
+	
+	/**
+	 * Returns a trigger given its ID.
+	 * 
+	 * @param id
+	 *            ID of the queried trigger
+	 * @return the corresponding trigger
+	 * @throws SQLException
+	 */
+	public Trigger getTriggerById(long id) throws SQLException {
+		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
+		return triggerDao.queryForId(id);
 	}
 
 	/**

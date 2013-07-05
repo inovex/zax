@@ -90,6 +90,12 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	 */
 	public void setHostGroupId(long hostGroupId) {
 		this.mHostGroupId  = hostGroupId;
+//		if(mZabbixDataService != null) {
+//			retrievePagerAdapter();
+//			// the adapter could be fresh -> set fragment manager
+//			mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
+//			mDetailsPager.setAdapter(mDetailsPagerAdapter);
+//		}
 	}
 
 	@Override
