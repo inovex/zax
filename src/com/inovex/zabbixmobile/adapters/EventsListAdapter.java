@@ -8,6 +8,7 @@ import java.util.Locale;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
@@ -23,6 +24,8 @@ import com.inovex.zabbixmobile.model.Trigger;
 public class EventsListAdapter extends BaseServiceAdapter<Event> {
 
 	private static final String TAG = EventsListAdapter.class.getSimpleName();
+	private static final int STATUS_OK = 0;
+	private static final int STATUS_PROBLEM = 0;
 	private int mTextViewResourceId = R.layout.severity_list_item;
 
 	/**
@@ -44,6 +47,9 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 
 		}
 
+		ImageView statusImage = (ImageView) row
+				.findViewById(R.id.severity_list_item_status);
+
 		TextView title = (TextView) row
 				.findViewById(R.id.severity_list_item_host);
 		TextView description = (TextView) row
@@ -53,24 +59,30 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 
 		Event e = getItem(position);
 		Trigger t = e.getTrigger();
-		if (t == null) {
-			description.setText("no trigger defined.");
-			Log.w(TAG, "No trigger defined for Event with ID " + e.getId());
-		} else
-			description.setText(String.valueOf(t.getDescription()));
-
+		
 		String hostNames = e.getHostNames();
 		if (hostNames == null) {
 			hostNames = "";
 			Log.w(TAG, "No host defined for Event with ID " + e.getId());
 		}
-		title.setText(hostNames + " [id: " + e.getId() + "]");
+		title.setText(hostNames);
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(e.getClock());
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 				SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
 				Locale.getDefault());
 		clock.setText(String.valueOf(dateFormatter.format(cal.getTime())));
+		
+		if(e.getValue() == STATUS_PROBLEM)
+			statusImage.setImageResource(R.drawable.problem);
+		else
+			statusImage.setImageResource(R.drawable.ok);
+		// TODO: remove id (only needed for debugging)
+		if (t == null) {
+			description.setText("[id: " + e.getId() + "] " + "no trigger defined.");
+			Log.w(TAG, "No trigger defined for Event with ID " + e.getId());
+		} else
+			description.setText("[id: " + e.getId() + "] " + String.valueOf(t.getDescription()));
 
 		return row;
 	}

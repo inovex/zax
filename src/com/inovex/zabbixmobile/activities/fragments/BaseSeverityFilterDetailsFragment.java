@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
+import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -32,6 +33,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	protected TitlePageIndicator mDetailsPageIndicator;
 	private OnListItemSelectedListener mCallbackMain;
 	protected BaseSeverityPagerAdapter<T> mDetailsPagerAdapter;
+
+	private long mHostGroupId = HostGroup.GROUP_ID_ALL;
 
 	/**
 	 * Selects an event which shall be displayed in the view pager.
@@ -77,6 +80,22 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 			mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
 			mDetailsPager.setAdapter(mDetailsPagerAdapter);
 		}
+	}
+	
+	/**
+	 * Sets the current host group id and updates the pager adapter.
+	 * 
+	 * @param hostGroupId
+	 *            current severity
+	 */
+	public void setHostGroupId(long hostGroupId) {
+		this.mHostGroupId  = hostGroupId;
+//		if(mZabbixDataService != null) {
+//			retrievePagerAdapter();
+//			// the adapter could be fresh -> set fragment manager
+//			mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
+//			mDetailsPager.setAdapter(mDetailsPagerAdapter);
+//		}
 	}
 
 	@Override

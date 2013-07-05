@@ -54,17 +54,17 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 		// Do we already have this fragment?
 		String name = makeFragmentName(container.getId(), itemId);
 		Fragment fragment = mFragmentManager.findFragmentByTag(name);
-		/*if (fragment != null) {
+		if (fragment != null) {
 			if (DEBUG)
 				Log.v(TAG, "Attaching item #" + itemId + ": f=" + fragment);
 			mCurTransaction.attach(fragment);
-		} else {*/
+		} else {
 			fragment = getPage(position);
 			if (DEBUG)
 				Log.v(TAG, "Adding item #" + itemId + ": f=" + fragment);
 			mCurTransaction.add(container.getId(), fragment,
 					makeFragmentName(container.getId(), itemId));
-		//}
+		}
 		if (fragment != mCurrentPrimaryItem) {
 			fragment.setMenuVisibility(false);
 			fragment.setUserVisibleHint(false);

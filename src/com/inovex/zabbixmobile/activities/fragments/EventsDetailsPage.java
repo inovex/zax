@@ -6,7 +6,9 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,10 +26,11 @@ import com.inovex.zabbixmobile.model.Trigger;
  * {@link EventsDetailsPagerAdapter} ). Shows the details of a specific event.
  * 
  */
-public class EventsDetailsPage extends SherlockFragment {
+public class EventsDetailsPage extends BaseServiceConnectedFragment {
+
+	private static final String TAG = EventsDetailsPage.class.getSimpleName();
 
 	private static final String ARG_EVENT_ID = "arg_event_id";
-	private static final String TAG = EventsDetailsPage.class.getSimpleName();
 	private Event mEvent;
 	private String mTitle = "";
 	private long mEventId = -1;
@@ -59,10 +62,13 @@ public class EventsDetailsPage extends SherlockFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		// TODO: on orientation change, mEvent is not set ->
-		// NullPointerException
-		StringBuilder sb = new StringBuilder();
+		fillDetailsText();
+	}
+
+	private void fillDetailsText() {
+
 		if (mEvent != null) {
+			StringBuilder sb = new StringBuilder();
 			sb.append("Event: \n\n");
 			sb.append("ID: " + mEvent.getId() + "\n");
 			sb.append("source: " + mEvent.getObjectId() + "\n");
@@ -88,9 +94,22 @@ public class EventsDetailsPage extends SherlockFragment {
 						+ String.valueOf(dateFormatter.format(cal.getTime()))
 						+ "\n");
 			}
-			TextView text = (TextView) getView()
-					.findViewById(R.id.checks_title);
-			text.setText(sb.toString());
+			TextView detailsText = (TextView) getView().findViewById(
+					R.id.event_details);
+			detailsText.setText(sb.toString());
+
+		}
+	}
+
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		super.onServiceConnected(name, service);
+		// if the event is not set, this fragment was apparently restored and we
+		// need to refresh the event data
+		if (mEvent == null) {
+			Log.d(TAG, "event was null, loading event from database.");
+			this.mEvent = mZabbixDataService.getEventById(mEventId);
+			fillDetailsText();
 		}
 	}
 
@@ -113,7 +132,7 @@ public class EventsDetailsPage extends SherlockFragment {
 	public String getTitle() {
 		return mTitle;
 	}
-	
+
 	@Override
 	public void onDetach() {
 		super.onDetach();

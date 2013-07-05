@@ -14,7 +14,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 public abstract class BaseServiceConnectedFragment extends SherlockFragment implements
 		ServiceConnection {
 
-	public static final String TAG = BaseServiceConnectedFragment.class.getSimpleName();
+	private static final String TAG = BaseServiceConnectedFragment.class.getSimpleName();
 
 	protected ZabbixDataService mZabbixDataService;
 
