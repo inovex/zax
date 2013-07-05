@@ -15,8 +15,9 @@ import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
-public abstract class BaseSeverityFilterActivity<T> extends BaseHostGroupSpinnerActivity
-		implements OnListItemSelectedListener, OnSeveritySelectedListener {
+public abstract class BaseSeverityFilterActivity<T> extends
+		BaseHostGroupSpinnerActivity implements OnListItemSelectedListener,
+		OnSeveritySelectedListener {
 
 	private static final String TAG = BaseSeverityFilterActivity.class
 			.getSimpleName();

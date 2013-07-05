@@ -11,10 +11,11 @@ import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 
-public abstract class BaseServiceConnectedListFragment extends SherlockListFragment implements
-		ServiceConnection {
+public abstract class BaseServiceConnectedListFragment extends
+		SherlockListFragment implements ServiceConnection {
 
-	public static final String TAG = BaseServiceConnectedListFragment.class.getSimpleName();
+	public static final String TAG = BaseServiceConnectedListFragment.class
+			.getSimpleName();
 
 	protected ZabbixDataService mZabbixDataService;
 

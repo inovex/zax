@@ -14,7 +14,8 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
  * Represents one page of a list view pager. Shows a list of items
  * (events/problems) for a specific severity.
  */
-public abstract class BaseSeverityFilterListPage extends BaseServiceConnectedListFragment {
+public abstract class BaseSeverityFilterListPage extends
+		BaseServiceConnectedListFragment {
 
 	private static final String TAG = BaseSeverityFilterListPage.class
 			.getSimpleName();
@@ -24,9 +25,9 @@ public abstract class BaseSeverityFilterListPage extends BaseServiceConnectedLis
 
 	private OnListItemSelectedListener mCallbackMain;
 
-	protected TriggerSeverity mSeverity;
+	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
 	protected long mHostGroupId = HostGroup.GROUP_ID_ALL;
-	private int mPosition;
+	private int mPosition = 0;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -45,7 +46,7 @@ public abstract class BaseSeverityFilterListPage extends BaseServiceConnectedLis
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d(TAG,"onCreate: " + this.toString());
+		Log.d(TAG, "onCreate: " + this.toString());
 		if (savedInstanceState != null) {
 			mPosition = savedInstanceState.getInt(ARG_POSITION, 0);
 			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
@@ -64,6 +65,8 @@ public abstract class BaseSeverityFilterListPage extends BaseServiceConnectedLis
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		getListView().setItemChecked(mPosition, true);
+		getListView().setSelection(mPosition);
 
 	}
 
@@ -81,14 +84,20 @@ public abstract class BaseSeverityFilterListPage extends BaseServiceConnectedLis
 	}
 
 	public void selectItem(int position) {
-		getListView().setItemChecked(position, true);
-		getListView().setSelection(position);
+
 		mPosition = position;
+		// check if the view has already been created -> if not, calls will be
+		// made in onViewCreated().
+		if (getListAdapter() != null) {
+			getListView().setItemChecked(position, true);
+			getListView().setSelection(position);
+		}
 	}
 
 	public void setSeverity(TriggerSeverity severity) {
 		this.mSeverity = severity;
-		Log.d(TAG, "setSeverity: " + severity.getName() + " - " + this.toString());
+		Log.d(TAG,
+				"setSeverity: " + severity.getName() + " - " + this.toString());
 	}
 
 	public TriggerSeverity getSeverity() {

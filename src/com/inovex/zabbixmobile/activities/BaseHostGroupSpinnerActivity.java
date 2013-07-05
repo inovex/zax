@@ -50,11 +50,10 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		if (savedInstanceState != null) {
 			mHostGroupPosition = savedInstanceState.getInt(
 					ARG_HOST_GROUP_POSITION, 0);
-			mHostGroupId = savedInstanceState.getLong(
-					ARG_HOST_GROUP_ID, 0);
+			mHostGroupId = savedInstanceState.getLong(ARG_HOST_GROUP_ID, 0);
 		}
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putInt(ARG_HOST_GROUP_POSITION, mHostGroupPosition);
@@ -80,6 +79,9 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 		mZabbixDataService.loadHostGroups();
 	}
+
+	// TODO: host group selection might trigger a switch from list to details
+	// view
 
 	@Override
 	public void onHostGroupSelected(int position) {

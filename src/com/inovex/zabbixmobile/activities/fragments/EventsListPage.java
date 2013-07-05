@@ -7,7 +7,6 @@ import com.inovex.zabbixmobile.R;
 
 public class EventsListPage extends BaseSeverityFilterListPage {
 
-	
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);

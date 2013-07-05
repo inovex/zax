@@ -74,14 +74,14 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		// if(severity == this.mSeverity)
 		// return;
 		this.mSeverity = severity;
-		if(mZabbixDataService != null) {
+		if (mZabbixDataService != null) {
 			retrievePagerAdapter();
 			// the adapter could be fresh -> set fragment manager
 			mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
 			mDetailsPager.setAdapter(mDetailsPagerAdapter);
 		}
 	}
-	
+
 	/**
 	 * Sets the current host group id and updates the pager adapter.
 	 * 
@@ -89,13 +89,13 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	 *            current severity
 	 */
 	public void setHostGroupId(long hostGroupId) {
-		this.mHostGroupId  = hostGroupId;
-//		if(mZabbixDataService != null) {
-//			retrievePagerAdapter();
-//			// the adapter could be fresh -> set fragment manager
-//			mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
-//			mDetailsPager.setAdapter(mDetailsPagerAdapter);
-//		}
+		this.mHostGroupId = hostGroupId;
+		// if (mZabbixDataService != null) {
+		// retrievePagerAdapter();
+		// // the adapter could be fresh -> set fragment manager
+		// mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
+		// mDetailsPager.setAdapter(mDetailsPagerAdapter);
+		// }
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
 					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
 		}
-//		setRetainInstance(true);
+		setRetainInstance(true);
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 		Log.d(TAG, "onViewCreated");
 	}
-	
+
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		super.onServiceConnected(name, service);
@@ -155,6 +155,18 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 			throw new ClassCastException(activity.toString()
 					+ " must implement OnListItemSelectedListener.");
 		}
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		// This is a fix for the issue with the child fragment manager;
+		// described here:
+		// http://stackoverflow.com/questions/15207305/getting-the-error-java-lang-illegalstateexception-activity-has-been-destroyed
+		// and here: https://code.google.com/p/android/issues/detail?id=42601
+		// If the fragment manager is not set to null, there will be issues when
+		// the activity is destroyed and there are pending transactions
+		mDetailsPagerAdapter.setFragmentManager(null);
 	}
 
 	/**

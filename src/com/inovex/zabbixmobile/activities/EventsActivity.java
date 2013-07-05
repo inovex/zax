@@ -28,7 +28,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 				.findFragmentById(R.id.events_details);
 		mListFragment = (BaseSeverityFilterListFragment) mFragmentManager
 				.findFragmentById(R.id.events_list);
-		if(mFlipper != null)
+		if (mFlipper != null)
 			Log.d(TAG, mFlipper.toString());
 		Log.d(TAG, mListFragment.toString());
 		Log.d(TAG, mDetailsFragment.toString());
@@ -58,13 +58,13 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	@Override
 	protected void disableUI() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	protected void enableUI() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

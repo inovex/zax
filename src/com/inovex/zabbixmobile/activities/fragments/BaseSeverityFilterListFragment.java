@@ -215,4 +215,5 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 			p.setHostGroupId(itemId);
 		}
 	}
+
 }

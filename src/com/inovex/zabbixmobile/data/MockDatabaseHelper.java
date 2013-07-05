@@ -65,7 +65,7 @@ public class MockDatabaseHelper extends DatabaseHelper {
 							- (3600 * 1000 * 0), 1, true),
 					new Event(14529, 0, System.currentTimeMillis()
 							- (3600 * 1000 * 8), 0, false) };
-			
+
 			Trigger[] triggers = new Trigger[] {
 					new Trigger(14062, "Sample trigger #1", "{13513}>0",
 							"Comments...", System.currentTimeMillis()

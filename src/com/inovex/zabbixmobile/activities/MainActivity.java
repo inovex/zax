@@ -150,7 +150,7 @@ public class MainActivity extends BaseActivity {
 		if (!PreferenceManager.getDefaultSharedPreferences(this)
 				.getString("zabbix_username", "").equals("")) {
 
-//			mZabbixService.performZabbixLogin(this);
+			// mZabbixService.performZabbixLogin(this);
 
 			BaseServiceAdapter<Trigger> adapter = mZabbixDataService
 					.getProblemsListAdapter(TriggerSeverity.ALL);
@@ -182,7 +182,8 @@ public class MainActivity extends BaseActivity {
 		boolean useMockData = getIntent().getBooleanExtra(
 				ZabbixDataService.EXTRA_IS_TESTING, false);
 		intent.putExtra(ZabbixDataService.EXTRA_IS_TESTING, useMockData);
-		getApplicationContext().bindService(intent, this, Context.BIND_AUTO_CREATE);
+		getApplicationContext().bindService(intent, this,
+				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override

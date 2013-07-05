@@ -219,7 +219,7 @@ public class ZabbixDataService extends Service {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Retrieves the event with the given ID from the database.
 	 * 
@@ -235,7 +235,7 @@ public class ZabbixDataService extends Service {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Retrieves the trigger with the given ID from the database.
 	 * 
@@ -251,7 +251,7 @@ public class ZabbixDataService extends Service {
 		}
 		return null;
 	}
-	
+
 	private int bindings = 0;
 
 	@Override
@@ -272,19 +272,21 @@ public class ZabbixDataService extends Service {
 
 		return mBinder;
 	}
-	
-	public void onBind(DatabaseHelper databasehelperMock, ZabbixRemoteAPI remoteAPIMock) {
+
+	public void onBind(DatabaseHelper databasehelperMock,
+			ZabbixRemoteAPI remoteAPIMock) {
 		if (mDatabaseHelper == null) {
 			// set up SQLite connection using OrmLite
 			if (databasehelperMock != null) {
 				mDatabaseHelper = databasehelperMock;
 			} else {
-				mDatabaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+				mDatabaseHelper = OpenHelperManager.getHelper(this,
+						DatabaseHelper.class);
 				// recreate database
-				mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0,
-						1);
+				mDatabaseHelper.onUpgrade(
+						mDatabaseHelper.getWritableDatabase(), 0, 1);
 			}
-			
+
 			Log.d(TAG, "onCreate");
 		}
 		if (mRemoteAPI == null) {
@@ -292,7 +294,7 @@ public class ZabbixDataService extends Service {
 				mRemoteAPI = remoteAPIMock;
 			} else {
 				mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
-					mDatabaseHelper, null);
+						mDatabaseHelper, null);
 			}
 		}
 	}

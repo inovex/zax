@@ -32,7 +32,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	/** Defines callbacks for service binding, passed to bindService() */
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
-		Log.d(TAG, "onServiceConnected: " + this.getLocalClassName() + " " + this.toString());
+		Log.d(TAG, "onServiceConnected: " + this.getLocalClassName() + " "
+				+ this.toString());
 		ZabbixDataBinder binder = (ZabbixDataBinder) service;
 		mZabbixDataService = binder.getService();
 		mZabbixDataService.setActivityContext(BaseActivity.this);
@@ -48,7 +49,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	@Override
 	protected void onStart() {
 		super.onStart();
-//		bindService();
+		// bindService();
 	}
 
 	/**
@@ -56,7 +57,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	 */
 	protected void bindService() {
 		Intent intent = new Intent(this, ZabbixDataService.class);
-		getApplicationContext().bindService(intent, this, Context.BIND_AUTO_CREATE);
+		getApplicationContext().bindService(intent, this,
+				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
@@ -73,13 +75,13 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	@Override
 	protected void onStop() {
 		super.onStop();
-//		getApplicationContext().unbindService(this);
+		// getApplicationContext().unbindService(this);
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		Log.d(TAG , "onDestroy");
+		Log.d(TAG, "onDestroy");
 		if (isFinishing()) {
 			Log.d(TAG, "unbindService");
 			getApplicationContext().unbindService(this);

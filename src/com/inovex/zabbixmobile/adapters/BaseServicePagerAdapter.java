@@ -30,7 +30,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 	protected FragmentManager mFragmentManager;
 	protected FragmentTransaction mCurTransaction = null;
 	private Fragment mCurrentPrimaryItem = null;
-	
+
 	public BaseServicePagerAdapter() {
 		mObjects = new TreeSet<T>();
 	}
@@ -75,6 +75,9 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 
 	@Override
 	public void destroyItem(ViewGroup container, int position, Object object) {
+		// if the fragment was detached, the fragment manager should be null
+		if (mFragmentManager == null)
+			return;
 		if (mCurTransaction == null) {
 			mCurTransaction = mFragmentManager.beginTransaction();
 		}
@@ -99,6 +102,8 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 
 	@Override
 	public void finishUpdate(ViewGroup container) {
+		if (mFragmentManager == null)
+			return;
 		if (mCurTransaction != null) {
 			mCurTransaction.commitAllowingStateLoss();
 			mCurTransaction = null;

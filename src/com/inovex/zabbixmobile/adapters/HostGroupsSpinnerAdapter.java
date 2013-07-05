@@ -18,7 +18,7 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 	private String mTitle;
 	private int mPosition;
 	private OnHostGroupSelectedListener mCallback;
-	
+
 	public interface OnHostGroupSelectedListener {
 		public void onHostGroupSelected(int position);
 	}
@@ -27,7 +27,7 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 		super(service);
 		addBaseGroups();
 	}
-	
+
 	public void setCallback(OnHostGroupSelectedListener callback) {
 		this.mCallback = callback;
 	}
@@ -90,10 +90,9 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 	@Override
 	public void notifyDataSetChanged() {
 		super.notifyDataSetChanged();
-		// update the current selection (we might have saved this position before)
+		// update the current selection (we might have saved this position
+		// before)
 		mCallback.onHostGroupSelected(mPosition);
 	}
-	
-	
 
 }

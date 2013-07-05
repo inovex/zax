@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.model.Trigger;
@@ -26,7 +25,7 @@ import com.inovex.zabbixmobile.model.Trigger;
  * 
  */
 public class ProblemsDetailsPage extends BaseServiceConnectedFragment {
-	
+
 	private static final String TAG = ProblemsDetailsPage.class.getSimpleName();
 
 	private static final String ARG_TRIGGER_ID = "arg_trigger_id";
@@ -76,8 +75,8 @@ public class ProblemsDetailsPage extends BaseServiceConnectedFragment {
 			sb.append("lastchange: "
 					+ String.valueOf(dateFormatter.format(cal.getTime()))
 					+ "\n");
-			TextView text = (TextView) getView()
-					.findViewById(R.id.trigger_details);
+			TextView text = (TextView) getView().findViewById(
+					R.id.trigger_details);
 			text.setText(sb.toString());
 		}
 	}

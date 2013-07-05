@@ -38,5 +38,5 @@ public class EventsDetailsPagerAdapter extends BaseSeverityPagerAdapter<Event> {
 	public long getItemId(int position) {
 		return getItem(position).getId();
 	}
-	
+
 }

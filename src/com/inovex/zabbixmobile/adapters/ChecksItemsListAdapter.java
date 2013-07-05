@@ -20,7 +20,8 @@ import com.inovex.zabbixmobile.model.Item;
  */
 public class ChecksItemsListAdapter extends BaseServiceAdapter<Item> {
 
-	private static final String TAG = ChecksItemsListAdapter.class.getSimpleName();
+	private static final String TAG = ChecksItemsListAdapter.class
+			.getSimpleName();
 	private int mTextViewResourceId = R.layout.items_list_item;
 
 	/**

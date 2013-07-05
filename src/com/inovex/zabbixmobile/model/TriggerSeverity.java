@@ -47,7 +47,7 @@ public enum TriggerSeverity {
 	public static TriggerSeverity getSeverityByNumber(int n) {
 		return valuesByNumber.get(n);
 	}
-	
+
 	public static TriggerSeverity getSeverityByPosition(int n) {
 		return valuesByPosition.get(n);
 	}

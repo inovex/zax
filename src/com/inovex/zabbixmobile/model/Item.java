@@ -107,7 +107,7 @@ public class Item implements Comparable<Item> {
 
 	@Override
 	public int compareTo(Item another) {
-		if(this.id > another.getId())
+		if (this.id > another.getId())
 			return 1;
 		return -1;
 	}

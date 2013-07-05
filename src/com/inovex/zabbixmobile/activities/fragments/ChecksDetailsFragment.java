@@ -84,9 +84,11 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 	 * adapter's contents are updated.
 	 */
 	public void redrawPageIndicator() {
-		mDetailsPageIndicator.invalidate();
-		// this is necessary to refresh the adapter
-		mDetailsPageIndicator.onPageSelected(0);
+		if (mDetailsPageIndicator != null) {
+			mDetailsPageIndicator.invalidate();
+			if (mDetailsPagerAdapter.getCount() > 0)
+				mDetailsPageIndicator.onPageSelected(0);
+		}
 	}
 
 	/**
@@ -149,6 +151,18 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 	protected void retrievePagerAdapter() {
 		mDetailsPagerAdapter = mZabbixDataService
 				.getChecksApplicationsPagerAdapter();
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		// This is a fix for the issue with the child fragment manager;
+		// described here:
+		// http://stackoverflow.com/questions/15207305/getting-the-error-java-lang-illegalstateexception-activity-has-been-destroyed
+		// and here: https://code.google.com/p/android/issues/detail?id=42601
+		// If the fragment manager is not set to null, there will be issues when
+		// the activity is destroyed and there are pending transactions
+		mDetailsPagerAdapter.setFragmentManager(null);
 	}
 
 }

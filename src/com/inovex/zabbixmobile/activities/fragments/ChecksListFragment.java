@@ -12,7 +12,7 @@ import com.inovex.zabbixmobile.model.HostGroup;
 public class ChecksListFragment extends BaseServiceConnectedListFragment {
 
 	public static String TAG = ChecksListFragment.class.getSimpleName();
-	
+
 	private static final String ARG_POSITION = "arg_position";
 	private static final String ARG_ITEM_ID = "arg_item_id";
 
@@ -55,7 +55,7 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 		setCurrentItemId(id);
 		mCallbackMain.onHostSelected(position, id);
 	}
-	
+
 	@Override
 	protected void setupListAdapter() {
 		setListAdapter(mZabbixDataService.getHostsListAdapter());
@@ -71,7 +71,7 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if(savedInstanceState != null) {
+		if (savedInstanceState != null) {
 			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
 			mCurrentItemId = savedInstanceState.getLong(ARG_ITEM_ID);
 		}

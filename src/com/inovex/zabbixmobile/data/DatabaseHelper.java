@@ -242,7 +242,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 		return hostQuery.query();
 	}
-	
+
 	/**
 	 * Queries a hosts by its ID.
 	 * 
@@ -268,7 +268,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		return eventDao.queryForId(id);
 	}
-	
+
 	/**
 	 * Returns a trigger given its ID.
 	 * 
@@ -314,19 +314,23 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return appDao.queryForEq(Application.COLUMN_HOSTID, hostId);
 		// TODO: index on hosts in application table
 	}
-	
-	public List<Item> getItemsByApplicationId(long applicationId) throws SQLException {
+
+	public List<Item> getItemsByApplicationId(long applicationId)
+			throws SQLException {
 		Dao<Item, Long> itemDao = getDao(Item.class);
 		Dao<ApplicationItemRelation, Long> relationDao = getDao(ApplicationItemRelation.class);
 		Dao<Application, Long> applicationDao = getDao(Application.class);
-		
+
 		QueryBuilder<Item, Long> itemQuery = itemDao.queryBuilder();
-		QueryBuilder<ApplicationItemRelation, Long> relationQuery = relationDao.queryBuilder();
-		QueryBuilder<Application, Long> applicationQuery = applicationDao.queryBuilder();
-		
-		applicationQuery.where().eq(Application.COLUMN_APPLICATIONID, applicationId);
+		QueryBuilder<ApplicationItemRelation, Long> relationQuery = relationDao
+				.queryBuilder();
+		QueryBuilder<Application, Long> applicationQuery = applicationDao
+				.queryBuilder();
+
+		applicationQuery.where().eq(Application.COLUMN_APPLICATIONID,
+				applicationId);
 		relationQuery.join(applicationQuery);
-		
+
 		itemQuery.join(relationQuery);
 		return itemQuery.query();
 	}
