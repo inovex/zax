@@ -69,7 +69,7 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseHostGroupSpinner
 	public void selectHostGroupInSpinner(int position, long itemId) {
 		super.selectHostGroupInSpinner(position, itemId);
 		mListFragment.setHostGroupId(itemId);
-		// TODO: update details fragment
+		mDetailsFragment.setHostGroupId(itemId);
 	}
 
 	@Override
@@ -82,6 +82,7 @@ public abstract class BaseSeverityFilterActivity<T> extends BaseHostGroupSpinner
 		// erroneously
 		showDetailsFragment();
 		mDetailsFragment.selectItem(position, id);
+		mListFragment.selectItem(position);
 
 	}
 

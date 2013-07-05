@@ -175,7 +175,8 @@ public class ZabbixRemoteAPI {
 	 * @param databaseHelper
 	 *            OrmLite database helper
 	 */
-	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper, HttpClientWrapper httpClientMock) {
+	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper,
+			HttpClientWrapper httpClientMock) {
 		ClientConnectionManager ccm = null;
 		HttpParams params = null;
 
@@ -214,7 +215,8 @@ public class ZabbixRemoteAPI {
 			if (ccm == null || params == null) {
 				httpClient = new HttpClientWrapper(new DefaultHttpClient());
 			} else {
-				httpClient = new HttpClientWrapper(new DefaultHttpClient(ccm, params));
+				httpClient = new HttpClientWrapper(new DefaultHttpClient(ccm,
+						params));
 			}
 		}
 
@@ -271,7 +273,7 @@ public class ZabbixRemoteAPI {
 				+ method + "\"," + "	\"params\" : " + params.toString() + ","
 				+ "	\"auth\" : " + (token == null ? "null" : '"' + token + '"')
 				+ "," + "	\"id\" : 0" + "}";
-		Log.d(TAG, "queryBuffer="+json);
+		Log.d(TAG, "queryBuffer=" + json);
 
 		post.setEntity(new StringEntity(json, "UTF-8"));
 		try {
@@ -660,11 +662,13 @@ public class ZabbixRemoteAPI {
 			}
 
 			// insert application item relations
-			for(Item item : items) {
-				applicationItemRelations.add(new ApplicationItemRelation(app, item));
+			for (Item item : items) {
+				applicationItemRelations.add(new ApplicationItemRelation(app,
+						item));
 			}
 			if (applicationItemRelations.size() >= RECORDS_PER_INSERT_BATCH) {
-				databaseHelper.insertApplicationItemRelations(applicationItemRelations);
+				databaseHelper
+						.insertApplicationItemRelations(applicationItemRelations);
 				applicationItemRelations = new ArrayList<ApplicationItemRelation>(
 						RECORDS_PER_INSERT_BATCH);
 			}
@@ -755,6 +759,10 @@ public class ZabbixRemoteAPI {
 
 			int numEvents = ZabbixConfig.EVENTS_GET_LIMIT;
 
+			// TODO: There is an issue when the number of events in the
+			// specified time range is larger than the specified limit. Then,
+			// the oldest events (and not the newest one, as expected) will be
+			// fetched.
 			JSONObject params;
 			params = new JSONObject()
 					.put("output", "extend")

@@ -50,4 +50,12 @@ public abstract class BaseSeverityPagerAdapter<T> extends BaseServicePagerAdapte
 		return (position + 1) + " of " + getCount();
 	}
 
+	@Override
+	public int getItemPosition(Object object) {
+		// This prevents caching of fragments. We need to disable caching
+		// because we have only one adapter which is reused when another host is
+		// selected.
+		return POSITION_NONE;
+	}
+
 }
