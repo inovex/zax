@@ -71,10 +71,12 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		// if(severity == this.mSeverity)
 		// return;
 		this.mSeverity = severity;
-		retrievePagerAdapter();
-		// the adapter could be fresh -> set fragment manager
-		mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
-		mDetailsPager.setAdapter(mDetailsPagerAdapter);
+		if(mZabbixDataService != null) {
+			retrievePagerAdapter();
+			// the adapter could be fresh -> set fragment manager
+			mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
+			mDetailsPager.setAdapter(mDetailsPagerAdapter);
+		}
 	}
 
 	@Override
@@ -88,7 +90,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
 					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
 		}
-		setRetainInstance(true);
+//		setRetainInstance(true);
 	}
 
 	@Override

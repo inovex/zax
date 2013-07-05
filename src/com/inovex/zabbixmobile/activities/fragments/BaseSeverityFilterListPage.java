@@ -45,6 +45,7 @@ public abstract class BaseSeverityFilterListPage extends BaseServiceConnectedLis
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d(TAG,"onCreate: " + this.toString());
 		if (savedInstanceState != null) {
 			mPosition = savedInstanceState.getInt(ARG_POSITION, 0);
 			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
@@ -74,6 +75,7 @@ public abstract class BaseSeverityFilterListPage extends BaseServiceConnectedLis
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		Log.d(TAG, "onListItemClick(l, v, " + position + ", " + id
 				+ "). severity: " + mSeverity);
+		Log.d(TAG, "list item clicked in: " + this.toString());
 		mPosition = position;
 		mCallbackMain.onListItemSelected(position, id);
 	}
@@ -86,6 +88,7 @@ public abstract class BaseSeverityFilterListPage extends BaseServiceConnectedLis
 
 	public void setSeverity(TriggerSeverity severity) {
 		this.mSeverity = severity;
+		Log.d(TAG, "setSeverity: " + severity.getName() + " - " + this.toString());
 	}
 
 	public TriggerSeverity getSeverity() {
@@ -94,6 +97,7 @@ public abstract class BaseSeverityFilterListPage extends BaseServiceConnectedLis
 
 	public void setHostGroupId(long hostGroupId) {
 		this.mHostGroupId = hostGroupId;
+		Log.d(TAG, "setHostGroupId: " + this.toString());
 		loadAdapterContent(true);
 	}
 

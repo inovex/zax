@@ -13,6 +13,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		implements OnHostGroupSelectedListener {
 
 	protected static final String ARG_HOST_GROUP_POSITION = "arg_host_group_position";
+	protected static final String ARG_HOST_GROUP_ID = "arg_host_group_id";
 
 	protected long mHostGroupId = HostGroup.GROUP_ID_ALL;
 	protected int mHostGroupPosition = 0;
@@ -49,12 +50,15 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		if (savedInstanceState != null) {
 			mHostGroupPosition = savedInstanceState.getInt(
 					ARG_HOST_GROUP_POSITION, 0);
+			mHostGroupId = savedInstanceState.getLong(
+					ARG_HOST_GROUP_ID, 0);
 		}
 	}
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putInt(ARG_HOST_GROUP_POSITION, mHostGroupPosition);
+		outState.putLong(ARG_HOST_GROUP_ID, mHostGroupId);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -72,7 +76,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 				mOnNavigationListener);
 
 		mSpinnerAdapter.setTitle(mSpinnerTitle);
-		mSpinnerAdapter.setCurrentPosition(mHostGroupPosition);
+		selectHostGroupInSpinner(mHostGroupPosition, mHostGroupId);
 
 		mZabbixDataService.loadHostGroups();
 	}

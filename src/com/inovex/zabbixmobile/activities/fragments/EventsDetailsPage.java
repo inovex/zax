@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +26,11 @@ import com.inovex.zabbixmobile.model.Trigger;
  */
 public class EventsDetailsPage extends SherlockFragment {
 
+	private static final String ARG_EVENT_ID = "arg_event_id";
+	private static final String TAG = EventsDetailsPage.class.getSimpleName();
 	private Event mEvent;
 	private String mTitle = "";
+	private long mEventId = -1;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -36,14 +40,17 @@ public class EventsDetailsPage extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		if (savedInstanceState != null)
+			mEventId = savedInstanceState.getLong(ARG_EVENT_ID, -1);
+		Log.d(TAG, "onCreate: " + this.toString());
+		Log.d(TAG, "mEventId: " + mEventId);
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.page_events_details, null);
-		// if (savedInstanceState != null)
-		// mEventId = savedInstanceState.getLong(ARG_EVENT_ID, -1);
 
 		return rootView;
 	}
@@ -55,43 +62,48 @@ public class EventsDetailsPage extends SherlockFragment {
 		// TODO: on orientation change, mEvent is not set ->
 		// NullPointerException
 		StringBuilder sb = new StringBuilder();
-		sb.append("Application: \n\n");
-		sb.append("ID: " + mEvent.getId() + "\n");
-		sb.append("source: " + mEvent.getObjectId() + "\n");
-		sb.append("value: " + mEvent.getValue() + "\n");
-		sb.append("clock: " + mEvent.getClock() + "\n");
-		Trigger t = mEvent.getTrigger();
-		if (t != null) {
-			sb.append("\nTrigger:\n\n");
-			sb.append("ID: " + t.getId() + "\n");
-			sb.append("severity: " + t.getPriority() + "\n");
-			sb.append("status: " + t.getStatus() + "\n");
-			sb.append("description: " + t.getDescription() + "\n");
-			sb.append("comments: " + t.getComments() + "\n");
-			sb.append("expression: " + t.getExpression() + "\n");
-			sb.append("URL: " + t.getUrl() + "\n");
-			sb.append("value: " + t.getValue() + "\n");
-			Calendar cal = Calendar.getInstance();
-			cal.setTimeInMillis(t.getLastChange());
-			DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
-					SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
-					Locale.getDefault());
-			sb.append("lastchange: "
-					+ String.valueOf(dateFormatter.format(cal.getTime()))
-					+ "\n");
+		if (mEvent != null) {
+			sb.append("Event: \n\n");
+			sb.append("ID: " + mEvent.getId() + "\n");
+			sb.append("source: " + mEvent.getObjectId() + "\n");
+			sb.append("value: " + mEvent.getValue() + "\n");
+			sb.append("clock: " + mEvent.getClock() + "\n");
+			Trigger t = mEvent.getTrigger();
+			if (t != null) {
+				sb.append("\nTrigger:\n\n");
+				sb.append("ID: " + t.getId() + "\n");
+				sb.append("severity: " + t.getPriority() + "\n");
+				sb.append("status: " + t.getStatus() + "\n");
+				sb.append("description: " + t.getDescription() + "\n");
+				sb.append("comments: " + t.getComments() + "\n");
+				sb.append("expression: " + t.getExpression() + "\n");
+				sb.append("URL: " + t.getUrl() + "\n");
+				sb.append("value: " + t.getValue() + "\n");
+				Calendar cal = Calendar.getInstance();
+				cal.setTimeInMillis(t.getLastChange());
+				DateFormat dateFormatter = SimpleDateFormat
+						.getDateTimeInstance(SimpleDateFormat.SHORT,
+								SimpleDateFormat.SHORT, Locale.getDefault());
+				sb.append("lastchange: "
+						+ String.valueOf(dateFormatter.format(cal.getTime()))
+						+ "\n");
+			}
+			TextView text = (TextView) getView()
+					.findViewById(R.id.checks_title);
+			text.setText(sb.toString());
 		}
-		TextView text = (TextView) getView().findViewById(R.id.checks_title);
-		text.setText(sb.toString());
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		// outState.putLong(ARG_EVENT_ID, mEventId);
+		outState.putLong(ARG_EVENT_ID, mEventId);
 		super.onSaveInstanceState(outState);
+		Log.d(TAG, "onSaveInstanceState: " + this.toString());
 	}
 
 	public void setEvent(Event event) {
 		this.mEvent = event;
+		this.mEventId = event.getId();
 	}
 
 	public void setTitle(String title) {
@@ -100,6 +112,18 @@ public class EventsDetailsPage extends SherlockFragment {
 
 	public String getTitle() {
 		return mTitle;
+	}
+	
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		Log.d(TAG, "onDetach: " + this.toString());
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		Log.d(TAG, "onDestroy: " + this.toString());
 	}
 
 }

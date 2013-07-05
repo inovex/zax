@@ -1,6 +1,7 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -31,33 +32,29 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	private int mCurrentPosition = 0;
 	private long mCurrentItemId = 0;
 	private TriggerSeverity mCurrentSeverity = TriggerSeverity.ALL;
-	private long mCurrentHostGroup;
+	private long mCurrentHostGroupId;
 
 	ViewPager mSeverityListPager;
 	SeverityListPagerAdapter mSeverityListPagerAdapter;
 	TabPageIndicator mSeverityListTabIndicator;
 
-	ArrayList<BaseSeverityFilterListPage> pages = new ArrayList<BaseSeverityFilterListPage>();
-
 	private OnSeveritySelectedListener mCallbackMain;
 
 	class SeverityListPagerAdapter extends FragmentPagerAdapter {
 
+		private Collection<BaseSeverityFilterListPage> instantiatedPages = new ArrayList<BaseSeverityFilterListPage>();
+
 		public SeverityListPagerAdapter(FragmentManager fm) {
 			super(fm);
-			BaseSeverityFilterListPage f;
-			for (TriggerSeverity s : TriggerSeverity.values()) {
-				f = instantiatePage();
-				f.setSeverity(s);
-
-				pages.add(f);
-			}
 		}
 
 		@Override
 		public Fragment getItem(int i) {
-
-			return pages.get(i);
+			BaseSeverityFilterListPage f = instantiatePage();
+			f.setSeverity(TriggerSeverity.getSeverityByPosition(i));
+			f.setHostGroupId(mCurrentHostGroupId);
+			Log.d(TAG, "getItem: " + f.toString());
+			return f;
 		}
 
 		@Override
@@ -67,8 +64,28 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			BaseSeverityFilterListPage f = ((BaseSeverityFilterListPage) getItem(position));
-			return f.getTitle();
+			return TriggerSeverity.getSeverityByPosition(position).getName();
+		}
+
+		@Override
+		public Object instantiateItem(ViewGroup container, int position) {
+			Object instantiatedItem = super
+					.instantiateItem(container, position);
+			// save instantiated page
+			Log.d(TAG, "instantiateItem: " + instantiatedItem.toString());
+			instantiatedPages
+					.add((BaseSeverityFilterListPage) instantiatedItem);
+			return instantiatedItem;
+		}
+
+		/**
+		 * Returns all pages in this view pager which have already been
+		 * instantiated.
+		 * 
+		 * @return instantiated pages
+		 */
+		public Collection<BaseSeverityFilterListPage> getPages() {
+			return instantiatedPages;
 		}
 	}
 
@@ -89,7 +106,6 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
 		if (savedInstanceState != null) {
 			setCurrentPosition(savedInstanceState.getInt(ARG_POSITION, 0));
 			setCurrentItemId(savedInstanceState.getLong(ARG_ITEM_ID, 0));
@@ -193,8 +209,9 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	}
 
 	public void setHostGroupId(long itemId) {
-		this.mCurrentHostGroup = itemId;
-		for (BaseSeverityFilterListPage p : pages) {
+		this.mCurrentHostGroupId = itemId;
+		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
+				.getPages()) {
 			p.setHostGroupId(itemId);
 		}
 	}

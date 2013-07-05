@@ -10,13 +10,19 @@ public enum TriggerSeverity {
 	private final String name;
 	private final int number;
 	private final int position;
-	private static final SparseArray<TriggerSeverity> values;
+	private static final SparseArray<TriggerSeverity> valuesByNumber;
+	private static final SparseArray<TriggerSeverity> valuesByPosition;
 
 	static {
-		values = new SparseArray<TriggerSeverity>(
+		valuesByNumber = new SparseArray<TriggerSeverity>(
 				TriggerSeverity.values().length);
 		for (TriggerSeverity t : TriggerSeverity.values()) {
-			values.put(t.getNumber(), t);
+			valuesByNumber.put(t.getNumber(), t);
+		}
+		valuesByPosition = new SparseArray<TriggerSeverity>(
+				TriggerSeverity.values().length);
+		for (TriggerSeverity t : TriggerSeverity.values()) {
+			valuesByPosition.put(t.getPosition(), t);
 		}
 	}
 
@@ -39,7 +45,11 @@ public enum TriggerSeverity {
 	}
 
 	public static TriggerSeverity getSeverityByNumber(int n) {
-		return values.get(n);
+		return valuesByNumber.get(n);
+	}
+	
+	public static TriggerSeverity getSeverityByPosition(int n) {
+		return valuesByPosition.get(n);
 	}
 
 	@Override
