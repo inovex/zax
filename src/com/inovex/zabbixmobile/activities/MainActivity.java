@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +23,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
 
 public class MainActivity extends BaseActivity {
 
@@ -147,8 +147,7 @@ public class MainActivity extends BaseActivity {
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		super.onServiceConnected(className, service);
 
-		if (!PreferenceManager.getDefaultSharedPreferences(this)
-				.getString("zabbix_username", "").equals("")) {
+		if (new ZaxPreferences(this).isConfigurated()) {
 
 //			mZabbixService.performZabbixLogin(this);
 
