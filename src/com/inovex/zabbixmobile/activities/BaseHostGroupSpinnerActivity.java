@@ -62,8 +62,8 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	}
 
 	@Override
-	public void onServiceConnected(ComponentName className, IBinder service) {
-		super.onServiceConnected(className, service);
+	public void onServiceConnected(ComponentName className, IBinder binder) {
+		super.onServiceConnected(className, binder);
 
 		// set up spinner adapter
 		mSpinnerAdapter = mZabbixDataService.getHostGroupSpinnerAdapter();
@@ -78,6 +78,9 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		selectHostGroupInSpinner(mHostGroupPosition, mHostGroupId);
 
 		mZabbixDataService.loadHostGroups();
+		
+		// fill all severity adapters
+		loadAdapterContent(false);
 	}
 
 	// TODO: host group selection might trigger a switch from list to details
@@ -103,6 +106,10 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		mHostGroupId = itemId;
 		mHostGroupPosition = position;
 		mSpinnerAdapter.setCurrentPosition(position);
+		// update adapters
+		loadAdapterContent(true);
 	}
+
+	protected abstract void loadAdapterContent(boolean hostGroupChanged);
 
 }

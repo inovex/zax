@@ -26,6 +26,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	private static final int FLIPPER_DETAILS_FRAGMENT = 1;
 
 	protected int mCurrentItemPosition;
+	protected long mCurrentItemId;
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
 	protected FragmentManager mFragmentManager;
 	protected ViewFlipper mFlipper;
@@ -46,10 +47,9 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	}
 
 	@Override
-	public void onServiceConnected(ComponentName className, IBinder service) {
-		super.onServiceConnected(className, service);
+	public void onServiceConnected(ComponentName className, IBinder binder) {
+		super.onServiceConnected(className, binder);
 		Log.d(TAG, "onServiceConnected()");
-
 	}
 
 	@Override
@@ -77,6 +77,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	public void onListItemSelected(int position, long id) {
 		Log.d(TAG, "item selected: " + id + ", position: " + position);
 		this.mCurrentItemPosition = position;
+		this.mCurrentItemId = id;
 
 		// Caution: details fragment must be shown before selectItem() is
 		// called! Otherwise the "acknowledge event" button might be displayed

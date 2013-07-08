@@ -1,7 +1,9 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -46,7 +48,6 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 
 	public void setHostGroup(long itemId) {
 		this.mHostGroupId = itemId;
-		loadAdapterContent(true);
 	}
 
 	@Override
@@ -59,13 +60,6 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 	@Override
 	protected void setupListAdapter() {
 		setListAdapter(mZabbixDataService.getHostsListAdapter());
-	}
-
-	@Override
-	protected void loadAdapterContent(boolean hostGroupChanged) {
-		if (mZabbixDataService != null)
-			mZabbixDataService.loadHostsByHostGroup(mHostGroupId,
-					hostGroupChanged);
 	}
 
 	@Override

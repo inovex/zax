@@ -107,7 +107,6 @@ public abstract class BaseSeverityFilterListPage extends
 	public void setHostGroupId(long hostGroupId) {
 		this.mHostGroupId = hostGroupId;
 		Log.d(TAG, "setHostGroupId: " + this.toString());
-		loadAdapterContent(true);
 	}
 
 	public void setItemSelected(int itemSelected) {

@@ -7,6 +7,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
 import com.inovex.zabbixmobile.model.Trigger;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
@@ -33,8 +34,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			int position = extras.getInt(ARG_ITEM_POSITION, -1);
 			long id = extras.getLong(ARG_ITEM_ID, -1);
 			if (position != -1 && id != -1) {
-				mDetailsFragment.setPosition(position);
-				mDetailsFragment.setCurrentItemId(id);
+				mDetailsFragment.selectItem(position, id);
 				showDetailsFragment();
 			}
 		}
@@ -61,5 +61,14 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 	protected void enableUI() {
 		// TODO Auto-generated method stub
 
+	}
+
+	protected void loadAdapterContent(boolean hostGroupChanged) {
+		if (mZabbixDataService != null) {
+			for (TriggerSeverity severity : TriggerSeverity.values()) {
+				mZabbixDataService.loadTriggersBySeverityAndHostGroup(severity,
+						mHostGroupId, hostGroupChanged);
+			}
+		}
 	}
 }

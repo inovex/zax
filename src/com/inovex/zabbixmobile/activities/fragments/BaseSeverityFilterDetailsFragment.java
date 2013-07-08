@@ -52,14 +52,15 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		setCurrentItemId(id);
 	}
 
-	public void setPosition(int position) {
+	private void setPosition(int position) {
 		this.mPosition = position;
 		if (mDetailsPageIndicator != null) {
 			mDetailsPageIndicator.setCurrentItem(position);
+			mDetailsPager.setCurrentItem(position);
 		}
 	}
 
-	public void setCurrentItemId(long itemId) {
+	private void setCurrentItemId(long itemId) {
 		this.mItemId = itemId;
 	}
 
@@ -97,7 +98,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		// mDetailsPager.setAdapter(mDetailsPagerAdapter);
 		// }
 	}
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

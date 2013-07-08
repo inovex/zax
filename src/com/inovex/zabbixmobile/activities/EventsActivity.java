@@ -1,6 +1,8 @@
 package com.inovex.zabbixmobile.activities;
 
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.widget.ViewFlipper;
 
@@ -9,6 +11,7 @@ import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFra
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		OnAcknowledgeEventListener {
@@ -36,9 +39,13 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	}
 
 	@Override
-	public void acknowledgeEvent(long eventId, String comment) {
-		Log.d(TAG, "acknowledgeEvent(" + eventId + ", " + comment + ")");
-		mZabbixDataService.acknowledgeEvent(eventId, comment);
+	public void acknowledgeEvent(Event event, String comment) {
+		Log.d(TAG, "acknowledgeEvent(" + event + ", " + comment + ")");
+		mZabbixDataService.acknowledgeEvent(event.getId(), comment);
+		// TODO: wait for callback (acknowledgement might be unsuccessful
+		event.setAcknowledged(true);
+		// select refreshes the action bar menu
+		mDetailsFragment.selectItem(mCurrentItemPosition, mCurrentItemId);
 	}
 
 	@Override
@@ -53,6 +60,14 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		super.showListFragment();
 		// details fragment becomes invisible -> disable menu
 		mDetailsFragment.setHasOptionsMenu(false);
+	}
+
+	@Override
+	protected void loadAdapterContent(boolean hostGroupChanged) {
+		for (TriggerSeverity severity : TriggerSeverity.values()) {
+			mZabbixDataService.loadEventsBySeverityAndHostGroup(severity,
+					mHostGroupId, hostGroupChanged);
+		}
 	}
 
 	@Override

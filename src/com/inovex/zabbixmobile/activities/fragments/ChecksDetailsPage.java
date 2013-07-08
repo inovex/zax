@@ -53,12 +53,6 @@ public class ChecksDetailsPage extends BaseServiceConnectedListFragment {
 	}
 
 	@Override
-	protected void loadAdapterContent(boolean hostGroupChanged) {
-		// TODO: Content should be already loaded; still, we could call the
-		// service to be sure
-	}
-
-	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		mCallbackMain.onItemSelected(position, id);
 	}

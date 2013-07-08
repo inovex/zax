@@ -42,7 +42,6 @@ public abstract class BaseServiceConnectedListFragment extends
 		ZabbixDataBinder binder = (ZabbixDataBinder) service;
 		mZabbixDataService = binder.getService();
 		setupListAdapter();
-		loadAdapterContent(false);
 	}
 
 	@Override
@@ -51,7 +50,5 @@ public abstract class BaseServiceConnectedListFragment extends
 	}
 
 	protected abstract void setupListAdapter();
-
-	protected abstract void loadAdapterContent(boolean hostGroupChanged);
 
 }

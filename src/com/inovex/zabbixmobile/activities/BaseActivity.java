@@ -33,11 +33,11 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 	/** Defines callbacks for service binding, passed to bindService() */
 	@Override
-	public void onServiceConnected(ComponentName className, IBinder service) {
+	public void onServiceConnected(ComponentName className, IBinder binder) {
 		Log.d(TAG, "onServiceConnected: " + this.getLocalClassName() + " "
 				+ this.toString());
-		ZabbixDataBinder binder = (ZabbixDataBinder) service;
-		mZabbixDataService = binder.getService();
+		ZabbixDataBinder zabbixBinder = (ZabbixDataBinder) binder;
+		mZabbixDataService = zabbixBinder.getService();
 		mZabbixDataService.setActivityContext(BaseActivity.this);
 		mZabbixDataService.performZabbixLogin(this);
 
