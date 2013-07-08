@@ -63,7 +63,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 			}
 			break;
 		}
-		return false;
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override

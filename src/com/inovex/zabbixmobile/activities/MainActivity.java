@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
@@ -130,17 +129,6 @@ public class MainActivity extends BaseActivity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getSupportMenuInflater().inflate(R.menu.main, menu);
 		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.menuitem_preferences) {
-			Intent intent = new Intent(getApplicationContext(),
-					ZaxPreferenceActivity.class);
-			startActivityForResult(intent, 0);
-			return true;
-		}
-		return false;
 	}
 
 	@Override
