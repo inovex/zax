@@ -35,6 +35,7 @@ import com.inovex.zabbixmobile.adapters.ProblemsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ProblemsListAdapter;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
+import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
 import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Host;
@@ -716,24 +717,30 @@ public class ZabbixDataService extends Service {
 		}.execute();
 	}
 
-	public void acknowledgeEvent(final long eventId, final String comment) {
+	public void acknowledgeEvent(final Event event, final String comment,
+			final OnAcknowledgeEventListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
+			
+			private boolean mSuccess = false;
 
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
-				mRemoteAPI.acknowledgeEvent(eventId, comment);
+				mRemoteAPI.acknowledgeEvent(event.getId(), comment);
 				try {
-					mDatabaseHelper.acknowledgeEvent(eventId);
+					mDatabaseHelper.acknowledgeEvent(event);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				mSuccess = true;
 			}
 
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
+				if(mSuccess)
+					callback.onEventAcknowledged();
 			}
 
 		}.execute();

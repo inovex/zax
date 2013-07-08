@@ -604,11 +604,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
-	public void acknowledgeEvent(long eventId) throws SQLException {
+	public void acknowledgeEvent(Event event) throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
-		Event e = getEventById(eventId);
-		e.setAcknowledged(true);
-		eventDao.update(e);
+		event.setAcknowledged(true);
+		eventDao.update(event);
 	}
 
 	/**

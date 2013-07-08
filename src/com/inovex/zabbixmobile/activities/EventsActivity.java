@@ -1,8 +1,6 @@
 package com.inovex.zabbixmobile.activities;
 
-import android.content.ComponentName;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.widget.ViewFlipper;
 
@@ -35,15 +33,19 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 			Log.d(TAG, mFlipper.toString());
 		Log.d(TAG, mListFragment.toString());
 		Log.d(TAG, mDetailsFragment.toString());
-		System.out.println();
+		
+		if(!mDetailsFragment.isVisible())
+			mDetailsFragment.setHasOptionsMenu(false);
 	}
 
 	@Override
 	public void acknowledgeEvent(Event event, String comment) {
 		Log.d(TAG, "acknowledgeEvent(" + event + ", " + comment + ")");
-		mZabbixDataService.acknowledgeEvent(event.getId(), comment);
-		// TODO: wait for callback (acknowledgement might be unsuccessful
-		event.setAcknowledged(true);
+		mZabbixDataService.acknowledgeEvent(event, comment, this);
+	}
+	
+	@Override
+	public void onEventAcknowledged() {
 		// select refreshes the action bar menu
 		mDetailsFragment.selectItem(mCurrentItemPosition, mCurrentItemId);
 	}
