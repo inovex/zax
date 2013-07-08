@@ -66,7 +66,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		if (mZabbixDataService != null) {
 			for (TriggerSeverity severity : TriggerSeverity.values()) {
-				mZabbixDataService.loadTriggersBySeverityAndHostGroup(severity,
+				mZabbixDataService.loadProblemsBySeverityAndHostGroup(severity,
 						mHostGroupId, hostGroupChanged);
 			}
 		}

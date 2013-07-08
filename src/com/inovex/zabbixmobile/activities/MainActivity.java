@@ -140,7 +140,7 @@ public class MainActivity extends BaseActivity {
 			// mZabbixService.performZabbixLogin(this);
 
 			BaseServiceAdapter<Trigger> adapter = mZabbixDataService
-					.getProblemsListAdapter(TriggerSeverity.ALL);
+					.getProblemsMainListAdapter();
 			mProblemsList.setAdapter(adapter);
 			mProblemsList.setOnItemClickListener(new OnItemClickListener() {
 
@@ -157,7 +157,7 @@ public class MainActivity extends BaseActivity {
 					startActivity(intent);
 				}
 			});
-			mZabbixDataService.loadTriggersBySeverityAndHostGroup(
+			mZabbixDataService.loadProblemsBySeverityAndHostGroup(
 					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true);
 		}
 

@@ -166,7 +166,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @return list of events with a matching severity and host group
 	 * @throws SQLException
 	 */
-	public List<Trigger> getTriggersBySeverityAndHostGroupId(
+	public List<Trigger> getProblemsBySeverityAndHostGroupId(
 			TriggerSeverity severity, long hostGroupId) throws SQLException {
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
 		QueryBuilder<Trigger, Long> triggerQuery = triggerDao.queryBuilder();

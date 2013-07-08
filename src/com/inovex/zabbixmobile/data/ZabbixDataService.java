@@ -75,6 +75,7 @@ public class ZabbixDataService extends Service {
 
 	// Problems
 	private HashMap<TriggerSeverity, ProblemsListAdapter> mProblemsListAdapters;
+	private ProblemsListAdapter mProblemsMainListAdapter;
 	private HashMap<TriggerSeverity, ProblemsDetailsPagerAdapter> mProblemsDetailsPagerAdapters;
 
 	// Checks
@@ -137,6 +138,16 @@ public class ZabbixDataService extends Service {
 	 */
 	public HostGroupsSpinnerAdapter getHostGroupSpinnerAdapter() {
 		return mHostGroupsSpinnerAdapter;
+	}
+
+	/**
+	 * Returns the problems list adapter for the main view. This adapter
+	 * contains all active problems regardless of severity and hostgroup.
+	 * 
+	 * @return list adapter
+	 */
+	public BaseServiceAdapter<Trigger> getProblemsMainListAdapter() {
+		return mProblemsMainListAdapter;
 	}
 
 	/**
@@ -345,24 +356,25 @@ public class ZabbixDataService extends Service {
 		mEventsDetailsPagerAdapters = new HashMap<TriggerSeverity, EventsDetailsPagerAdapter>(
 				TriggerSeverity.values().length);
 
-		mProblemsListAdapters = new HashMap<TriggerSeverity, ProblemsListAdapter>(
-				TriggerSeverity.values().length);
-		mProblemsDetailsPagerAdapters = new HashMap<TriggerSeverity, ProblemsDetailsPagerAdapter>(
-				TriggerSeverity.values().length);
-
-		mHostGroupsSpinnerAdapter = new HostGroupsSpinnerAdapter(this);
-
 		for (TriggerSeverity s : TriggerSeverity.values()) {
 			mEventsListAdapters.put(s, new EventsListAdapter(this));
 			mEventsDetailsPagerAdapters
 					.put(s, new EventsDetailsPagerAdapter(s));
 		}
+		
+		mProblemsListAdapters = new HashMap<TriggerSeverity, ProblemsListAdapter>(
+				TriggerSeverity.values().length);
+		mProblemsMainListAdapter = new ProblemsListAdapter(this);
+		mProblemsDetailsPagerAdapters = new HashMap<TriggerSeverity, ProblemsDetailsPagerAdapter>(
+				TriggerSeverity.values().length);
 
 		for (TriggerSeverity s : TriggerSeverity.values()) {
 			mProblemsListAdapters.put(s, new ProblemsListAdapter(this));
 			mProblemsDetailsPagerAdapters.put(s,
 					new ProblemsDetailsPagerAdapter(s));
 		}
+		
+		mHostGroupsSpinnerAdapter = new HostGroupsSpinnerAdapter(this);
 
 		mHostsListAdapter = new HostsListAdapter(this);
 		mChecksApplicationsPagerAdapter = new ChecksApplicationsPagerAdapter();
@@ -455,7 +467,7 @@ public class ZabbixDataService extends Service {
 	 *            adapters will be cleared before being filled with entries
 	 *            matching the selected host group.
 	 */
-	public void loadTriggersBySeverityAndHostGroup(
+	public void loadProblemsBySeverityAndHostGroup(
 			final TriggerSeverity severity, final long hostGroupId,
 			final boolean hostGroupChanged) {
 
@@ -464,6 +476,7 @@ public class ZabbixDataService extends Service {
 			private List<Trigger> triggers;
 			private final BaseServiceAdapter<Trigger> adapter = mProblemsListAdapters
 					.get(severity);
+			private final BaseServiceAdapter<Trigger> mainAdapter = mProblemsMainListAdapter;
 			private final BaseSeverityPagerAdapter<Trigger> detailsAdapter = mProblemsDetailsPagerAdapters
 					.get(severity);
 
@@ -478,7 +491,7 @@ public class ZabbixDataService extends Service {
 				} finally {
 					try {
 						triggers = mDatabaseHelper
-								.getTriggersBySeverityAndHostGroupId(severity,
+								.getProblemsBySeverityAndHostGroupId(severity,
 										hostGroupId);
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
@@ -490,6 +503,10 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
+				if(mainAdapter != null && severity == TriggerSeverity.ALL && hostGroupId == HostGroup.GROUP_ID_ALL) {
+					mainAdapter.addAll(triggers);
+					mainAdapter.notifyDataSetChanged();
+				}
 				if (adapter != null) {
 					if (hostGroupChanged)
 						adapter.clear();
@@ -720,7 +737,7 @@ public class ZabbixDataService extends Service {
 	public void acknowledgeEvent(final Event event, final String comment,
 			final OnAcknowledgeEventListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
-			
+
 			private boolean mSuccess = false;
 
 			@Override
@@ -739,7 +756,7 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				if(mSuccess)
+				if (mSuccess)
 					callback.onEventAcknowledged();
 			}
 
