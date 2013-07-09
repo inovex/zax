@@ -36,6 +36,7 @@ import com.inovex.zabbixmobile.adapters.ProblemsListAdapter;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
+import com.inovex.zabbixmobile.listeners.OnListAdapterFilledListener;
 import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterFilledListener;
 import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.Event;
@@ -362,7 +363,7 @@ public class ZabbixDataService extends Service {
 			mEventsDetailsPagerAdapters
 					.put(s, new EventsDetailsPagerAdapter(s));
 		}
-		
+
 		mProblemsListAdapters = new HashMap<TriggerSeverity, ProblemsListAdapter>(
 				TriggerSeverity.values().length);
 		mProblemsMainListAdapter = new ProblemsListAdapter(this);
@@ -374,7 +375,7 @@ public class ZabbixDataService extends Service {
 			mProblemsDetailsPagerAdapters.put(s,
 					new ProblemsDetailsPagerAdapter(s));
 		}
-		
+
 		mHostGroupsSpinnerAdapter = new HostGroupsSpinnerAdapter(this);
 
 		mHostsListAdapter = new HostsListAdapter(this);
@@ -397,10 +398,13 @@ public class ZabbixDataService extends Service {
 	 *            whether the host group has changed. If this is true, the
 	 *            adapters will be cleared before being filled with entries
 	 *            matching the selected host group.
+	 * @param callback
+	 *            listener to be called when the adapters have been updated
 	 */
 	public void loadEventsBySeverityAndHostGroup(
 			final TriggerSeverity severity, final long hostGroupId,
-			final boolean hostGroupChanged, final OnSeverityListAdapterFilledListener callback) {
+			final boolean hostGroupChanged,
+			final OnSeverityListAdapterFilledListener callback) {
 
 		new RemoteAPITask(mRemoteAPI) {
 
@@ -448,9 +452,10 @@ public class ZabbixDataService extends Service {
 					detailsAdapter.addAll(events);
 					detailsAdapter.notifyDataSetChanged();
 				}
-				
-				if(callback != null)
-					callback.onSeverityListAdapterFilled(severity, hostGroupChanged);
+
+				if (callback != null)
+					callback.onSeverityListAdapterFilled(severity,
+							hostGroupChanged);
 			}
 
 		}.execute();
@@ -470,10 +475,13 @@ public class ZabbixDataService extends Service {
 	 *            whether the host group has changed. If this is true, the
 	 *            adapters will be cleared before being filled with entries
 	 *            matching the selected host group.
+	 * @param callback
+	 *            listener to be called when the adapters have been updated
 	 */
 	public void loadProblemsBySeverityAndHostGroup(
 			final TriggerSeverity severity, final long hostGroupId,
-			final boolean hostGroupChanged, final OnSeverityListAdapterFilledListener callback) {
+			final boolean hostGroupChanged,
+			final OnSeverityListAdapterFilledListener callback) {
 
 		new RemoteAPITask(mRemoteAPI) {
 
@@ -507,7 +515,8 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				if(mainAdapter != null && severity == TriggerSeverity.ALL && hostGroupId == HostGroup.GROUP_ID_ALL) {
+				if (mainAdapter != null && severity == TriggerSeverity.ALL
+						&& hostGroupId == HostGroup.GROUP_ID_ALL) {
 					mainAdapter.addAll(triggers);
 					mainAdapter.notifyDataSetChanged();
 				}
@@ -524,9 +533,10 @@ public class ZabbixDataService extends Service {
 					detailsAdapter.addAll(triggers);
 					detailsAdapter.notifyDataSetChanged();
 				}
-				
-				if(callback != null)
-					callback.onSeverityListAdapterFilled(severity, hostGroupChanged);
+
+				if (callback != null)
+					callback.onSeverityListAdapterFilled(severity,
+							hostGroupChanged);
 			}
 
 		}.execute();
@@ -589,9 +599,12 @@ public class ZabbixDataService extends Service {
 	 *            whether the host group has changed. If this is true, the
 	 *            adapter will be cleared before being filled with entries
 	 *            matching the selected host group.
+	 * @param callback
+	 *            listener to be called when the adapter has been updated
 	 */
 	public void loadHostsByHostGroup(final long hostGroupId,
-			final boolean hostGroupChanged) {
+			final boolean hostGroupChanged,
+			final OnListAdapterFilledListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
 			private List<Host> hosts;
@@ -627,6 +640,9 @@ public class ZabbixDataService extends Service {
 					hostsAdapter.addAll(hosts);
 					hostsAdapter.notifyDataSetChanged();
 				}
+				if (callback != null)
+					callback.onListAdapterFilled();
+				Log.d(TAG, "Hosts imported.");
 
 			}
 

@@ -253,7 +253,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	public Host getHostById(long hostId) throws SQLException {
 		Dao<Host, Long> hostDao = getDao(Host.class);
-		return hostDao.queryForId(hostId);
+		synchronized (hostDao) {
+			return hostDao.queryForId(hostId);
+		}
 	}
 
 	/**

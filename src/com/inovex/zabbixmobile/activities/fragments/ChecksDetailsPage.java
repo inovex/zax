@@ -37,6 +37,9 @@ public class ChecksDetailsPage extends BaseServiceConnectedListFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		setEmptyText(getResources().getString(R.string.empty_list_checks));
+		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		getListView().setItemChecked(mCurrentPosition, true);
+		getListView().setSelection(mCurrentPosition);
 	}
 
 	public void setCurrentPosition(int currentPosition) {

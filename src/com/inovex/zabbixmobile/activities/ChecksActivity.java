@@ -15,9 +15,11 @@ import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksItemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
+import com.inovex.zabbixmobile.listeners.OnListAdapterFilledListener;
+import com.inovex.zabbixmobile.model.Host;
 
 public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
-		OnChecksItemSelectedListener {
+		OnChecksItemSelectedListener, OnListAdapterFilledListener {
 
 	private static final String TAG = ChecksActivity.class.getSimpleName();
 
@@ -25,12 +27,14 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	private static final int FLIPPER_APPLICATIONS_FRAGMENT = 1;
 	private static final int FLIPPER_ITEM_DETAILS_FRAGMENT = 2;
 
-	protected int mCurrentItemPosition;
 	protected FragmentManager mFragmentManager;
 	protected ViewFlipper mFlipper;
 	protected ChecksListFragment mHostListFragment;
 	protected ChecksDetailsFragment mApplicationsFragment;
 	protected ChecksItemsDetailsFragment mItemDetailsFragment;
+
+	protected int mCurrentHostPosition;
+	private long mCurrentHostId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +74,20 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	@Override
 	public void onHostSelected(int position, long id) {
 		Log.d(TAG, "item selected: " + id + " position: " + position + ")");
-		this.mCurrentItemPosition = position;
+		this.mCurrentHostPosition = position;
+		this.mCurrentHostId = id;
 
-		mApplicationsFragment.selectHost(position, id);
+		mHostListFragment.selectItem(position);
+
+		Host h = mZabbixDataService.getHostById(mCurrentHostId);
+		// update view pager
+		Log.d(TAG,
+				"Retrieved host from database: "
+						+ ((h == null) ? "null" : h.toString()));
+		// mApplicationsFragment.selectHost(position, id);
+		mApplicationsFragment.setHost(h);
 		showApplicationsFragment();
+		mZabbixDataService.loadApplicationsByHostId(id, mApplicationsFragment);
 
 	}
 
@@ -136,7 +150,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		if (mZabbixDataService != null)
 			mZabbixDataService.loadHostsByHostGroup(mHostGroupId,
-					hostGroupChanged);
+					hostGroupChanged, this);
 	}
 
 	protected void showHostListFragment() {
@@ -175,6 +189,17 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 			ft.hide(mHostListFragment);
 			ft.show(mItemDetailsFragment);
 			ft.commit();
+		}
+	}
+
+	@Override
+	public void onListAdapterFilled() {
+		mCurrentHostId = mHostListFragment.selectItem(mCurrentHostPosition);
+		if (mCurrentHostId > 0) {
+			Host h = mZabbixDataService.getHostById(mCurrentHostId);
+			mApplicationsFragment.setHost(h);
+			mZabbixDataService.loadApplicationsByHostId(h.getId(),
+					mApplicationsFragment);
 		}
 	}
 

@@ -25,10 +25,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		ServiceConnection, OnLoginProgressListener {
 
 	protected ZabbixDataService mZabbixDataService;
-	
+
 	protected ActionBar mActionBar;
 	private LoginProgressDialogFragment mLoginProgress;
-	
+
 	private static final String TAG = BaseActivity.class.getSimpleName();
 
 	/** Defines callbacks for service binding, passed to bindService() */
@@ -71,10 +71,11 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		mActionBar.setHomeButtonEnabled(true);
 		mActionBar.setDisplayHomeAsUpEnabled(true);
 		mActionBar.setDisplayShowTitleEnabled(true);
-		
+
 		// (re-) instantiate progress dialog
-		mLoginProgress = (LoginProgressDialogFragment) getSupportFragmentManager().findFragmentByTag(LoginProgressDialogFragment.TAG);
-		if(mLoginProgress == null)
+		mLoginProgress = (LoginProgressDialogFragment) getSupportFragmentManager()
+				.findFragmentByTag(LoginProgressDialogFragment.TAG);
+		if (mLoginProgress == null)
 			mLoginProgress = LoginProgressDialogFragment.getInstance();
 	}
 
@@ -87,7 +88,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	protected void onDestroy() {
 		super.onDestroy();
 		Log.d(TAG, "onDestroy");
-		
+
 		if (isFinishing()) {
 			Log.d(TAG, "unbindService");
 			getApplicationContext().unbindService(this);
@@ -103,8 +104,9 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onLoginStarted() {
 		disableUI();
-		mLoginProgress.show(getSupportFragmentManager(),
-				LoginProgressDialogFragment.TAG);
+		if (!this.isFinishing())
+			mLoginProgress.show(getSupportFragmentManager(),
+					LoginProgressDialogFragment.TAG);
 	}
 
 	@Override

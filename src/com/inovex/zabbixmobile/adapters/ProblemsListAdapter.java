@@ -21,7 +21,7 @@ import com.inovex.zabbixmobile.model.Trigger;
 public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 
 	private static final String TAG = ProblemsListAdapter.class.getSimpleName();
-	private int mTextViewResourceId = R.layout.severity_list_item;
+	private int mTextViewResourceId = R.layout.list_item_severity;
 
 	/**
 	 * Constructor.

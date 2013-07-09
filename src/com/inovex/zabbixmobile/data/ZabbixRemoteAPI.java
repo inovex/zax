@@ -175,7 +175,8 @@ public class ZabbixRemoteAPI {
 	 * @param databaseHelper
 	 *            OrmLite database helper
 	 */
-	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper, HttpClientWrapper httpClientMock, ZaxPreferences prefsMock) {
+	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper,
+			HttpClientWrapper httpClientMock, ZaxPreferences prefsMock) {
 		ClientConnectionManager ccm = null;
 		HttpParams params = null;
 		if (prefsMock != null) {
@@ -778,7 +779,7 @@ public class ZabbixRemoteAPI {
 				params.put("sortfield", "clock").put("sortorder", "DESC");
 			}
 			JsonArrayOrObjectReader events = _queryStream("event.get", params);
-			importEvents(events);
+			importEventsFromStream(events);
 			// events.close();
 			databaseHelper.setCached(CacheDataType.EVENT);
 		} catch (SQLException e) {
@@ -809,7 +810,7 @@ public class ZabbixRemoteAPI {
 	 * @throws ZabbixLoginRequiredException
 	 * @throws JSONException
 	 */
-	private void importEvents(JsonArrayOrObjectReader jsonReader)
+	private void importEventsFromStream(JsonArrayOrObjectReader jsonReader)
 			throws JsonParseException, IOException, SQLException,
 			JSONException, ZabbixLoginRequiredException, FatalException {
 		JsonObjectReader eventReader;
@@ -1179,6 +1180,8 @@ public class ZabbixRemoteAPI {
 	private List<Host> importHostsFromStream(
 			JsonArrayOrObjectReader jsonReader, Integer numHosts)
 			throws JsonParseException, IOException, SQLException {
+
+		Log.d(TAG, "hosts cleared.");
 		List<Host> hosts = new ArrayList<Host>();
 		List<HostHostGroupRelation> hostHostGroupCollection = new ArrayList<HostHostGroupRelation>();
 		long firstHostId = -1;
@@ -1236,6 +1239,8 @@ public class ZabbixRemoteAPI {
 		// insert the last batch of events
 		databaseHelper.insertHosts(hosts);
 
+		Log.d(TAG, "hosts inserted.");
+
 		if (!hostHostGroupCollection.isEmpty())
 			databaseHelper
 					.insertHostHostgroupRelations(hostHostGroupCollection);
@@ -1243,6 +1248,7 @@ public class ZabbixRemoteAPI {
 		// return new Object[] { hostnames.toString().replaceAll("[\\[\\]]",
 		// ""),
 		// firstHostId };
+
 		return hosts;
 	}
 
@@ -1259,28 +1265,33 @@ public class ZabbixRemoteAPI {
 			FatalException {
 		// if (!isCached(HostData.TABLE_NAME, null)) {
 		try {
-			databaseHelper.clearHosts();
-			databaseHelper.clearHostGroups();
+			// hosts in the local database may not be empty; hence we prevent
+			// multiple database operations on the hosts table (as soon as
+			// caching is implemented, the performance impact will be 0)
+			synchronized (databaseHelper.getDao(Host.class)) {
+				databaseHelper.clearHosts();
+				databaseHelper.clearHostGroups();
+				// get count of hosts
+				// TODO: progress bar
+				// JSONObject result = _queryBuffer(
+				// "host.get",
+				// new JSONObject()
+				// .put("countOutput", 1)
+				// .put("limit", ZabbixConfig.HOST_GET_LIMIT)
+				// .put(isVersion2 ? "selectGroups" : "select_groups",
+				// "extend"));
+				// int numHosts = result.getInt("result");
+				JsonArrayOrObjectReader hosts = _queryStream(
+						"host.get",
+						new JSONObject()
+								.put("output", "extend")
+								.put("limit", ZabbixConfig.HOST_GET_LIMIT)
+								.put(isVersion2 ? "selectGroups"
+										: "select_groups", "extend"));
+				importHostsFromStream(hosts, null);
+				hosts.close();
 
-			// get count of hosts
-			// TODO: progress bar
-			// JSONObject result = _queryBuffer(
-			// "host.get",
-			// new JSONObject()
-			// .put("countOutput", 1)
-			// .put("limit", ZabbixConfig.HOST_GET_LIMIT)
-			// .put(isVersion2 ? "selectGroups" : "select_groups",
-			// "extend"));
-			// int numHosts = result.getInt("result");
-			JsonArrayOrObjectReader hosts = _queryStream(
-					"host.get",
-					new JSONObject()
-							.put("output", "extend")
-							.put("limit", ZabbixConfig.HOST_GET_LIMIT)
-							.put(isVersion2 ? "selectGroups" : "select_groups",
-									"extend"));
-			importHostsFromStream(hosts, null);
-			hosts.close();
+			}
 
 		} catch (SQLException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);

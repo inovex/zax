@@ -26,7 +26,7 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 	private static final String TAG = EventsListAdapter.class.getSimpleName();
 	private static final int STATUS_OK = 0;
 	private static final int STATUS_PROBLEM = 0;
-	private int mTextViewResourceId = R.layout.severity_list_item;
+	private int mTextViewResourceId = R.layout.list_item_severity;
 
 	/**
 	 * Constructor.
