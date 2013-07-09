@@ -43,13 +43,15 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	 *            list position
 	 * @param severity
 	 *            severity (this is used to retrieve the correct pager adapter
-	 * @param id
-	 *            item identifier
 	 */
-	public void selectItem(int position, long id) {
+	public void selectItem(int position) {
 		Log.d(TAG, "selectItem(" + position + ")");
+		if(mDetailsPagerAdapter == null || mDetailsPagerAdapter.getCount() == 0)
+			return;
+		if(position > mDetailsPagerAdapter.getCount() - 1)
+			position = 0;
 		setPosition(position);
-		setCurrentItemId(id);
+		setCurrentItemId(mDetailsPagerAdapter.getItemId(position));
 	}
 
 	private void setPosition(int position) {
@@ -57,13 +59,14 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		if (mDetailsPageIndicator != null) {
 			mDetailsPageIndicator.setCurrentItem(position);
 			mDetailsPager.setCurrentItem(position);
+			mDetailsPagerAdapter.setCurrentPosition(position);
 		}
 	}
 
 	private void setCurrentItemId(long itemId) {
 		this.mItemId = itemId;
 	}
-
+	
 	/**
 	 * Sets the current severity and updates the pager adapter.
 	 * 

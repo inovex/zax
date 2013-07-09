@@ -11,13 +11,14 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
+import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterFilledListener;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public abstract class BaseSeverityFilterActivity<T> extends
 		BaseHostGroupSpinnerActivity implements OnListItemSelectedListener,
-		OnSeveritySelectedListener {
+		OnSeveritySelectedListener, OnSeverityListAdapterFilledListener {
 
 	private static final String TAG = BaseSeverityFilterActivity.class
 			.getSimpleName();
@@ -25,8 +26,8 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	private static final int FLIPPER_LIST_FRAGMENT = 0;
 	private static final int FLIPPER_DETAILS_FRAGMENT = 1;
 
-	protected int mCurrentItemPosition;
-	protected long mCurrentItemId;
+	protected int mCurrentItemPosition = 0;
+	protected long mCurrentItemId = 0;
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
 	protected FragmentManager mFragmentManager;
 	protected ViewFlipper mFlipper;
@@ -71,6 +72,8 @@ public abstract class BaseSeverityFilterActivity<T> extends
 		super.selectHostGroupInSpinner(position, itemId);
 		mListFragment.setHostGroupId(itemId);
 		mDetailsFragment.setHostGroupId(itemId);
+		mListFragment.selectItem(0);
+		mDetailsFragment.selectItem(0);
 	}
 
 	@Override
@@ -83,7 +86,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 		// called! Otherwise the "acknowledge event" button might be displayed
 		// erroneously
 		showDetailsFragment();
-		mDetailsFragment.selectItem(position, id);
+		mDetailsFragment.selectItem(position);
 		mListFragment.selectItem(position);
 
 	}
@@ -92,6 +95,8 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	public void onSeveritySelected(TriggerSeverity severity) {
 		mSeverity = severity;
 		mDetailsFragment.setSeverity(severity);
+		mListFragment.selectItem(0);
+		mDetailsFragment.selectItem(0);
 	}
 
 	@Override
@@ -120,6 +125,21 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	protected void showListFragment() {
 		if (!mListFragment.isVisible() && mFlipper != null) {
 			mFlipper.setDisplayedChild(FLIPPER_LIST_FRAGMENT);
+		}
+	}
+
+	@Override
+	public void onSeverityListAdapterFilled(TriggerSeverity severity, boolean hostGroupChanged) {
+		if (severity == mSeverity) {
+			if(hostGroupChanged) {
+				mDetailsFragment.selectItem(0);
+				mListFragment.selectItem(0);
+				// TODO: page indicator display issue
+				// TODO: maybe: save current item per severity and host group
+				return;
+			}
+			mDetailsFragment.selectItem(mCurrentItemPosition);
+			mListFragment.selectItem(mCurrentItemPosition);
 		}
 	}
 

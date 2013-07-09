@@ -78,8 +78,10 @@ public class EventsDetailsFragment extends
 	}
 	
 	@Override
-	public void selectItem(int position, long id) {
-		super.selectItem(position, id);
+	public void selectItem(int position) {
+		super.selectItem(position);
+		if(mDetailsPagerAdapter == null || mDetailsPagerAdapter.getCount() == 0)
+			return;
 		Event e = mDetailsPagerAdapter.getCurrentItem();
 		if (e.isAcknowledged())
 			this.setAcknowledgeButtonEnabled(false);

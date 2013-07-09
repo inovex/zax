@@ -34,7 +34,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			int position = extras.getInt(ARG_ITEM_POSITION, -1);
 			long id = extras.getLong(ARG_ITEM_ID, -1);
 			if (position != -1 && id != -1) {
-				mDetailsFragment.selectItem(position, id);
+				mDetailsFragment.selectItem(position);
 				showDetailsFragment();
 			}
 		}
@@ -67,8 +67,9 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		if (mZabbixDataService != null) {
 			for (TriggerSeverity severity : TriggerSeverity.values()) {
 				mZabbixDataService.loadProblemsBySeverityAndHostGroup(severity,
-						mHostGroupId, hostGroupChanged);
+						mHostGroupId, hostGroupChanged, this);
 			}
 		}
 	}
+
 }

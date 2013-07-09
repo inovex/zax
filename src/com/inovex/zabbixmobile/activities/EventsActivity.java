@@ -8,11 +8,12 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
+import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterFilledListener;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
-		OnAcknowledgeEventListener {
+		OnAcknowledgeEventListener{
 
 	private static final String TAG = EventsActivity.class.getSimpleName();
 
@@ -36,6 +37,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		
 		if(!mDetailsFragment.isVisible())
 			mDetailsFragment.setHasOptionsMenu(false);
+		
 	}
 
 	@Override
@@ -47,7 +49,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	@Override
 	public void onEventAcknowledged() {
 		// select refreshes the action bar menu
-		mDetailsFragment.selectItem(mCurrentItemPosition, mCurrentItemId);
+		mDetailsFragment.selectItem(mCurrentItemPosition);
 	}
 
 	@Override
@@ -68,7 +70,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		for (TriggerSeverity severity : TriggerSeverity.values()) {
 			mZabbixDataService.loadEventsBySeverityAndHostGroup(severity,
-					mHostGroupId, hostGroupChanged);
+					mHostGroupId, hostGroupChanged, this);
 		}
 	}
 

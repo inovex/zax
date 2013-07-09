@@ -36,6 +36,7 @@ import com.inovex.zabbixmobile.adapters.ProblemsListAdapter;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
+import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterFilledListener;
 import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Host;
@@ -399,12 +400,12 @@ public class ZabbixDataService extends Service {
 	 */
 	public void loadEventsBySeverityAndHostGroup(
 			final TriggerSeverity severity, final long hostGroupId,
-			final boolean hostGroupChanged) {
+			final boolean hostGroupChanged, final OnSeverityListAdapterFilledListener callback) {
 
 		new RemoteAPITask(mRemoteAPI) {
 
 			private List<Event> events;
-			private final BaseServiceAdapter<Event> adapter = mEventsListAdapters
+			private final BaseServiceAdapter<Event> listAdapter = mEventsListAdapters
 					.get(severity);
 			private final BaseSeverityPagerAdapter<Event> detailsAdapter = mEventsDetailsPagerAdapters
 					.get(severity);
@@ -434,11 +435,11 @@ public class ZabbixDataService extends Service {
 				super.onPostExecute(result);
 				// TODO: update the data set instead of removing and re-adding
 				// all items
-				if (adapter != null) {
+				if (listAdapter != null) {
 					if (hostGroupChanged)
-						adapter.clear();
-					adapter.addAll(events);
-					adapter.notifyDataSetChanged();
+						listAdapter.clear();
+					listAdapter.addAll(events);
+					listAdapter.notifyDataSetChanged();
 				}
 
 				if (detailsAdapter != null) {
@@ -447,6 +448,9 @@ public class ZabbixDataService extends Service {
 					detailsAdapter.addAll(events);
 					detailsAdapter.notifyDataSetChanged();
 				}
+				
+				if(callback != null)
+					callback.onSeverityListAdapterFilled(severity, hostGroupChanged);
 			}
 
 		}.execute();
@@ -469,7 +473,7 @@ public class ZabbixDataService extends Service {
 	 */
 	public void loadProblemsBySeverityAndHostGroup(
 			final TriggerSeverity severity, final long hostGroupId,
-			final boolean hostGroupChanged) {
+			final boolean hostGroupChanged, final OnSeverityListAdapterFilledListener callback) {
 
 		new RemoteAPITask(mRemoteAPI) {
 
@@ -520,6 +524,9 @@ public class ZabbixDataService extends Service {
 					detailsAdapter.addAll(triggers);
 					detailsAdapter.notifyDataSetChanged();
 				}
+				
+				if(callback != null)
+					callback.onSeverityListAdapterFilled(severity, hostGroupChanged);
 			}
 
 		}.execute();

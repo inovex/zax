@@ -158,7 +158,7 @@ public class MainActivity extends BaseActivity {
 				}
 			});
 			mZabbixDataService.loadProblemsBySeverityAndHostGroup(
-					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true);
+					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true, null);
 		}
 
 	}
