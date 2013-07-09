@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.widget.ViewFlipper;
 
@@ -20,12 +21,16 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	private static final String TAG = ChecksActivity.class.getSimpleName();
 
+	private static final int FLIPPER_HOST_LIST_FRAGMENT = 0;
+	private static final int FLIPPER_APPLICATIONS_FRAGMENT = 1;
+	private static final int FLIPPER_ITEM_DETAILS_FRAGMENT = 2;
+
 	protected int mCurrentItemPosition;
 	protected FragmentManager mFragmentManager;
 	protected ViewFlipper mFlipper;
-	protected ChecksDetailsFragment mDetailsFragment;
-	protected ChecksItemsDetailsFragment mItemsDetailsFragment;
-	protected ChecksListFragment mListFragment;
+	protected ChecksListFragment mHostListFragment;
+	protected ChecksDetailsFragment mApplicationsFragment;
+	protected ChecksItemsDetailsFragment mItemDetailsFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,24 +44,20 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.checks_flipper);
-		mListFragment = (ChecksListFragment) mFragmentManager
+		mHostListFragment = (ChecksListFragment) mFragmentManager
 				.findFragmentById(R.id.checks_list);
-		mDetailsFragment = (ChecksDetailsFragment) mFragmentManager
+		mApplicationsFragment = (ChecksDetailsFragment) mFragmentManager
 				.findFragmentById(R.id.checks_details);
-		mItemsDetailsFragment = (ChecksItemsDetailsFragment) mFragmentManager
+		mItemDetailsFragment = (ChecksItemsDetailsFragment) mFragmentManager
 				.findFragmentById(R.id.checks_items_details);
-		Log.d(TAG, mFlipper.toString());
-		Log.d(TAG, mListFragment.toString());
-		Log.d(TAG, mDetailsFragment.toString());
-		Log.d(TAG, mItemsDetailsFragment.toString());
-		System.out.println();
+		showHostListFragment();
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			if ((mDetailsFragment.isVisible() || mItemsDetailsFragment
+			if ((mApplicationsFragment.isVisible() || mItemDetailsFragment
 					.isVisible()) && mFlipper != null) {
 				mFlipper.showPrevious();
 			} else
@@ -71,27 +72,38 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		Log.d(TAG, "item selected: " + id + " position: " + position + ")");
 		this.mCurrentItemPosition = position;
 
-		mDetailsFragment.selectHost(position, id);
-		if (mFlipper != null)
-			mFlipper.showNext();
+		mApplicationsFragment.selectHost(position, id);
+		showApplicationsFragment();
 
 	}
 
 	@Override
 	public void onItemSelected(int position, long id) {
-		mItemsDetailsFragment.selectItem(position, id);
-		if (mFlipper != null)
-			mFlipper.showNext();
+		mItemDetailsFragment.selectItem(position, id);
+		showItemDetailsFragment();
 	}
 
 	@Override
 	public void onBackPressed() {
-		if ((mDetailsFragment.isVisible() || mItemsDetailsFragment.isVisible())
-				&& mFlipper != null) {
-			mFlipper.showPrevious();
+		if (mFlipper != null) {
+			if (mItemDetailsFragment.isVisible()) {
+				showApplicationsFragment();
+				return;
+			}
+			if (mApplicationsFragment.isVisible()) {
+				showHostListFragment();
+				return;
+			}
+
 		} else {
-			super.onBackPressed();
+			if (mApplicationsFragment.isVisible()
+					&& mItemDetailsFragment.isVisible()) {
+				showHostListFragment();
+				return;
+			}
+
 		}
+		super.onBackPressed();
 	}
 
 	@Override
@@ -105,7 +117,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	@Override
 	public void selectHostGroupInSpinner(int position, long itemId) {
 		super.selectHostGroupInSpinner(position, itemId);
-		mListFragment.setHostGroup(itemId);
+		mHostListFragment.setHostGroup(itemId);
 		// TODO: update details fragment
 	}
 
@@ -125,6 +137,45 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		if (mZabbixDataService != null)
 			mZabbixDataService.loadHostsByHostGroup(mHostGroupId,
 					hostGroupChanged);
+	}
+
+	protected void showHostListFragment() {
+		if (mFlipper != null) {
+			// portrait
+			if (!mHostListFragment.isVisible()) {
+				mFlipper.setDisplayedChild(FLIPPER_HOST_LIST_FRAGMENT);
+			}
+		} else {
+			// landscape
+			FragmentTransaction ft = mFragmentManager.beginTransaction();
+			ft.show(mHostListFragment);
+			ft.hide(mItemDetailsFragment);
+			ft.commit();
+		}
+	}
+
+	protected void showApplicationsFragment() {
+		if (mFlipper != null) {
+			// portrait
+			if (!mApplicationsFragment.isVisible())
+				mFlipper.setDisplayedChild(FLIPPER_APPLICATIONS_FRAGMENT);
+		}
+		// nothing to do for landscape: applications are always visible
+	}
+
+	protected void showItemDetailsFragment() {
+		if (mFlipper != null) {
+			// portrait
+			if (!mItemDetailsFragment.isVisible()) {
+				mFlipper.setDisplayedChild(FLIPPER_ITEM_DETAILS_FRAGMENT);
+			}
+		} else {
+			// landscape
+			FragmentTransaction ft = mFragmentManager.beginTransaction();
+			ft.hide(mHostListFragment);
+			ft.show(mItemDetailsFragment);
+			ft.commit();
+		}
 	}
 
 }
