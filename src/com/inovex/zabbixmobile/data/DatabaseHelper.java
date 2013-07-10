@@ -246,6 +246,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Queries a hosts by its ID.
 	 * 
+	 * This method is synchronized on the {@link Dao} for {@link Host} to ensure
+	 * that hosts are actually present in the database (see
+	 * {@link ZabbixRemoteAPI#importHostsAndGroups()}).
+	 * 
 	 * @param hostId
 	 *            ID of the host group
 	 * @return hosts with the given ID

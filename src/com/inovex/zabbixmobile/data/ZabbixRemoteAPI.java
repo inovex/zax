@@ -614,8 +614,16 @@ public class ZabbixRemoteAPI {
 					app.setId(Long.parseLong(application.getText()));
 				} else if (propName.equals(Application.COLUMN_NAME)) {
 					app.setName(application.getText());
-					// } else if
-					// (propName.equals(ApplicationData.COLUMN_HOSTID)) {
+				} else if (propName.equals(Application.COLUMN_HOSTID)) {
+					// Attention: there is an inconsistency in Zabbix 1.8: Even
+					// though the select_hosts parameter is set, application.get
+					// does not return hosts. The hostid of the application
+					// object is, however, set. So we use this id to retrieve
+					// the host for an application from the database.
+					Host h = databaseHelper.getHostById(Long
+							.parseLong(application.getText()));
+					if (h != null)
+						app.setHost(h);
 					// app.set(ApplicationData.COLUMN_HOSTID,
 					// Long.parseLong(application.getText()));
 				} else if (propName.equals("items")) {
@@ -626,8 +634,9 @@ public class ZabbixRemoteAPI {
 					List<Host> hosts = importHostsFromStream(
 							application.getJsonArrayOrObjectReader(), null);
 					if (hosts.size() > 0) {
-						Host t = hosts.get(0);
-						app.setHost(t);
+						Host h = hosts.get(0);
+						if (h != null)
+							app.setHost(h);
 					}
 					if (hosts.size() > 1) {
 						Log.w(TAG, "More than one host found for application "
@@ -1181,7 +1190,6 @@ public class ZabbixRemoteAPI {
 			JsonArrayOrObjectReader jsonReader, Integer numHosts)
 			throws JsonParseException, IOException, SQLException {
 
-		Log.d(TAG, "hosts cleared.");
 		List<Host> hosts = new ArrayList<Host>();
 		List<HostHostGroupRelation> hostHostGroupCollection = new ArrayList<HostHostGroupRelation>();
 		long firstHostId = -1;
