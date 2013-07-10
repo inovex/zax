@@ -317,6 +317,8 @@ public class ZabbixRemoteAPI {
 			throw new FatalException(Type.NO_CONNECTION, e);
 		} catch (ConnectTimeoutException e) {
 			throw new FatalException(Type.CONNECTION_TIMEOUT, e);
+		} catch (UnknownHostException e) {
+			throw new FatalException(Type.SERVER_NOT_FOUND, e);
 		}
 	}
 
@@ -405,6 +407,8 @@ public class ZabbixRemoteAPI {
 			throw new FatalException(Type.NO_CONNECTION, e);
 		} catch (ConnectTimeoutException e) {
 			throw new FatalException(Type.CONNECTION_TIMEOUT, e);
+		} catch (UnknownHostException e) {
+			throw new FatalException(Type.SERVER_NOT_FOUND, e);
 		}
 	}
 

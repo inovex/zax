@@ -103,11 +103,13 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	 *            id of the selected host group
 	 */
 	public void selectHostGroupInSpinner(int position, long itemId) {
-		mHostGroupId = itemId;
-		mHostGroupPosition = position;
 		mSpinnerAdapter.setCurrentPosition(position);
-		// update adapters
-		loadAdapterContent(true);
+		if(itemId != mHostGroupId) {
+			mHostGroupId = itemId;
+			mHostGroupPosition = position;
+			// update adapters
+			loadAdapterContent(true);
+		}
 	}
 
 	protected abstract void loadAdapterContent(boolean hostGroupChanged);
