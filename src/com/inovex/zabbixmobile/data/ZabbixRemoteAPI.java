@@ -269,10 +269,14 @@ public class ZabbixRemoteAPI {
 			FatalException {
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
+		
+		String auth = "null";
+		if(token != null && method != "user.authenticate")
+			auth = "\"" + token + "\"";
 
 		String json = "{" + "	\"jsonrpc\" : \"2.0\"," + "	\"method\" : \""
 				+ method + "\"," + "	\"params\" : " + params.toString() + ","
-				+ "	\"auth\" : " + (token == null ? "null" : '"' + token + '"')
+				+ "	\"auth\" : " + auth
 				+ "," + "	\"id\" : 0" + "}";
 		Log.d(TAG, "queryBuffer=" + json);
 
@@ -537,6 +541,24 @@ public class ZabbixRemoteAPI {
 			throw new ZabbixLoginRequiredException();
 		}
 		return token != null;
+	}
+
+	public void logout() throws ZabbixLoginRequiredException, FatalException {
+
+		try {
+			JSONObject result = _queryBuffer("user.logout", new JSONObject());
+			token = result.getString("result");
+		} catch (JSONException e) {
+			// there's no result
+			e.printStackTrace();
+		} catch (RuntimeException e) {
+			// wrong password. token remains null
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (IOException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		}
 	}
 
 	/**

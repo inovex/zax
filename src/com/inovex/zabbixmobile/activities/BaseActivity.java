@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
+import android.test.PerformanceTestCase;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -24,10 +25,15 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 public abstract class BaseActivity extends SherlockFragmentActivity implements
 		ServiceConnection, OnLoginProgressListener {
 
+	private static final int REQUEST_CODE_PREFERENCES = 12345;
+
 	protected ZabbixDataService mZabbixDataService;
 
 	protected ActionBar mActionBar;
 	private LoginProgressDialogFragment mLoginProgress;
+	protected static boolean mLoggedIn = false;
+
+	private boolean mPreferencesClosed = false;
 
 	private static final String TAG = BaseActivity.class.getSimpleName();
 
@@ -39,18 +45,33 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		ZabbixDataBinder zabbixBinder = (ZabbixDataBinder) binder;
 		mZabbixDataService = zabbixBinder.getService();
 		mZabbixDataService.setActivityContext(BaseActivity.this);
-		mZabbixDataService.performZabbixLogin(this);
+		if (!mLoggedIn)
+			mZabbixDataService.performZabbixLogin(this);
+
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		Log.d(TAG, "onPause");
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Log.d(TAG, "onResume");
+		// if the preferences activity has been closed (and possibly preferences
+		// have been changed), we start a relogin.
+		if (mPreferencesClosed && mZabbixDataService != null) {
+			mZabbixDataService.performZabbixLogin(this);
+			// TODO: refresh data
+		}
 
 	}
 
 	@Override
 	public void onServiceDisconnected(ComponentName arg0) {
 		Log.d(TAG, "onServiceDisconnected()");
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
 	}
 
 	/**
@@ -117,6 +138,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		if (success) {
 			Toast.makeText(this, R.string.zabbix_login_successful,
 					Toast.LENGTH_LONG).show();
+			mLoggedIn = true;
 			enableUI();
 		}
 	}
@@ -130,10 +152,18 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		if (item.getItemId() == R.id.menuitem_preferences) {
 			Intent intent = new Intent(getApplicationContext(),
 					ZaxPreferenceActivity.class);
-			startActivityForResult(intent, 0);
+			startActivityForResult(intent, REQUEST_CODE_PREFERENCES);
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d(TAG, "onActivityResult");
+		
+		if (requestCode == REQUEST_CODE_PREFERENCES)
+			mPreferencesClosed = true;
 	}
 
 	/**

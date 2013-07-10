@@ -90,8 +90,6 @@ public class ZabbixDataService extends Service {
 	private LayoutInflater mInflater;
 	private ZabbixRemoteAPI mRemoteAPI;
 
-	protected boolean loggedIn;
-
 	/**
 	 * Class used for the client Binder. Because we know this service always
 	 * runs in the same process as its clients, we don't need to deal with IPC.
@@ -323,28 +321,56 @@ public class ZabbixDataService extends Service {
 	 * 
 	 */
 	public void performZabbixLogin(final OnLoginProgressListener listener) {
-		if (!loggedIn) {
 			listener.onLoginStarted();
 
 			// authenticate
 			RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI) {
 
+				private boolean success = false;
+				
 				@Override
 				protected void executeTask()
 						throws ZabbixLoginRequiredException, FatalException {
 					mRemoteAPI.authenticate();
-					loggedIn = true;
+					success = true;
 				}
 
 				@Override
 				protected void onPostExecute(Void result) {
 					super.onPostExecute(result);
-					listener.onLoginFinished(loggedIn);
+					listener.onLoginFinished(success);
 				}
 
 			};
 			loginTask.execute();
-		}
+	}
+	
+	/**
+	 * Performs the Zabbix login using the server address and credentials from
+	 * the preferences.
+	 * 
+	 * @param listener
+	 *            listener to be informed about start and end of the login
+	 *            process
+	 * 
+	 */
+	public void performZabbixLogout() {
+			RemoteAPITask logoutTask = new RemoteAPITask(mRemoteAPI) {
+
+				
+				@Override
+				protected void executeTask()
+						throws ZabbixLoginRequiredException, FatalException {
+					mRemoteAPI.logout();
+				}
+
+				@Override
+				protected void onPostExecute(Void result) {
+					super.onPostExecute(result);
+				}
+
+			};
+			logoutTask.execute();
 	}
 
 	@Override
