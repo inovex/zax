@@ -59,4 +59,10 @@ public class Host implements Comparable<Host> {
 			return 1;
 		return -1;
 	}
+
+	@Override
+	public String toString() {
+		return getId() + ": " + getName();
+	}
+	
 }

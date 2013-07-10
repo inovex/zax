@@ -88,7 +88,7 @@ public abstract class BaseSeverityFilterListPage extends
 		mPosition = position;
 		// check if the view has already been created -> if not, calls will be
 		// made in onViewCreated().
-		if (getListAdapter() != null) {
+		if (getView() != null) {
 			getListView().setItemChecked(position, true);
 			getListView().setSelection(position);
 		}

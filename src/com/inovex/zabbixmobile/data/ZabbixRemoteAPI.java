@@ -1277,6 +1277,15 @@ public class ZabbixRemoteAPI {
 			FatalException {
 		// if (!isCached(HostData.TABLE_NAME, null)) {
 		try {
+			if (databaseHelper.isCached(CacheDataType.HOST)) {
+				Log.d(TAG, "Hosts do not need to be refreshed.");
+				return;
+			}
+		} catch (SQLException e1) {
+			// ignore this because the worst that can happen is an unnecessary
+			// API call
+		}
+		try {
 			// hosts in the local database may not be empty; hence we prevent
 			// multiple database operations on the hosts table (as soon as
 			// caching is implemented, the performance impact will be 0)
@@ -1302,7 +1311,7 @@ public class ZabbixRemoteAPI {
 										: "select_groups", "extend"));
 				importHostsFromStream(hosts, null);
 				hosts.close();
-
+				databaseHelper.setCached(CacheDataType.HOST);
 			}
 
 		} catch (SQLException e) {

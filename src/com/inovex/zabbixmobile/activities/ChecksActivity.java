@@ -132,6 +132,8 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	public void selectHostGroupInSpinner(int position, long itemId) {
 		super.selectHostGroupInSpinner(position, itemId);
 		mHostListFragment.setHostGroup(itemId);
+		if(!mHostListFragment.isVisible())
+			showHostListFragment();
 		// TODO: update details fragment
 	}
 

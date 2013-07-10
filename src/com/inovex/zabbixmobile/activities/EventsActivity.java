@@ -53,6 +53,13 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	}
 
 	@Override
+	public void selectHostGroupInSpinner(int position, long itemId) {
+		super.selectHostGroupInSpinner(position, itemId);
+		if (!mListFragment.isVisible())
+			showListFragment();
+	}
+
+	@Override
 	protected void showDetailsFragment() {
 		super.showDetailsFragment();
 		// details fragment becomes visible -> enable menu
