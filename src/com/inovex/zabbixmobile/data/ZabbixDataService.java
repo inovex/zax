@@ -36,6 +36,7 @@ import com.inovex.zabbixmobile.adapters.ProblemsListAdapter;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
+import com.inovex.zabbixmobile.listeners.OnHistoryDetailsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnListAdapterFilledListener;
 import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterFilledListener;
 import com.inovex.zabbixmobile.model.Application;
@@ -763,7 +764,7 @@ public class ZabbixDataService extends Service {
 	 * @param itemId
 	 *            item id
 	 */
-	public void loadHistoryDetailsByItemId(final long itemId) {
+	public void loadHistoryDetailsByItemId(final long itemId, final OnHistoryDetailsLoadedListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
 			List<HistoryDetail> historyDetails;
@@ -790,8 +791,8 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				// fill adapter
 
+				callback.onHistoryDetailsLoaded(historyDetails);
 			}
 
 		}.execute();

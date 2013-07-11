@@ -1,8 +1,18 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/checks_title"
+        android:id="@+id/item_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-</ScrollView>
+    <LinearLayout
+        android:id="@+id/item_graph"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:padding="2dip" />
+
+</LinearLayout>

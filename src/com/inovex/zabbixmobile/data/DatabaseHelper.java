@@ -27,6 +27,8 @@ import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.PreparedDelete;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
@@ -343,8 +345,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		itemQuery.join(relationQuery);
 		return itemQuery.query();
 	}
-	
-	public List<HistoryDetail> getHistoryDetailsByItemId(long itemId) throws SQLException {
+
+	public List<HistoryDetail> getHistoryDetailsByItemId(long itemId)
+			throws SQLException {
 		Dao<HistoryDetail, Long> historyDao = getDao(HistoryDetail.class);
 		return historyDao.queryForEq(HistoryDetail.COLUMN_ITEMID, itemId);
 	}
@@ -707,6 +710,23 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	public void clearItems() throws SQLException {
 		clearTable(Item.class);
+	}
+
+	/**
+	 * Deletes history details which are older than the specified time.
+	 * 
+	 * @param threshold
+	 *            all items with a clock smaller than this threshold will be
+	 *            deleted
+	 * @throws SQLException
+	 */
+	public void deleteOldHistoryDetails(long threshold) throws SQLException {
+		Dao<HistoryDetail, Long> historyDao = getDao(HistoryDetail.class);
+		DeleteBuilder<HistoryDetail, Long> deleteBuilder = historyDao
+				.deleteBuilder();
+		deleteBuilder.where().lt(HistoryDetail.COLUMN_CLOCK, threshold);
+		int n = deleteBuilder.delete();
+		Log.d(TAG, "deleted " + n + "history details.");
 	}
 
 	/**

@@ -1017,18 +1017,25 @@ public class ZabbixRemoteAPI {
 		// zabbixLocalDB.delete(HistoryDetailData.TABLE_NAME,
 		// HistoryDetailData.COLUMN_ITEMID+"="+itemid, null);
 
+		// delete old history items
 		try {
-			// the past 2 hours
-			long time_till = new Date().getTime() / 1000;
-			long time_from = time_till
+			databaseHelper.deleteOldHistoryDetails(System.currentTimeMillis()
+					- (ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT * 1000));
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		try {
+			long timeTill = new Date().getTime() / 1000;
+			long timeFrom = timeTill
 					- ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT;
 
 			// Workaround: historydetails only comes if you use the correct
 			// "history"-parameter. This parameter can be "null" or a number
 			// 0-4.
 			// Because we don't know when to use which, we try them all, until
-			// we
-			// get results.
+			// we get results.
 			Integer historytype = null;
 			JSONObject result = _queryBuffer(
 					"history.get",
@@ -1036,7 +1043,7 @@ public class ZabbixRemoteAPI {
 							.put("history", historytype)
 							// for integer ?
 							.put("itemids", new JSONArray().put(itemId))
-							.put("time_from", time_from));
+							.put("time_from", timeFrom));
 
 			JSONArray testHistorydetails = result.getJSONArray("result");
 			if (testHistorydetails.length() == 0) {
@@ -1051,11 +1058,11 @@ public class ZabbixRemoteAPI {
 									.put("limit", 1)
 									.put("history", historytype)
 									.put("itemids", new JSONArray().put(itemId))
-									.put("time_from", time_from));
+									.put("time_from", timeFrom));
 					testHistorydetails = result.getJSONArray("result");
 				}
 			}
-			// correct historytype found and there are data
+			// correct historytype found and there is data
 			if (testHistorydetails.length() > 0) {
 				// count of the entries cannot be detected (zabbix bug),
 				// so we use a fiction
@@ -1067,7 +1074,7 @@ public class ZabbixRemoteAPI {
 								.put("limit", ZabbixConfig.HISTORY_GET_LIMIT)
 								.put("history", historytype)
 								.put("itemids", new JSONArray().put(itemId))
-								.put("time_from", time_from)
+								.put("time_from", timeFrom)
 								.put("sortfield", "clock")
 								.put("sortorder", "DESC"));
 
@@ -1090,8 +1097,7 @@ public class ZabbixRemoteAPI {
 							String propName = historydetail.getCurrentName();
 							if (propName.equals(HistoryDetail.COLUMN_CLOCK)) {
 								// The unit of Zabbix timestamps is seconds, we
-								// need
-								// milliseconds
+								// need milliseconds
 								h.setClock(Long.parseLong(historydetail
 										.getText()) * 1000);
 							} else if (propName
