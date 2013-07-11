@@ -63,6 +63,7 @@ import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.ApplicationItemRelation;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.HostHostGroupRelation;
@@ -269,15 +270,14 @@ public class ZabbixRemoteAPI {
 			FatalException {
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
-		
+
 		String auth = "null";
-		if(token != null && method != "user.authenticate")
+		if (token != null && method != "user.authenticate")
 			auth = "\"" + token + "\"";
 
 		String json = "{" + "	\"jsonrpc\" : \"2.0\"," + "	\"method\" : \""
 				+ method + "\"," + "	\"params\" : " + params.toString() + ","
-				+ "	\"auth\" : " + auth
-				+ "," + "	\"id\" : 0" + "}";
+				+ "	\"auth\" : " + auth + "," + "	\"id\" : 0" + "}";
 		Log.d(TAG, "queryBuffer=" + json);
 
 		post.setEntity(new StringEntity(json, "UTF-8"));
@@ -541,24 +541,6 @@ public class ZabbixRemoteAPI {
 			throw new ZabbixLoginRequiredException();
 		}
 		return token != null;
-	}
-
-	public void logout() throws ZabbixLoginRequiredException, FatalException {
-
-		try {
-			JSONObject result = _queryBuffer("user.logout", new JSONObject());
-			token = result.getString("result");
-		} catch (JSONException e) {
-			// there's no result
-			e.printStackTrace();
-		} catch (RuntimeException e) {
-			// wrong password. token remains null
-			e.printStackTrace();
-		} catch (ClientProtocolException e) {
-			throw new FatalException(Type.INTERNAL_ERROR, e);
-		} catch (IOException e) {
-			throw new FatalException(Type.INTERNAL_ERROR, e);
-		}
 	}
 
 	/**
@@ -1027,113 +1009,128 @@ public class ZabbixRemoteAPI {
 	// _endTransaction();
 	// }
 	// }
-	//
-	// public void importHistoryDetails(String itemid) throws
-	// ClientProtocolException, IOException, JSONException,
-	// HttpAuthorizationRequiredException, NoAPIAccessException,
-	// PreconditionFailedException {
-	// if (!isCached(HistoryDetailData.TABLE_NAME, itemid)) {
-	// _startTransaction();
-	// zabbixLocalDB.delete(HistoryDetailData.TABLE_NAME,
-	// HistoryDetailData.COLUMN_ITEMID+"="+itemid, null);
-	//
-	// // the past 2 hours
-	// long time_till = new Date().getTime() / 1000;
-	// long time_from = time_till - ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT;
-	//
-	// // Workaround: historydetails only comes if you use the correct
-	// "history"-parameter.
-	// // this parameter can be "null" or a number 0-4. Because we don't know
-	// when to use which,
-	// // we try them all, until we get results.
-	// Integer historytype = null;
-	// JSONObject result = _queryBuffer(
-	// "history.get"
-	// , new JSONObject()
-	// .put("limit", 1)
-	// .put("history", historytype) // for integer ?
-	// .put("itemids", new JSONArray().put(itemid))
-	// .put("time_from", time_from)
-	// );
-	//
-	// JSONArray testHistorydetails = result.getJSONArray("result");
-	// if (testHistorydetails.length() == 0) {
-	// historytype = -1;
-	// while (testHistorydetails.length() == 0 && ++historytype <= 4) {
-	// // if we get an empty array, we try another history parameter
-	// result = _queryBuffer(
-	// "history.get"
-	// , new JSONObject()
-	// .put("output", "extend")
-	// .put("limit", 1)
-	// .put("history", historytype)
-	// .put("itemids", new JSONArray().put(itemid))
-	// .put("time_from", time_from)
-	// );
-	// testHistorydetails = result.getJSONArray("result");
-	// }
-	// }
-	// // correct historytype found and there are data
-	// if (testHistorydetails.length() > 0) {
-	// // count of the entries cannot be detected (zabbix bug),
-	// // so we use a fiction
-	// int numDetails = 400;
-	// int curI=0;
-	// JsonArrayOrObjectReader historydetails = _queryStream(
-	// "history.get"
-	// , new JSONObject()
-	// .put("output", "extend")
-	// .put("limit", ZabbixConfig.HISTORY_GET_LIMIT)
-	// .put("history", historytype)
-	// .put("itemids", new JSONArray().put(itemid))
-	// .put("time_from", time_from)
-	// .put("sortfield", "clock")
-	// .put("sortorder", "DESC")
-	// );
-	// JsonObjectReader historydetail;
-	// try {
-	// int selI = 0;
-	// while ((historydetail = historydetails.next()) != null) {
-	// // save only every 20th
-	// if (selI++ % 20 != 0) {
-	// while (historydetail.nextValueToken()) {
-	// historydetail.nextProperty();
-	// }
-	// continue;
-	// }
-	//
-	// HistoryDetailData h = new HistoryDetailData();
-	// while (historydetail.nextValueToken()) {
-	// String propName = historydetail.getCurrentName();
-	// if (propName.equals(HistoryDetailData.COLUMN_CLOCK)) {
-	// h.set(HistoryDetailData.COLUMN_CLOCK,
-	// Integer.parseInt(historydetail.getText()));
-	// } else if (propName.equals(HistoryDetailData.COLUMN_ITEMID)) {
-	// h.set(HistoryDetailData.COLUMN_ITEMID,
-	// Long.parseLong(historydetail.getText()));
-	// } else if (propName.equals(HistoryDetailData.COLUMN_VALUE)) {
-	// h.set(HistoryDetailData.COLUMN_VALUE,
-	// Double.parseDouble(historydetail.getText()));
-	// } else {
-	// historydetail.nextProperty();
-	// }
-	// }
-	// h.insert(zabbixLocalDB);
-	// if (++curI % 10 == 0) {
-	// showProgress(Math.min(curI*100/numDetails, 84));
-	// }
-	// _commitTransactionIfRecommended();
-	// }
-	// } catch (NumberFormatException e) {
-	// // data are unuseable, e.g. because it's a string
-	// }
-	// historydetails.close();
-	// }
-	// setCached(HistoryDetailData.TABLE_NAME, itemid,
-	// ZabbixConfig.CACHE_LIFETIME_HISTORY_DETAILS);
-	// _endTransaction();
-	// }
-	// }
+
+	public void importHistoryDetails(long itemId)
+			throws ZabbixLoginRequiredException, FatalException {
+		// if (!isCached(HistoryDetailData.TABLE_NAME, itemid)) {
+		// _startTransaction();
+		// zabbixLocalDB.delete(HistoryDetailData.TABLE_NAME,
+		// HistoryDetailData.COLUMN_ITEMID+"="+itemid, null);
+
+		try {
+			// the past 2 hours
+			long time_till = new Date().getTime() / 1000;
+			long time_from = time_till
+					- ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT;
+
+			// Workaround: historydetails only comes if you use the correct
+			// "history"-parameter. This parameter can be "null" or a number
+			// 0-4.
+			// Because we don't know when to use which, we try them all, until
+			// we
+			// get results.
+			Integer historytype = null;
+			JSONObject result = _queryBuffer(
+					"history.get",
+					new JSONObject().put("limit", 1)
+							.put("history", historytype)
+							// for integer ?
+							.put("itemids", new JSONArray().put(itemId))
+							.put("time_from", time_from));
+
+			JSONArray testHistorydetails = result.getJSONArray("result");
+			if (testHistorydetails.length() == 0) {
+				historytype = -1;
+				while (testHistorydetails.length() == 0 && ++historytype <= 4) {
+					// if we get an empty array, we try another history
+					// parameter
+					result = _queryBuffer(
+							"history.get",
+							new JSONObject()
+									.put("output", "extend")
+									.put("limit", 1)
+									.put("history", historytype)
+									.put("itemids", new JSONArray().put(itemId))
+									.put("time_from", time_from));
+					testHistorydetails = result.getJSONArray("result");
+				}
+			}
+			// correct historytype found and there are data
+			if (testHistorydetails.length() > 0) {
+				// count of the entries cannot be detected (zabbix bug),
+				// so we use a fiction
+				int numDetails = 400;
+				int curI = 0;
+				JsonArrayOrObjectReader historydetails = _queryStream(
+						"history.get",
+						new JSONObject().put("output", "extend")
+								.put("limit", ZabbixConfig.HISTORY_GET_LIMIT)
+								.put("history", historytype)
+								.put("itemids", new JSONArray().put(itemId))
+								.put("time_from", time_from)
+								.put("sortfield", "clock")
+								.put("sortorder", "DESC"));
+
+				JsonObjectReader historydetail;
+				List<HistoryDetail> historyDetailsCollection = new ArrayList<HistoryDetail>(
+						RECORDS_PER_INSERT_BATCH);
+				try {
+					int selI = 0;
+					while ((historydetail = historydetails.next()) != null) {
+						// save only every 20th
+						if (selI++ % 20 != 0) {
+							while (historydetail.nextValueToken()) {
+								historydetail.nextProperty();
+							}
+							continue;
+						}
+
+						HistoryDetail h = new HistoryDetail();
+						while (historydetail.nextValueToken()) {
+							String propName = historydetail.getCurrentName();
+							if (propName.equals(HistoryDetail.COLUMN_CLOCK)) {
+								// The unit of Zabbix timestamps is seconds, we
+								// need
+								// milliseconds
+								h.setClock(Long.parseLong(historydetail
+										.getText()) * 1000);
+							} else if (propName
+									.equals(HistoryDetail.COLUMN_ITEMID)) {
+								h.setItemId(Long.parseLong(historydetail
+										.getText()));
+							} else if (propName
+									.equals(HistoryDetail.COLUMN_VALUE)) {
+								h.setValue(Double.parseDouble(historydetail
+										.getText()));
+							} else {
+								historydetail.nextProperty();
+							}
+						}
+						historyDetailsCollection.add(h);
+						if (historyDetailsCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+							databaseHelper
+									.insertHistoryDetails(historyDetailsCollection);
+							historyDetailsCollection = new ArrayList<HistoryDetail>(
+									RECORDS_PER_INSERT_BATCH);
+						}
+					}
+				} catch (NumberFormatException e) {
+					// data are unuseable, e.g. because it's a string
+				}
+				// insert the last batch of events
+				databaseHelper.insertHistoryDetails(historyDetailsCollection);
+				historydetails.close();
+			}
+		} catch (SQLException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (IOException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (JSONException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		}
+		// setCached(HistoryDetailData.TABLE_NAME, itemid,
+		// ZabbixConfig.CACHE_LIFETIME_HISTORY_DETAILS);
+	}
 
 	/**
 	 * Imports host groups from a JSON stream.
@@ -1370,7 +1367,8 @@ public class ZabbixRemoteAPI {
 		long firstItemId = -1;
 		int curI = 0;
 		JsonObjectReader itemReader;
-		List<Item> items = new ArrayList<Item>();
+		List<Item> itemsComplete = new ArrayList<Item>();
+		List<Item> itemsPerBatch = new ArrayList<Item>(RECORDS_PER_INSERT_BATCH);
 		while ((itemReader = jsonReader.next()) != null) {
 			Item i = new Item();
 			String key_ = null;
@@ -1438,15 +1436,16 @@ public class ZabbixRemoteAPI {
 			// zabbixLocalDB.update(ApplicationItemRelationData.TABLE_NAME,
 			// values, ApplicationItemRelationData.COLUMN_ITEMID + "=-1",
 			// null);
-			items.add(i);
-			if (items.size() >= RECORDS_PER_INSERT_BATCH) {
-				databaseHelper.insertItems(items);
-				items = new ArrayList<Item>(RECORDS_PER_INSERT_BATCH);
+			itemsPerBatch.add(i);
+			itemsComplete.add(i);
+			if (itemsPerBatch.size() >= RECORDS_PER_INSERT_BATCH) {
+				databaseHelper.insertItems(itemsPerBatch);
+				itemsPerBatch = new ArrayList<Item>(RECORDS_PER_INSERT_BATCH);
 			}
 		}
 		// insert the last batch of events
-		databaseHelper.insertItems(items);
-		return items;
+		databaseHelper.insertItems(itemsPerBatch);
+		return itemsComplete;
 	}
 
 	public void importItems(long hostid) throws FatalException,

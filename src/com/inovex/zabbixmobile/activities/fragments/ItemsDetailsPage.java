@@ -6,7 +6,9 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +24,7 @@ import com.inovex.zabbixmobile.model.Item;
  * {@link EventsDetailsPagerAdapter} ). Shows the details of a specific event.
  * 
  */
-public class ItemsDetailsPage extends SherlockFragment {
+public class ItemsDetailsPage extends BaseServiceConnectedFragment {
 
 	private Item mItem;
 	private String mTitle = "";
@@ -66,9 +68,9 @@ public class ItemsDetailsPage extends SherlockFragment {
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		// outState.putLong(ARG_EVENT_ID, mEventId);
-		super.onSaveInstanceState(outState);
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		super.onServiceConnected(name, service);
+		mZabbixDataService.loadHistoryDetailsByItemId(mItem.getId());
 	}
 
 	public void setItem(Item item) {

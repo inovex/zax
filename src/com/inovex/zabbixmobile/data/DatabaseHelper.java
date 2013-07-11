@@ -17,6 +17,7 @@ import com.inovex.zabbixmobile.model.ApplicationItemRelation;
 import com.inovex.zabbixmobile.model.Cache;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.HostHostGroupRelation;
@@ -86,6 +87,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					HostHostGroupRelation.class);
 			TableUtils.createTable(connectionSource,
 					ApplicationItemRelation.class);
+			TableUtils.createTable(connectionSource, HistoryDetail.class);
 			TableUtils.createTable(connectionSource, Cache.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
@@ -111,6 +113,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					true);
 			TableUtils.dropTable(connectionSource,
 					ApplicationItemRelation.class, true);
+			TableUtils.dropTable(connectionSource, HistoryDetail.class, true);
 			TableUtils.dropTable(connectionSource, Cache.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
@@ -339,6 +342,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		itemQuery.join(relationQuery);
 		return itemQuery.query();
+	}
+	
+	public List<HistoryDetail> getHistoryDetailsByItemId(long itemId) throws SQLException {
+		Dao<HistoryDetail, Long> historyDao = getDao(HistoryDetail.class);
+		return historyDao.queryForEq(HistoryDetail.COLUMN_ITEMID, itemId);
 	}
 
 	/**
@@ -584,7 +592,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * Inserts items into the database.
 	 * 
 	 * @param itemCollection
-	 *            collection of relations to be inserted
+	 *            collection of items to be inserted
 	 * @throws SQLException
 	 */
 	public void insertItems(List<Item> itemCollection) throws SQLException {
@@ -594,12 +602,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 
 			for (Item item : itemCollection) {
-				try {
-					dao.createOrUpdate(item);
-				} catch (SQLException e) {
-					// this might throw an exception if the relation exists
-					// already (however, with a different primary key) -> ignore
-				}
+				dao.createOrUpdate(item);
 			}
 
 		} finally {
@@ -610,6 +613,39 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
+	/**
+	 * Inserts history details into the database.
+	 * 
+	 * @param historyDetailsCollection
+	 *            collection of relations to be inserted
+	 * @throws SQLException
+	 */
+	public void insertHistoryDetails(
+			List<HistoryDetail> historyDetailsCollection) throws SQLException {
+		Dao<HistoryDetail, Long> dao = getDao(HistoryDetail.class);
+		mThreadConnection = dao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (HistoryDetail historyDetail : historyDetailsCollection) {
+				dao.createOrUpdate(historyDetail);
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			dao.endThreadConnection(mThreadConnection);
+		}
+	}
+
+	/**
+	 * Sets an event to acknowledged.
+	 * 
+	 * @param event
+	 *            the event
+	 * @throws SQLException
+	 */
 	public void acknowledgeEvent(Event event) throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		event.setAcknowledged(true);

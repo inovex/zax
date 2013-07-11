@@ -40,6 +40,7 @@ import com.inovex.zabbixmobile.listeners.OnListAdapterFilledListener;
 import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterFilledListener;
 import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Item;
@@ -321,56 +322,28 @@ public class ZabbixDataService extends Service {
 	 * 
 	 */
 	public void performZabbixLogin(final OnLoginProgressListener listener) {
-			listener.onLoginStarted();
+		listener.onLoginStarted();
 
-			// authenticate
-			RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI) {
+		// authenticate
+		RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI) {
 
-				private boolean success = false;
-				
-				@Override
-				protected void executeTask()
-						throws ZabbixLoginRequiredException, FatalException {
-					mRemoteAPI.authenticate();
-					success = true;
-				}
+			private boolean success = false;
 
-				@Override
-				protected void onPostExecute(Void result) {
-					super.onPostExecute(result);
-					listener.onLoginFinished(success);
-				}
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				mRemoteAPI.authenticate();
+				success = true;
+			}
 
-			};
-			loginTask.execute();
-	}
-	
-	/**
-	 * Performs the Zabbix login using the server address and credentials from
-	 * the preferences.
-	 * 
-	 * @param listener
-	 *            listener to be informed about start and end of the login
-	 *            process
-	 * 
-	 */
-	public void performZabbixLogout() {
-			RemoteAPITask logoutTask = new RemoteAPITask(mRemoteAPI) {
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+				listener.onLoginFinished(success);
+			}
 
-				
-				@Override
-				protected void executeTask()
-						throws ZabbixLoginRequiredException, FatalException {
-					mRemoteAPI.logout();
-				}
-
-				@Override
-				protected void onPostExecute(Void result) {
-					super.onPostExecute(result);
-				}
-
-			};
-			logoutTask.execute();
+		};
+		loginTask.execute();
 	}
 
 	@Override
@@ -783,6 +756,58 @@ public class ZabbixDataService extends Service {
 		}.execute();
 	}
 
+	/**
+	 * Loads all history details for a given item. If necessary, an import from
+	 * the Zabbix API is triggered.
+	 * 
+	 * @param itemId
+	 *            item id
+	 */
+	public void loadHistoryDetailsByItemId(final long itemId) {
+		new RemoteAPITask(mRemoteAPI) {
+
+			List<HistoryDetail> historyDetails;
+
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				try {
+					// We only import applications with corresponding hosts
+					// (this way templates are ignored)
+					mRemoteAPI.importHistoryDetails(itemId);
+				} finally {
+					try {
+						historyDetails = mDatabaseHelper
+								.getHistoryDetailsByItemId(itemId);
+
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+				// fill adapter
+
+			}
+
+		}.execute();
+	}
+
+	/**
+	 * Acknowledges an event.
+	 * 
+	 * @param event
+	 *            the event
+	 * @param comment
+	 *            an optional comment
+	 * @param callback
+	 *            callback to be notified when the acknowledgement was
+	 *            successful
+	 */
 	public void acknowledgeEvent(final Event event, final String comment,
 			final OnAcknowledgeEventListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
