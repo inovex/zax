@@ -1718,8 +1718,8 @@ public class ZabbixRemoteAPI {
 					// "extend")
 					.put(isVersion2 ? "selectGroups" : "select_groups",
 							"extend")
-					// .put(isVersion2 ? "selectItems" : "select_items",
-					// "extend").put("lastChangeSince", min)
+					.put(isVersion2 ? "selectItems" : "select_items", "extend")
+					.put("lastChangeSince", min)
 					.put("limit", ZabbixConfig.TRIGGER_GET_LIMIT)
 					.put("expandDescription", true);
 
@@ -1805,9 +1805,10 @@ public class ZabbixRemoteAPI {
 					}
 				} else if (propName.equals("items")) {
 					// store the first item id
-					// t.set(TriggerData.COLUMN_ITEMID,
-					// importItems(triggerReader.getJsonArrayOrObjectReader(),
-					// 1, true));
+					List<Item> items = importItemsFromStream(triggerReader.getJsonArrayOrObjectReader(),
+							 1, true);
+					if(items.size() > 0)
+						t.setItem(items.get(0));
 				} else {
 					triggerReader.nextProperty();
 				}

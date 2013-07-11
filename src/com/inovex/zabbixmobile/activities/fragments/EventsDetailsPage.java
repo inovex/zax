@@ -3,6 +3,7 @@ package com.inovex.zabbixmobile.activities.fragments;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -13,19 +14,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
+import com.inovex.zabbixmobile.listeners.OnHistoryDetailsLoadedListener;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Trigger;
+import com.inovex.zabbixmobile.util.GraphUtil;
+import com.jjoe64.graphview.LineGraphView;
 
 /**
  * Represents one page of the event details view pager (see
  * {@link EventsDetailsPagerAdapter} ). Shows the details of a specific event.
  * 
  */
-public class EventsDetailsPage extends BaseServiceConnectedFragment {
+public class EventsDetailsPage extends BaseServiceConnectedFragment implements OnHistoryDetailsLoadedListener {
 
 	private static final String TAG = EventsDetailsPage.class.getSimpleName();
 
@@ -33,6 +39,10 @@ public class EventsDetailsPage extends BaseServiceConnectedFragment {
 	private Event mEvent;
 	private String mTitle = "";
 	private long mEventId = -1;
+	
+	private boolean mHistoryDetailsImported = false;
+
+	private Collection<HistoryDetail> mHistoryDetails;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -62,6 +72,9 @@ public class EventsDetailsPage extends BaseServiceConnectedFragment {
 		super.onViewCreated(view, savedInstanceState);
 
 		fillDetailsText();
+		
+		if (mHistoryDetails != null)
+			showGraph();
 	}
 
 	private void fillDetailsText() {
@@ -110,6 +123,9 @@ public class EventsDetailsPage extends BaseServiceConnectedFragment {
 			this.mEvent = mZabbixDataService.getEventById(mEventId);
 			fillDetailsText();
 		}
+		
+		if(!mHistoryDetailsImported && mEvent.getTrigger().getItem() != null)
+			mZabbixDataService.loadHistoryDetailsByItemId(mEvent.getTrigger().getItem().getId(), this);
 	}
 
 	@Override
@@ -122,6 +138,8 @@ public class EventsDetailsPage extends BaseServiceConnectedFragment {
 	public void setEvent(Event event) {
 		this.mEvent = event;
 		this.mEventId = event.getId();
+		if(!mHistoryDetailsImported && getView() != null)
+			mZabbixDataService.loadHistoryDetailsByItemId(mEvent.getTrigger().getItem().getId(), this);
 	}
 
 	public void setTitle(String title) {
@@ -131,17 +149,33 @@ public class EventsDetailsPage extends BaseServiceConnectedFragment {
 	public String getTitle() {
 		return mTitle;
 	}
-
+	
 	@Override
-	public void onDetach() {
-		super.onDetach();
-		Log.d(TAG, "onDetach: " + this.toString());
+	public void onHistoryDetailsLoaded(Collection<HistoryDetail> historyDetails) {
+		mHistoryDetailsImported  = true;
+		mHistoryDetails = historyDetails;
+		if (getView() != null) {
+			showGraph();
+		}
 	}
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		Log.d(TAG, "onDestroy: " + this.toString());
+	private void showGraph() {
+		LinearLayout graphLayout = (LinearLayout) getView().findViewById(
+				R.id.event_graph);
+		// create graph and add it to the layout
+		int numEntries = mHistoryDetails.size();
+		if (numEntries > 0) {
+			LineGraphView graph = GraphUtil.createItemGraph(getSherlockActivity(), mHistoryDetails, mEvent.getTrigger().getItem().getDescription());
+			graphLayout.removeAllViews();
+			graphLayout.addView(graph);
+		} else {
+			// no history data available
+			graphLayout.removeAllViews();
+			// TODO: show empty view
+			// mActivity.getLayoutInflater().inflate(R.layout.details_no_data,
+			// layout);
+			// ((TextView)
+			// layout.findViewById(R.id.details_no_data_text)).setText(R.string.no_history_data_found);
+		}
 	}
-
 }
