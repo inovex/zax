@@ -15,11 +15,11 @@ import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksItemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
-import com.inovex.zabbixmobile.listeners.OnListAdapterFilledListener;
+import com.inovex.zabbixmobile.listeners.OnListAdapterLoadedListener;
 import com.inovex.zabbixmobile.model.Host;
 
 public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
-		OnChecksItemSelectedListener, OnListAdapterFilledListener {
+		OnChecksItemSelectedListener, OnListAdapterLoadedListener {
 
 	private static final String TAG = ChecksActivity.class.getSimpleName();
 
@@ -197,7 +197,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	}
 
 	@Override
-	public void onListAdapterFilled() {
+	public void onListAdapterLoaded() {
 		mCurrentHostId = mHostListFragment.selectItem(mCurrentHostPosition);
 		if (mCurrentHostId > 0) {
 			Host h = mZabbixDataService.getHostById(mCurrentHostId);

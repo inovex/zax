@@ -11,14 +11,14 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
-import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterFilledListener;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
+import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public abstract class BaseSeverityFilterActivity<T> extends
 		BaseHostGroupSpinnerActivity implements OnListItemSelectedListener,
-		OnSeveritySelectedListener, OnSeverityListAdapterFilledListener {
+		OnSeveritySelectedListener, OnSeverityListAdapterLoadedListener {
 
 	private static final String TAG = BaseSeverityFilterActivity.class
 			.getSimpleName();
@@ -140,8 +140,9 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	}
 
 	@Override
-	public void onSeverityListAdapterFilled(TriggerSeverity severity,
+	public void onSeverityListAdapterLoaded(TriggerSeverity severity,
 			boolean hostGroupChanged) {
+		mListFragment.dismissLoadingSpinner();
 		if (severity == mSeverity && !mFirstCallSeverityListAdapterFilled) {
 			mFirstCallSeverityListAdapterFilled = false;
 			if (hostGroupChanged) {
@@ -155,5 +156,8 @@ public abstract class BaseSeverityFilterActivity<T> extends
 			mListFragment.selectItem(mCurrentItemPosition);
 		}
 	}
+
+	@Override
+	protected abstract void loadAdapterContent(boolean hostGroupChanged);
 
 }

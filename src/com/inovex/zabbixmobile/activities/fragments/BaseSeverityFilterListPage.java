@@ -3,9 +3,14 @@ package com.inovex.zabbixmobile.activities.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
@@ -22,12 +27,14 @@ public abstract class BaseSeverityFilterListPage extends
 
 	private static final String ARG_POSITION = "arg_position";
 	private static final String ARG_SEVERITY = "arg_severity";
+	private static final String ARG_SPINNER_VISIBLE = "arg_spinner_visible";
 
 	private OnListItemSelectedListener mCallbackMain;
 
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
 	protected long mHostGroupId = HostGroup.GROUP_ID_ALL;
 	private int mPosition = 0;
+	private boolean mLoadingSpinnerVisible = true;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -51,7 +58,15 @@ public abstract class BaseSeverityFilterListPage extends
 			mPosition = savedInstanceState.getInt(ARG_POSITION, 0);
 			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
 					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
+			mLoadingSpinnerVisible = savedInstanceState.getBoolean(ARG_SPINNER_VISIBLE, false);
 		}
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View rootView = inflater.inflate(R.layout.page_base_list, null);
+		return rootView;
 	}
 
 	@Override
@@ -59,14 +74,18 @@ public abstract class BaseSeverityFilterListPage extends
 		super.onSaveInstanceState(outState);
 		outState.putInt(ARG_POSITION, mPosition);
 		outState.putInt(ARG_SEVERITY, mSeverity.getNumber());
+		outState.putBoolean(ARG_SPINNER_VISIBLE, mLoadingSpinnerVisible);
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		Log.d(TAG, this + " onViewCreated");
 		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		getListView().setItemChecked(mPosition, true);
 		getListView().setSelection(mPosition);
+		if (mLoadingSpinnerVisible)
+			showLoadingSpinner();
 
 	}
 
@@ -111,6 +130,43 @@ public abstract class BaseSeverityFilterListPage extends
 
 	public void setItemSelected(int itemSelected) {
 		this.mPosition = itemSelected;
+
+	}
+
+	public void setCustomEmptyText(CharSequence text) {
+		// We need to override this because we use a custom view
+		TextView emptyView = (TextView) getView().findViewById(
+				android.R.id.empty);
+		if (emptyView != null)
+			emptyView.setText(text);
+	}
+
+	/**
+	 * Shows a loading spinner instead of this page's list view.
+	 */
+	public void showLoadingSpinner() {
+		mLoadingSpinnerVisible = true;
+		LinearLayout progressLayout = (LinearLayout) getView().findViewById(
+				R.id.progressSpinnerLayout);
+		if (progressLayout != null)
+			progressLayout.setVisibility(View.VISIBLE);
+	}
+
+	/**
+	 * Dismisses the loading spinner view.
+	 * 
+	 * If the view has not yet been created, the status is saved and when the
+	 * view is created, the spinner will not be shown at all.
+	 */
+	public void dismissLoadingSpinner() {
+		mLoadingSpinnerVisible = false;
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.progressSpinnerLayout);
+			if (progressLayout != null) {
+				progressLayout.setVisibility(View.GONE);
+			}
+		}
 
 	}
 

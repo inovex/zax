@@ -45,11 +45,6 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	 *            severity (this is used to retrieve the correct pager adapter
 	 */
 	public void selectItem(int position) {
-		try {
-			throw new RuntimeException();
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-		}
 		Log.d(TAG, "selectItem(" + position + ")");
 		if (mDetailsPagerAdapter == null
 				|| mDetailsPagerAdapter.getCount() == 0)

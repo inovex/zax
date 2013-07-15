@@ -726,7 +726,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				.deleteBuilder();
 		deleteBuilder.where().lt(HistoryDetail.COLUMN_CLOCK, threshold);
 		int n = deleteBuilder.delete();
-		Log.d(TAG, "deleted " + n + "history details.");
+		Log.d(TAG, "deleted " + n + " history details.");
 	}
 
 	/**

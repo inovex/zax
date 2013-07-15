@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 
@@ -37,8 +38,8 @@ import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
 import com.inovex.zabbixmobile.listeners.OnHistoryDetailsLoadedListener;
-import com.inovex.zabbixmobile.listeners.OnListAdapterFilledListener;
-import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterFilledListener;
+import com.inovex.zabbixmobile.listeners.OnListAdapterLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.HistoryDetail;
@@ -404,7 +405,7 @@ public class ZabbixDataService extends Service {
 	public void loadEventsBySeverityAndHostGroup(
 			final TriggerSeverity severity, final long hostGroupId,
 			final boolean hostGroupChanged,
-			final OnSeverityListAdapterFilledListener callback) {
+			final OnSeverityListAdapterLoadedListener callback) {
 
 		new RemoteAPITask(mRemoteAPI) {
 
@@ -420,6 +421,7 @@ public class ZabbixDataService extends Service {
 				events = new ArrayList<Event>();
 				try {
 					mRemoteAPI.importEvents();
+					SystemClock.sleep(5000);
 				} finally {
 					// even if the api call is not successful, we can still use
 					// the cached events
@@ -454,7 +456,7 @@ public class ZabbixDataService extends Service {
 				}
 
 				if (callback != null)
-					callback.onSeverityListAdapterFilled(severity,
+					callback.onSeverityListAdapterLoaded(severity,
 							hostGroupChanged);
 			}
 
@@ -481,7 +483,7 @@ public class ZabbixDataService extends Service {
 	public void loadProblemsBySeverityAndHostGroup(
 			final TriggerSeverity severity, final long hostGroupId,
 			final boolean hostGroupChanged,
-			final OnSeverityListAdapterFilledListener callback) {
+			final OnSeverityListAdapterLoadedListener callback) {
 
 		new RemoteAPITask(mRemoteAPI) {
 
@@ -535,7 +537,7 @@ public class ZabbixDataService extends Service {
 				}
 
 				if (callback != null)
-					callback.onSeverityListAdapterFilled(severity,
+					callback.onSeverityListAdapterLoaded(severity,
 							hostGroupChanged);
 			}
 
@@ -604,7 +606,7 @@ public class ZabbixDataService extends Service {
 	 */
 	public void loadHostsByHostGroup(final long hostGroupId,
 			final boolean hostGroupChanged,
-			final OnListAdapterFilledListener callback) {
+			final OnListAdapterLoadedListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
 			private List<Host> hosts;
@@ -641,7 +643,7 @@ public class ZabbixDataService extends Service {
 					hostsAdapter.notifyDataSetChanged();
 				}
 				if (callback != null)
-					callback.onListAdapterFilled();
+					callback.onListAdapterLoaded();
 				Log.d(TAG, "Hosts imported.");
 
 			}

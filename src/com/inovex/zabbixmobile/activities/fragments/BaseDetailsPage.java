@@ -3,6 +3,8 @@ package com.inovex.zabbixmobile.activities.fragments;
 import java.util.Collection;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -20,8 +22,22 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment imple
 	protected Collection<HistoryDetail> mHistoryDetails;
 	
 	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		Log.d("OC", this + "onCreate");
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		Log.d("OC", this + "onCreateView");
+		return super.onCreateView(inflater, container, savedInstanceState);
+	}
+
+	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		Log.d("OC", this + "onViewCreated");
 
 		fillDetailsText();
 		

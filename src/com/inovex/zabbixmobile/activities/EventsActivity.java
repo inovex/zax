@@ -8,7 +8,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
-import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterFilledListener;
+import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
@@ -75,6 +75,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 
 	@Override
 	protected void loadAdapterContent(boolean hostGroupChanged) {
+		Log.d(TAG, "loadAdapterContent");
 		for (TriggerSeverity severity : TriggerSeverity.values()) {
 			mZabbixDataService.loadEventsBySeverityAndHostGroup(severity,
 					mHostGroupId, hostGroupChanged, this);

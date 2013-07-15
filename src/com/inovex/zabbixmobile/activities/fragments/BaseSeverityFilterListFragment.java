@@ -28,6 +28,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	private static final String ARG_POSITION = "arg_position";
 	private static final String ARG_ITEM_ID = "arg_item_id";
 	private static final String ARG_SEVERITY = "arg_severity";
+	private static final String ARG_SPINNER_VISIBLE = "arg_spinner_visible";
 
 	private int mCurrentPosition = 0;
 	private long mCurrentItemId = 0;
@@ -39,6 +40,8 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	TabPageIndicator mSeverityListTabIndicator;
 
 	private OnSeveritySelectedListener mCallbackMain;
+	
+	private boolean mLoadingSpinnerVisible = true;
 
 	class SeverityListPagerAdapter extends FragmentPagerAdapter {
 
@@ -53,6 +56,8 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 			BaseSeverityFilterListPage f = instantiatePage();
 			f.setSeverity(TriggerSeverity.getSeverityByPosition(i));
 			f.setHostGroupId(mCurrentHostGroupId);
+			if(!mLoadingSpinnerVisible)
+				f.dismissLoadingSpinner();
 			Log.d(TAG, "getItem: " + f.toString());
 			return f;
 		}
@@ -106,18 +111,21 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d(TAG, "onCreate");
 		if (savedInstanceState != null) {
 			setCurrentPosition(savedInstanceState.getInt(ARG_POSITION, 0));
 			setCurrentItemId(savedInstanceState.getLong(ARG_ITEM_ID, 0));
 			setCurrentSeverity(TriggerSeverity
 					.getSeverityByNumber(savedInstanceState.getInt(
 							ARG_SEVERITY, TriggerSeverity.ALL.getNumber())));
+			mLoadingSpinnerVisible = savedInstanceState.getBoolean(ARG_SPINNER_VISIBLE, false);
 		}
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		Log.d(TAG, "onCreateView");
 		return inflater.inflate(R.layout.fragment_severity_list, container,
 				false);
 	}
@@ -127,6 +135,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		super.onViewCreated(view, savedInstanceState);
 
 		setupListViewPager();
+		Log.d(TAG, "onViewCreated");
 	}
 
 	@Override
@@ -134,6 +143,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		outState.putInt(ARG_POSITION, mCurrentPosition);
 		outState.putLong(ARG_ITEM_ID, mCurrentItemId);
 		outState.putInt(ARG_SEVERITY, mCurrentSeverity.getNumber());
+		outState.putBoolean(ARG_SPINNER_VISIBLE, mLoadingSpinnerVisible);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -215,6 +225,22 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
 				.getPages()) {
 			p.setHostGroupId(itemId);
+		}
+	}
+
+	public void showLoadingSpinner() {
+		mLoadingSpinnerVisible = true;
+		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
+				.getPages()) {
+			p.showLoadingSpinner();
+		}
+	}
+	
+	public void dismissLoadingSpinner() {
+		mLoadingSpinnerVisible = false;
+		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
+				.getPages()) {
+			p.dismissLoadingSpinner();
 		}
 	}
 
