@@ -47,7 +47,8 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			if (position != -1 && id != -1) {
 				mShowDetailsFragment = true;
 				mBackToMain = true;
-				mDetailsFragment.selectItem(position);
+//				mDetailsFragment.selectItem(position);
+				mDetailsFragment.setPosition(position);
 				showDetailsFragment();
 			}
 		}

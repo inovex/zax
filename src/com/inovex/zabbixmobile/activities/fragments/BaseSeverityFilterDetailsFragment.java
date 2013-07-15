@@ -45,16 +45,28 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	 *            severity (this is used to retrieve the correct pager adapter
 	 */
 	public void selectItem(int position) {
+		try {
+			throw new RuntimeException();
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+		}
 		Log.d(TAG, "selectItem(" + position + ")");
-		if(mDetailsPagerAdapter == null || mDetailsPagerAdapter.getCount() == 0)
+		if (mDetailsPagerAdapter == null
+				|| mDetailsPagerAdapter.getCount() == 0)
 			return;
-		if(position > mDetailsPagerAdapter.getCount() - 1)
+		if (position > mDetailsPagerAdapter.getCount() - 1)
 			position = 0;
 		setPosition(position);
 		setCurrentItemId(mDetailsPagerAdapter.getItemId(position));
 	}
 
-	private void setPosition(int position) {
+	/**
+	 * This sets the current position and updates the pager, pager adapter and
+	 * page indicator.
+	 * 
+	 * @param position
+	 */
+	public void setPosition(int position) {
 		this.mPosition = position;
 		if (mDetailsPageIndicator != null) {
 			mDetailsPageIndicator.setCurrentItem(position);
@@ -66,7 +78,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	private void setCurrentItemId(long itemId) {
 		this.mItemId = itemId;
 	}
-	
+
 	/**
 	 * Sets the current severity and updates the pager adapter.
 	 * 
@@ -101,7 +113,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		// mDetailsPager.setAdapter(mDetailsPagerAdapter);
 		// }
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

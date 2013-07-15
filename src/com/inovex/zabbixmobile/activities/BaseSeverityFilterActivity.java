@@ -34,6 +34,11 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	protected BaseSeverityFilterDetailsFragment<T> mDetailsFragment;
 	protected BaseSeverityFilterListFragment mListFragment;
 
+	// These flags are necessary to select the correct element when coming from
+	// another activity (e.g. Problems list in MainActivity)
+	private boolean mFirstCallSelectHostGroup = true;
+	private boolean mFirstCallSeverityListAdapterFilled = true;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,8 +60,9 @@ public abstract class BaseSeverityFilterActivity<T> extends
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (super.onOptionsItemSelected(item)) return true;
-		
+		if (super.onOptionsItemSelected(item))
+			return true;
+
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			if (mDetailsFragment.isVisible() && mFlipper != null) {
@@ -74,8 +80,11 @@ public abstract class BaseSeverityFilterActivity<T> extends
 		super.selectHostGroupInSpinner(position, itemId);
 		mListFragment.setHostGroupId(itemId);
 		mDetailsFragment.setHostGroupId(itemId);
-		mListFragment.selectItem(0);
-		mDetailsFragment.selectItem(0);
+		if (!mFirstCallSelectHostGroup) {
+			mListFragment.selectItem(0);
+			mDetailsFragment.selectItem(0);
+			mFirstCallSelectHostGroup = false;
+		}
 	}
 
 	@Override
@@ -131,9 +140,11 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	}
 
 	@Override
-	public void onSeverityListAdapterFilled(TriggerSeverity severity, boolean hostGroupChanged) {
-		if (severity == mSeverity) {
-			if(hostGroupChanged) {
+	public void onSeverityListAdapterFilled(TriggerSeverity severity,
+			boolean hostGroupChanged) {
+		if (severity == mSeverity && !mFirstCallSeverityListAdapterFilled) {
+			mFirstCallSeverityListAdapterFilled = false;
+			if (hostGroupChanged) {
 				mDetailsFragment.selectItem(0);
 				mListFragment.selectItem(0);
 				// TODO: page indicator display issue
