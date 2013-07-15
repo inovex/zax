@@ -2,7 +2,7 @@ package com.inovex.zabbixmobile.adapters;
 
 import android.support.v4.app.Fragment;
 
-import com.inovex.zabbixmobile.activities.fragments.ItemsDetailsPage;
+import com.inovex.zabbixmobile.activities.fragments.ChecksItemsDetailsPage;
 import com.inovex.zabbixmobile.model.Item;
 
 public class ChecksItemsPagerAdapter extends BaseServicePagerAdapter<Item> {
@@ -23,13 +23,13 @@ public class ChecksItemsPagerAdapter extends BaseServicePagerAdapter<Item> {
 
 	@Override
 	protected Fragment getPage(int position) {
-		ItemsDetailsPage p = new ItemsDetailsPage();
+		ChecksItemsDetailsPage p = new ChecksItemsDetailsPage();
 		p.setItem(getItem(position));
 		return p;
 	}
 
-	public ItemsDetailsPage getCurrentPage() {
-		return (ItemsDetailsPage) getPage(getCurrentPosition());
+	public ChecksItemsDetailsPage getCurrentPage() {
+		return (ChecksItemsDetailsPage) getPage(getCurrentPosition());
 	}
 
 	@Override
