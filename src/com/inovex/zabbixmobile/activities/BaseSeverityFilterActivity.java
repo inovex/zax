@@ -55,6 +55,8 @@ public abstract class BaseSeverityFilterActivity<T> extends
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		if (super.onOptionsItemSelected(item)) return true;
+		
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			if (mDetailsFragment.isVisible() && mFlipper != null) {
