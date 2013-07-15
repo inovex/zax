@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
@@ -93,6 +94,17 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.menuitem_preferences) {
+			Intent intent = new Intent(getApplicationContext(),
+					ZaxPreferenceActivity.class);
+			startActivityForResult(intent, 0);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
 	public void onLoginStarted() {
 		disableUI();
 		mLoginProgress = new ProgressDialog(BaseActivity.this);
@@ -103,7 +115,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		mLoginProgress.setIndeterminate(true);
 		mLoginProgress.show();
 	}
-
+	
 	@Override
 	public void onLoginFinished(boolean success) {
 		if (mLoginProgress != null)
