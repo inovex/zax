@@ -792,7 +792,8 @@ public class ZabbixDataService extends Service {
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
 
-				callback.onHistoryDetailsLoaded(historyDetails);
+				if(callback != null)
+					callback.onHistoryDetailsLoaded(historyDetails);
 			}
 
 		}.execute();
@@ -831,7 +832,7 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				if (mSuccess)
+				if (mSuccess && callback != null)
 					callback.onEventAcknowledged();
 			}
 

@@ -74,13 +74,15 @@ public class EventsDetailsFragment extends
 	 *            true: enable; false: disable the button
 	 */
 	public void setAcknowledgeButtonEnabled(boolean enabled) {
-		mMenuItemAcknowledge.setVisible(enabled);
+		if (mMenuItemAcknowledge != null)
+			mMenuItemAcknowledge.setVisible(enabled);
 	}
-	
+
 	@Override
 	public void selectItem(int position) {
 		super.selectItem(position);
-		if(mDetailsPagerAdapter == null || mDetailsPagerAdapter.getCount() == 0)
+		if (mDetailsPagerAdapter == null
+				|| mDetailsPagerAdapter.getCount() == 0)
 			return;
 		Event e = mDetailsPagerAdapter.getCurrentItem();
 		if (e.isAcknowledged())
@@ -124,7 +126,7 @@ public class EventsDetailsFragment extends
 
 			View view = inflater.inflate(R.layout.dialog_acknowledge, null);
 			builder.setView(view);
-			
+
 			final EditText comment = (EditText) view
 					.findViewById(R.id.acknowledge_comment);
 			// add title
