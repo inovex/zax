@@ -9,7 +9,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
-import android.test.PerformanceTestCase;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -127,7 +126,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		if (item.getItemId() == R.id.menuitem_preferences) {
 			Intent intent = new Intent(getApplicationContext(),
 					ZaxPreferenceActivity.class);
-			startActivityForResult(intent, 0);
+			startActivityForResult(intent, REQUEST_CODE_PREFERENCES);
 			return true;
 		}
 		return false;
@@ -157,17 +156,6 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	protected abstract void disableUI();
 
 	protected abstract void enableUI();
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.menuitem_preferences) {
-			Intent intent = new Intent(getApplicationContext(),
-					ZaxPreferenceActivity.class);
-			startActivityForResult(intent, REQUEST_CODE_PREFERENCES);
-			return true;
-		}
-		return false;
-	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
