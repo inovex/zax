@@ -1,5 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/events_layout"
+    android:id="@+id/problems_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:baselineAligned="false"
@@ -10,19 +10,19 @@
     android:paddingTop="@dimen/activity_vertical_margin" >
 
     <fragment
-        android:id="@+id/events_list"
+        android:id="@+id/problems_list"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        class="com.inovex.zabbixmobile.activities.fragments.EventsListFragment"
+        class="com.inovex.zabbixmobile.activities.fragments.ProblemsListFragment"
         android:orientation="vertical" />
 
     <fragment
-        android:id="@+id/events_details"
+        android:id="@+id/problems_details"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        class="com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment"
+        class="com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment"
         android:orientation="vertical" />
 
 </LinearLayout>

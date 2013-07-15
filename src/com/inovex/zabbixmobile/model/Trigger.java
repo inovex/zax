@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -41,11 +40,9 @@ public class Trigger implements Comparable<Trigger> {
 	public static final String COLUMN_URL = "url";
 	@DatabaseField(columnName = COLUMN_URL)
 	String url;
-
-	// @ForeignCollectionField(eager = false)
-	ForeignCollection<Host> hosts;
-	// @ForeignCollectionField(eager = false)
-	ForeignCollection<Item> items;
+	public static final String COLUMN_ITEMID = "itemid";
+	@DatabaseField(columnName = COLUMN_ITEMID, foreign = true, foreignAutoRefresh = true)
+	Item item;
 
 	public Trigger() {
 
@@ -97,16 +94,16 @@ public class Trigger implements Comparable<Trigger> {
 		return url;
 	}
 
-	public ForeignCollection<Host> getHosts() {
-		return hosts;
-	}
-
-	public ForeignCollection<Item> getItems() {
-		return items;
-	}
-
 	public long getLastChange() {
 		return lastChange;
+	}
+
+	public Item getItem() {
+		return item;
+	}
+
+	public void setItem(Item item) {
+		this.item = item;
 	}
 
 	public void setLastChange(long lastChange) {

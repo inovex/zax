@@ -12,13 +12,6 @@ public class ProblemsListPage extends BaseSeverityFilterListPage {
 		super.onViewCreated(view, savedInstanceState);
 		setEmptyText(getResources().getString(R.string.empty_list_problems));
 	}
-	
-	@Override
-	protected void loadAdapterContent(boolean hostGroupChanged) {
-		if (mZabbixDataService != null)
-			mZabbixDataService.loadTriggersBySeverityAndHostGroup(mSeverity,
-					mHostGroupId, hostGroupChanged);
-	}
 
 	@Override
 	protected void setupListAdapter() {

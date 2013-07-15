@@ -7,15 +7,17 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 /**
  * Base class for a pager adapter containing details pages for a particular
- * severity (see {@link TriggerSeverity}. 
+ * severity (see {@link TriggerSeverity}.
  * 
  * @param <T>
  *            class of the items in this adapter's data set
  */
-public abstract class BaseSeverityPagerAdapter<T> extends BaseServicePagerAdapter<T> {
-	
+public abstract class BaseSeverityPagerAdapter<T> extends
+		BaseServicePagerAdapter<T> {
+
 	private static final String TAG = BaseSeverityPagerAdapter.class
 			.getSimpleName();
+
 	/**
 	 * Creates an adapter.
 	 * 

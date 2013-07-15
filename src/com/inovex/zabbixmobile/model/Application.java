@@ -43,7 +43,7 @@ public class Application implements Comparable<Application> {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getId() + " " + getName() + "(Host: " + host.getName() + ")";
@@ -51,7 +51,7 @@ public class Application implements Comparable<Application> {
 
 	@Override
 	public int compareTo(Application another) {
-		if(id > another.getId())
+		if (id > another.getId())
 			return 1;
 		return -1;
 	}

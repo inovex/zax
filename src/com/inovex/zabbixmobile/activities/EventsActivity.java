@@ -8,10 +8,12 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
+import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterFilledListener;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
-		OnAcknowledgeEventListener {
+		OnAcknowledgeEventListener{
 
 	private static final String TAG = EventsActivity.class.getSimpleName();
 
@@ -28,17 +30,33 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 				.findFragmentById(R.id.events_details);
 		mListFragment = (BaseSeverityFilterListFragment) mFragmentManager
 				.findFragmentById(R.id.events_list);
-		if(mFlipper != null)
+		if (mFlipper != null)
 			Log.d(TAG, mFlipper.toString());
 		Log.d(TAG, mListFragment.toString());
 		Log.d(TAG, mDetailsFragment.toString());
-		System.out.println();
+		
+		if(!mDetailsFragment.isVisible())
+			mDetailsFragment.setHasOptionsMenu(false);
+		
 	}
 
 	@Override
-	public void acknowledgeEvent(long eventId, String comment) {
-		Log.d(TAG, "acknowledgeEvent(" + eventId + ", " + comment + ")");
-		mZabbixDataService.acknowledgeEvent(eventId, comment);
+	public void acknowledgeEvent(Event event, String comment) {
+		Log.d(TAG, "acknowledgeEvent(" + event + ", " + comment + ")");
+		mZabbixDataService.acknowledgeEvent(event, comment, this);
+	}
+	
+	@Override
+	public void onEventAcknowledged() {
+		// select refreshes the action bar menu
+		mDetailsFragment.selectItem(mCurrentItemPosition);
+	}
+
+	@Override
+	public void selectHostGroupInSpinner(int position, long itemId) {
+		super.selectHostGroupInSpinner(position, itemId);
+		if (!mListFragment.isVisible())
+			showListFragment();
 	}
 
 	@Override
@@ -56,15 +74,23 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	}
 
 	@Override
+	protected void loadAdapterContent(boolean hostGroupChanged) {
+		for (TriggerSeverity severity : TriggerSeverity.values()) {
+			mZabbixDataService.loadEventsBySeverityAndHostGroup(severity,
+					mHostGroupId, hostGroupChanged, this);
+		}
+	}
+
+	@Override
 	protected void disableUI() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	protected void enableUI() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

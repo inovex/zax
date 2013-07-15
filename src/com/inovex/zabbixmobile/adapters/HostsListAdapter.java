@@ -16,7 +16,7 @@ import com.inovex.zabbixmobile.model.Host;
 public class HostsListAdapter extends BaseServiceAdapter<Host> {
 
 	private static final String TAG = HostsListAdapter.class.getSimpleName();
-	private int mTextViewResourceId = R.layout.hosts_list_item;
+	private int mTextViewResourceId = R.layout.list_item_hosts;
 
 	/**
 	 * Constructor.

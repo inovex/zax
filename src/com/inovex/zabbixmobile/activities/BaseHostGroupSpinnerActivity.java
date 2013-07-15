@@ -50,11 +50,10 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		if (savedInstanceState != null) {
 			mHostGroupPosition = savedInstanceState.getInt(
 					ARG_HOST_GROUP_POSITION, 0);
-			mHostGroupId = savedInstanceState.getLong(
-					ARG_HOST_GROUP_ID, 0);
+			mHostGroupId = savedInstanceState.getLong(ARG_HOST_GROUP_ID, 0);
 		}
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putInt(ARG_HOST_GROUP_POSITION, mHostGroupPosition);
@@ -63,8 +62,8 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	}
 
 	@Override
-	public void onServiceConnected(ComponentName className, IBinder service) {
-		super.onServiceConnected(className, service);
+	public void onServiceConnected(ComponentName className, IBinder binder) {
+		super.onServiceConnected(className, binder);
 
 		// set up spinner adapter
 		mSpinnerAdapter = mZabbixDataService.getHostGroupSpinnerAdapter();
@@ -79,7 +78,13 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		selectHostGroupInSpinner(mHostGroupPosition, mHostGroupId);
 
 		mZabbixDataService.loadHostGroups();
+		
+		// fill all severity adapters
+		loadAdapterContent(false);
 	}
+
+	// TODO: host group selection might trigger a switch from list to details
+	// view
 
 	@Override
 	public void onHostGroupSelected(int position) {
@@ -98,9 +103,15 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	 *            id of the selected host group
 	 */
 	public void selectHostGroupInSpinner(int position, long itemId) {
-		mHostGroupId = itemId;
-		mHostGroupPosition = position;
 		mSpinnerAdapter.setCurrentPosition(position);
+		if(itemId != mHostGroupId) {
+			mHostGroupId = itemId;
+			mHostGroupPosition = position;
+			// update adapters
+			loadAdapterContent(true);
+		}
 	}
+
+	protected abstract void loadAdapterContent(boolean hostGroupChanged);
 
 }

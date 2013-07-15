@@ -186,12 +186,14 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	}
 
 	public void selectItem(int position) {
-		if (mSeverityListPager == null)
+		if (mSeverityListPagerAdapter == null || mSeverityListPagerAdapter.getCount() == 0)
 			return;
+		if(position > mSeverityListPagerAdapter.getCount() - 1)
+			position = 0;
 		BaseSeverityFilterListPage f = (BaseSeverityFilterListPage) mSeverityListPagerAdapter
 				.instantiateItem(mSeverityListPager,
 						mSeverityListPager.getCurrentItem());
-		Log.d(TAG, "selectEvent(" + position + ")");
+		Log.d(TAG, "selectItem(" + position + ")");
 		f.selectItem(position);
 		mCurrentPosition = position;
 	}
@@ -215,4 +217,5 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 			p.setHostGroupId(itemId);
 		}
 	}
+
 }

@@ -26,7 +26,7 @@ public class ChecksApplicationsPagerAdapter extends
 		p.setApplication(getItem(position));
 		return p;
 	}
-	
+
 	public ChecksDetailsPage getCurrentPage() {
 		return (ChecksDetailsPage) getPage(getCurrentPosition());
 	}

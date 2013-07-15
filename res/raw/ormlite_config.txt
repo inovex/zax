@@ -1,5 +1,5 @@
 #
-# generated on 2013/07/01 03:57:16
+# generated on 2013/07/11 04:34:37
 #
 # --table-start--
 dataClass=com.j256.ormlite.android.DatabaseTableConfigUtil$DatabaseFieldSample
@@ -104,6 +104,31 @@ columnName=acknowledged
 # --field-end--
 # --field-start--
 fieldName=hostNames
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.HistoryDetail
+tableName=historydetails
+# --table-fields-start--
+# --field-start--
+fieldName=id
+columnName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=itemId
+columnName=itemid
+indexName=historydetails_itemid_idx
+# --field-end--
+# --field-start--
+fieldName=clock
+columnName=clock
+# --field-end--
+# --field-start--
+fieldName=value
+columnName=value
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -242,6 +267,12 @@ columnName=value
 # --field-start--
 fieldName=url
 columnName=url
+# --field-end--
+# --field-start--
+fieldName=item
+columnName=itemid
+foreign=true
+foreignAutoRefresh=true
 # --field-end--
 # --table-fields-end--
 # --table-end--

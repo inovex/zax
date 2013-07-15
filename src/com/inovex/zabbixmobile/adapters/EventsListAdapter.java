@@ -26,7 +26,7 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 	private static final String TAG = EventsListAdapter.class.getSimpleName();
 	private static final int STATUS_OK = 0;
 	private static final int STATUS_PROBLEM = 0;
-	private int mTextViewResourceId = R.layout.severity_list_item;
+	private int mTextViewResourceId = R.layout.list_item_severity;
 
 	/**
 	 * Constructor.
@@ -59,7 +59,7 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 
 		Event e = getItem(position);
 		Trigger t = e.getTrigger();
-		
+
 		String hostNames = e.getHostNames();
 		if (hostNames == null) {
 			hostNames = "";
@@ -72,17 +72,19 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 				SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
 				Locale.getDefault());
 		clock.setText(String.valueOf(dateFormatter.format(cal.getTime())));
-		
-		if(e.getValue() == STATUS_PROBLEM)
+
+		if (e.getValue() == STATUS_PROBLEM)
 			statusImage.setImageResource(R.drawable.problem);
 		else
 			statusImage.setImageResource(R.drawable.ok);
 		// TODO: remove id (only needed for debugging)
 		if (t == null) {
-			description.setText("[id: " + e.getId() + "] " + "no trigger defined.");
+			description.setText("[id: " + e.getId() + "] "
+					+ "no trigger defined.");
 			Log.w(TAG, "No trigger defined for Event with ID " + e.getId());
 		} else
-			description.setText("[id: " + e.getId() + "] " + String.valueOf(t.getDescription()));
+			description.setText("[id: " + e.getId() + "] "
+					+ String.valueOf(t.getDescription()));
 
 		return row;
 	}

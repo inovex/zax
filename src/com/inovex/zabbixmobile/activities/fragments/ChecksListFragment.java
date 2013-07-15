@@ -1,18 +1,21 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
+import com.inovex.zabbixmobile.adapters.HostsListAdapter;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.inovex.zabbixmobile.model.HostGroup;
 
 public class ChecksListFragment extends BaseServiceConnectedListFragment {
 
 	public static String TAG = ChecksListFragment.class.getSimpleName();
-	
+
 	private static final String ARG_POSITION = "arg_position";
 	private static final String ARG_ITEM_ID = "arg_item_id";
 
@@ -21,6 +24,8 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 	private long mHostGroupId = HostGroup.GROUP_ID_ALL;
 
 	private OnChecksItemSelectedListener mCallbackMain;
+
+	private HostsListAdapter mListAdapter;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -46,7 +51,6 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 
 	public void setHostGroup(long itemId) {
 		this.mHostGroupId = itemId;
-		loadAdapterContent(true);
 	}
 
 	@Override
@@ -56,26 +60,44 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 		mCallbackMain.onHostSelected(position, id);
 	}
 	
-	@Override
-	protected void setupListAdapter() {
-		setListAdapter(mZabbixDataService.getHostsListAdapter());
+	public long selectItem(int position) {
+		if (mListAdapter == null || mListAdapter.getCount() == 0)
+			return -1;
+		if(position > mListAdapter.getCount() - 1)
+			position = 0;
+		mCurrentPosition = position;
+		// check if the view has already been created -> if not, calls will be
+		// made in onViewCreated().
+		if (getView() != null) {
+			getListView().setItemChecked(position, true);
+			getListView().setSelection(position);
+		}
+		setCurrentItemId(getListAdapter().getItemId(position));
+		return mCurrentItemId;
 	}
 
 	@Override
-	protected void loadAdapterContent(boolean hostGroupChanged) {
-		if (mZabbixDataService != null)
-			mZabbixDataService.loadHostsByHostGroup(mHostGroupId,
-					hostGroupChanged);
+	protected void setupListAdapter() {
+		this.mListAdapter = mZabbixDataService.getHostsListAdapter();
+		setListAdapter(mListAdapter);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if(savedInstanceState != null) {
+		if (savedInstanceState != null) {
 			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
 			mCurrentItemId = savedInstanceState.getLong(ARG_ITEM_ID);
 		}
 		Log.d(TAG, "pos: " + mCurrentPosition + "; id: " + mCurrentItemId);
+	}
+
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		getListView().setItemChecked(mCurrentPosition, true);
+		getListView().setSelection(mCurrentPosition);
 	}
 
 	@Override

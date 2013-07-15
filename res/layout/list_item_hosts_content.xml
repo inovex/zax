@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="12dip" >
+<merge xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <TextView
         android:id="@+id/host_entry_name"
@@ -12,4 +8,4 @@
         android:paddingStart="?android:attr/expandableListPreferredItemPaddingLeft"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-</RelativeLayout>
+</merge>

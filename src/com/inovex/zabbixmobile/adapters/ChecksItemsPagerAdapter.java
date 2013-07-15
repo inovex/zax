@@ -5,14 +5,13 @@ import android.support.v4.app.Fragment;
 import com.inovex.zabbixmobile.activities.fragments.ItemsDetailsPage;
 import com.inovex.zabbixmobile.model.Item;
 
-public class ChecksItemsPagerAdapter extends
-		BaseServicePagerAdapter<Item> {
+public class ChecksItemsPagerAdapter extends BaseServicePagerAdapter<Item> {
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		if(position == mCurrentPosition - 1)
+		if (position == mCurrentPosition - 1)
 			return "previous";
-		if(position == mCurrentPosition + 1)
+		if (position == mCurrentPosition + 1)
 			return "next";
 		return (position + 1) + "/" + getCount();
 	}
@@ -28,7 +27,7 @@ public class ChecksItemsPagerAdapter extends
 		p.setItem(getItem(position));
 		return p;
 	}
-	
+
 	public ItemsDetailsPage getCurrentPage() {
 		return (ItemsDetailsPage) getPage(getCurrentPosition());
 	}

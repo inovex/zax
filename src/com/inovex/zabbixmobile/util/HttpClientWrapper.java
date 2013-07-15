@@ -12,7 +12,7 @@ import org.apache.http.params.HttpParams;
 
 public class HttpClientWrapper {
 	private final AbstractHttpClient mHttpClient;
-	
+
 	public HttpClientWrapper(DefaultHttpClient defaultHttpClient) {
 		mHttpClient = defaultHttpClient;
 	}
@@ -25,7 +25,8 @@ public class HttpClientWrapper {
 		return mHttpClient.getParams();
 	}
 
-	public HttpResponse execute(HttpPost post) throws ClientProtocolException, IOException {
+	public HttpResponse execute(HttpPost post) throws ClientProtocolException,
+			IOException {
 		return mHttpClient.execute(post);
 	}
 }

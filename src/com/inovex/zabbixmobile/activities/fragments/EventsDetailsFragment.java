@@ -54,11 +54,12 @@ public class EventsDetailsFragment extends
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menuitem_acknowledge_event:
-			Log.d(TAG, "Acknowledge event: " + mItemId);
+			Event e = mDetailsPagerAdapter.getCurrentItem();
+			Log.d(TAG, "Acknowledge event: " + e);
 			// show dialog
 			AcknowledgeDialogFragment dialog = AcknowledgeDialogFragment
 					.getInstance();
-			dialog.setEventId(mItemId);
+			dialog.setEvent(e);
 			dialog.show(getChildFragmentManager(),
 					AcknowledgeDialogFragment.TAG);
 			return true;
@@ -75,15 +76,17 @@ public class EventsDetailsFragment extends
 	public void setAcknowledgeButtonEnabled(boolean enabled) {
 		mMenuItemAcknowledge.setVisible(enabled);
 	}
-
+	
 	@Override
-	public void selectItem(int position, long id) {
-		super.selectItem(position, id);
+	public void selectItem(int position) {
+		super.selectItem(position);
+		if(mDetailsPagerAdapter == null || mDetailsPagerAdapter.getCount() == 0)
+			return;
 		Event e = mDetailsPagerAdapter.getCurrentItem();
 		if (e.isAcknowledged())
-			EventsDetailsFragment.this.setAcknowledgeButtonEnabled(false);
+			this.setAcknowledgeButtonEnabled(false);
 		else
-			EventsDetailsFragment.this.setAcknowledgeButtonEnabled(true);
+			this.setAcknowledgeButtonEnabled(true);
 	}
 
 	/**
@@ -96,7 +99,7 @@ public class EventsDetailsFragment extends
 				.getSimpleName();
 
 		private OnAcknowledgeEventListener mCallback;
-		private long mEventId;
+		private Event mEvent;
 
 		public static AcknowledgeDialogFragment getInstance() {
 			return new AcknowledgeDialogFragment();
@@ -121,7 +124,7 @@ public class EventsDetailsFragment extends
 
 			View view = inflater.inflate(R.layout.dialog_acknowledge, null);
 			builder.setView(view);
-
+			
 			final EditText comment = (EditText) view
 					.findViewById(R.id.acknowledge_comment);
 			// add title
@@ -131,7 +134,7 @@ public class EventsDetailsFragment extends
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
-							mCallback.acknowledgeEvent(mEventId, comment
+							mCallback.acknowledgeEvent(mEvent, comment
 									.getText().toString());
 						}
 					});
@@ -145,8 +148,8 @@ public class EventsDetailsFragment extends
 			return builder.create();
 		}
 
-		public void setEventId(long eventId) {
-			this.mEventId = eventId;
+		public void setEvent(Event event) {
+			this.mEvent = event;
 		}
 
 	}

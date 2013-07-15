@@ -20,8 +20,9 @@ import com.inovex.zabbixmobile.model.Item;
  */
 public class ChecksItemsListAdapter extends BaseServiceAdapter<Item> {
 
-	private static final String TAG = ChecksItemsListAdapter.class.getSimpleName();
-	private int mTextViewResourceId = R.layout.items_list_item;
+	private static final String TAG = ChecksItemsListAdapter.class
+			.getSimpleName();
+	private int mTextViewResourceId = R.layout.list_item_items;
 
 	/**
 	 * Constructor.
@@ -55,7 +56,7 @@ public class ChecksItemsListAdapter extends BaseServiceAdapter<Item> {
 				Locale.getDefault());
 		clock.setText(dateFormatter.format(cal.getTime()));
 		name.setText(i.getDescription());
-		value.setText(i.getLastValue() + i.getUnits());
+		value.setText(i.getLastValue() + " " +  i.getUnits());
 
 		return row;
 	}

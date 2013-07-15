@@ -17,6 +17,7 @@ import com.inovex.zabbixmobile.model.ApplicationItemRelation;
 import com.inovex.zabbixmobile.model.Cache;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.HostHostGroupRelation;
@@ -26,6 +27,8 @@ import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.DeleteBuilder;
+import com.j256.ormlite.stmt.PreparedDelete;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
@@ -86,6 +89,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					HostHostGroupRelation.class);
 			TableUtils.createTable(connectionSource,
 					ApplicationItemRelation.class);
+			TableUtils.createTable(connectionSource, HistoryDetail.class);
 			TableUtils.createTable(connectionSource, Cache.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
@@ -111,6 +115,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					true);
 			TableUtils.dropTable(connectionSource,
 					ApplicationItemRelation.class, true);
+			TableUtils.dropTable(connectionSource, HistoryDetail.class, true);
 			TableUtils.dropTable(connectionSource, Cache.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
@@ -166,7 +171,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @return list of events with a matching severity and host group
 	 * @throws SQLException
 	 */
-	public List<Trigger> getTriggersBySeverityAndHostGroupId(
+	public List<Trigger> getProblemsBySeverityAndHostGroupId(
 			TriggerSeverity severity, long hostGroupId) throws SQLException {
 		Dao<Trigger, Long> triggerDao = getDao(Trigger.class);
 		QueryBuilder<Trigger, Long> triggerQuery = triggerDao.queryBuilder();
@@ -242,9 +247,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 		return hostQuery.query();
 	}
-	
+
 	/**
 	 * Queries a hosts by its ID.
+	 * 
+	 * This method is synchronized on the {@link Dao} for {@link Host} to ensure
+	 * that hosts are actually present in the database (see
+	 * {@link ZabbixRemoteAPI#importHostsAndGroups()}).
 	 * 
 	 * @param hostId
 	 *            ID of the host group
@@ -253,7 +262,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	public Host getHostById(long hostId) throws SQLException {
 		Dao<Host, Long> hostDao = getDao(Host.class);
-		return hostDao.queryForId(hostId);
+		synchronized (hostDao) {
+			return hostDao.queryForId(hostId);
+		}
 	}
 
 	/**
@@ -268,7 +279,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		Dao<Event, Long> eventDao = getDao(Event.class);
 		return eventDao.queryForId(id);
 	}
-	
+
 	/**
 	 * Returns a trigger given its ID.
 	 * 
@@ -314,21 +325,31 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return appDao.queryForEq(Application.COLUMN_HOSTID, hostId);
 		// TODO: index on hosts in application table
 	}
-	
-	public List<Item> getItemsByApplicationId(long applicationId) throws SQLException {
+
+	public List<Item> getItemsByApplicationId(long applicationId)
+			throws SQLException {
 		Dao<Item, Long> itemDao = getDao(Item.class);
 		Dao<ApplicationItemRelation, Long> relationDao = getDao(ApplicationItemRelation.class);
 		Dao<Application, Long> applicationDao = getDao(Application.class);
-		
+
 		QueryBuilder<Item, Long> itemQuery = itemDao.queryBuilder();
-		QueryBuilder<ApplicationItemRelation, Long> relationQuery = relationDao.queryBuilder();
-		QueryBuilder<Application, Long> applicationQuery = applicationDao.queryBuilder();
-		
-		applicationQuery.where().eq(Application.COLUMN_APPLICATIONID, applicationId);
+		QueryBuilder<ApplicationItemRelation, Long> relationQuery = relationDao
+				.queryBuilder();
+		QueryBuilder<Application, Long> applicationQuery = applicationDao
+				.queryBuilder();
+
+		applicationQuery.where().eq(Application.COLUMN_APPLICATIONID,
+				applicationId);
 		relationQuery.join(applicationQuery);
-		
+
 		itemQuery.join(relationQuery);
 		return itemQuery.query();
+	}
+
+	public List<HistoryDetail> getHistoryDetailsByItemId(long itemId)
+			throws SQLException {
+		Dao<HistoryDetail, Long> historyDao = getDao(HistoryDetail.class);
+		return historyDao.queryForEq(HistoryDetail.COLUMN_ITEMID, itemId);
 	}
 
 	/**
@@ -574,7 +595,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * Inserts items into the database.
 	 * 
 	 * @param itemCollection
-	 *            collection of relations to be inserted
+	 *            collection of items to be inserted
 	 * @throws SQLException
 	 */
 	public void insertItems(List<Item> itemCollection) throws SQLException {
@@ -584,12 +605,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 
 			for (Item item : itemCollection) {
-				try {
-					dao.createOrUpdate(item);
-				} catch (SQLException e) {
-					// this might throw an exception if the relation exists
-					// already (however, with a different primary key) -> ignore
-				}
+				dao.createOrUpdate(item);
 			}
 
 		} finally {
@@ -600,11 +616,43 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
-	public void acknowledgeEvent(long eventId) throws SQLException {
+	/**
+	 * Inserts history details into the database.
+	 * 
+	 * @param historyDetailsCollection
+	 *            collection of relations to be inserted
+	 * @throws SQLException
+	 */
+	public void insertHistoryDetails(
+			List<HistoryDetail> historyDetailsCollection) throws SQLException {
+		Dao<HistoryDetail, Long> dao = getDao(HistoryDetail.class);
+		mThreadConnection = dao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (HistoryDetail historyDetail : historyDetailsCollection) {
+				dao.createOrUpdate(historyDetail);
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			dao.endThreadConnection(mThreadConnection);
+		}
+	}
+
+	/**
+	 * Sets an event to acknowledged.
+	 * 
+	 * @param event
+	 *            the event
+	 * @throws SQLException
+	 */
+	public void acknowledgeEvent(Event event) throws SQLException {
 		Dao<Event, Long> eventDao = getDao(Event.class);
-		Event e = getEventById(eventId);
-		e.setAcknowledged(true);
-		eventDao.update(e);
+		event.setAcknowledged(true);
+		eventDao.update(event);
 	}
 
 	/**
@@ -662,6 +710,23 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	public void clearItems() throws SQLException {
 		clearTable(Item.class);
+	}
+
+	/**
+	 * Deletes history details which are older than the specified time.
+	 * 
+	 * @param threshold
+	 *            all items with a clock smaller than this threshold will be
+	 *            deleted
+	 * @throws SQLException
+	 */
+	public void deleteOldHistoryDetails(long threshold) throws SQLException {
+		Dao<HistoryDetail, Long> historyDao = getDao(HistoryDetail.class);
+		DeleteBuilder<HistoryDetail, Long> deleteBuilder = historyDao
+				.deleteBuilder();
+		deleteBuilder.where().lt(HistoryDetail.COLUMN_CLOCK, threshold);
+		int n = deleteBuilder.delete();
+		Log.d(TAG, "deleted " + n + "history details.");
 	}
 
 	/**

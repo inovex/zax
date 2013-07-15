@@ -13,12 +13,12 @@ public class ChecksDetailsPage extends BaseServiceConnectedListFragment {
 
 	private Application mApplication;
 	private String mTitle = "";
-	
+
 	public static String TAG = ChecksDetailsPage.class.getSimpleName();
 
 	private int mCurrentPosition = 0;
 	private long mCurrentItemId = 0;
-	
+
 	private OnChecksItemSelectedListener mCallbackMain;
 
 	@Override
@@ -37,8 +37,11 @@ public class ChecksDetailsPage extends BaseServiceConnectedListFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		setEmptyText(getResources().getString(R.string.empty_list_checks));
+		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		getListView().setItemChecked(mCurrentPosition, true);
+		getListView().setSelection(mCurrentPosition);
 	}
-	
+
 	public void setCurrentPosition(int currentPosition) {
 		this.mCurrentPosition = currentPosition;
 	}
@@ -50,11 +53,6 @@ public class ChecksDetailsPage extends BaseServiceConnectedListFragment {
 	@Override
 	protected void setupListAdapter() {
 		setListAdapter(mZabbixDataService.getChecksItemsListAdapter());
-	}
-	
-	@Override
-	protected void loadAdapterContent(boolean hostGroupChanged) {
-		// TODO: Content should be already loaded; still, we could call the service to be sure
 	}
 
 	@Override

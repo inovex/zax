@@ -25,11 +25,13 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 	private static final String ARG_HOST_POSITION = "arg_host_position";
 	private static final String ARG_HOST_ID = "arg_host_id";
 
-	private TextView titleView;
+	private TextView mTitleView;
 
 	protected ViewPager mDetailsPager;
 	protected TitlePageIndicator mDetailsPageIndicator;
 	protected ChecksApplicationsPagerAdapter mDetailsPagerAdapter;
+
+	private Host mHost;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,13 +45,6 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		outState.putInt(ARG_HOST_POSITION, mHostPosition);
-		outState.putLong(ARG_HOST_ID, mHostId);
-		super.onSaveInstanceState(outState);
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_checks_details, container);
@@ -58,7 +53,14 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		titleView = (TextView) view.findViewById(R.id.checks_title);
+		mTitleView = (TextView) view.findViewById(R.id.checks_title);
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putInt(ARG_HOST_POSITION, mHostPosition);
+		outState.putLong(ARG_HOST_ID, mHostId);
+		super.onSaveInstanceState(outState);
 	}
 
 	@Override
@@ -66,17 +68,15 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 		super.onServiceConnected(name, service);
 
 		setupDetailsViewPager();
+		if (mHost != null)
+			mTitleView.setText("Host: " + mHost.getName());
 
 	}
 
-	public void selectHost(int position, long id) {
-		this.mHostPosition = position;
-		this.mHostId = id;
-		Host h = mZabbixDataService.getHostById(mHostId);
-		// update view pager
-		titleView.setText("Host: " + h.getName());
-		mZabbixDataService.loadApplicationsByHostId(mHostId, this);
-		mDetailsPageIndicator.setCurrentItem(0);
+	public void setHost(Host h) {
+		this.mHost = h;
+		if(mHost != null && getView() != null)
+			mTitleView.setText("Host: " + mHost.getName());
 	}
 
 	/**
@@ -84,9 +84,11 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 	 * adapter's contents are updated.
 	 */
 	public void redrawPageIndicator() {
-		mDetailsPageIndicator.invalidate();
-		// this is necessary to refresh the adapter
-		mDetailsPageIndicator.onPageSelected(0);
+		if (mDetailsPageIndicator != null) {
+			// mDetailsPageIndicator.invalidate();
+			if (mDetailsPagerAdapter.getCount() > 0)
+				mDetailsPageIndicator.onPageSelected(0);
+		}
 	}
 
 	/**
@@ -149,6 +151,18 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 	protected void retrievePagerAdapter() {
 		mDetailsPagerAdapter = mZabbixDataService
 				.getChecksApplicationsPagerAdapter();
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		// This is a fix for the issue with the child fragment manager;
+		// described here:
+		// http://stackoverflow.com/questions/15207305/getting-the-error-java-lang-illegalstateexception-activity-has-been-destroyed
+		// and here: https://code.google.com/p/android/issues/detail?id=42601
+		// If the fragment manager is not set to null, there will be issues when
+		// the activity is destroyed and there are pending transactions
+		mDetailsPagerAdapter.setFragmentManager(null);
 	}
 
 }
