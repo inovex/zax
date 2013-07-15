@@ -1,13 +1,15 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.HostsListAdapter;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.inovex.zabbixmobile.model.HostGroup;
@@ -18,10 +20,12 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 
 	private static final String ARG_POSITION = "arg_position";
 	private static final String ARG_ITEM_ID = "arg_item_id";
+	private static final String ARG_SPINNER_VISIBLE = "arg_spinner_visible";
 
 	private int mCurrentPosition = 0;
 	private long mCurrentItemId = 0;
 	private long mHostGroupId = HostGroup.GROUP_ID_ALL;
+	private boolean mLoadingSpinnerVisible = true;
 
 	private OnChecksItemSelectedListener mCallbackMain;
 
@@ -88,8 +92,16 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 		if (savedInstanceState != null) {
 			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
 			mCurrentItemId = savedInstanceState.getLong(ARG_ITEM_ID);
+			mLoadingSpinnerVisible = savedInstanceState.getBoolean(ARG_SPINNER_VISIBLE, false);
 		}
 		Log.d(TAG, "pos: " + mCurrentPosition + "; id: " + mCurrentItemId);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View rootView = inflater.inflate(R.layout.page_base_list, null);
+		return rootView;
 	}
 
 	@Override
@@ -98,6 +110,8 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		getListView().setItemChecked(mCurrentPosition, true);
 		getListView().setSelection(mCurrentPosition);
+		if (mLoadingSpinnerVisible)
+			showLoadingSpinner();
 	}
 
 	@Override
@@ -105,6 +119,35 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 		outState.putInt(ARG_POSITION, mCurrentPosition);
 		outState.putLong(ARG_ITEM_ID, mCurrentItemId);
 		super.onSaveInstanceState(outState);
+	}
+	
+	/**
+	 * Shows a loading spinner instead of this page's list view.
+	 */
+	public void showLoadingSpinner() {
+		mLoadingSpinnerVisible = true;
+		LinearLayout progressLayout = (LinearLayout) getView().findViewById(
+				R.id.list_progress_layout);
+		if (progressLayout != null)
+			progressLayout.setVisibility(View.VISIBLE);
+	}
+
+	/**
+	 * Dismisses the loading spinner view.
+	 * 
+	 * If the view has not yet been created, the status is saved and when the
+	 * view is created, the spinner will not be shown at all.
+	 */
+	public void dismissLoadingSpinner() {
+		mLoadingSpinnerVisible = false;
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.list_progress_layout);
+			if (progressLayout != null) {
+				progressLayout.setVisibility(View.GONE);
+			}
+		}
+
 	}
 
 }

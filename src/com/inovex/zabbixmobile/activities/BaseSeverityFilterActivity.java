@@ -77,6 +77,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 
 	@Override
 	public void selectHostGroupInSpinner(int position, long itemId) {
+		mListFragment.showLoadingSpinner();
 		super.selectHostGroupInSpinner(position, itemId);
 		mListFragment.setHostGroupId(itemId);
 		mDetailsFragment.setHostGroupId(itemId);
@@ -148,7 +149,6 @@ public abstract class BaseSeverityFilterActivity<T> extends
 			if (hostGroupChanged) {
 				mDetailsFragment.selectItem(0);
 				mListFragment.selectItem(0);
-				// TODO: page indicator display issue
 				// TODO: maybe: save current item per severity and host group
 				return;
 			}

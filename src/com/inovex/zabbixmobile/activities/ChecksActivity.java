@@ -132,6 +132,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	@Override
 	public void selectHostGroupInSpinner(int position, long itemId) {
+		mHostListFragment.showLoadingSpinner();
 		super.selectHostGroupInSpinner(position, itemId);
 		mHostListFragment.setHostGroup(itemId);
 		if(!mHostListFragment.isVisible())
@@ -205,6 +206,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 			mZabbixDataService.loadApplicationsByHostId(h.getId(),
 					mApplicationsFragment);
 		}
+		mHostListFragment.dismissLoadingSpinner();
 	}
 
 }
