@@ -140,7 +140,6 @@ public class EventsDetailsPage extends BaseDetailsPage {
 	
 	@Override
 	protected void showGraph() {
-		showGraph((LinearLayout) getView().findViewById(
-				R.id.event_graph), mEvent.getTrigger().getItem());
+		showGraph(mEvent.getTrigger().getItem());
 	}
 }

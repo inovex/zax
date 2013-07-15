@@ -421,7 +421,6 @@ public class ZabbixDataService extends Service {
 				events = new ArrayList<Event>();
 				try {
 					mRemoteAPI.importEvents();
-					SystemClock.sleep(5000);
 				} finally {
 					// even if the api call is not successful, we can still use
 					// the cached events

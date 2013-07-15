@@ -10,19 +10,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="200dp"
-            android:orientation="horizontal" >
-
-            <LinearLayout
-                android:id="@+id/item_graph"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical"
-                android:padding="2dip" />
-        </LinearLayout>
+        <include layout="@layout/graph_view" />
     </LinearLayout>
 
 </ScrollView>

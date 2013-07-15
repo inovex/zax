@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
@@ -16,11 +17,13 @@ import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.util.GraphUtil;
 import com.jjoe64.graphview.LineGraphView;
 
-public abstract class BaseDetailsPage extends BaseServiceConnectedFragment implements OnHistoryDetailsLoadedListener {
+public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
+		implements OnHistoryDetailsLoadedListener {
 
 	protected boolean mHistoryDetailsImported = false;
 	protected Collection<HistoryDetail> mHistoryDetails;
-	
+	private boolean mLoadingSpinnerVisible = true;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.d("OC", this + "onCreate");
@@ -39,19 +42,26 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment imple
 		super.onViewCreated(view, savedInstanceState);
 		Log.d("OC", this + "onViewCreated");
 
+		if (mLoadingSpinnerVisible)
+			showGraphLoadingSpinner();
+
 		fillDetailsText();
-		
+
 		if (mHistoryDetails != null)
 			showGraph();
 	}
 
 	protected abstract void fillDetailsText();
 
-	protected void showGraph(ViewGroup layout, Item item) {
+	protected void showGraph(Item item) {
+		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graph);
+		dismissGraphLoadingSpinner();
 		// create graph and add it to the layout
 		int numEntries = mHistoryDetails.size();
 		if (numEntries > 0 && item != null) {
-			LineGraphView graph = GraphUtil.createItemGraph(getSherlockActivity(), mHistoryDetails, item.getDescription());
+			LineGraphView graph = GraphUtil.createItemGraph(
+					getSherlockActivity(), mHistoryDetails,
+					item.getDescription());
 			layout.removeAllViews();
 			layout.addView(graph);
 		} else {
@@ -67,11 +77,40 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment imple
 
 	@Override
 	public void onHistoryDetailsLoaded(Collection<HistoryDetail> historyDetails) {
-		mHistoryDetailsImported  = true;
+		mHistoryDetailsImported = true;
 		mHistoryDetails = historyDetails;
 		if (getView() != null) {
 			showGraph();
 		}
+	}
+
+	/**
+	 * Shows a loading spinner instead of the graph view.
+	 */
+	public void showGraphLoadingSpinner() {
+		mLoadingSpinnerVisible = true;
+		LinearLayout progressLayout = (LinearLayout) getView().findViewById(
+				R.id.graph_progress_layout);
+		if (progressLayout != null)
+			progressLayout.setVisibility(View.VISIBLE);
+	}
+
+	/**
+	 * Dismisses the graph loading spinner view.
+	 * 
+	 * If the view has not yet been created, the status is saved and when the
+	 * view is created, the spinner will not be shown at all.
+	 */
+	public void dismissGraphLoadingSpinner() {
+		mLoadingSpinnerVisible = false;
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.graph_progress_layout);
+			if (progressLayout != null) {
+				progressLayout.setVisibility(View.GONE);
+			}
+		}
+
 	}
 
 }

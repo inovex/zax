@@ -147,7 +147,7 @@ public abstract class BaseSeverityFilterListPage extends
 	public void showLoadingSpinner() {
 		mLoadingSpinnerVisible = true;
 		LinearLayout progressLayout = (LinearLayout) getView().findViewById(
-				R.id.progressSpinnerLayout);
+				R.id.list_progress_layout);
 		if (progressLayout != null)
 			progressLayout.setVisibility(View.VISIBLE);
 	}
@@ -162,7 +162,7 @@ public abstract class BaseSeverityFilterListPage extends
 		mLoadingSpinnerVisible = false;
 		if (getView() != null) {
 			LinearLayout progressLayout = (LinearLayout) getView()
-					.findViewById(R.id.progressSpinnerLayout);
+					.findViewById(R.id.list_progress_layout);
 			if (progressLayout != null) {
 				progressLayout.setVisibility(View.GONE);
 			}

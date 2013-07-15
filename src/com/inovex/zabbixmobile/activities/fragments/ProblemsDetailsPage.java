@@ -114,8 +114,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 	
 	@Override
 	protected void showGraph() {
-		showGraph((LinearLayout) getView().findViewById(
-				R.id.trigger_graph), mTrigger.getItem());
+		showGraph(mTrigger.getItem());
 	}
 
 }

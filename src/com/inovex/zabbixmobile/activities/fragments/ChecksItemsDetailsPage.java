@@ -99,7 +99,7 @@ public class ChecksItemsDetailsPage extends BaseDetailsPage {
 	}
 
 	protected void showGraph() {
-		showGraph((LinearLayout) getView().findViewById(R.id.item_graph), mItem);
+		showGraph(mItem);
 	}
 
 }
