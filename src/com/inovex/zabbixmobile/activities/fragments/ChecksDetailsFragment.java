@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
@@ -22,8 +23,12 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 
 	private int mHostPosition = 0;
 	private long mHostId;
+	private Host mHost;
+	private boolean mLoadingSpinnerVisible = true;
+
 	private static final String ARG_HOST_POSITION = "arg_host_position";
 	private static final String ARG_HOST_ID = "arg_host_id";
+	private static final String ARG_SPINNER_VISIBLE = "arg_spinner_visible";
 
 	private TextView mTitleView;
 
@@ -31,14 +36,14 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 	protected TitlePageIndicator mDetailsPageIndicator;
 	protected ChecksApplicationsPagerAdapter mDetailsPagerAdapter;
 
-	private Host mHost;
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
 			mHostPosition = savedInstanceState.getInt(ARG_HOST_POSITION, 0);
 			mHostId = savedInstanceState.getLong(ARG_HOST_ID, 0);
+			mLoadingSpinnerVisible = savedInstanceState.getBoolean(
+					ARG_SPINNER_VISIBLE, false);
 		}
 		setRetainInstance(true);
 		Log.d(TAG, "Host position: " + mHostPosition + "; id: " + mHostId);
@@ -54,12 +59,15 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		mTitleView = (TextView) view.findViewById(R.id.checks_title);
+		if (mLoadingSpinnerVisible)
+			showLoadingSpinner();
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putInt(ARG_HOST_POSITION, mHostPosition);
 		outState.putLong(ARG_HOST_ID, mHostId);
+		outState.putBoolean(ARG_SPINNER_VISIBLE, mLoadingSpinnerVisible);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -75,7 +83,7 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 
 	public void setHost(Host h) {
 		this.mHost = h;
-		if(mHost != null && getView() != null)
+		if (mHost != null && getView() != null)
 			mTitleView.setText("Host: " + mHost.getName());
 	}
 
@@ -132,6 +140,8 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 							Log.d(TAG, "detail page selected: " + position);
 
 							mDetailsPagerAdapter.setCurrentPosition(position);
+							mDetailsPager.setCurrentItem(position);
+							mDetailsPageIndicator.setCurrentItem(position);
 							mZabbixDataService
 									.loadItemsByApplicationId(mDetailsPagerAdapter
 											.getCurrentItem().getId());
@@ -151,6 +161,37 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment {
 	protected void retrievePagerAdapter() {
 		mDetailsPagerAdapter = mZabbixDataService
 				.getChecksApplicationsPagerAdapter();
+	}
+
+	/**
+	 * Shows a loading spinner instead of this page's list view.
+	 */
+	public void showLoadingSpinner() {
+		mLoadingSpinnerVisible = true;
+		LinearLayout progressLayout = (LinearLayout) getView().findViewById(
+				R.id.applications_progress_layout);
+		if (progressLayout != null)
+			progressLayout.setVisibility(View.VISIBLE);
+	}
+
+	/**
+	 * Dismisses the loading spinner view.
+	 * 
+	 * If the view has not yet been created, the status is saved and when the
+	 * view is created, the spinner will not be shown at all.
+	 */
+	public void dismissLoadingSpinner() {
+		mLoadingSpinnerVisible = false;
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.applications_progress_layout);
+			if (progressLayout != null) {
+				progressLayout.setVisibility(View.GONE);
+			}
+		}
+		// for (ChecksDetailsPage p : mDetailsPagerAdapter.getPages()) {
+		// p.dismissLoadingSpinner();
+		// }
 	}
 
 	@Override

@@ -11,13 +11,11 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 
 import com.inovex.zabbixmobile.activities.BaseSeverityFilterActivity;
 import com.inovex.zabbixmobile.activities.ChecksActivity;
-import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListPage;
@@ -37,8 +35,9 @@ import com.inovex.zabbixmobile.adapters.ProblemsListAdapter;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
+import com.inovex.zabbixmobile.listeners.OnApplicationsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnHistoryDetailsLoadedListener;
-import com.inovex.zabbixmobile.listeners.OnListAdapterLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnListItemsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.Event;
@@ -499,7 +498,6 @@ public class ZabbixDataService extends Service {
 				triggers = new ArrayList<Trigger>();
 				try {
 					mRemoteAPI.importActiveTriggers();
-					SystemClock.sleep(5000);
 					// even if the api call is not successful, we can still use
 					// the cached events
 				} finally {
@@ -606,7 +604,7 @@ public class ZabbixDataService extends Service {
 	 */
 	public void loadHostsByHostGroup(final long hostGroupId,
 			final boolean hostGroupChanged,
-			final OnListAdapterLoadedListener callback) {
+			final OnListItemsLoadedListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
 			private List<Host> hosts;
@@ -643,7 +641,7 @@ public class ZabbixDataService extends Service {
 					hostsAdapter.notifyDataSetChanged();
 				}
 				if (callback != null)
-					callback.onListAdapterLoaded();
+					callback.onListItemsLoaded();
 				Log.d(TAG, "Hosts imported.");
 
 			}
@@ -662,7 +660,7 @@ public class ZabbixDataService extends Service {
 	 *            Callback needed to trigger a redraw the view pager indicator
 	 */
 	public void loadApplicationsByHostId(final long hostId,
-			final ChecksDetailsFragment callback) {
+			final OnApplicationsLoadedListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
 			List<Host> hosts;
@@ -697,9 +695,9 @@ public class ZabbixDataService extends Service {
 					mChecksApplicationsPagerAdapter.clear();
 					mChecksApplicationsPagerAdapter.addAll(applications);
 					mChecksApplicationsPagerAdapter.notifyDataSetChanged();
-					// This is ugly, but we need it to redraw the page indicator
+
 					if (callback != null)
-						callback.redrawPageIndicator();
+						callback.onApplicationsLoaded();
 				}
 
 			}
@@ -727,6 +725,19 @@ public class ZabbixDataService extends Service {
 			List<Item> items;
 
 			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+				// clear adapters first to avoid display of old items
+				if (mChecksItemsListAdapter != null) {
+					mChecksItemsListAdapter.clear();
+				}
+
+				if (mChecksItemsPagerAdapter != null) {
+					mChecksItemsPagerAdapter.clear();
+				}
+			}
+
+			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
 				try {
@@ -744,12 +755,10 @@ public class ZabbixDataService extends Service {
 				super.onPostExecute(result);
 				// fill adapters
 				if (mChecksItemsListAdapter != null) {
-					mChecksItemsListAdapter.clear();
 					mChecksItemsListAdapter.addAll(items);
 					mChecksItemsListAdapter.notifyDataSetChanged();
 				}
 				if (mChecksItemsPagerAdapter != null) {
-					mChecksItemsPagerAdapter.clear();
 					mChecksItemsPagerAdapter.addAll(items);
 					mChecksItemsPagerAdapter.notifyDataSetChanged();
 				}
@@ -766,7 +775,8 @@ public class ZabbixDataService extends Service {
 	 * @param itemId
 	 *            item id
 	 */
-	public void loadHistoryDetailsByItemId(final long itemId, final OnHistoryDetailsLoadedListener callback) {
+	public void loadHistoryDetailsByItemId(final long itemId,
+			final OnHistoryDetailsLoadedListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
 			List<HistoryDetail> historyDetails;
@@ -794,7 +804,7 @@ public class ZabbixDataService extends Service {
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
 
-				if(callback != null)
+				if (callback != null)
 					callback.onHistoryDetailsLoaded(historyDetails);
 			}
 

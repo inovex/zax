@@ -14,12 +14,13 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksItemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
+import com.inovex.zabbixmobile.listeners.OnApplicationsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
-import com.inovex.zabbixmobile.listeners.OnListAdapterLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnListItemsLoadedListener;
 import com.inovex.zabbixmobile.model.Host;
 
 public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
-		OnChecksItemSelectedListener, OnListAdapterLoadedListener {
+		OnChecksItemSelectedListener, OnListItemsLoadedListener, OnApplicationsLoadedListener {
 
 	private static final String TAG = ChecksActivity.class.getSimpleName();
 
@@ -88,8 +89,9 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 						+ ((h == null) ? "null" : h.toString()));
 		// mApplicationsFragment.selectHost(position, id);
 		mApplicationsFragment.setHost(h);
+		mApplicationsFragment.showLoadingSpinner();
 		showApplicationsFragment();
-		mZabbixDataService.loadApplicationsByHostId(id, mApplicationsFragment);
+		mZabbixDataService.loadApplicationsByHostId(id, this);
 
 	}
 
@@ -198,15 +200,24 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	}
 
 	@Override
-	public void onListAdapterLoaded() {
+	public void onListItemsLoaded() {
 		mCurrentHostId = mHostListFragment.selectItem(mCurrentHostPosition);
 		if (mCurrentHostId > 0) {
 			Host h = mZabbixDataService.getHostById(mCurrentHostId);
 			mApplicationsFragment.setHost(h);
 			mZabbixDataService.loadApplicationsByHostId(h.getId(),
-					mApplicationsFragment);
+					this);
 		}
 		mHostListFragment.dismissLoadingSpinner();
 	}
+
+	@Override
+	public void onApplicationsLoaded() {
+		// This is ugly, but we need it to redraw the page indicator
+		mApplicationsFragment.redrawPageIndicator();
+		mApplicationsFragment.dismissLoadingSpinner();
+	}
+	
+	
 
 }

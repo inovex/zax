@@ -2,6 +2,7 @@ package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
@@ -15,6 +16,8 @@ public class ChecksDetailsPage extends BaseServiceConnectedListFragment {
 	private String mTitle = "";
 
 	public static String TAG = ChecksDetailsPage.class.getSimpleName();
+
+	private static final String ARG_POSITION = "arg_position";
 
 	private int mCurrentPosition = 0;
 	private long mCurrentItemId = 0;
@@ -34,12 +37,27 @@ public class ChecksDetailsPage extends BaseServiceConnectedListFragment {
 	}
 
 	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		Log.d(TAG, "onCreate: " + this.toString());
+		if (savedInstanceState != null) {
+			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION, 0);
+		}
+	}
+
+	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		setEmptyText(getResources().getString(R.string.empty_list_checks));
 		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		getListView().setItemChecked(mCurrentPosition, true);
 		getListView().setSelection(mCurrentPosition);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt(ARG_POSITION, mCurrentPosition);
 	}
 
 	public void setCurrentPosition(int currentPosition) {
