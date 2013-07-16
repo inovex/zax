@@ -1,16 +1,24 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
+import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.model.Application;
 
-public class ChecksDetailsPage extends BaseServiceConnectedListFragment {
+public class ChecksDetailsPage extends BaseServiceConnectedListFragment
+		 {
 
 	private Application mApplication;
 	private String mTitle = "";
@@ -46,12 +54,25 @@ public class ChecksDetailsPage extends BaseServiceConnectedListFragment {
 	}
 
 	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View rootView = inflater.inflate(R.layout.page_base_list, null);
+		return rootView;
+	}
+
+	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		setEmptyText(getResources().getString(R.string.empty_list_checks));
+		// setEmptyText(getResources().getString(R.string.empty_list_checks));
 		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		getListView().setItemChecked(mCurrentPosition, true);
 		getListView().setSelection(mCurrentPosition);
+
+		TextView emptyView = (TextView) getView().findViewById(
+				android.R.id.empty);
+		if (emptyView != null)
+			emptyView.setText(R.string.empty_list_checks);
+
 	}
 
 	@Override

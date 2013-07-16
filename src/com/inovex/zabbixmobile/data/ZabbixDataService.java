@@ -37,6 +37,7 @@ import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
 import com.inovex.zabbixmobile.listeners.OnApplicationsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnHistoryDetailsLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnListItemsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.model.Application;
@@ -675,6 +676,7 @@ public class ZabbixDataService extends Service {
 					// We only import applications with corresponding hosts
 					// (this way templates are ignored)
 					mRemoteAPI.importApplicationsByHostIds(hostIds);
+					mRemoteAPI.importItemsByHostIds(hostIds);
 				} finally {
 					try {
 						applications = mDatabaseHelper
@@ -719,7 +721,8 @@ public class ZabbixDataService extends Service {
 	 *            adapters will be cleared before being filled with entries
 	 *            matching the selected host group.
 	 */
-	public void loadItemsByApplicationId(final long applicationId) {
+	public void loadItemsByApplicationId(final long applicationId,
+			final OnItemsLoadedListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
 			List<Item> items;
@@ -730,10 +733,12 @@ public class ZabbixDataService extends Service {
 				// clear adapters first to avoid display of old items
 				if (mChecksItemsListAdapter != null) {
 					mChecksItemsListAdapter.clear();
+					mChecksItemsListAdapter.notifyDataSetChanged();
 				}
 
 				if (mChecksItemsPagerAdapter != null) {
 					mChecksItemsPagerAdapter.clear();
+					mChecksItemsPagerAdapter.notifyDataSetChanged();
 				}
 			}
 
@@ -762,6 +767,9 @@ public class ZabbixDataService extends Service {
 					mChecksItemsPagerAdapter.addAll(items);
 					mChecksItemsPagerAdapter.notifyDataSetChanged();
 				}
+				
+				if(callback != null)
+					callback.onItemsLoaded();
 
 			}
 

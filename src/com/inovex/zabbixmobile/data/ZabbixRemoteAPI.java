@@ -56,11 +56,13 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.ApplicationItemRelation;
+import com.inovex.zabbixmobile.model.Cache;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.HistoryDetail;
@@ -565,6 +567,7 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 */
+	@Deprecated
 	public void importApplicationsByHostIds(Collection<Long> hostIds)
 			throws FatalException, ZabbixLoginRequiredException {
 		// TODO: ignore empty applications
@@ -573,7 +576,8 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject().put("output", "extend")
 					.put("limit", ZabbixConfig.APPLICATION_GET_LIMIT)
 					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
-					.put(isVersion2 ? "selectItems" : "select_items", "extend")
+					// .put(isVersion2 ? "selectItems" : "select_items",
+					// "extend")
 					.put("source", 0);
 			if (!isVersion2) {
 				// in Zabbix version <2.0, this is not default
@@ -604,16 +608,14 @@ public class ZabbixRemoteAPI {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	private void importApplicationsFromStream(JsonArrayOrObjectReader jsonReader)
-			throws JsonParseException, NumberFormatException, IOException,
-			SQLException {
+	private Collection<Application> importApplicationsFromStream(
+			JsonArrayOrObjectReader jsonReader) throws JsonParseException,
+			NumberFormatException, IOException, SQLException {
 		int num = 0;
-		List<Application> applicationsCollection = new ArrayList<Application>(
-				RECORDS_PER_INSERT_BATCH);
-		List<ApplicationItemRelation> applicationItemRelations = new ArrayList<ApplicationItemRelation>(
+		List<Application> applicationsComplete = new ArrayList<Application>();
+		List<Application> applicationsPerBatch = new ArrayList<Application>(
 				RECORDS_PER_INSERT_BATCH);
 		JsonObjectReader application;
-		List<Item> items = new ArrayList<Item>();
 		while ((application = jsonReader.next()) != null) {
 			Application app = new Application();
 			while (application.nextValueToken()) {
@@ -635,7 +637,7 @@ public class ZabbixRemoteAPI {
 					// app.set(ApplicationData.COLUMN_HOSTID,
 					// Long.parseLong(application.getText()));
 				} else if (propName.equals("items")) {
-					items = importItemsFromStream(
+					importItemsFromStream(
 							application.getJsonArrayOrObjectReader(), 0, false);
 				} else if (propName.equals("hosts")) {
 					// import hosts
@@ -643,8 +645,17 @@ public class ZabbixRemoteAPI {
 							application.getJsonArrayOrObjectReader(), null);
 					if (hosts.size() > 0) {
 						Host h = hosts.get(0);
-						if (h != null)
+						if (h != null) {
+							if (h.getName() == null) {
+								// if the host's information is not complete, we
+								// need to query it from the database
+								Host hostFromDB = databaseHelper.getHostById(h
+										.getId());
+								if (hostFromDB != null)
+									h = hostFromDB;
+							}
 							app.setHost(h);
+						}
 					}
 					if (hosts.size() > 1) {
 						Log.w(TAG, "More than one host found for application "
@@ -654,59 +665,59 @@ public class ZabbixRemoteAPI {
 					application.nextProperty();
 				}
 			}
-			// create applications that does not exist
-			// app.insert(zabbixLocalDB, ApplicationData.COLUMN_APPLICATIONID);
-			// _commitTransactionIfRecommended();
-			//
-			// // create ApplicationItemRelation
-			// long appid = (Long)
-			// app.get(ApplicationData.COLUMN_APPLICATIONID);
-			// ApplicationItemRelationData rel = new
-			// ApplicationItemRelationData();
-			// rel.set(ApplicationItemRelationData.COLUMN_APPLICATIONID, appid);
-			// rel.set(ApplicationItemRelationData.COLUMN_ITEMID, itemid);
-			// rel.set(ApplicationItemRelationData.COLUMN_HOSTID, hostid);
-			// rel.insert(zabbixLocalDB);
-			// _commitTransactionIfRecommended();
 
 			num++;
-			applicationsCollection.add(app);
-			if (applicationsCollection.size() >= RECORDS_PER_INSERT_BATCH) {
-				databaseHelper.insertApplications(applicationsCollection);
-				applicationsCollection = new ArrayList<Application>(
+			applicationsPerBatch.add(app);
+			applicationsComplete.add(app);
+
+			if (applicationsPerBatch.size() >= RECORDS_PER_INSERT_BATCH) {
+				databaseHelper.insertApplications(applicationsPerBatch);
+				applicationsPerBatch = new ArrayList<Application>(
 						RECORDS_PER_INSERT_BATCH);
 			}
 
-			// insert application item relations
-			for (Item item : items) {
-				applicationItemRelations.add(new ApplicationItemRelation(app,
-						item));
-			}
-			if (applicationItemRelations.size() >= RECORDS_PER_INSERT_BATCH) {
-				databaseHelper
-						.insertApplicationItemRelations(applicationItemRelations);
-				applicationItemRelations = new ArrayList<ApplicationItemRelation>(
-						RECORDS_PER_INSERT_BATCH);
-			}
 		}
 		// insert the last batch of applications
-		databaseHelper.insertApplications(applicationsCollection);
-		databaseHelper.insertApplicationItemRelations(applicationItemRelations);
-		// if (num == 0) {
-		// // if there's no application, the ID #0 must be added (for other)
-		// ApplicationItemRelationData rel = new ApplicationItemRelationData();
-		// rel.set(ApplicationItemRelationData.COLUMN_APPLICATIONID, 0);
-		// rel.set(ApplicationItemRelationData.COLUMN_ITEMID, itemid);
-		// rel.set(ApplicationItemRelationData.COLUMN_HOSTID, hostid);
-		// rel.insert(zabbixLocalDB);
-		//
-		// // if #0 "other" does not exist yet, it has to be created
-		// ApplicationData app = new ApplicationData();
-		// app.set(ApplicationData.COLUMN_APPLICATIONID, 0);
-		// app.set(ApplicationData.COLUMN_NAME, "- "
-		// + context.getResources().getString(R.string.other) + " -");
-		// app.insert(zabbixLocalDB, ApplicationData.COLUMN_APPLICATIONID);
-		// }
+		databaseHelper.insertApplications(applicationsPerBatch);
+		return applicationsComplete;
+	}
+
+	/**
+	 * Imports applications from a JSON stream containing an array of IDs. The
+	 * applications are queried from the database.
+	 * 
+	 * @param jsonReader
+	 *            JSON stream reader
+	 * @throws JsonParseException
+	 * @throws NumberFormatException
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	private Collection<Application> importApplicationsFromIdStream(
+			JsonArrayOrObjectReader jsonReader) throws JsonParseException,
+			NumberFormatException, IOException, SQLException {
+		List<Application> applications = new ArrayList<Application>();
+		JsonObjectReader application;
+		HashSet<Long> appIds = new HashSet<Long>();
+		while ((application = jsonReader.next()) != null) {
+			while (application.nextValueToken()) {
+				String propName = application.getCurrentName();
+				if (propName.equals(Application.COLUMN_APPLICATIONID)) {
+					long appId = Long.parseLong(application.getText());
+					if (!appIds.contains(appId)) {
+						Application app = databaseHelper
+								.getApplicationById(appId);
+						if (app != null)
+							applications.add(app);
+					} else
+						Log.d(TAG, "app " + appId + " already imported.");
+				} else {
+					application.nextProperty();
+				}
+			}
+
+		}
+		return applications;
 	}
 
 	//
@@ -1028,8 +1039,7 @@ public class ZabbixRemoteAPI {
 
 		try {
 			long timeTill = new Date().getTime() / 1000;
-			long timeFrom = timeTill
-					- ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT;
+			long timeFrom = timeTill - ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT;
 
 			// Workaround: historydetails only comes if you use the correct
 			// "history"-parameter. This parameter can be "null" or a number
@@ -1375,50 +1385,51 @@ public class ZabbixRemoteAPI {
 		JsonObjectReader itemReader;
 		List<Item> itemsComplete = new ArrayList<Item>();
 		List<Item> itemsPerBatch = new ArrayList<Item>(RECORDS_PER_INSERT_BATCH);
+		List<ApplicationItemRelation> applicationItemRelations = new ArrayList<ApplicationItemRelation>(
+				RECORDS_PER_INSERT_BATCH);
 		while ((itemReader = jsonReader.next()) != null) {
-			Item i = new Item();
+			Item item = new Item();
+			Collection<Application> applications = new ArrayList<Application>();
 			String key_ = null;
 			while (itemReader.nextValueToken()) {
 				String propName = itemReader.getCurrentName();
 				if (propName.equals(Item.COLUMN_ITEMID)) {
-					i.setId(Long.parseLong(itemReader.getText()));
+					item.setId(Long.parseLong(itemReader.getText()));
 					// if (firstItemId == -1) {
 					// firstItemId = (Long) i.get(Item.COLUMN_ITEMID);
 					// }
 				} else if (propName.equals(Item.COLUMN_HOSTID)) {
-					// i.setHost(Long.parseLong(itemReader.getText()));
+					Host h = databaseHelper.getHostById(Long
+							.parseLong(itemReader.getText()));
+					if (h != null)
+						item.setHost(h);
 				} else if (propName.equals(Item.COLUMN_DESCRIPTION)
-						|| propName.equals(Item.COLUMN_DESCRIPTION_OLD)) {
+						|| propName.equals(Item.COLUMN_DESCRIPTION_NEW)) {
 					// since zabbix 2.x is the name of the item "name"
 					// before zabbix 2.x the name field was "description"
 					if (isVersion2
-							&& propName.equals(Item.COLUMN_DESCRIPTION_OLD)) {
-						i.setDescription(itemReader.getText());
+							&& propName.equals(Item.COLUMN_DESCRIPTION_NEW)) {
+						item.setDescription(itemReader.getText());
 					} else if (!isVersion2) {
-						i.setDescription(itemReader.getText());
+						item.setDescription(itemReader.getText());
 					}
 				} else if (propName.equals(Item.COLUMN_LASTCLOCK)) {
-					i.setLastClock(Long.parseLong(itemReader.getText()) * 1000);
+					item.setLastClock(Long.parseLong(itemReader.getText()) * 1000);
 				} else if (propName.equals(Item.COLUMN_LASTVALUE)) {
-					i.setLastValue(itemReader.getText());
+					item.setLastValue(itemReader.getText());
 				} else if (propName.equals(Item.COLUMN_UNITS)) {
-					i.setUnits(itemReader.getText());
+					item.setUnits(itemReader.getText());
 				} else if (propName.equals("key_")) {
 					key_ = itemReader.getText();
 				} else if (propName.equals("applications")) {
-					// at this point itemid and hostid is unknown
-					// because of this, all applicationrelations will be saved
-					// with itemid
-					// and hostid "-1".
-					// later the IDs will be replaced with the correct
-					// importApplications(-1, -1,
-					// itemReader.getJsonArrayOrObjectReader());
+					applications = importApplicationsFromIdStream(itemReader
+							.getJsonArrayOrObjectReader());
 				} else {
 					itemReader.nextProperty();
 				}
 			}
 			// if applicable replace placeholder
-			String description = i.getDescription();
+			String description = item.getDescription();
 			if (description.matches(".*\\$[0-9].*")) {
 				if (key_ != null && key_.indexOf('[') != -1) {
 					String[] keys = key_.substring(key_.indexOf('[') + 1,
@@ -1429,7 +1440,7 @@ public class ZabbixRemoteAPI {
 					}
 				}
 			}
-			i.setDescription(description);
+			item.setDescription(description);
 
 			// now the "-1" IDs of applicationsrelation will be replaced with
 			// the
@@ -1442,20 +1453,52 @@ public class ZabbixRemoteAPI {
 			// zabbixLocalDB.update(ApplicationItemRelationData.TABLE_NAME,
 			// values, ApplicationItemRelationData.COLUMN_ITEMID + "=-1",
 			// null);
-			itemsPerBatch.add(i);
-			itemsComplete.add(i);
+			itemsPerBatch.add(item);
+			itemsComplete.add(item);
 			if (itemsPerBatch.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper.insertItems(itemsPerBatch);
 				itemsPerBatch = new ArrayList<Item>(RECORDS_PER_INSERT_BATCH);
 			}
+
+			if (item.getHost() != null
+					&& (applications == null || applications.isEmpty())) {
+				// If no application has been found for this particular event,
+				// we create an "other" application
+				long otherId = item.getHost().getId() * (-1);
+				Application other = databaseHelper.getApplicationById(otherId);
+				if (other == null) {
+					other = new Application();
+					other.setHost(item.getHost());
+					other.setId(otherId);
+					other.setName(mContext.getResources().getString(
+							R.string.other));
+					ArrayList<Application> apps = new ArrayList<Application>();
+					apps.add(other);
+					databaseHelper.insertApplications(apps);
+				}
+				applications.add(other);
+			}
+			// insert application item relations
+			for (Application app : applications) {
+				app.setHost(item.getHost());
+				applicationItemRelations.add(new ApplicationItemRelation(app,
+						item));
+			}
+			if (applicationItemRelations.size() >= RECORDS_PER_INSERT_BATCH) {
+				databaseHelper
+						.insertApplicationItemRelations(applicationItemRelations);
+				applicationItemRelations = new ArrayList<ApplicationItemRelation>(
+						RECORDS_PER_INSERT_BATCH);
+			}
 		}
 		// insert the last batch of events
 		databaseHelper.insertItems(itemsPerBatch);
+		databaseHelper.insertApplicationItemRelations(applicationItemRelations);
 		return itemsComplete;
 	}
 
-	public void importItems(long hostid) throws FatalException,
-			ZabbixLoginRequiredException {
+	public void importItemsByHostIds(Collection<Long> hostIds)
+			throws FatalException, ZabbixLoginRequiredException {
 		// if (!isCached(ItemData.TABLE_NAME, "hostid=" + hostid)) {
 		// zabbixLocalDB.delete(ApplicationItemRelationData.TABLE_NAME,
 		// ApplicationItemRelationData.COLUMN_HOSTID + "=" + hostid,
@@ -1471,16 +1514,19 @@ public class ZabbixRemoteAPI {
 			// .put("limit", ZabbixConfig.ITEM_GET_LIMIT)
 			// .put("hostids", new JSONArray().put(hostid)));
 			// int numItems = result.getInt("result");
-			JsonArrayOrObjectReader items = _queryStream(
-					"item.get",
-					new JSONObject()
-							.put("output", "extend")
-							.put("limit", ZabbixConfig.ITEM_GET_LIMIT)
-							.put(isVersion2 ? "selectApplications"
-									: "select_applications", "extend")
-							.put("hostids", new JSONArray().put(hostid)));
+			JSONObject params = new JSONObject();
+			params.put("output", "extend")
+					.put("limit", ZabbixConfig.ITEM_GET_LIMIT)
+					.put(isVersion2 ? "selectApplications"
+							: "select_applications", "refer")
+					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend");
+			if (hostIds != null)
+				params.put("hostids", new JSONArray(hostIds));
+			JsonArrayOrObjectReader items = _queryStream("item.get", params);
 			importItemsFromStream(items, 0, false);
 			items.close();
+
+			// Log.d(TAG, _queryBuffer("item.get", params).toString());
 
 		} catch (SQLException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
@@ -1494,42 +1540,6 @@ public class ZabbixRemoteAPI {
 		// ZabbixConfig.CACHE_LIFETIME_ITEMS);
 		// }
 	}
-
-	// public void importItems(long hostid) throws JSONException, IOException,
-	// HttpAuthorizationRequiredException, NoAPIAccessException,
-	// PreconditionFailedException {
-	// if (!isCached(ItemData.TABLE_NAME, "hostid=" + hostid)) {
-	// _startTransaction();
-	// zabbixLocalDB.delete(ItemData.TABLE_NAME, ItemData.COLUMN_HOSTID
-	// + "=" + hostid, null);
-	// zabbixLocalDB.delete(ApplicationItemRelationData.TABLE_NAME,
-	// ApplicationItemRelationData.COLUMN_HOSTID + "=" + hostid,
-	// null);
-	//
-	// // count of items
-	// JSONObject result = _queryBuffer(
-	// "item.get",
-	// new JSONObject().put("output", "extend")
-	// .put("countOutput", 1)
-	// .put("limit", ZabbixConfig.ITEM_GET_LIMIT)
-	// .put("hostids", new JSONArray().put(hostid)));
-	// int numItems = result.getInt("result");
-	// JsonArrayOrObjectReader items = _queryStream(
-	// "item.get",
-	// new JSONObject()
-	// .put("output", "extend")
-	// .put("limit", ZabbixConfig.ITEM_GET_LIMIT)
-	// .put(isVersion2 ? "selectApplications"
-	// : "select_applications", "extend")
-	// .put("hostids", new JSONArray().put(hostid)));
-	// importItems(items, numItems, false);
-	// items.close();
-	//
-	// setCached(ItemData.TABLE_NAME, "hostid=" + hostid,
-	// ZabbixConfig.CACHE_LIFETIME_ITEMS);
-	// _endTransaction();
-	// }
-	// }
 
 	// private void importScreenItems(JsonArrayOrObjectReader screenItems)
 	// throws JsonParseException, NumberFormatException, IOException {
@@ -1805,9 +1815,9 @@ public class ZabbixRemoteAPI {
 					}
 				} else if (propName.equals("items")) {
 					// store the first item id
-					List<Item> items = importItemsFromStream(triggerReader.getJsonArrayOrObjectReader(),
-							 1, true);
-					if(items.size() > 0)
+					List<Item> items = importItemsFromStream(
+							triggerReader.getJsonArrayOrObjectReader(), 1, true);
+					if (items.size() > 0)
 						t.setItem(items.get(0));
 				} else {
 					triggerReader.nextProperty();

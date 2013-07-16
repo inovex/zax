@@ -16,11 +16,13 @@ import com.inovex.zabbixmobile.activities.fragments.ChecksItemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.listeners.OnApplicationsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
+import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnListItemsLoadedListener;
 import com.inovex.zabbixmobile.model.Host;
 
 public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
-		OnChecksItemSelectedListener, OnListItemsLoadedListener, OnApplicationsLoadedListener {
+		OnChecksItemSelectedListener, OnListItemsLoadedListener,
+		OnApplicationsLoadedListener {
 
 	private static final String TAG = ChecksActivity.class.getSimpleName();
 
@@ -60,8 +62,9 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (super.onOptionsItemSelected(item)) return true;
-		
+		if (super.onOptionsItemSelected(item))
+			return true;
+
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			if ((mApplicationsFragment.isVisible() || mItemDetailsFragment
@@ -89,7 +92,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 						+ ((h == null) ? "null" : h.toString()));
 		// mApplicationsFragment.selectHost(position, id);
 		mApplicationsFragment.setHost(h);
-		mApplicationsFragment.showLoadingSpinner();
+		mApplicationsFragment.showApplicationsLoadingSpinner();
 		showApplicationsFragment();
 		mZabbixDataService.loadApplicationsByHostId(id, this);
 
@@ -137,7 +140,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		mHostListFragment.showLoadingSpinner();
 		super.selectHostGroupInSpinner(position, itemId);
 		mHostListFragment.setHostGroup(itemId);
-		if(!mHostListFragment.isVisible())
+		if (!mHostListFragment.isVisible())
 			showHostListFragment();
 		// TODO: update details fragment
 	}
@@ -205,8 +208,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		if (mCurrentHostId > 0) {
 			Host h = mZabbixDataService.getHostById(mCurrentHostId);
 			mApplicationsFragment.setHost(h);
-			mZabbixDataService.loadApplicationsByHostId(h.getId(),
-					this);
+			mZabbixDataService.loadApplicationsByHostId(h.getId(), this);
 		}
 		mHostListFragment.dismissLoadingSpinner();
 	}
@@ -215,9 +217,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	public void onApplicationsLoaded() {
 		// This is ugly, but we need it to redraw the page indicator
 		mApplicationsFragment.redrawPageIndicator();
-		mApplicationsFragment.dismissLoadingSpinner();
+		mApplicationsFragment.dismissApplicationsLoadingSpinner();
 	}
-	
-	
 
 }

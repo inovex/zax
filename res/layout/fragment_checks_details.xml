@@ -37,11 +37,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <LinearLayout
+            android:id="@+id/items_progress_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <ProgressBar
+                android:id="@+id/items_progress_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+            </ProgressBar>
+        </LinearLayout>
+
         <android.support.v4.view.ViewPager
             android:id="@+id/checks_view_pager"
             android:layout_width="match_parent"
-            android:layout_height="0px"
-            android:layout_weight="1" >
+            android:layout_height="fill_parent" >
         </android.support.v4.view.ViewPager>
     </LinearLayout>
 

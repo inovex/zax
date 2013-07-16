@@ -305,11 +305,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Queries all applications for a specified hostfrom the database.
+	 * Queries all applications for a specified host from the database.
 	 * 
 	 * @param host
 	 * 
-	 * @return list of all applications
+	 * @return list of applications
 	 * @throws SQLException
 	 */
 	public List<Application> getApplicationsByHost(Host host)
@@ -319,6 +319,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		// TODO: index on hosts in application table
 	}
 
+	/**
+	 * Queries all applications for a specified host ID from the database.
+	 * 
+	 * @param hostId
+	 * 
+	 * @return list of applications
+	 * @throws SQLException
+	 */
 	public List<Application> getApplicationsByHostId(long hostId)
 			throws SQLException {
 		Dao<Application, Long> appDao = getDao(Application.class);
@@ -326,6 +334,27 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		// TODO: index on hosts in application table
 	}
 
+	/**
+	 * Queries the application with a given ID from the database.
+	 * 
+	 * @param id
+	 * 
+	 * @return application, or null if there is no application with this ID
+	 * @throws SQLException
+	 */
+	public Application getApplicationById(long id) throws SQLException {
+		Dao<Application, Long> appDao = getDao(Application.class);
+		return appDao.queryForId(id);
+	}
+
+	/**
+	 * Queries all items for a specified applicationfrom the database.
+	 * 
+	 * @param applicationId
+	 * 
+	 * @return list of items
+	 * @throws SQLException
+	 */
 	public List<Item> getItemsByApplicationId(long applicationId)
 			throws SQLException {
 		Dao<Item, Long> itemDao = getDao(Item.class);
