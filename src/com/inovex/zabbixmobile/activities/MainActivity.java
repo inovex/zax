@@ -6,57 +6,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import com.actionbarsherlock.view.Menu;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
+import com.inovex.zabbixmobile.activities.fragments.MainMenuFragment;
+import com.inovex.zabbixmobile.activities.fragments.MainProblemsFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
+import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.model.HostGroup;
-import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements
+		OnSeverityListAdapterLoadedListener {
 
 	protected static final String TAG = MainActivity.class.getSimpleName();
 
-	private ListView mProblemsList;
-	private Button mProblemsButton;
-
-	private MenuListAdapter mListAdapter;
-
-	protected class MenuListAdapter extends ArrayAdapter<String> {
-
-		private boolean mEnabled = true;
-
-		public MenuListAdapter(Context context, int resource, String[] objects) {
-			super(context, resource, objects);
-		}
-
-		@Override
-		public boolean isEnabled(int position) {
-			return mEnabled;
-		}
-
-		@Override
-		public boolean areAllItemsEnabled() {
-			return mEnabled;
-		}
-
-		// TODO: adjust view!
-		public void setEnabled(boolean enabled) {
-			mEnabled = enabled;
-		}
-
-	}
+	protected MainMenuFragment mMenuFragment;
+	protected MainProblemsFragment mProblemsFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,62 +33,23 @@ public class MainActivity extends BaseActivity {
 		mActionBar.setDisplayHomeAsUpEnabled(false);
 		mActionBar.setHomeButtonEnabled(false);
 
-		ListView listView = (ListView) findViewById(R.id.main_activities);
-		mListAdapter = new MenuListAdapter(this,
-				android.R.layout.simple_expandable_list_item_1, getResources()
-						.getStringArray(R.array.activities));
-		listView.setAdapter(mListAdapter);
-
-		listView.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View arg1,
-					int position, long arg3) {
-				Intent intent = null;
-				switch (position) {
-				case 0:
-					intent = new Intent(MainActivity.this, EventsActivity.class);
-					break;
-				case 1:
-					intent = new Intent(MainActivity.this, ChecksActivity.class);
-					break;
-				case 2:
-					intent = new Intent(MainActivity.this,
-							ScreensActivity.class);
-					break;
-				default:
-					return;
-				}
-				MainActivity.this.startActivity(intent);
-			}
-		});
-
-		LinearLayout baseLayout = (LinearLayout) findViewById(R.id.layout_main);
-
-		mProblemsList = (ListView) findViewById(R.id.main_problems_list);
-		mProblemsButton = (Button) findViewById(R.id.main_problems_button);
-
-		mProblemsButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(MainActivity.this,
-						ProblemsActivity.class);
-				MainActivity.this.startActivity(intent);
-			}
-		});
+		mMenuFragment = (MainMenuFragment) getSupportFragmentManager()
+				.findFragmentById(R.id.main_menu);
+		mProblemsFragment = (MainProblemsFragment) getSupportFragmentManager()
+				.findFragmentById(R.id.main_problems);
 
 	}
 
 	@Override
 	protected void disableUI() {
-		mProblemsButton.setEnabled(false);
-		mListAdapter.setEnabled(false);
+		// mProblemsButton.setEnabled(false);
+		// mListAdapter.setEnabled(false);
 	}
 
 	@Override
 	protected void enableUI() {
-		mProblemsButton.setEnabled(true);
-		mListAdapter.setEnabled(true);
+		// mProblemsButton.setEnabled(true);
+		// mListAdapter.setEnabled(true);
 	}
 
 	@Override
@@ -139,26 +67,8 @@ public class MainActivity extends BaseActivity {
 
 			// mZabbixService.performZabbixLogin(this);
 
-			BaseServiceAdapter<Trigger> adapter = mZabbixDataService
-					.getProblemsMainListAdapter();
-			mProblemsList.setAdapter(adapter);
-			mProblemsList.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					Log.d(TAG, "onItemClick(pos: " + position + ", id: " + id);
-					Bundle args = new Bundle();
-					Intent intent = new Intent(MainActivity.this,
-							ProblemsActivity.class);
-					intent.putExtra(ProblemsActivity.ARG_ITEM_POSITION,
-							position);
-					intent.putExtra(ProblemsActivity.ARG_ITEM_ID, id);
-					startActivity(intent);
-				}
-			});
 			mZabbixDataService.loadProblemsBySeverityAndHostGroup(
-					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true, null);
+					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true, this);
 		}
 
 	}
@@ -177,6 +87,13 @@ public class MainActivity extends BaseActivity {
 	protected void onStart() {
 		super.onStart();
 		Log.d(TAG, "onStart");
+	}
+
+	@Override
+	public void onSeverityListAdapterLoaded(TriggerSeverity severity,
+			boolean hostGroupChanged) {
+		mProblemsFragment.dismissLoadingSpinner();
+
 	}
 
 }

@@ -3,29 +3,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <LinearLayout
-        android:id="@+id/list_progress_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone" >
+    <include layout="@layout/view_list_with_loading_spinner" />
 
-        <ProgressBar
-            android:id="@+id/list_progress_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </ProgressBar>
-    </LinearLayout>
-    <ListView
-        android:id="@android:id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:drawSelectorOnTop="false" />
-
-    <TextView
-        android:id="@android:id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center" />
-</LinearLayout>
+</LinearLayout>

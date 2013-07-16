@@ -134,7 +134,6 @@ public abstract class BaseSeverityFilterListPage extends
 	}
 
 	public void setCustomEmptyText(CharSequence text) {
-		// We need to override this because we use a custom view
 		TextView emptyView = (TextView) getView().findViewById(
 				android.R.id.empty);
 		if (emptyView != null)

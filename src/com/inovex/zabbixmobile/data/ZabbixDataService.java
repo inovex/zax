@@ -499,6 +499,7 @@ public class ZabbixDataService extends Service {
 				triggers = new ArrayList<Trigger>();
 				try {
 					mRemoteAPI.importActiveTriggers();
+					SystemClock.sleep(5000);
 					// even if the api call is not successful, we can still use
 					// the cached events
 				} finally {
