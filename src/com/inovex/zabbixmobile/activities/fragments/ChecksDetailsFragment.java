@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.ChecksApplicationsPagerAdapter;
+import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.Host;
@@ -41,6 +42,20 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 	protected ViewPager mDetailsPager;
 	protected TitlePageIndicator mDetailsPageIndicator;
 	protected ChecksApplicationsPagerAdapter mDetailsPagerAdapter;
+
+	private OnChecksItemSelectedListener mCallbackMain;
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+
+		try {
+			mCallbackMain = (OnChecksItemSelectedListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnChecksItemSelectedListener.");
+		}
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -157,6 +172,9 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 							mDetailsPager.setCurrentItem(position);
 							mDetailsPageIndicator.setCurrentItem(position);
 
+							// mDetailsPagerAdapter.getCurrentPage().selectItem(0);
+							mCallbackMain.onApplicationSelected(position);
+
 							showItemsLoadingSpinner();
 							mZabbixDataService.loadItemsByApplicationId(
 									mDetailsPagerAdapter.getCurrentItem()
@@ -257,6 +275,10 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 	@Override
 	public void onItemsLoaded() {
 		dismissItemsLoadingSpinner();
+	}
+
+	public void selectItem(int position) {
+		mDetailsPagerAdapter.getCurrentPage().selectItem(position);
 	}
 
 }

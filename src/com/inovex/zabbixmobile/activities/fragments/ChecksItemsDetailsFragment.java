@@ -1,5 +1,6 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.ChecksItemsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
+import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.viewpagerindicator.TitlePageIndicator;
 
 /**
@@ -25,11 +27,24 @@ public class ChecksItemsDetailsFragment extends BaseServiceConnectedFragment {
 			.getSimpleName();
 
 	private int mPosition = 0;
-	private long mItemId;
 
 	protected ViewPager mDetailsPager;
 	protected TitlePageIndicator mDetailsPageIndicator;
 	protected ChecksItemsPagerAdapter mDetailsPagerAdapter;
+
+	private OnChecksItemSelectedListener mCallbackMain;
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+
+		try {
+			mCallbackMain = (OnChecksItemSelectedListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ " must implement OnChecksItemSelectedListener.");
+		}
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -55,9 +70,8 @@ public class ChecksItemsDetailsFragment extends BaseServiceConnectedFragment {
 		setupDetailsViewPager();
 	}
 
-	public void selectItem(int position, long id) {
+	public void selectItem(int position) {
 		this.mPosition = position;
-		this.mItemId = id;
 		// update view pager
 		mDetailsPageIndicator.setCurrentItem(position);
 	}
@@ -111,9 +125,8 @@ public class ChecksItemsDetailsFragment extends BaseServiceConnectedFragment {
 							// a
 							// change -> prevent infinite propagation
 							// mDetailsPagerAdapter.setCurrentPosition(position);
-							// if (position != mPosition)
-							// mCallbackMain.onListItemSelected(position,
-							// mDetailsPagerAdapter.getItemId(position));
+							if (position != mPosition)
+								mCallbackMain.onItemSelected(position);
 						}
 					});
 		}

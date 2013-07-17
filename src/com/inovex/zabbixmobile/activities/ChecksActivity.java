@@ -99,9 +99,21 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	}
 
 	@Override
-	public void onItemSelected(int position, long id) {
-		mItemDetailsFragment.selectItem(position, id);
+	public void onItemSelected(int position) {
+		mApplicationsFragment.selectItem(position);
+		mItemDetailsFragment.selectItem(position);
 		showItemDetailsFragment();
+	}
+
+	@Override
+	public void onApplicationSelected(int position) {
+		// Selecting an application never makes the item details visible. If
+		// item details are already visible, we select the first item of the
+		// chosen application.
+		if (mItemDetailsFragment.isVisible()) {
+			mApplicationsFragment.selectItem(0);
+			mItemDetailsFragment.selectItem(0);
+		}
 	}
 
 	@Override

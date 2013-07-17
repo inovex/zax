@@ -760,10 +760,12 @@ public class ZabbixDataService extends Service {
 				super.onPostExecute(result);
 				// fill adapters
 				if (mChecksItemsListAdapter != null) {
+					mChecksItemsListAdapter.clear();
 					mChecksItemsListAdapter.addAll(items);
 					mChecksItemsListAdapter.notifyDataSetChanged();
 				}
 				if (mChecksItemsPagerAdapter != null) {
+					mChecksItemsPagerAdapter.clear();
 					mChecksItemsPagerAdapter.addAll(items);
 					mChecksItemsPagerAdapter.notifyDataSetChanged();
 				}

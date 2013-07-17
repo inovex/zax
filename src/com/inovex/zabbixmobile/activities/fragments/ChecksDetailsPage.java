@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -88,6 +89,19 @@ public class ChecksDetailsPage extends BaseServiceConnectedListFragment
 	public void setCurrentItemId(long currentItemId) {
 		this.mCurrentItemId = currentItemId;
 	}
+	
+	public void selectItem(int position) {
+		setCurrentPosition(position);
+		if(getView() != null) {
+			getListView().setItemChecked(position, true);
+			getListView().setSelection(position);
+		}
+		ListAdapter adapter = getListAdapter();
+		if(adapter != null && adapter.getCount() > position) {
+			long id = adapter.getItemId(position);
+			setCurrentItemId(id);
+		}
+	}
 
 	@Override
 	protected void setupListAdapter() {
@@ -96,7 +110,7 @@ public class ChecksDetailsPage extends BaseServiceConnectedListFragment
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		mCallbackMain.onItemSelected(position, id);
+		mCallbackMain.onItemSelected(position);
 	}
 
 	public void setApplication(Application app) {
