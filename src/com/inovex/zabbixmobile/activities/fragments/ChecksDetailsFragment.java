@@ -68,7 +68,7 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 			mItemsLoadingSpinnerVisible = savedInstanceState.getBoolean(
 					ARG_ITEMS_SPINNER_VISIBLE, false);
 		}
-		setRetainInstance(true);
+//		setRetainInstance(true);
 		Log.d(TAG, "Host position: " + mHostPosition + "; id: " + mHostId);
 	}
 
@@ -141,7 +141,6 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 			mDetailsPager = (ViewPager) getView().findViewById(
 					R.id.checks_view_pager);
 			mDetailsPager.setAdapter(mDetailsPagerAdapter);
-			mDetailsPager.setOffscreenPageLimit(0);
 
 			// Initialize the page indicator
 			mDetailsPageIndicator = (TitlePageIndicator) getView()
@@ -278,7 +277,15 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 	}
 
 	public void selectItem(int position) {
-		mDetailsPagerAdapter.getCurrentPage().selectItem(position);
+		if (mDetailsPagerAdapter == null || mDetailsPagerAdapter.getCount() == 0)
+			return;
+		if(position > mDetailsPagerAdapter.getCount() - 1)
+			position = 0;
+		ChecksDetailsPage f = (ChecksDetailsPage) mDetailsPagerAdapter
+				.instantiateItem(mDetailsPager,
+						mDetailsPager.getCurrentItem());
+		Log.d(TAG, "selectItem(" + position + ")");
+		f.selectItem(position);
 	}
 
 }

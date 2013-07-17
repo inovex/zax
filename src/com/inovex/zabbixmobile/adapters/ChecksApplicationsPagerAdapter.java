@@ -15,7 +15,6 @@ public class ChecksApplicationsPagerAdapter extends
 		BaseServicePagerAdapter<Application> {
 
 	private static final String TAG = ChecksApplicationsPagerAdapter.class.getSimpleName();
-	private ArrayList<ChecksDetailsPage> instantiatedPages = new ArrayList<ChecksDetailsPage>();
 	private boolean mLoadingSpinnerVisible = true;
 	
 	@Override
@@ -38,11 +37,7 @@ public class ChecksApplicationsPagerAdapter extends
 //			p.dismissLoadingSpinner();
 		return p;
 	}
-
-	public ChecksDetailsPage getCurrentPage() {
-		return instantiatedPages.get(getCurrentPosition());
-	}
-
+	
 	@Override
 	public int getItemPosition(Object object) {
 		// This prevents caching of fragments. We need to disable caching
@@ -51,27 +46,6 @@ public class ChecksApplicationsPagerAdapter extends
 		return POSITION_NONE;
 	}
 	
-	@Override
-	public Object instantiateItem(ViewGroup container, int position) {
-		Object instantiatedItem = super
-				.instantiateItem(container, position);
-		// save instantiated page
-		Log.d(TAG, "instantiateItem: " + instantiatedItem.toString());
-		instantiatedPages
-				.add((ChecksDetailsPage) instantiatedItem);
-		return instantiatedItem;
-	}
-
-	/**
-	 * Returns all pages in this view pager which have already been
-	 * instantiated.
-	 * 
-	 * @return instantiated pages
-	 */
-	public Collection<ChecksDetailsPage> getPages() {
-		return instantiatedPages;
-	}
-
 	public void setLoadingSpinnerVisible(boolean loadingSpinnerVisible) {
 		this.mLoadingSpinnerVisible = loadingSpinnerVisible;
 	}

@@ -28,10 +28,6 @@ public class ChecksItemsPagerAdapter extends BaseServicePagerAdapter<Item> {
 		return p;
 	}
 
-	public ChecksItemsDetailsPage getCurrentPage() {
-		return (ChecksItemsDetailsPage) getPage(getCurrentPosition());
-	}
-
 	@Override
 	public int getItemPosition(Object object) {
 		// This prevents caching of fragments. We need to disable caching
