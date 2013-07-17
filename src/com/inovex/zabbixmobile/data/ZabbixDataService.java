@@ -32,6 +32,7 @@ import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 import com.inovex.zabbixmobile.adapters.HostsListAdapter;
 import com.inovex.zabbixmobile.adapters.ProblemsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ProblemsListAdapter;
+import com.inovex.zabbixmobile.adapters.ScreensListAdapter;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
@@ -89,6 +90,9 @@ public class ZabbixDataService extends Service {
 	private ChecksApplicationsPagerAdapter mChecksApplicationsPagerAdapter;
 	private ChecksItemsListAdapter mChecksItemsListAdapter;
 	private ChecksItemsPagerAdapter mChecksItemsPagerAdapter;
+	
+	// Screens
+	private ScreensListAdapter mScreensListAdapter;
 
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
@@ -193,6 +197,17 @@ public class ZabbixDataService extends Service {
 		return mHostsListAdapter;
 	}
 
+	/**
+	 * Returns the screens list adapter.
+	 * 
+	 * See {@link ScreensListFragment}.
+	 * 
+	 * @return screens list adapter
+	 */
+	public ScreensListAdapter getScreensListAdapter() {
+		return mScreensListAdapter;
+	}
+	
 	/**
 	 * Returns the application adapter.
 	 * 
@@ -384,6 +399,8 @@ public class ZabbixDataService extends Service {
 		mChecksApplicationsPagerAdapter = new ChecksApplicationsPagerAdapter();
 		mChecksItemsListAdapter = new ChecksItemsListAdapter(this);
 		mChecksItemsPagerAdapter = new ChecksItemsPagerAdapter();
+		
+		mScreensListAdapter = new ScreensListAdapter(this);
 
 	}
 
@@ -827,7 +844,7 @@ public class ZabbixDataService extends Service {
 	 * the Zabbix API is triggered.
 	 * 
 	 */
-	public void loadScreens() {
+	public void loadScreens(final OnListItemsLoadedListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
 			List<Screen> screens;
@@ -854,7 +871,15 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
+				
+				if(mScreensListAdapter != null) {
+					mScreensListAdapter.clear();
+					mScreensListAdapter.addAll(screens);
+					mScreensListAdapter.notifyDataSetChanged();
+				}
 
+				if(callback != null)
+					callback.onListItemsLoaded();
 			}
 
 		}.execute();

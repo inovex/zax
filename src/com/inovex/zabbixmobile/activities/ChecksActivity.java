@@ -16,7 +16,6 @@ import com.inovex.zabbixmobile.activities.fragments.ChecksItemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.listeners.OnApplicationsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
-import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnListItemsLoadedListener;
 import com.inovex.zabbixmobile.model.Host;
 

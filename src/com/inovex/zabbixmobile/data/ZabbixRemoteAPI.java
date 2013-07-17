@@ -1605,14 +1605,7 @@ public class ZabbixRemoteAPI {
 			// collect all graphids
 			Set<Long> graphids = databaseHelper.getGraphIdsByScreenId(screenId);
 
-			// Cursor cur = zabbixLocalDB.query(ScreenItemData.TABLE_NAME, null,
-			// ScreenItemData.COLUMN_SCREENID+"="+screenid, null, null, null,
-			// null);
-			// while (cur.moveToNext()) {
-			// graphids.add(cur.getLong(cur.getColumnIndex(ScreenItemData.COLUMN_RESOURCEID)));
-			// }
-
-			// delete old graphs
+			// TODO: delete old graphs
 			// String str_graphids = graphids.toString().replace("[",
 			// "").replace("]",
 			// "");
@@ -1665,16 +1658,6 @@ public class ZabbixRemoteAPI {
 
 				databaseHelper.insertGraphItems(graphItemsCollection);
 				graphItemsCollection.clear();
-				// if (mustSetGraphid) {
-				// ContentValues values = new ContentValues(1);
-				// values.put(GraphItemData.COLUMN_GRAPHID, (Long)
-				// scr.get(GraphData.COLUMN_GRAPHID));
-				// zabbixLocalDB.update(
-				// GraphItemData.TABLE_NAME
-				// , values
-				// , GraphItemData.COLUMN_GRAPHID+"=-1"
-				// , null);
-				// }
 
 				graphsCollection.add(graph);
 				if (graphsCollection.size() >= RECORDS_PER_INSERT_BATCH) {

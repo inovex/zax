@@ -4,7 +4,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "screens")
-public class Screen {
+public class Screen implements Comparable<Screen> {
 
 	/** Screen ID */
 	public static final String COLUMN_SCREENID = "screenid";
@@ -33,5 +33,16 @@ public class Screen {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+	@Override
+	public int compareTo(Screen another) {
+		if(another.getId() < id)
+			return 1;
+		if(another.getId() > id)
+			return -1;
+		return 0;
+	}
+	
+	
 
 }
