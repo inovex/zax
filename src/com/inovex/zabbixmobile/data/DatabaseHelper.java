@@ -4,7 +4,9 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,6 +19,8 @@ import com.inovex.zabbixmobile.model.ApplicationItemRelation;
 import com.inovex.zabbixmobile.model.Cache;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.Graph;
+import com.inovex.zabbixmobile.model.GraphItem;
 import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
@@ -30,7 +34,6 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
-import com.j256.ormlite.stmt.PreparedDelete;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.ConnectionSource;
@@ -94,6 +97,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, HistoryDetail.class);
 			TableUtils.createTable(connectionSource, Screen.class);
 			TableUtils.createTable(connectionSource, ScreenItem.class);
+			TableUtils.createTable(connectionSource, Graph.class);
+			TableUtils.createTable(connectionSource, GraphItem.class);
 			TableUtils.createTable(connectionSource, Cache.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
@@ -122,6 +127,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, HistoryDetail.class, true);
 			TableUtils.dropTable(connectionSource, Screen.class, true);
 			TableUtils.dropTable(connectionSource, ScreenItem.class, true);
+			TableUtils.dropTable(connectionSource, Graph.class, true);
+			TableUtils.dropTable(connectionSource, GraphItem.class, true);
 			TableUtils.dropTable(connectionSource, Cache.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
@@ -403,8 +410,28 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @throws SQLException
 	 */
 	public List<Screen> getScreens() throws SQLException {
-		Dao<Screen, Long> historyDao = getDao(Screen.class);
-		return historyDao.queryForAll();
+		Dao<Screen, Long> screenDao = getDao(Screen.class);
+		return screenDao.queryForAll();
+	}
+
+	/**
+	 * Queries all graph IDs for a particular screen from the database.
+	 * 
+	 * @param screenId
+	 * @return list of graph IDs
+	 * @throws SQLException
+	 */
+	public Set<Long> getGraphIdsByScreenId(long screenId) throws SQLException {
+		Dao<ScreenItem, Long> screenItemDao = getDao(ScreenItem.class);
+		List<ScreenItem> screenItems = screenItemDao.queryForEq(
+				ScreenItem.COLUMN_SCREENID, screenId);
+		// TODO: add index (screen) to screenitems table
+
+		HashSet<Long> graphIds = new HashSet<Long>();
+		for (ScreenItem s : screenItems) {
+			graphIds.add(s.getResourceId());
+		}
+		return graphIds;
 	}
 
 	/**
@@ -726,7 +753,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Inserts screen items into the database.
 	 * 
-	 * @param screenCollection
+	 * @param screenItemsCollection
 	 *            collection of screens to be inserted
 	 * @throws SQLException
 	 */
@@ -738,6 +765,57 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 
 			for (ScreenItem screen : screenItemsCollection) {
+				dao.createOrUpdate(screen);
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			dao.endThreadConnection(mThreadConnection);
+		}
+	}
+
+	/**
+	 * Inserts graphs into the database.
+	 * 
+	 * @param graphCollection
+	 *            collection of graphs to be inserted
+	 * @throws SQLException
+	 */
+	public void insertGraphs(List<Graph> graphCollection) throws SQLException {
+		Dao<Graph, Long> dao = getDao(Graph.class);
+		mThreadConnection = dao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (Graph graph : graphCollection) {
+				dao.createOrUpdate(graph);
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			dao.endThreadConnection(mThreadConnection);
+		}
+	}
+
+	/**
+	 * Inserts graph items into the database.
+	 * 
+	 * @param graphItemsCollection
+	 *            collection of graph items to be inserted
+	 * @throws SQLException
+	 */
+	public void insertGraphItems(List<GraphItem> graphItemsCollection)
+			throws SQLException {
+		Dao<GraphItem, Long> dao = getDao(GraphItem.class);
+		mThreadConnection = dao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (GraphItem screen : graphItemsCollection) {
 				dao.createOrUpdate(screen);
 			}
 
@@ -834,6 +912,27 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		deleteBuilder.where().lt(HistoryDetail.COLUMN_CLOCK, threshold);
 		int n = deleteBuilder.delete();
 		Log.d(TAG, "deleted " + n + " history details.");
+	}
+
+	/**
+	 * Deletes history details which are older than the specified time.
+	 * 
+	 * @param threshold
+	 *            all items with a clock smaller than this threshold will be
+	 *            deleted
+	 * @throws SQLException
+	 */
+	public void deleteGraphsByScreenId(long screenId) throws SQLException {
+		Dao<Graph, Long> graphDao = getDao(Graph.class);
+		Dao<ScreenItem, Long> screenItemDao = getDao(ScreenItem.class);
+
+		QueryBuilder<Graph, Long> graphQuery = graphDao.queryBuilder();
+		QueryBuilder<ScreenItem, Long> screenItemQuery = screenItemDao
+				.queryBuilder();
+		screenItemQuery.where().eq(ScreenItem.COLUMN_SCREENID, screenId);
+		graphQuery.join(screenItemQuery);
+		// TODO: finish
+
 	}
 
 	/**

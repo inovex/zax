@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -49,7 +50,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -64,6 +67,8 @@ import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.ApplicationItemRelation;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.Graph;
+import com.inovex.zabbixmobile.model.GraphItem;
 import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
@@ -901,127 +906,6 @@ public class ZabbixRemoteAPI {
 		importTriggersByIds(triggerIds, false);
 	}
 
-	// /**
-	// * import graph items
-	// *
-	// * @param graphItems
-	// * @return true, if graphid column has to be updated from -1 to the
-	// correct graphid later.
-	// * @throws JsonParseException
-	// * @throws NumberFormatException
-	// * @throws IOException
-	// */
-	// private boolean importGraphItems(JsonArrayOrObjectReader graphItems)
-	// throws JsonParseException, NumberFormatException, IOException {
-	// boolean mustSetGraphid = false;
-	// JsonObjectReader graphItemReader;
-	// while ((graphItemReader = graphItems.next()) != null) {
-	// GraphItemData gi = new GraphItemData();
-	// while (graphItemReader.nextValueToken()) {
-	// String propName = graphItemReader.getCurrentName();
-	// if (propName.equals("gitemid")) {
-	// gi.set(GraphItemData.COLUMN_GRAPHITEMID,
-	// Long.parseLong(graphItemReader.getText()));
-	// } else if (propName.equals(GraphItemData.COLUMN_GRAPHID)) {
-	// gi.set(GraphItemData.COLUMN_GRAPHID,
-	// Long.parseLong(graphItemReader.getText()));
-	// } else if (propName.equals(GraphItemData.COLUMN_ITEMID)) {
-	// gi.set(GraphItemData.COLUMN_ITEMID,
-	// Long.parseLong(graphItemReader.getText()));
-	// } else if (propName.equals(GraphItemData.COLUMN_COLOR)) {
-	// // hex string => color int
-	// gi.set(GraphItemData.COLUMN_COLOR,
-	// Color.parseColor("#"+graphItemReader.getText()));
-	// } else {
-	// graphItemReader.nextProperty();
-	// }
-	// }
-	// // if graphid-column was not set, this must be done later. temporary
-	// graphid=-1
-	// if (gi.get(GraphItemData.COLUMN_GRAPHID) == null) {
-	// gi.set(GraphItemData.COLUMN_GRAPHID, -1);
-	// mustSetGraphid = true;
-	// }
-	// gi.insert(zabbixLocalDB);
-	// }
-	// return mustSetGraphid;
-	// }
-	//
-	// public void importGraphsForScreen(long screenid) throws
-	// ClientProtocolException, IOException, JSONException,
-	// HttpAuthorizationRequiredException, NoAPIAccessException,
-	// PreconditionFailedException {
-	// if (!isCached(GraphData.TABLE_NAME, "screenid="+screenid)) {
-	// _startTransaction();
-	//
-	// // collect all graphids
-	// Set<Long> graphids = new HashSet<Long>();
-	// Cursor cur = zabbixLocalDB.query(ScreenItemData.TABLE_NAME, null,
-	// ScreenItemData.COLUMN_SCREENID+"="+screenid, null, null, null, null);
-	// while (cur.moveToNext()) {
-	// graphids.add(cur.getLong(cur.getColumnIndex(ScreenItemData.COLUMN_RESOURCEID)));
-	// }
-	//
-	// // delete old graphs
-	// String str_graphids = graphids.toString().replace("[", "").replace("]",
-	// "");
-	// if (str_graphids.length()>0) {
-	// zabbixLocalDB.delete(GraphData.TABLE_NAME,
-	// GraphData.COLUMN_GRAPHID+" IN ("+str_graphids+")", null);
-	// zabbixLocalDB.delete(GraphItemData.TABLE_NAME,
-	// GraphItemData.COLUMN_GRAPHID+" IN ("+str_graphids+")", null);
-	// }
-	// zabbixLocalDB.delete(CacheData.TABLE_NAME,
-	// CacheData.COLUMN_KIND+"='"+GraphData.TABLE_NAME+"' AND "+CacheData.COLUMN_FILTER+"='screenid="+screenid+'\'',
-	// null);
-	//
-	// JsonArrayOrObjectReader graphs = _queryStream(
-	// "graph.get"
-	// , new JSONObject()
-	// .put(isVersion2?"selectGraphItems":"select_graph_items", "extend")
-	// .put(isVersion2?"selectItems":"select_items", "extend")
-	// .put("output", "extend")
-	// .put("graphids", new JSONArray(graphids))
-	// );
-	// JsonObjectReader graphReader;
-	// while ((graphReader = graphs.next()) != null) {
-	// boolean mustSetGraphid = false;
-	// GraphData scr = new GraphData();
-	// while (graphReader.nextValueToken()) {
-	// String propName = graphReader.getCurrentName();
-	// if (propName.equals(GraphData.COLUMN_GRAPHID)) {
-	// scr.set(GraphData.COLUMN_GRAPHID, Long.parseLong(graphReader.getText()));
-	// } else if (propName.equals(GraphData.COLUMN_NAME)) {
-	// scr.set(GraphData.COLUMN_NAME, graphReader.getText());
-	// } else if (propName.equals("gitems")) {
-	// mustSetGraphid =
-	// importGraphItems(graphReader.getJsonArrayOrObjectReader());
-	// } else if (propName.equals("items")) {
-	// importItems(graphReader.getJsonArrayOrObjectReader(), 0, true);
-	// } else {
-	// graphReader.nextProperty();
-	// }
-	// }
-	// scr.insert(zabbixLocalDB);
-	// if (mustSetGraphid) {
-	// ContentValues values = new ContentValues(1);
-	// values.put(GraphItemData.COLUMN_GRAPHID, (Long)
-	// scr.get(GraphData.COLUMN_GRAPHID));
-	// zabbixLocalDB.update(
-	// GraphItemData.TABLE_NAME
-	// , values
-	// , GraphItemData.COLUMN_GRAPHID+"=-1"
-	// , null);
-	// }
-	// }
-	// graphs.close();
-	//
-	// setCached(GraphData.TABLE_NAME, "screenid="+screenid,
-	// ZabbixConfig.CACHE_LIFETIME_SCREENS);
-	// _endTransaction();
-	// }
-	// }
-
 	public void importHistoryDetails(long itemId)
 			throws ZabbixLoginRequiredException, FatalException {
 		// if (!isCached(HistoryDetailData.TABLE_NAME, itemid)) {
@@ -1543,48 +1427,44 @@ public class ZabbixRemoteAPI {
 	}
 
 	private void importScreenItems(JsonArrayOrObjectReader jsonReader)
-			throws JsonParseException, NumberFormatException, IOException {
+			throws JsonParseException, NumberFormatException, IOException,
+			SQLException {
 		JsonObjectReader screenItemReader;
 
-		try {
-			ArrayList<ScreenItem> screenItemsCollection = new ArrayList<ScreenItem>(
-					RECORDS_PER_INSERT_BATCH);
-			while ((screenItemReader = jsonReader.next()) != null) {
-				ScreenItem screenItem = new ScreenItem();
-				int resourcetype = -1;
-				while (screenItemReader.nextValueToken()) {
-					String propName = screenItemReader.getCurrentName();
-					if (propName.equals(ScreenItem.COLUMN_SCREENITEMID)) {
-						screenItem.setId(Long.parseLong(screenItemReader.getText()));
-					} else if (propName.equals(ScreenItem.COLUMN_SCREENID)) {
-						screenItem.setScreenId(Long.parseLong(screenItemReader
-								.getText()));
-					} else if (propName.equals(ScreenItem.COLUMN_RESOURCEID)) {
-						screenItem.setResourceId(Long.parseLong(screenItemReader
-								.getText()));
-					} else if (propName.equals("resourcetype")) {
-						resourcetype = Integer.parseInt(screenItemReader
-								.getText());
-					} else {
-						screenItemReader.nextProperty();
-					}
-				}
-				// only resouretype == 0
-				if (resourcetype == 0) {
-					screenItemsCollection.add(screenItem);
-				}
-				if (screenItemsCollection.size() >= RECORDS_PER_INSERT_BATCH) {
-					databaseHelper.insertScreenItems(screenItemsCollection);
-					screenItemsCollection = new ArrayList<ScreenItem>(
-							RECORDS_PER_INSERT_BATCH);
+		ArrayList<ScreenItem> screenItemsCollection = new ArrayList<ScreenItem>(
+				RECORDS_PER_INSERT_BATCH);
+		while ((screenItemReader = jsonReader.next()) != null) {
+			ScreenItem screenItem = new ScreenItem();
+			int resourcetype = -1;
+			while (screenItemReader.nextValueToken()) {
+				String propName = screenItemReader.getCurrentName();
+				if (propName.equals(ScreenItem.COLUMN_SCREENITEMID)) {
+					screenItem
+							.setId(Long.parseLong(screenItemReader.getText()));
+				} else if (propName.equals(ScreenItem.COLUMN_SCREENID)) {
+					screenItem.setScreenId(Long.parseLong(screenItemReader
+							.getText()));
+				} else if (propName.equals(ScreenItem.COLUMN_RESOURCEID)) {
+					screenItem.setResourceId(Long.parseLong(screenItemReader
+							.getText()));
+				} else if (propName.equals("resourcetype")) {
+					resourcetype = Integer.parseInt(screenItemReader.getText());
+				} else {
+					screenItemReader.nextProperty();
 				}
 			}
-
-			databaseHelper.insertScreenItems(screenItemsCollection);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// only resouretype == 0
+			if (resourcetype == 0) {
+				screenItemsCollection.add(screenItem);
+			}
+			if (screenItemsCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+				databaseHelper.insertScreenItems(screenItemsCollection);
+				screenItemsCollection = new ArrayList<ScreenItem>(
+						RECORDS_PER_INSERT_BATCH);
+			}
 		}
+
+		databaseHelper.insertScreenItems(screenItemsCollection);
 	}
 
 	/**
@@ -1607,13 +1487,15 @@ public class ZabbixRemoteAPI {
 		try {
 			JSONObject params = new JSONObject();
 			params.put("output", "extend");
-			params.put(isVersion2 ? "selectScreenItems" : "select_screenitems", "extend");
+			params.put(isVersion2 ? "selectScreenItems" : "select_screenitems",
+					"extend");
 			jsonReader = _queryStream((isVersion2 ? "s" : "S") + "creen.get",
 					params);
 
 			JsonObjectReader screenReader;
-			ArrayList<Screen> screenCollection = new ArrayList<Screen>(
+			ArrayList<Screen> screensCollection = new ArrayList<Screen>(
 					RECORDS_PER_INSERT_BATCH);
+			ArrayList<Screen> screensComplete = new ArrayList<Screen>();
 			while ((screenReader = jsonReader.next()) != null) {
 				Screen screen = new Screen();
 				while (screenReader.nextValueToken()) {
@@ -1629,15 +1511,19 @@ public class ZabbixRemoteAPI {
 						screenReader.nextProperty();
 					}
 				}
-				screenCollection.add(screen);
-				if (screenCollection.size() >= RECORDS_PER_INSERT_BATCH) {
-					databaseHelper.insertScreens(screenCollection);
-					screenCollection = new ArrayList<Screen>(
+				screensCollection.add(screen);
+				screensComplete.add(screen);
+				if (screensCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+					databaseHelper.insertScreens(screensCollection);
+					screensCollection = new ArrayList<Screen>(
 							RECORDS_PER_INSERT_BATCH);
 				}
 			}
-			databaseHelper.insertScreens(screenCollection);
+			databaseHelper.insertScreens(screensCollection);
 			jsonReader.close();
+			for (Screen s : screensComplete) {
+				importGraphsForScreen(s.getId());
+			}
 
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -1653,6 +1539,168 @@ public class ZabbixRemoteAPI {
 		// setCached(ScreenData.TABLE_NAME, null,
 		// ZabbixConfig.CACHE_LIFETIME_SCREENS);
 		// _endTransaction();
+	}
+
+	/**
+	 * import graph items
+	 * 
+	 * @param graphItems
+	 * @return true, if graphid column has to be updated from -1 to the correct
+	 *         graphid later.
+	 * @throws JsonParseException
+	 * @throws NumberFormatException
+	 * @throws IOException
+	 */
+	private Collection<GraphItem> importGraphItemsFromStream(
+			JsonArrayOrObjectReader graphItems) throws JsonParseException,
+			NumberFormatException, IOException {
+		ArrayList<GraphItem> graphItemsCollection = new ArrayList<GraphItem>();
+		JsonObjectReader graphItemReader;
+
+		while ((graphItemReader = graphItems.next()) != null) {
+			GraphItem gi = new GraphItem();
+			while (graphItemReader.nextValueToken()) {
+				String propName = graphItemReader.getCurrentName();
+				if (propName.equals("gitemid")) {
+					gi.setId(Long.parseLong(graphItemReader.getText()));
+				} else if (propName.equals(GraphItem.COLUMN_GRAPHID)) {
+					gi.setGraphId(Long.parseLong(graphItemReader.getText()));
+				} else if (propName.equals(GraphItem.COLUMN_ITEMID)) {
+					gi.setItemId(Long.parseLong(graphItemReader.getText()));
+				} else if (propName.equals(GraphItem.COLUMN_COLOR)) {
+					// hex string => color int
+					gi.setColor(Color.parseColor("#"
+							+ graphItemReader.getText()));
+				} else {
+					graphItemReader.nextProperty();
+				}
+			}
+			// if graphid-column was not set, this must be done later.
+			// temporary
+			// graphid=-1
+			// if (gi.getId() == null) {
+			// gi.setId(-1);
+			// mustSetGraphid = true;
+			// }
+			graphItemsCollection.add(gi);
+		}
+		return graphItemsCollection;
+	}
+
+	/**
+	 * Imports all graphs for a particular screen from Zabbix.
+	 * 
+	 * @param screenId
+	 * @throws ZabbixLoginRequiredException
+	 * @throws FatalException
+	 */
+	private void importGraphsForScreen(long screenId)
+			throws ZabbixLoginRequiredException, FatalException {
+		// if (!isCached(GraphData.TABLE_NAME, "screenid="+screenid)) {
+		// _startTransaction();
+
+		JsonArrayOrObjectReader graphs;
+		try {
+
+			// collect all graphids
+			Set<Long> graphids = databaseHelper.getGraphIdsByScreenId(screenId);
+
+			// Cursor cur = zabbixLocalDB.query(ScreenItemData.TABLE_NAME, null,
+			// ScreenItemData.COLUMN_SCREENID+"="+screenid, null, null, null,
+			// null);
+			// while (cur.moveToNext()) {
+			// graphids.add(cur.getLong(cur.getColumnIndex(ScreenItemData.COLUMN_RESOURCEID)));
+			// }
+
+			// delete old graphs
+			// String str_graphids = graphids.toString().replace("[",
+			// "").replace("]",
+			// "");
+			// if (str_graphids.length()>0) {
+			// zabbixLocalDB.delete(GraphData.TABLE_NAME,
+			// GraphData.COLUMN_GRAPHID+" IN ("+str_graphids+")", null);
+			// zabbixLocalDB.delete(GraphItemData.TABLE_NAME,
+			// GraphItemData.COLUMN_GRAPHID+" IN ("+str_graphids+")", null);
+			// }
+			// zabbixLocalDB.delete(CacheData.TABLE_NAME,
+			// CacheData.COLUMN_KIND+"='"+GraphData.TABLE_NAME+"' AND "+CacheData.COLUMN_FILTER+"='screenid="+screenid+'\'',
+			// null);
+			graphs = _queryStream(
+					"graph.get",
+					new JSONObject()
+							.put(isVersion2 ? "selectGraphItems"
+									: "select_graph_items", "extend")
+							.put(isVersion2 ? "selectItems" : "select_items",
+									"extend").put("output", "extend")
+							.put("graphids", new JSONArray(graphids)));
+
+			JsonObjectReader graphReader;
+			ArrayList<Graph> graphsCollection = new ArrayList<Graph>(
+					RECORDS_PER_INSERT_BATCH);
+			ArrayList<GraphItem> graphItemsCollection = new ArrayList<GraphItem>();
+			while ((graphReader = graphs.next()) != null) {
+				boolean mustSetGraphid = false;
+				Graph graph = new Graph();
+				while (graphReader.nextValueToken()) {
+					String propName = graphReader.getCurrentName();
+					if (propName.equals(Graph.COLUMN_GRAPHID)) {
+						graph.setId(Long.parseLong(graphReader.getText()));
+					} else if (propName.equals(Graph.COLUMN_NAME)) {
+						graph.setName(graphReader.getText());
+					} else if (propName.equals("gitems")) {
+						graphItemsCollection.addAll(importGraphItemsFromStream(graphReader
+								.getJsonArrayOrObjectReader()));
+					} else if (propName.equals("items")) {
+						importItemsFromStream(
+								graphReader.getJsonArrayOrObjectReader(), 0,
+								true);
+					} else {
+						graphReader.nextProperty();
+					}
+				}
+
+				for (GraphItem graphItem : graphItemsCollection) {
+					graphItem.setGraphId(graph.getId());
+				}
+
+				databaseHelper.insertGraphItems(graphItemsCollection);
+				graphItemsCollection.clear();
+				// if (mustSetGraphid) {
+				// ContentValues values = new ContentValues(1);
+				// values.put(GraphItemData.COLUMN_GRAPHID, (Long)
+				// scr.get(GraphData.COLUMN_GRAPHID));
+				// zabbixLocalDB.update(
+				// GraphItemData.TABLE_NAME
+				// , values
+				// , GraphItemData.COLUMN_GRAPHID+"=-1"
+				// , null);
+				// }
+
+				graphsCollection.add(graph);
+				if (graphsCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+					databaseHelper.insertGraphs(graphsCollection);
+					graphsCollection = new ArrayList<Graph>(
+							RECORDS_PER_INSERT_BATCH);
+				}
+			}
+			databaseHelper.insertGraphs(graphsCollection);
+			graphs.close();
+
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// setCached(GraphData.TABLE_NAME, "screenid="+screenid,
+		// ZabbixConfig.CACHE_LIFETIME_SCREENS);
+		// _endTransaction();
+		// }
 	}
 
 	// public void importTrigger(String triggerid) throws JSONException,
