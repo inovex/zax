@@ -22,6 +22,8 @@ import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.HostHostGroupRelation;
 import com.inovex.zabbixmobile.model.Item;
+import com.inovex.zabbixmobile.model.Screen;
+import com.inovex.zabbixmobile.model.ScreenItem;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
@@ -90,6 +92,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource,
 					ApplicationItemRelation.class);
 			TableUtils.createTable(connectionSource, HistoryDetail.class);
+			TableUtils.createTable(connectionSource, Screen.class);
+			TableUtils.createTable(connectionSource, ScreenItem.class);
 			TableUtils.createTable(connectionSource, Cache.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
@@ -116,6 +120,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource,
 					ApplicationItemRelation.class, true);
 			TableUtils.dropTable(connectionSource, HistoryDetail.class, true);
+			TableUtils.dropTable(connectionSource, Screen.class, true);
+			TableUtils.dropTable(connectionSource, ScreenItem.class, true);
 			TableUtils.dropTable(connectionSource, Cache.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
@@ -348,7 +354,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
-	 * Queries all items for a specified applicationfrom the database.
+	 * Queries all items for a specified application from the database.
 	 * 
 	 * @param applicationId
 	 * 
@@ -375,10 +381,30 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return itemQuery.query();
 	}
 
+	/**
+	 * Queries all history details for a specified item from the database.
+	 * 
+	 * @param itemId
+	 * 
+	 * @return list of history details
+	 * @throws SQLException
+	 */
 	public List<HistoryDetail> getHistoryDetailsByItemId(long itemId)
 			throws SQLException {
 		Dao<HistoryDetail, Long> historyDao = getDao(HistoryDetail.class);
 		return historyDao.queryForEq(HistoryDetail.COLUMN_ITEMID, itemId);
+	}
+
+	/**
+	 * Queries all screens from the database.
+	 * 
+	 * 
+	 * @return list of screens
+	 * @throws SQLException
+	 */
+	public List<Screen> getScreens() throws SQLException {
+		Dao<Screen, Long> historyDao = getDao(Screen.class);
+		return historyDao.queryForAll();
 	}
 
 	/**
@@ -649,7 +675,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * Inserts history details into the database.
 	 * 
 	 * @param historyDetailsCollection
-	 *            collection of relations to be inserted
+	 *            collection of history details to be inserted
 	 * @throws SQLException
 	 */
 	public void insertHistoryDetails(
@@ -661,6 +687,58 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			for (HistoryDetail historyDetail : historyDetailsCollection) {
 				dao.createOrUpdate(historyDetail);
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			dao.endThreadConnection(mThreadConnection);
+		}
+	}
+
+	/**
+	 * Inserts screens into the database.
+	 * 
+	 * @param screenCollection
+	 *            collection of screens to be inserted
+	 * @throws SQLException
+	 */
+	public void insertScreens(List<Screen> screenCollection)
+			throws SQLException {
+		Dao<Screen, Long> dao = getDao(Screen.class);
+		mThreadConnection = dao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (Screen screen : screenCollection) {
+				dao.createOrUpdate(screen);
+			}
+
+		} finally {
+			// commit at the end
+			savePoint = mThreadConnection.setSavePoint(null);
+			mThreadConnection.commit(savePoint);
+			dao.endThreadConnection(mThreadConnection);
+		}
+	}
+
+	/**
+	 * Inserts screen items into the database.
+	 * 
+	 * @param screenCollection
+	 *            collection of screens to be inserted
+	 * @throws SQLException
+	 */
+	public void insertScreenItems(List<ScreenItem> screenItemsCollection)
+			throws SQLException {
+		Dao<ScreenItem, Long> dao = getDao(ScreenItem.class);
+		mThreadConnection = dao.startThreadConnection();
+		Savepoint savePoint = null;
+		try {
+
+			for (ScreenItem screen : screenItemsCollection) {
+				dao.createOrUpdate(screen);
 			}
 
 		} finally {

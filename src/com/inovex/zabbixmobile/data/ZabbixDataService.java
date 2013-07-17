@@ -46,6 +46,7 @@ import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Item;
+import com.inovex.zabbixmobile.model.Screen;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -816,6 +817,44 @@ public class ZabbixDataService extends Service {
 
 				if (callback != null)
 					callback.onHistoryDetailsLoaded(historyDetails);
+			}
+
+		}.execute();
+	}
+	
+	/**
+	 * Loads all screens. If necessary, an import from
+	 * the Zabbix API is triggered.
+	 * 
+	 */
+	public void loadScreens() {
+		new RemoteAPITask(mRemoteAPI) {
+
+			List<Screen> screens;
+
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				try {
+					// We only import applications with corresponding hosts
+					// (this way templates are ignored)
+					mRemoteAPI.importScreens();
+				} finally {
+					try {
+						screens = mDatabaseHelper
+								.getScreens();
+
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+
 			}
 
 		}.execute();

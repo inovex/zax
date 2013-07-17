@@ -1,5 +1,5 @@
 #
-# generated on 2013/07/11 04:34:37
+# generated on 2013/07/17 11:29:54
 #
 # --table-start--
 dataClass=com.j256.ormlite.android.DatabaseTableConfigUtil$DatabaseFieldSample
@@ -222,6 +222,42 @@ columnName=lastvalue
 # --field-start--
 fieldName=units
 columnName=units
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.Screen
+tableName=screens
+# --table-fields-start--
+# --field-start--
+fieldName=id
+columnName=screenid
+id=true
+# --field-end--
+# --field-start--
+fieldName=name
+columnName=name
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.ScreenItem
+tableName=screenitems
+# --table-fields-start--
+# --field-start--
+fieldName=id
+columnName=screenitemid
+id=true
+# --field-end--
+# --field-start--
+fieldName=screenId
+columnName=screenid
+# --field-end--
+# --field-start--
+fieldName=resourceId
+columnName=resourceid
 # --field-end--
 # --table-fields-end--
 # --table-end--

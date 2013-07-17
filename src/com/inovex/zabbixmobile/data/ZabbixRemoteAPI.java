@@ -62,7 +62,6 @@ import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.ApplicationItemRelation;
-import com.inovex.zabbixmobile.model.Cache;
 import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.HistoryDetail;
@@ -70,6 +69,8 @@ import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.HostHostGroupRelation;
 import com.inovex.zabbixmobile.model.Item;
+import com.inovex.zabbixmobile.model.Screen;
+import com.inovex.zabbixmobile.model.ScreenItem;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
@@ -1541,79 +1542,119 @@ public class ZabbixRemoteAPI {
 		// }
 	}
 
-	// private void importScreenItems(JsonArrayOrObjectReader screenItems)
-	// throws JsonParseException, NumberFormatException, IOException {
-	// JsonObjectReader screenItemReader;
-	// while ((screenItemReader = screenItems.next()) != null) {
-	// ScreenItemData si = new ScreenItemData();
-	// int resourcetype = -1;
-	// while (screenItemReader.nextValueToken()) {
-	// String propName = screenItemReader.getCurrentName();
-	// if (propName.equals(ScreenItemData.COLUMN_SCREENITEMID)) {
-	// si.set(ScreenItemData.COLUMN_SCREENITEMID,
-	// Long.parseLong(screenItemReader.getText()));
-	// } else if (propName.equals(ScreenItemData.COLUMN_SCREENID)) {
-	// si.set(ScreenItemData.COLUMN_SCREENID,
-	// Long.parseLong(screenItemReader.getText()));
-	// } else if (propName.equals(ScreenItemData.COLUMN_RESOURCEID)) {
-	// si.set(ScreenItemData.COLUMN_RESOURCEID,
-	// Long.parseLong(screenItemReader.getText()));
-	// } else if (propName.equals("resourcetype")) {
-	// resourcetype = Integer.parseInt(screenItemReader.getText());
-	// } else {
-	// screenItemReader.nextProperty();
-	// }
-	// }
-	// // only resouretype == 0
-	// if (resourcetype == 0) {
-	// si.insert(zabbixLocalDB);
-	// }
-	// }
-	// }
-	//
-	// public void importScreens() throws ClientProtocolException, IOException,
-	// JSONException, HttpAuthorizationRequiredException, NoAPIAccessException,
-	// PreconditionFailedException {
-	// if (!isCached(ScreenData.TABLE_NAME, null)) {
-	// _startTransaction();
-	//
-	// zabbixLocalDB.delete(ScreenData.TABLE_NAME, null, null);
-	// zabbixLocalDB.delete(ScreenItemData.TABLE_NAME, null, null);
-	// zabbixLocalDB.delete(CacheData.TABLE_NAME,
-	// CacheData.COLUMN_KIND+"='"+ScreenData.TABLE_NAME+"'", null);
-	//
-	// JsonArrayOrObjectReader screens = _queryStream(
-	// (isVersion2?"s":"S")+"creen.get"
-	// , new JSONObject()
-	// .put("output", "extend")
-	// .put(isVersion2?"selectScreenItems":"select_screenitems", "extend")
-	// );
-	// JsonObjectReader screenReader;
-	// while ((screenReader = screens.next()) != null) {
-	// ScreenData scr = new ScreenData();
-	// while (screenReader.nextValueToken()) {
-	// String propName = screenReader.getCurrentName();
-	// if (propName.equals(ScreenData.COLUMN_SCREENID)) {
-	// scr.set(ScreenData.COLUMN_SCREENID,
-	// Long.parseLong(screenReader.getText()));
-	// } else if (propName.equals(ScreenData.COLUMN_NAME)) {
-	// scr.set(ScreenData.COLUMN_NAME, screenReader.getText());
-	// } else if (propName.equals("screenitems")) {
-	// importScreenItems(screenReader.getJsonArrayOrObjectReader());
-	// } else {
-	// screenReader.nextProperty();
-	// }
-	// }
-	// scr.insert(zabbixLocalDB);
-	// }
-	// screens.close();
-	//
-	// setCached(ScreenData.TABLE_NAME, null,
-	// ZabbixConfig.CACHE_LIFETIME_SCREENS);
-	// _endTransaction();
-	// }
-	// }
-	//
+	private void importScreenItems(JsonArrayOrObjectReader jsonReader)
+			throws JsonParseException, NumberFormatException, IOException {
+		JsonObjectReader screenItemReader;
+
+		try {
+			ArrayList<ScreenItem> screenItemsCollection = new ArrayList<ScreenItem>(
+					RECORDS_PER_INSERT_BATCH);
+			while ((screenItemReader = jsonReader.next()) != null) {
+				ScreenItem screenItem = new ScreenItem();
+				int resourcetype = -1;
+				while (screenItemReader.nextValueToken()) {
+					String propName = screenItemReader.getCurrentName();
+					if (propName.equals(ScreenItem.COLUMN_SCREENITEMID)) {
+						screenItem.setId(Long.parseLong(screenItemReader.getText()));
+					} else if (propName.equals(ScreenItem.COLUMN_SCREENID)) {
+						screenItem.setScreenId(Long.parseLong(screenItemReader
+								.getText()));
+					} else if (propName.equals(ScreenItem.COLUMN_RESOURCEID)) {
+						screenItem.setResourceId(Long.parseLong(screenItemReader
+								.getText()));
+					} else if (propName.equals("resourcetype")) {
+						resourcetype = Integer.parseInt(screenItemReader
+								.getText());
+					} else {
+						screenItemReader.nextProperty();
+					}
+				}
+				// only resouretype == 0
+				if (resourcetype == 0) {
+					screenItemsCollection.add(screenItem);
+				}
+				if (screenItemsCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+					databaseHelper.insertScreenItems(screenItemsCollection);
+					screenItemsCollection = new ArrayList<ScreenItem>(
+							RECORDS_PER_INSERT_BATCH);
+				}
+			}
+
+			databaseHelper.insertScreenItems(screenItemsCollection);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Imports screens from Zabbix.
+	 * 
+	 * @throws ZabbixLoginRequiredException
+	 * @throws FatalException
+	 */
+	public void importScreens() throws ZabbixLoginRequiredException,
+			FatalException {
+		// if (!isCached(ScreenData.TABLE_NAME, null)) {
+		// _startTransaction();
+		//
+		// zabbixLocalDB.delete(ScreenData.TABLE_NAME, null, null);
+		// zabbixLocalDB.delete(ScreenItemData.TABLE_NAME, null, null);
+		// zabbixLocalDB.delete(CacheData.TABLE_NAME,
+		// CacheData.COLUMN_KIND+"='"+ScreenData.TABLE_NAME+"'", null);
+
+		JsonArrayOrObjectReader jsonReader;
+		try {
+			JSONObject params = new JSONObject();
+			params.put("output", "extend");
+			params.put(isVersion2 ? "selectScreenItems" : "select_screenitems", "extend");
+			jsonReader = _queryStream((isVersion2 ? "s" : "S") + "creen.get",
+					params);
+
+			JsonObjectReader screenReader;
+			ArrayList<Screen> screenCollection = new ArrayList<Screen>(
+					RECORDS_PER_INSERT_BATCH);
+			while ((screenReader = jsonReader.next()) != null) {
+				Screen screen = new Screen();
+				while (screenReader.nextValueToken()) {
+					String propName = screenReader.getCurrentName();
+					if (propName.equals(Screen.COLUMN_SCREENID)) {
+						screen.setId(Long.parseLong(screenReader.getText()));
+					} else if (propName.equals(Screen.COLUMN_NAME)) {
+						screen.setName(screenReader.getText());
+					} else if (propName.equals("screenitems")) {
+						importScreenItems(screenReader
+								.getJsonArrayOrObjectReader());
+					} else {
+						screenReader.nextProperty();
+					}
+				}
+				screenCollection.add(screen);
+				if (screenCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+					databaseHelper.insertScreens(screenCollection);
+					screenCollection = new ArrayList<Screen>(
+							RECORDS_PER_INSERT_BATCH);
+				}
+			}
+			databaseHelper.insertScreens(screenCollection);
+			jsonReader.close();
+
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// setCached(ScreenData.TABLE_NAME, null,
+		// ZabbixConfig.CACHE_LIFETIME_SCREENS);
+		// _endTransaction();
+	}
+
 	// public void importTrigger(String triggerid) throws JSONException,
 	// IOException, HttpAuthorizationRequiredException, NoAPIAccessException,
 	// PreconditionFailedException {
