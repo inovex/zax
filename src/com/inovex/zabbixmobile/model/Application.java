@@ -51,9 +51,7 @@ public class Application implements Comparable<Application> {
 
 	@Override
 	public int compareTo(Application another) {
-		if (id > another.getId())
-			return 1;
-		return -1;
+		return name.compareTo(another.getName());
 	}
 
 }

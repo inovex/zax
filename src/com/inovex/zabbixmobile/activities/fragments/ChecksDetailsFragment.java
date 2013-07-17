@@ -69,8 +69,8 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 		mTitleView = (TextView) view.findViewById(R.id.checks_title);
 		if (mApplicationsLoadingSpinnerVisible)
 			showApplicationsLoadingSpinner();
-//		if (mItemsLoadingSpinnerVisible)
-//			showItemsLoadingSpinner();
+		// if (mItemsLoadingSpinnerVisible)
+		// showItemsLoadingSpinner();
 	}
 
 	@Override
@@ -79,7 +79,8 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 		outState.putLong(ARG_HOST_ID, mHostId);
 		outState.putBoolean(ARG_APPLICATIONS_SPINNER_VISIBLE,
 				mApplicationsLoadingSpinnerVisible);
-		outState.putBoolean(ARG_ITEMS_SPINNER_VISIBLE, mItemsLoadingSpinnerVisible);
+		outState.putBoolean(ARG_ITEMS_SPINNER_VISIBLE,
+				mItemsLoadingSpinnerVisible);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -155,10 +156,12 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 							mDetailsPagerAdapter.setCurrentPosition(position);
 							mDetailsPager.setCurrentItem(position);
 							mDetailsPageIndicator.setCurrentItem(position);
-							
+
 							showItemsLoadingSpinner();
-							mZabbixDataService.loadItemsByApplicationId(mDetailsPagerAdapter
-									.getCurrentItem().getId(), ChecksDetailsFragment.this);
+							mZabbixDataService.loadItemsByApplicationId(
+									mDetailsPagerAdapter.getCurrentItem()
+											.getId(),
+									ChecksDetailsFragment.this);
 
 							// propagate page change only if there actually was
 							// a
@@ -225,10 +228,12 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 	 */
 	public void showItemsLoadingSpinner() {
 		mItemsLoadingSpinnerVisible = true;
-		LinearLayout progressLayout = (LinearLayout) getView().findViewById(
-				R.id.items_progress_layout);
-		if (progressLayout != null)
-			progressLayout.setVisibility(View.VISIBLE);
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.items_progress_layout);
+			if (progressLayout != null)
+				progressLayout.setVisibility(View.VISIBLE);
+		}
 	}
 
 	/**
