@@ -65,7 +65,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 			showGraphLoadingSpinner();
 		else
 			showGraphs();
-		
+
 	}
 
 	public void setScreen(Screen screen) {
@@ -115,12 +115,13 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 						long clock = detail.getClock() / 1000;
 						double value = detail.getValue();
 						values[i] = new GraphViewData(clock, value);
+						highestclock = Math.max(highestclock,
+								clock);
+						lowestclock = Math
+								.min(lowestclock, clock);
 						i++;
 					}
-					highestclock = Math.max(highestclock,
-							(long) values[values.length - 1].valueX);
-					lowestclock = Math
-							.min(lowestclock, (long) values[0].valueX);
+					
 					series = new GraphViewSeries(item.getDescription(),
 							new GraphViewSeriesStyle(gi.getColor(), 3), values);
 					// series = new GraphViewSeries(values);
@@ -131,8 +132,8 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 			// create graph and add it to the layout
 			// TODO: When the viewport is set, the graphs are not displayed
 			// correctly.
-			// long size = (highestclock - lowestclock) ; // we show 2/3
-			// graphView.setViewPort(highestclock - size, size);
+			long size = (highestclock - lowestclock) * 2 / 3; // we show 2/3
+			graphView.setViewPort(highestclock - size, size);
 			graphView.setScalable(true);
 
 			GraphViewStyle style = new GraphViewStyle();
@@ -140,7 +141,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 					.getColor(android.R.color.black));
 			style.setVerticalLabelsColor(getSherlockActivity().getResources()
 					.getColor(android.R.color.black));
-			graphView.setGraphViewStyle(style);
+			graphView.setGraphViewStyle(style); 
 
 			LinearLayout graphLayout = new LinearLayout(getSherlockActivity());
 			graphLayout.addView(graphView);

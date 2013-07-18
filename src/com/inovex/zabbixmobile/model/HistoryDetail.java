@@ -51,7 +51,7 @@ public class HistoryDetail implements Comparable<HistoryDetail> {
 	public void setValue(double value) {
 		this.value = value;
 	}
-	
+
 	@Override
 	public String toString() {
 		return itemId + " " + value + " " + clock;
@@ -59,12 +59,7 @@ public class HistoryDetail implements Comparable<HistoryDetail> {
 
 	@Override
 	public int compareTo(HistoryDetail another) {
-		if (itemId == another.getItemId()) {
-			if (clock < another.getClock())
-				return -1;
-			return 1;
-		}
-		if (itemId < another.getItemId())
+		if (clock < another.getClock())
 			return -1;
 		return 1;
 	}

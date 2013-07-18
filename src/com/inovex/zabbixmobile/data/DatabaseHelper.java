@@ -397,7 +397,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public List<HistoryDetail> getHistoryDetailsByItemId(long itemId)
 			throws SQLException {
 		Dao<HistoryDetail, Long> historyDao = getDao(HistoryDetail.class);
-		return historyDao.queryForEq(HistoryDetail.COLUMN_ITEMID, itemId);
+		QueryBuilder<HistoryDetail, Long> query = historyDao.queryBuilder();
+		query.where().eq(HistoryDetail.COLUMN_ITEMID, itemId);
+		query.orderBy(HistoryDetail.COLUMN_CLOCK, true);
+		return query.query();
 	}
 
 	/**
