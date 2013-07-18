@@ -21,14 +21,14 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 		implements OnHistoryDetailsLoadedListener {
 
 	protected boolean mHistoryDetailsImported = false;
-	protected Collection<HistoryDetail> mHistoryDetails;
 	private boolean mGraphLoadingSpinnerVisible = true;
 	private static final String ARG_GRAPH_SPINNER_VISIBLE = "arg_graph_spinner_visible";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		if(savedInstanceState != null) {
-			mGraphLoadingSpinnerVisible = savedInstanceState.getBoolean(ARG_GRAPH_SPINNER_VISIBLE, true);
+		if (savedInstanceState != null) {
+			mGraphLoadingSpinnerVisible = savedInstanceState.getBoolean(
+					ARG_GRAPH_SPINNER_VISIBLE, true);
 		}
 		Log.d("OC", this + "onCreate");
 		super.onCreate(savedInstanceState);
@@ -36,7 +36,8 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putBoolean(ARG_GRAPH_SPINNER_VISIBLE, mGraphLoadingSpinnerVisible);
+		outState.putBoolean(ARG_GRAPH_SPINNER_VISIBLE,
+				mGraphLoadingSpinnerVisible);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -57,7 +58,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 
 		fillDetailsText();
 
-		if (mHistoryDetails != null)
+		if (mHistoryDetailsImported)
 			showGraph();
 	}
 
@@ -66,29 +67,31 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 	protected void showGraph(Item item) {
 		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graph);
 		dismissGraphLoadingSpinner();
-		// create graph and add it to the layout
-		int numEntries = mHistoryDetails.size();
-		if (numEntries > 0 && item != null) {
-			LineGraphView graph = GraphUtil.createItemGraph(
-					getSherlockActivity(), mHistoryDetails,
-					item.getDescription());
-			layout.removeAllViews();
-			layout.addView(graph);
-		} else {
-			// no history data available
-			layout.removeAllViews();
-			TextView noGraphDataView = new TextView(getSherlockActivity());
-			noGraphDataView.setText(R.string.no_history_data_found);
-			layout.addView(noGraphDataView);
+		if (item != null) {
+			Collection<HistoryDetail> historyDetails = item.getHistoryDetails();
+			// create graph and add it to the layout
+			int numEntries = historyDetails.size();
+			if (numEntries > 0) {
+				LineGraphView graph = GraphUtil.createItemGraph(
+						getSherlockActivity(), historyDetails,
+						item.getDescription());
+				layout.removeAllViews();
+				layout.addView(graph);
+			} else {
+				// no history data available
+				layout.removeAllViews();
+				TextView noGraphDataView = new TextView(getSherlockActivity());
+				noGraphDataView.setText(R.string.no_history_data_found);
+				layout.addView(noGraphDataView);
+			}
 		}
 	}
 
 	protected abstract void showGraph();
 
 	@Override
-	public void onHistoryDetailsLoaded(Collection<HistoryDetail> historyDetails) {
+	public void onHistoryDetailsLoaded() {
 		mHistoryDetailsImported = true;
-		mHistoryDetails = historyDetails;
 		if (getView() != null) {
 			showGraph();
 		}

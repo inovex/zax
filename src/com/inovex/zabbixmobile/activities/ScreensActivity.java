@@ -66,6 +66,10 @@ public class ScreensActivity extends BaseActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
+			if (mFlipper != null && mDetailsFragment.isVisible()) {
+				showListFragment();
+				return true;
+			}
 			try {
 				finish();
 			} catch (Throwable e) {
@@ -78,12 +82,9 @@ public class ScreensActivity extends BaseActivity implements
 
 	@Override
 	public void onBackPressed() {
-		if (mFlipper != null) {
-			if (mDetailsFragment.isVisible()) {
-				showListFragment();
-				return;
-			}
-
+		if (mFlipper != null && mDetailsFragment.isVisible()) {
+			showListFragment();
+			return;
 		}
 		super.onBackPressed();
 	}

@@ -11,7 +11,7 @@ import com.inovex.zabbixmobile.R;
 
 public class ScreensDetailsFragment extends SherlockFragment {
 	
-	private long mScreenId;
+	private long mScreenId = -1;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -31,6 +31,7 @@ public class ScreensDetailsFragment extends SherlockFragment {
 		if(getView() != null) {
 			TextView tv = (TextView)getView().findViewById(R.id.screens_details_text);
 			tv.setText(getResources().getString(R.string.screens) + " " + mScreenId);
+			
 		}
 	}
 

@@ -1,5 +1,7 @@
 package com.inovex.zabbixmobile.model;
 
+import java.util.Collection;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -28,6 +30,9 @@ public class Item implements Comparable<Item> {
 	public static final String COLUMN_UNITS = "units";
 	@DatabaseField(columnName = COLUMN_UNITS)
 	String units;
+	
+	// only local
+	Collection<HistoryDetail> historyDetails;
 
 	public Item() {
 
@@ -71,6 +76,10 @@ public class Item implements Comparable<Item> {
 	public String getUnits() {
 		return units;
 	}
+	
+	public Collection<HistoryDetail> getHistoryDetails() {
+		return historyDetails;
+	}
 
 	public void setId(long id) {
 		this.id = id;
@@ -98,6 +107,10 @@ public class Item implements Comparable<Item> {
 
 	public void setUnits(String units) {
 		this.units = units;
+	}
+
+	public void setHistoryDetails(Collection<HistoryDetail> historyDetails) {
+		this.historyDetails = historyDetails;
 	}
 
 	@Override

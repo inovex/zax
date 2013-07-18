@@ -803,7 +803,7 @@ public class ZabbixDataService extends Service {
 	 * @param itemId
 	 *            item id
 	 */
-	public void loadHistoryDetailsByItemId(final long itemId,
+	public void loadHistoryDetailsByItemId(final Item item,
 			final OnHistoryDetailsLoadedListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
@@ -815,11 +815,11 @@ public class ZabbixDataService extends Service {
 				try {
 					// We only import applications with corresponding hosts
 					// (this way templates are ignored)
-					mRemoteAPI.importHistoryDetails(itemId);
+					mRemoteAPI.importHistoryDetails(item.getId());
 				} finally {
 					try {
 						historyDetails = mDatabaseHelper
-								.getHistoryDetailsByItemId(itemId);
+								.getHistoryDetailsByItemId(item.getId());
 
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
@@ -831,9 +831,11 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
+				
+				item.setHistoryDetails(historyDetails);
 
 				if (callback != null)
-					callback.onHistoryDetailsLoaded(historyDetails);
+					callback.onHistoryDetailsLoaded();
 			}
 
 		}.execute();

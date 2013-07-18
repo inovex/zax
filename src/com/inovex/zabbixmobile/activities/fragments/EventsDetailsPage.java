@@ -113,7 +113,7 @@ public class EventsDetailsPage extends BaseDetailsPage {
 		}
 		
 		if(!mHistoryDetailsImported && mEvent.getTrigger().getItem() != null)
-			mZabbixDataService.loadHistoryDetailsByItemId(mEvent.getTrigger().getItem().getId(), this);
+			mZabbixDataService.loadHistoryDetailsByItemId(mEvent.getTrigger().getItem(), this);
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class EventsDetailsPage extends BaseDetailsPage {
 		this.mEvent = event;
 		this.mEventId = event.getId();
 		if(!mHistoryDetailsImported && getView() != null)
-			mZabbixDataService.loadHistoryDetailsByItemId(mEvent.getTrigger().getItem().getId(), this);
+			mZabbixDataService.loadHistoryDetailsByItemId(mEvent.getTrigger().getItem(), this);
 	}
 
 	public void setTitle(String title) {

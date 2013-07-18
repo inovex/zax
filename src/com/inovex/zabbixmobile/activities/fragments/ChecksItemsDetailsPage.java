@@ -75,7 +75,7 @@ public class ChecksItemsDetailsPage extends BaseDetailsPage {
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		super.onServiceConnected(name, service);
 		if (!mHistoryDetailsImported && mItem != null)
-			mZabbixDataService.loadHistoryDetailsByItemId(mItem.getId(), this);
+			mZabbixDataService.loadHistoryDetailsByItemId(mItem, this);
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class ChecksItemsDetailsPage extends BaseDetailsPage {
 	public void setItem(Item item) {
 		this.mItem = item;
 		if (!mHistoryDetailsImported && mZabbixDataService != null)
-			mZabbixDataService.loadHistoryDetailsByItemId(mItem.getId(), this);
+			mZabbixDataService.loadHistoryDetailsByItemId(mItem, this);
 	}
 
 	public void setTitle(String title) {

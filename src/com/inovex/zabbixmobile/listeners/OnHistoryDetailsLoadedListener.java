@@ -6,6 +6,6 @@ import com.inovex.zabbixmobile.model.HistoryDetail;
 
 public interface OnHistoryDetailsLoadedListener {
 
-	public void onHistoryDetailsLoaded(Collection<HistoryDetail> historyDetails);
+	public void onHistoryDetailsLoaded();
 	
 }
