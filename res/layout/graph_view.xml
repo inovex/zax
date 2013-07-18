@@ -21,7 +21,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/graph"
+            android:id="@+id/graphs"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical"

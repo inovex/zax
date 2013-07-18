@@ -1,5 +1,7 @@
 package com.inovex.zabbixmobile.model;
 
+import java.util.Collection;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -15,6 +17,8 @@ public class Screen implements Comparable<Screen> {
 	@DatabaseField(columnName = COLUMN_NAME)
 	String name;
 	
+	Collection<Graph> graphs;
+	
 	public Screen() {
 	}
 
@@ -24,6 +28,14 @@ public class Screen implements Comparable<Screen> {
 
 	public String getName() {
 		return name;
+	}
+
+	public Collection<Graph> getGraphs() {
+		return graphs;
+	}
+
+	public void setGraphs(Collection<Graph> graphs) {
+		this.graphs = graphs;
 	}
 
 	public void setId(long screenId) {

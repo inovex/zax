@@ -17,8 +17,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.net.ssl.SSLContext;
@@ -50,7 +52,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
@@ -356,8 +357,8 @@ public class ZabbixRemoteAPI {
 				.put("method", method).put("params", params).put("auth", token)
 				.put("id", 0);
 
-		Log.d("ZabbixService", "_queryStream: " + url);
-		Log.d("ZabbixService", "_queryStream: " + json.toString());
+		Log.d(TAG, "_queryStream: " + url);
+		Log.d(TAG, "_queryStream: " + json.toString());
 
 		post.setEntity(new StringEntity(json.toString(), "UTF-8"));
 		try {
@@ -397,18 +398,18 @@ public class ZabbixRemoteAPI {
 																			// the
 																			// array
 				try {
-					Log.d("ZabbixService",
+					Log.d(TAG,
 							"current token: " + jp.getCurrentToken());
-					Log.d("ZabbixService",
+					Log.d(TAG,
 							"current name: " + jp.getCurrentName());
-					Log.d("ZabbixService", "get text: " + jp.getText());
-					Log.d("ZabbixService", "next value: " + jp.nextValue());
-					Log.d("ZabbixService", "next token: " + jp.nextToken());
-					Log.d("ZabbixService",
+					Log.d(TAG, "get text: " + jp.getText());
+					Log.d(TAG, "next value: " + jp.nextValue());
+					Log.d(TAG, "next token: " + jp.nextToken());
+					Log.d(TAG,
 							"current token: " + jp.getCurrentToken());
-					Log.d("ZabbixService",
+					Log.d(TAG,
 							"current name: " + jp.getCurrentName());
-					Log.d("ZabbixService", "get text: " + jp.getText());
+					Log.d(TAG, "get text: " + jp.getText());
 				} catch (Exception e) {
 					throw new IOException(
 							"Expected data to start with an Array");
@@ -447,7 +448,7 @@ public class ZabbixRemoteAPI {
 					+ " "
 					+ resp.getStatusLine().getReasonPhrase());
 		} else {
-			Log.d("ZabbixService", resp.getStatusLine().getStatusCode() + " "
+			Log.d(TAG, resp.getStatusLine().getStatusCode() + " "
 					+ resp.getStatusLine().getReasonPhrase());
 		}
 	}
@@ -511,7 +512,7 @@ public class ZabbixRemoteAPI {
 		// String password = "zabbix";
 
 		this.url = url + (url.endsWith("/") ? "" : '/') + "api_jsonrpc.php";
-		Log.d("ZabbixContentProvider", url + "//" + user);
+		Log.d(TAG, url + "//" + user);
 
 		try {
 			JSONObject result = _queryBuffer("user.authenticate",
@@ -1521,9 +1522,6 @@ public class ZabbixRemoteAPI {
 			}
 			databaseHelper.insertScreens(screensCollection);
 			jsonReader.close();
-			for (Screen s : screensComplete) {
-				importGraphsForScreen(s.getId());
-			}
 
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -1588,13 +1586,14 @@ public class ZabbixRemoteAPI {
 	}
 
 	/**
-	 * Imports all graphs for a particular screen from Zabbix.
+	 * Imports all graphs for a particular screen from Zabbix. This includes
+	 * graph items and the corresponding items.
 	 * 
-	 * @param screenId
+	 * @param screen
 	 * @throws ZabbixLoginRequiredException
 	 * @throws FatalException
 	 */
-	private void importGraphsForScreen(long screenId)
+	public void importGraphsByScreen(Screen screen)
 			throws ZabbixLoginRequiredException, FatalException {
 		// if (!isCached(GraphData.TABLE_NAME, "screenid="+screenid)) {
 		// _startTransaction();
@@ -1603,7 +1602,7 @@ public class ZabbixRemoteAPI {
 		try {
 
 			// collect all graphids
-			Set<Long> graphids = databaseHelper.getGraphIdsByScreenId(screenId);
+			Set<Long> graphids = databaseHelper.getGraphIdsByScreen(screen);
 
 			// TODO: delete old graphs
 			// String str_graphids = graphids.toString().replace("[",
@@ -1631,8 +1630,8 @@ public class ZabbixRemoteAPI {
 			ArrayList<Graph> graphsCollection = new ArrayList<Graph>(
 					RECORDS_PER_INSERT_BATCH);
 			ArrayList<GraphItem> graphItemsCollection = new ArrayList<GraphItem>();
+			Map<Long, Item> itemsMap = new HashMap<Long, Item>();
 			while ((graphReader = graphs.next()) != null) {
-				boolean mustSetGraphid = false;
 				Graph graph = new Graph();
 				while (graphReader.nextValueToken()) {
 					String propName = graphReader.getCurrentName();
@@ -1641,12 +1640,16 @@ public class ZabbixRemoteAPI {
 					} else if (propName.equals(Graph.COLUMN_NAME)) {
 						graph.setName(graphReader.getText());
 					} else if (propName.equals("gitems")) {
-						graphItemsCollection.addAll(importGraphItemsFromStream(graphReader
-								.getJsonArrayOrObjectReader()));
+						graphItemsCollection
+								.addAll(importGraphItemsFromStream(graphReader
+										.getJsonArrayOrObjectReader()));
 					} else if (propName.equals("items")) {
-						importItemsFromStream(
+						Collection<Item> items = importItemsFromStream(
 								graphReader.getJsonArrayOrObjectReader(), 0,
 								true);
+						for (Item i : items) {
+							itemsMap.put(i.getId(), i);
+						}
 					} else {
 						graphReader.nextProperty();
 					}
@@ -1654,6 +1657,7 @@ public class ZabbixRemoteAPI {
 
 				for (GraphItem graphItem : graphItemsCollection) {
 					graphItem.setGraphId(graph.getId());
+					graphItem.setItem(itemsMap.get(graphItem.getItemId()));
 				}
 
 				databaseHelper.insertGraphItems(graphItemsCollection);

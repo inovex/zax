@@ -417,14 +417,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Queries all graph IDs for a particular screen from the database.
 	 * 
-	 * @param screenId
+	 * @param screen
 	 * @return list of graph IDs
 	 * @throws SQLException
 	 */
-	public Set<Long> getGraphIdsByScreenId(long screenId) throws SQLException {
+	public Set<Long> getGraphIdsByScreen(Screen screen) throws SQLException {
 		Dao<ScreenItem, Long> screenItemDao = getDao(ScreenItem.class);
 		List<ScreenItem> screenItems = screenItemDao.queryForEq(
-				ScreenItem.COLUMN_SCREENID, screenId);
+				ScreenItem.COLUMN_SCREENID, screen.getId());
 		// TODO: add index (screen) to screenitems table
 
 		HashSet<Long> graphIds = new HashSet<Long>();
@@ -432,6 +432,37 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			graphIds.add(s.getResourceId());
 		}
 		return graphIds;
+	}
+
+	/**
+	 * Queries all graphs for a particular screen from the database.
+	 * 
+	 * @param screen
+	 * @return graphs
+	 * @throws SQLException
+	 */
+	public Collection<Graph> getGraphsByScreen(Screen screen)
+			throws SQLException {
+		Set<Long> graphIds = getGraphIdsByScreen(screen);
+
+		Dao<Graph, Long> graphsDao = getDao(Graph.class);
+		QueryBuilder<Graph, Long> graphsQuery = graphsDao.queryBuilder();
+		graphsQuery.where().in(Graph.COLUMN_GRAPHID, graphIds);
+		return graphsQuery.query();
+	}
+
+	/**
+	 * Queries all graph items for a particular graph from the database.
+	 * 
+	 * @param graph
+	 * @return graph items
+	 * @throws SQLException
+	 */
+	public Collection<GraphItem> getGraphItemsByGraph(Graph graph)
+			throws SQLException {
+		Dao<GraphItem, Long> graphItemDao = getDao(GraphItem.class);
+		
+		return graphItemDao.queryForEq(GraphItem.COLUMN_GRAPHID, graph.getId());
 	}
 
 	/**

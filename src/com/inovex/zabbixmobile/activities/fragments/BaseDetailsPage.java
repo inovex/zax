@@ -3,7 +3,6 @@ package com.inovex.zabbixmobile.activities.fragments;
 import java.util.Collection;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,12 +25,11 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
 			mGraphLoadingSpinnerVisible = savedInstanceState.getBoolean(
 					ARG_GRAPH_SPINNER_VISIBLE, true);
 		}
-		Log.d("OC", this + "onCreate");
-		super.onCreate(savedInstanceState);
 	}
 
 	@Override
@@ -44,14 +42,12 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		Log.d("OC", this + "onCreateView");
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		Log.d("OC", this + "onViewCreated");
 
 		if (mGraphLoadingSpinnerVisible)
 			showGraphLoadingSpinner();
@@ -65,7 +61,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 	protected abstract void fillDetailsText();
 
 	protected void showGraph(Item item) {
-		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graph);
+		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
 		dismissGraphLoadingSpinner();
 		if (item != null) {
 			Collection<HistoryDetail> historyDetails = item.getHistoryDetails();

@@ -1,5 +1,7 @@
 package com.inovex.zabbixmobile.model;
 
+import java.util.Collection;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -14,6 +16,8 @@ public class Graph {
 	public static final String COLUMN_NAME = "name";
 	@DatabaseField(columnName = COLUMN_NAME)
 	String name;
+	
+	Collection<GraphItem> graphItems;
 
 	public Graph() {
 		
@@ -27,11 +31,19 @@ public class Graph {
 		return name;
 	}
 
+	public Collection<GraphItem> getGraphItems() {
+		return graphItems;
+	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public void setGraphItems(Collection<GraphItem> graphItems) {
+		this.graphItems = graphItems;
 	}
 }

@@ -12,6 +12,7 @@ import android.widget.ListView;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.ScreensListAdapter;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
+import com.inovex.zabbixmobile.listeners.OnScreensItemSelectedListener;
 
 public class ScreensListFragment extends BaseServiceConnectedListFragment {
 
@@ -25,7 +26,7 @@ public class ScreensListFragment extends BaseServiceConnectedListFragment {
 	private long mCurrentItemId = 0;
 	private boolean mLoadingSpinnerVisible = true;
 
-	private OnListItemSelectedListener mCallbackMain;
+	private OnScreensItemSelectedListener mCallbackMain;
 
 	private ScreensListAdapter mListAdapter;
 
@@ -36,10 +37,10 @@ public class ScreensListFragment extends BaseServiceConnectedListFragment {
 		// This makes sure that the container activity has implemented
 		// the callback interface. If not, it throws an exception
 		try {
-			mCallbackMain = (OnListItemSelectedListener) activity;
+			mCallbackMain = (OnScreensItemSelectedListener) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString()
-					+ " must implement OnChecksItemSelectedListener.");
+					+ " must implement OnScreensItemSelectedListener.");
 		}
 	}
 
@@ -55,7 +56,7 @@ public class ScreensListFragment extends BaseServiceConnectedListFragment {
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		setCurrentPosition(position);
 		setCurrentItemId(id);
-		mCallbackMain.onListItemSelected(position, id);
+		mCallbackMain.onScreenSelected(mListAdapter.getItem(position));
 	}
 	
 	public long selectItem(int position) {

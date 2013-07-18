@@ -88,7 +88,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 			fillDetailsText();
 		}
 		if(!mHistoryDetailsImported && mTrigger.getItem() != null)
-			mZabbixDataService.loadHistoryDetailsByItemId(mTrigger.getItem(), this);
+			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(), this);
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 		this.mTrigger = trigger;
 		this.mTriggerId = trigger.getId();
 		if(!mHistoryDetailsImported && getView() != null)
-			mZabbixDataService.loadHistoryDetailsByItemId(mTrigger.getItem(), this);
+			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(), this);
 	}
 
 	public void setTitle(String title) {

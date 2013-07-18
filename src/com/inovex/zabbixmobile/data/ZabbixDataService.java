@@ -37,12 +37,15 @@ import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
 import com.inovex.zabbixmobile.listeners.OnApplicationsLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnHistoryDetailsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnListItemsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.Graph;
+import com.inovex.zabbixmobile.model.GraphItem;
 import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.HostGroup;
@@ -90,7 +93,7 @@ public class ZabbixDataService extends Service {
 	private ChecksApplicationsPagerAdapter mChecksApplicationsPagerAdapter;
 	private ChecksItemsListAdapter mChecksItemsListAdapter;
 	private ChecksItemsPagerAdapter mChecksItemsPagerAdapter;
-	
+
 	// Screens
 	private ScreensListAdapter mScreensListAdapter;
 
@@ -207,7 +210,7 @@ public class ZabbixDataService extends Service {
 	public ScreensListAdapter getScreensListAdapter() {
 		return mScreensListAdapter;
 	}
-	
+
 	/**
 	 * Returns the application adapter.
 	 * 
@@ -399,7 +402,7 @@ public class ZabbixDataService extends Service {
 		mChecksApplicationsPagerAdapter = new ChecksApplicationsPagerAdapter();
 		mChecksItemsListAdapter = new ChecksItemsListAdapter(this);
 		mChecksItemsPagerAdapter = new ChecksItemsPagerAdapter();
-		
+
 		mScreensListAdapter = new ScreensListAdapter(this);
 
 	}
@@ -787,8 +790,8 @@ public class ZabbixDataService extends Service {
 					mChecksItemsPagerAdapter.addAll(items);
 					mChecksItemsPagerAdapter.notifyDataSetChanged();
 				}
-				
-				if(callback != null)
+
+				if (callback != null)
 					callback.onItemsLoaded();
 
 			}
@@ -800,10 +803,9 @@ public class ZabbixDataService extends Service {
 	 * Loads all history details for a given item. If necessary, an import from
 	 * the Zabbix API is triggered.
 	 * 
-	 * @param itemId
-	 *            item id
+	 * @param item
 	 */
-	public void loadHistoryDetailsByItemId(final Item item,
+	public void loadHistoryDetailsByItem(final Item item,
 			final OnHistoryDetailsLoadedListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
@@ -813,8 +815,6 @@ public class ZabbixDataService extends Service {
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
 				try {
-					// We only import applications with corresponding hosts
-					// (this way templates are ignored)
 					mRemoteAPI.importHistoryDetails(item.getId());
 				} finally {
 					try {
@@ -831,7 +831,7 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				
+
 				item.setHistoryDetails(historyDetails);
 
 				if (callback != null)
@@ -840,10 +840,10 @@ public class ZabbixDataService extends Service {
 
 		}.execute();
 	}
-	
+
 	/**
-	 * Loads all screens. If necessary, an import from
-	 * the Zabbix API is triggered.
+	 * Loads all screens. If necessary, an import from the Zabbix API is
+	 * triggered.
 	 * 
 	 */
 	public void loadScreens(final OnListItemsLoadedListener callback) {
@@ -855,13 +855,10 @@ public class ZabbixDataService extends Service {
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
 				try {
-					// We only import applications with corresponding hosts
-					// (this way templates are ignored)
 					mRemoteAPI.importScreens();
 				} finally {
 					try {
-						screens = mDatabaseHelper
-								.getScreens();
+						screens = mDatabaseHelper.getScreens();
 
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
@@ -873,15 +870,59 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				
-				if(mScreensListAdapter != null) {
+
+				if (mScreensListAdapter != null) {
 					mScreensListAdapter.clear();
 					mScreensListAdapter.addAll(screens);
 					mScreensListAdapter.notifyDataSetChanged();
 				}
 
-				if(callback != null)
+				if (callback != null)
 					callback.onListItemsLoaded();
+			}
+
+		}.execute();
+	}
+
+	/**
+	 * Loads graphs belonging to a screen. If necessary, an import from the
+	 * Zabbix API is triggered.
+	 * 
+	 * @param screen
+	 * @param callback
+	 */
+	public void loadGraphsByScreen(final Screen screen,
+			final OnGraphsLoadedListener callback) {
+		new RemoteAPITask(mRemoteAPI) {
+
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				try {
+					mRemoteAPI.importGraphsByScreen(screen);
+					screen.setGraphs(mDatabaseHelper.getGraphsByScreen(screen));
+					for (Graph g : screen.getGraphs()) {
+						g.setGraphItems(mDatabaseHelper.getGraphItemsByGraph(g));
+						for (GraphItem gi : g.getGraphItems()) {
+							Item item = gi.getItem();
+							mRemoteAPI.importHistoryDetails(item.getId());
+							item.setHistoryDetails(mDatabaseHelper
+									.getHistoryDetailsByItemId(item.getId()));
+						}
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} finally {
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+
+				if (callback != null)
+					callback.onGraphsLoaded();
 			}
 
 		}.execute();

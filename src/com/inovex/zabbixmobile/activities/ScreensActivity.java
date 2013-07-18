@@ -4,7 +4,6 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.widget.ViewFlipper;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -12,11 +11,12 @@ import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ScreensDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ScreensListFragment;
-import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.listeners.OnListItemsLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnScreensItemSelectedListener;
+import com.inovex.zabbixmobile.model.Screen;
 
 public class ScreensActivity extends BaseActivity implements
-		OnListItemsLoadedListener, OnListItemSelectedListener {
+		OnListItemsLoadedListener, OnScreensItemSelectedListener {
 
 	private static final String TAG = ScreensActivity.class.getSimpleName();
 
@@ -56,9 +56,9 @@ public class ScreensActivity extends BaseActivity implements
 	}
 
 	@Override
-	public void onListItemSelected(int position, long id) {
-		mDetailsFragment.setScreenId(id);
-		Log.d(TAG, "onListItemSelected(" + position + ", " + id + ")");
+	public void onScreenSelected(Screen screen) {
+		mActionBar.setSubtitle(screen.getName());
+		mDetailsFragment.setScreen(screen);
 		showDetailsFragment();
 	}
 

@@ -12,15 +12,18 @@ public class GraphItem {
 	long id;
 	/** Item ID */
 	public static final String COLUMN_ITEMID = "itemid";
-	@DatabaseField(columnName = COLUMN_ITEMID)
-	long itemId;
+	@DatabaseField(columnName = COLUMN_ITEMID, foreign = true, foreignAutoRefresh = true)
+	Item item;
 	/** graph id */
 	public static final String COLUMN_GRAPHID = "graphid";
 	@DatabaseField(columnName = COLUMN_GRAPHID)
 	long graphId;
 	/** color hex (only local, original as string) */
 	public static final String COLUMN_COLOR = "color";
+	@DatabaseField(columnName = COLUMN_COLOR)
 	int color;
+
+	long itemId;
 
 	public GraphItem() {
 
@@ -38,8 +41,12 @@ public class GraphItem {
 		return itemId;
 	}
 
-	public void setItemId(long itemId) {
-		this.itemId = itemId;
+	public Item getItem() {
+		return item;
+	}
+
+	public void setItem(Item item) {
+		this.item = item;
 	}
 
 	public long getGraphId() {
@@ -56,6 +63,10 @@ public class GraphItem {
 
 	public void setColor(int color) {
 		this.color = color;
+	}
+
+	public void setItemId(long itemId) {
+		this.itemId = itemId;
 	}
 
 }
