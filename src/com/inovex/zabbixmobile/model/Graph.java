@@ -2,7 +2,9 @@ package com.inovex.zabbixmobile.model;
 
 import java.util.Collection;
 
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "graphs")
@@ -17,7 +19,9 @@ public class Graph {
 	@DatabaseField(columnName = COLUMN_NAME)
 	String name;
 	
-	Collection<GraphItem> graphItems;
+	public static final String COLUMN_GRAPH_ITEMS = "graphitems";
+	@ForeignCollectionField(eager = true, columnName = COLUMN_GRAPH_ITEMS)
+	ForeignCollection<GraphItem> graphItems;
 
 	public Graph() {
 		
@@ -43,7 +47,4 @@ public class Graph {
 		this.name = name;
 	}
 	
-	public void setGraphItems(Collection<GraphItem> graphItems) {
-		this.graphItems = graphItems;
-	}
 }

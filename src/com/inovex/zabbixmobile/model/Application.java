@@ -10,7 +10,7 @@ public class Application implements Comparable<Application> {
 	@DatabaseField(id = true, columnName = COLUMN_APPLICATIONID)
 	private long id;
 	public static final String COLUMN_HOSTID = "hostid";
-	@DatabaseField(columnName = COLUMN_HOSTID, foreign = true, foreignAutoRefresh = true)
+	@DatabaseField(columnName = COLUMN_HOSTID, foreign = true, foreignAutoRefresh = true, index = true)
 	Host host;
 	public static final String COLUMN_NAME = "name";
 	@DatabaseField(columnName = COLUMN_NAME)

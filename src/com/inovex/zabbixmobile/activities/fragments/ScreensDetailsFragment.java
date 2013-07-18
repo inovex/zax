@@ -63,6 +63,9 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 
 		if (mGraphLoadingSpinnerVisible)
 			showGraphLoadingSpinner();
+		else
+			showGraphs();
+		
 	}
 
 	public void setScreen(Screen screen) {
@@ -155,14 +158,19 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 
 	@Override
 	public void onGraphsLoaded() {
-		System.out.println();
 		// now we have all graphs, so we can show them
-		for (Graph g : mScreen.getGraphs()) {
-			showGraph(g);
+		if (getView() != null) {
+			showGraphs();
 		}
 		dismissGraphLoadingSpinner();
 		// if (mScreen.getGraphs() != null)
 		// showGraph((Graph) mScreen.getGraphs().toArray()[0]);
+	}
+
+	protected void showGraphs() {
+		for (Graph g : mScreen.getGraphs()) {
+			showGraph(g);
+		}
 	}
 
 	/**

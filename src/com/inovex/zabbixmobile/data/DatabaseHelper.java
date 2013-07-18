@@ -329,7 +329,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			throws SQLException {
 		Dao<Application, Long> appDao = getDao(Application.class);
 		return appDao.queryForEq(Application.COLUMN_HOSTID, host);
-		// TODO: index on hosts in application table
 	}
 
 	/**
@@ -344,7 +343,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			throws SQLException {
 		Dao<Application, Long> appDao = getDao(Application.class);
 		return appDao.queryForEq(Application.COLUMN_HOSTID, hostId);
-		// TODO: index on hosts in application table
 	}
 
 	/**
@@ -425,7 +423,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		Dao<ScreenItem, Long> screenItemDao = getDao(ScreenItem.class);
 		List<ScreenItem> screenItems = screenItemDao.queryForEq(
 				ScreenItem.COLUMN_SCREENID, screen.getId());
-		// TODO: add index (screen) to screenitems table
 
 		HashSet<Long> graphIds = new HashSet<Long>();
 		for (ScreenItem s : screenItems) {

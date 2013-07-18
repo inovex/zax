@@ -902,7 +902,6 @@ public class ZabbixDataService extends Service {
 					mRemoteAPI.importGraphsByScreen(screen);
 					screen.setGraphs(mDatabaseHelper.getGraphsByScreen(screen));
 					for (Graph g : screen.getGraphs()) {
-						g.setGraphItems(mDatabaseHelper.getGraphItemsByGraph(g));
 						for (GraphItem gi : g.getGraphItems()) {
 							Item item = gi.getItem();
 							mRemoteAPI.importHistoryDetails(item.getId());

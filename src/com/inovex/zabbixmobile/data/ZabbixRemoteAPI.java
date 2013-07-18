@@ -398,17 +398,13 @@ public class ZabbixRemoteAPI {
 																			// the
 																			// array
 				try {
-					Log.d(TAG,
-							"current token: " + jp.getCurrentToken());
-					Log.d(TAG,
-							"current name: " + jp.getCurrentName());
+					Log.d(TAG, "current token: " + jp.getCurrentToken());
+					Log.d(TAG, "current name: " + jp.getCurrentName());
 					Log.d(TAG, "get text: " + jp.getText());
 					Log.d(TAG, "next value: " + jp.nextValue());
 					Log.d(TAG, "next token: " + jp.nextToken());
-					Log.d(TAG,
-							"current token: " + jp.getCurrentToken());
-					Log.d(TAG,
-							"current name: " + jp.getCurrentName());
+					Log.d(TAG, "current token: " + jp.getCurrentToken());
+					Log.d(TAG, "current name: " + jp.getCurrentName());
 					Log.d(TAG, "get text: " + jp.getText());
 				} catch (Exception e) {
 					throw new IOException(
@@ -1561,8 +1557,8 @@ public class ZabbixRemoteAPI {
 				String propName = graphItemReader.getCurrentName();
 				if (propName.equals("gitemid")) {
 					gi.setId(Long.parseLong(graphItemReader.getText()));
-				} else if (propName.equals(GraphItem.COLUMN_GRAPHID)) {
-					gi.setGraphId(Long.parseLong(graphItemReader.getText()));
+//				} else if (propName.equals(GraphItem.COLUMN_GRAPHID)) {
+//					gi.setGraphId(Long.parseLong(graphItemReader.getText()));
 				} else if (propName.equals(GraphItem.COLUMN_ITEMID)) {
 					gi.setItemId(Long.parseLong(graphItemReader.getText()));
 				} else if (propName.equals(GraphItem.COLUMN_COLOR)) {
@@ -1655,8 +1651,10 @@ public class ZabbixRemoteAPI {
 					}
 				}
 
+				// the graph id is usually not included in the graph item
+				// import, hence we set the graph manually
 				for (GraphItem graphItem : graphItemsCollection) {
-					graphItem.setGraphId(graph.getId());
+					graphItem.setGraph(graph);
 					graphItem.setItem(itemsMap.get(graphItem.getItemId()));
 				}
 

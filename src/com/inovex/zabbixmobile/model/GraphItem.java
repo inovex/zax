@@ -8,7 +8,7 @@ public class GraphItem {
 
 	/** GraphItem ID- original gitemid */
 	public static final String COLUMN_GRAPHITEMID = "graphitemid";
-	@DatabaseField(id = true, columnName = COLUMN_GRAPHITEMID)
+	@DatabaseField(id = true, unique = true, columnName = COLUMN_GRAPHITEMID)
 	long id;
 	/** Item ID */
 	public static final String COLUMN_ITEMID = "itemid";
@@ -16,8 +16,8 @@ public class GraphItem {
 	Item item;
 	/** graph id */
 	public static final String COLUMN_GRAPHID = "graphid";
-	@DatabaseField(columnName = COLUMN_GRAPHID)
-	long graphId;
+	@DatabaseField(foreign = true, columnName = COLUMN_GRAPHID)
+	Graph graph;
 	/** color hex (only local, original as string) */
 	public static final String COLUMN_COLOR = "color";
 	@DatabaseField(columnName = COLUMN_COLOR)
@@ -49,12 +49,12 @@ public class GraphItem {
 		this.item = item;
 	}
 
-	public long getGraphId() {
-		return graphId;
+	public Graph getGraph() {
+		return graph;
 	}
 
-	public void setGraphId(long graphId) {
-		this.graphId = graphId;
+	public void setGraph(Graph graph) {
+		this.graph = graph;
 	}
 
 	public int getColor() {

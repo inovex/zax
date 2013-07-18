@@ -12,7 +12,7 @@ public class ScreenItem {
 	long id;
 	/** screen ID */
 	public static final String COLUMN_SCREENID = "screenid";
-	@DatabaseField(columnName = COLUMN_SCREENID)
+	@DatabaseField(columnName = COLUMN_SCREENID, index = true)
 	long screenId;
 	/** graph id */
 	public static final String COLUMN_RESOURCEID = "resourceid";

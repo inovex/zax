@@ -106,7 +106,6 @@ public class ScreensActivity extends BaseActivity implements
 
 	@Override
 	public void onListItemsLoaded() {
-		// TODO: load graphs
 		mListFragment.dismissLoadingSpinner();
 	}
 
