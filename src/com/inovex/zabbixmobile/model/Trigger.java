@@ -44,6 +44,10 @@ public class Trigger implements Comparable<Trigger> {
 	@DatabaseField(columnName = COLUMN_ITEMID, foreign = true, foreignAutoRefresh = true)
 	Item item;
 
+	// only local
+	@DatabaseField
+	String hostNames;
+
 	public Trigger() {
 
 	}
@@ -100,6 +104,14 @@ public class Trigger implements Comparable<Trigger> {
 
 	public Item getItem() {
 		return item;
+	}
+
+	public String getHostNames() {
+		return hostNames;
+	}
+
+	public void setHostNames(String hostNames) {
+		this.hostNames = hostNames;
 	}
 
 	public void setItem(Item item) {

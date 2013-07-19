@@ -72,6 +72,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 					+ "\n");
 			TextView text = (TextView) getView().findViewById(
 					R.id.trigger_details);
+			sb.append("Host(s): " + mTrigger.getHostNames() + "\n");
 			text.setText(sb.toString());
 		}
 	}

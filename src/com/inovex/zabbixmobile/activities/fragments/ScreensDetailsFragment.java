@@ -130,8 +130,6 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 			}
 
 			// create graph and add it to the layout
-			// TODO: When the viewport is set, the graphs are not displayed
-			// correctly.
 			long size = (highestclock - lowestclock) * 2 / 3; // we show 2/3
 			graphView.setViewPort(highestclock - size, size);
 			graphView.setScalable(true);

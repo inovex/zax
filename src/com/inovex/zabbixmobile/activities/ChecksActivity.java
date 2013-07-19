@@ -149,11 +149,12 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	@Override
 	public void selectHostGroupInSpinner(int position, long itemId) {
 		mHostListFragment.showLoadingSpinner();
+		// this loads the adapter content, hence we need to show the loading
+		// spinner first
 		super.selectHostGroupInSpinner(position, itemId);
 		mHostListFragment.setHostGroup(itemId);
 		if (!mHostListFragment.isVisible())
 			showHostListFragment();
-		// TODO: update details fragment
 	}
 
 	@Override

@@ -58,7 +58,8 @@ public abstract class BaseSeverityFilterListPage extends
 			mPosition = savedInstanceState.getInt(ARG_POSITION, 0);
 			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
 					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
-			mLoadingSpinnerVisible = savedInstanceState.getBoolean(ARG_SPINNER_VISIBLE, false);
+			mLoadingSpinnerVisible = savedInstanceState.getBoolean(
+					ARG_SPINNER_VISIBLE, false);
 		}
 	}
 
@@ -145,10 +146,12 @@ public abstract class BaseSeverityFilterListPage extends
 	 */
 	public void showLoadingSpinner() {
 		mLoadingSpinnerVisible = true;
-		LinearLayout progressLayout = (LinearLayout) getView().findViewById(
-				R.id.list_progress_layout);
-		if (progressLayout != null)
-			progressLayout.setVisibility(View.VISIBLE);
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.list_progress_layout);
+			if (progressLayout != null)
+				progressLayout.setVisibility(View.VISIBLE);
+		}
 	}
 
 	/**

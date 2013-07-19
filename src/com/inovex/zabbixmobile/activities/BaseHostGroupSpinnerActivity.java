@@ -83,9 +83,6 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		loadAdapterContent(false);
 	}
 
-	// TODO: host group selection might trigger a switch from list to details
-	// view
-
 	@Override
 	public void onHostGroupSelected(int position) {
 		mActionBar.setSelectedNavigationItem(position);

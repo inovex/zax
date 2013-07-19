@@ -675,8 +675,7 @@ public class ZabbixRemoteAPI {
 
 			if (applicationsPerBatch.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper.insertApplications(applicationsPerBatch);
-				applicationsPerBatch = new ArrayList<Application>(
-						RECORDS_PER_INSERT_BATCH);
+				applicationsPerBatch.clear();
 			}
 
 		}
@@ -857,7 +856,7 @@ public class ZabbixRemoteAPI {
 					List<Host> hosts = importHostsFromStream(
 							eventReader.getJsonArrayOrObjectReader(), null);
 					String hostNames = createHostNamesString(hosts);
-					// store hosts namen
+					// store hosts names
 					e.setHostNames(hostNames);
 				} else if (propName.equals("triggers")) {
 					// import triggers
@@ -892,8 +891,7 @@ public class ZabbixRemoteAPI {
 			eventsCollection.add(e);
 			if (eventsCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper.insertEvents(eventsCollection);
-				eventsCollection = new ArrayList<Event>(
-						RECORDS_PER_INSERT_BATCH);
+				eventsCollection.clear();
 			}
 		}
 		// insert the last batch of events
@@ -977,7 +975,8 @@ public class ZabbixRemoteAPI {
 					int selI = 0;
 					while ((historydetail = historydetails.next()) != null) {
 						// save only every 20th
-						// TODO: This may produce odd graphs for a small amount of values
+						// TODO: This may produce odd graphs for a small amount
+						// of values
 						if (selI++ % 20 != 0) {
 							while (historydetail.nextValueToken()) {
 								historydetail.nextProperty();
@@ -1009,8 +1008,7 @@ public class ZabbixRemoteAPI {
 						if (historyDetailsCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 							databaseHelper
 									.insertHistoryDetails(historyDetailsCollection);
-							historyDetailsCollection = new ArrayList<HistoryDetail>(
-									RECORDS_PER_INSERT_BATCH);
+							historyDetailsCollection.clear();
 						}
 					}
 				} catch (NumberFormatException e) {
@@ -1041,7 +1039,7 @@ public class ZabbixRemoteAPI {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	private List<HostGroup> importHostGroups(JsonArrayOrObjectReader jsonReader)
+	private List<HostGroup> importHostGroupsFromStream(JsonArrayOrObjectReader jsonReader)
 			throws JsonParseException, IOException, SQLException {
 		long firstHostGroupId = -1;
 		ArrayList<HostGroup> hostGroupCollection = new ArrayList<HostGroup>();
@@ -1065,31 +1063,13 @@ public class ZabbixRemoteAPI {
 			// TODO: hostGroupCollection.clear() ? Testen
 			if (hostGroupCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper.insertHostGroups(hostGroupCollection);
-				hostGroupCollection = new ArrayList<HostGroup>(
-						RECORDS_PER_INSERT_BATCH);
+				hostGroupCollection.clear();
 			}
 		}
 		databaseHelper.insertHostGroups(hostGroupCollection);
 
 		return hostGroupCollection;
 		// return firstHostGroupId;
-	}
-
-	/**
-	 * Creates a comma-separated string containing the names of all hosts in the
-	 * given list.
-	 * 
-	 * @param hosts
-	 *            list of hosts
-	 * @return comma-separated host names
-	 */
-	private String createHostNamesString(List<Host> hosts) {
-
-		List<String> hostnames = new ArrayList<String>();
-		for (Host h : hosts) {
-			hostnames.add(h.getName());
-		}
-		return hostnames.toString().replaceAll("[\\[\\]]", "");
 	}
 
 	/**
@@ -1112,7 +1092,7 @@ public class ZabbixRemoteAPI {
 			JsonArrayOrObjectReader jsonReader, Integer numHosts)
 			throws JsonParseException, IOException, SQLException {
 
-		List<Host> hosts = new ArrayList<Host>();
+		List<Host> hostCollection = new ArrayList<Host>();
 		List<HostHostGroupRelation> hostHostGroupCollection = new ArrayList<HostHostGroupRelation>();
 		long firstHostId = -1;
 		JsonObjectReader hostReader;
@@ -1130,44 +1110,25 @@ public class ZabbixRemoteAPI {
 					String host = hostReader.getText();
 					h.setHost(host);
 				} else if (propName.equals("groups")) {
-					List<HostGroup> groups = importHostGroups(hostReader
+					List<HostGroup> groups = importHostGroupsFromStream(hostReader
 							.getJsonArrayOrObjectReader());
 					for (HostGroup group : groups) {
 						// create HostHostGroupRelation
 						hostHostGroupCollection.add(new HostHostGroupRelation(
 								h, group));
 					}
-					// if (groupid != -1) {
-					// h.set(HostData.COLUMN_GROUPID, groupid);
-					// }
 				} else {
 					hostReader.nextProperty();
 				}
 			}
-			hosts.add(h);
-			// host without group will get group #0 (other)
-			// if (h.get(HostData.COLUMN_GROUPID) == null) {
-			// h.set(HostData.COLUMN_GROUPID, 0);
-			// // create "other" hostgroup #1
-			// HostGroupData hg = new HostGroupData();
-			// hg.set(HostGroupData.COLUMN_GROUPID, 0);
-			// hg.set(HostGroupData.COLUMN_NAME, "- "
-			// + context.getResources().getString(R.string.other)
-			// + " -");
-			// hg.insert(zabbixLocalDB, HostGroupData.COLUMN_GROUPID);
-			// }
-			// h.insert(zabbixLocalDB, HostData.COLUMN_HOSTID);
-			// if (numHosts != null && ++i % 10 == 0) {
-			// showProgress(i * 100 / numHosts);
-			// }
-			// _commitTransactionIfRecommended();
-			if (hosts.size() >= RECORDS_PER_INSERT_BATCH) {
-				databaseHelper.insertHosts(hosts);
-				hosts = new ArrayList<Host>(RECORDS_PER_INSERT_BATCH);
+			hostCollection.add(h);
+			if (hostCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+				databaseHelper.insertHosts(hostCollection);
+				hostCollection.clear();
 			}
 		}
 		// insert the last batch of events
-		databaseHelper.insertHosts(hosts);
+		databaseHelper.insertHosts(hostCollection);
 
 		Log.d(TAG, "hosts inserted.");
 
@@ -1175,11 +1136,7 @@ public class ZabbixRemoteAPI {
 			databaseHelper
 					.insertHostHostgroupRelations(hostHostGroupCollection);
 
-		// return new Object[] { hostnames.toString().replaceAll("[\\[\\]]",
-		// ""),
-		// firstHostId };
-
-		return hosts;
+		return hostCollection;
 	}
 
 	/**
@@ -1340,7 +1297,7 @@ public class ZabbixRemoteAPI {
 			itemsComplete.add(item);
 			if (itemsPerBatch.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper.insertItems(itemsPerBatch);
-				itemsPerBatch = new ArrayList<Item>(RECORDS_PER_INSERT_BATCH);
+				itemsPerBatch.clear();
 			}
 
 			if (item.getHost() != null
@@ -1370,8 +1327,7 @@ public class ZabbixRemoteAPI {
 			if (applicationItemRelations.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper
 						.insertApplicationItemRelations(applicationItemRelations);
-				applicationItemRelations = new ArrayList<ApplicationItemRelation>(
-						RECORDS_PER_INSERT_BATCH);
+				applicationItemRelations.clear();
 			}
 		}
 		// insert the last batch of events
@@ -1424,7 +1380,7 @@ public class ZabbixRemoteAPI {
 		// }
 	}
 
-	private void importScreenItems(JsonArrayOrObjectReader jsonReader)
+	private void importScreenItemsFromStream(JsonArrayOrObjectReader jsonReader)
 			throws JsonParseException, NumberFormatException, IOException,
 			SQLException {
 		JsonObjectReader screenItemReader;
@@ -1457,8 +1413,7 @@ public class ZabbixRemoteAPI {
 			}
 			if (screenItemsCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper.insertScreenItems(screenItemsCollection);
-				screenItemsCollection = new ArrayList<ScreenItem>(
-						RECORDS_PER_INSERT_BATCH);
+				screenItemsCollection.clear();
 			}
 		}
 
@@ -1503,7 +1458,7 @@ public class ZabbixRemoteAPI {
 					} else if (propName.equals(Screen.COLUMN_NAME)) {
 						screen.setName(screenReader.getText());
 					} else if (propName.equals("screenitems")) {
-						importScreenItems(screenReader
+						importScreenItemsFromStream(screenReader
 								.getJsonArrayOrObjectReader());
 					} else {
 						screenReader.nextProperty();
@@ -1513,8 +1468,7 @@ public class ZabbixRemoteAPI {
 				screensComplete.add(screen);
 				if (screensCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 					databaseHelper.insertScreens(screensCollection);
-					screensCollection = new ArrayList<Screen>(
-							RECORDS_PER_INSERT_BATCH);
+					screensCollection.clear();
 				}
 			}
 			databaseHelper.insertScreens(screensCollection);
@@ -1558,8 +1512,8 @@ public class ZabbixRemoteAPI {
 				String propName = graphItemReader.getCurrentName();
 				if (propName.equals("gitemid")) {
 					gi.setId(Long.parseLong(graphItemReader.getText()));
-//				} else if (propName.equals(GraphItem.COLUMN_GRAPHID)) {
-//					gi.setGraphId(Long.parseLong(graphItemReader.getText()));
+					// } else if (propName.equals(GraphItem.COLUMN_GRAPHID)) {
+					// gi.setGraphId(Long.parseLong(graphItemReader.getText()));
 				} else if (propName.equals(GraphItem.COLUMN_ITEMID)) {
 					gi.setItemId(Long.parseLong(graphItemReader.getText()));
 				} else if (propName.equals(GraphItem.COLUMN_COLOR)) {
@@ -1570,13 +1524,6 @@ public class ZabbixRemoteAPI {
 					graphItemReader.nextProperty();
 				}
 			}
-			// if graphid-column was not set, this must be done later.
-			// temporary
-			// graphid=-1
-			// if (gi.getId() == null) {
-			// gi.setId(-1);
-			// mustSetGraphid = true;
-			// }
 			graphItemsCollection.add(gi);
 		}
 		return graphItemsCollection;
@@ -1665,8 +1612,7 @@ public class ZabbixRemoteAPI {
 				graphsCollection.add(graph);
 				if (graphsCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 					databaseHelper.insertGraphs(graphsCollection);
-					graphsCollection = new ArrayList<Graph>(
-							RECORDS_PER_INSERT_BATCH);
+					graphsCollection.clear();
 				}
 			}
 			databaseHelper.insertGraphs(graphsCollection);
@@ -1799,8 +1745,7 @@ public class ZabbixRemoteAPI {
 			params.put("output", "extend")
 					.put("sortfield", "lastchange")
 					.put("sortorder", "desc")
-					// .put(isVersion2 ? "selectHosts" : "select_hosts",
-					// "extend")
+					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
 					.put(isVersion2 ? "selectGroups" : "select_groups",
 							"extend")
 					.put(isVersion2 ? "selectItems" : "select_items", "extend")
@@ -1876,20 +1821,21 @@ public class ZabbixRemoteAPI {
 				} else if (propName.equals(Trigger.COLUMN_URL)) {
 					t.setUrl(triggerReader.getText());
 				} else if (propName.equals("hosts")) {
-					// Object[] hostsCache =
-					// importHosts(triggerReader.getJsonArrayOrObjectReader(),
-					// null);
-					// t.set(TriggerData.COLUMN_HOSTS, hostsCache[0]);
-					// t.set(TriggerData.COLUMN_HOSTID, hostsCache[1]);
+					// import hosts
+					List<Host> hosts = importHostsFromStream(
+							triggerReader.getJsonArrayOrObjectReader(), null);
+					String hostNames = createHostNamesString(hosts);
+					// store hosts names
+					t.setHostNames(hostNames);
 				} else if (propName.equals("groups")) {
-					List<HostGroup> hostGroups = importHostGroups(triggerReader
+					List<HostGroup> hostGroups = importHostGroupsFromStream(triggerReader
 							.getJsonArrayOrObjectReader());
 					for (HostGroup h : hostGroups) {
 						triggerHostGroupCollection
 								.add(new TriggerHostGroupRelation(t, h));
 					}
 				} else if (propName.equals("items")) {
-					// store the first item id
+					// store the first item
 					List<Item> items = importItemsFromStream(
 							triggerReader.getJsonArrayOrObjectReader(), 1, true);
 					if (items.size() > 0)
@@ -1901,14 +1847,12 @@ public class ZabbixRemoteAPI {
 			triggerCollection.add(t);
 			if (triggerCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper.insertTriggers(triggerCollection);
-				triggerCollection = new ArrayList<Trigger>(
-						RECORDS_PER_INSERT_BATCH);
+				triggerCollection.clear();
 			}
 			if (triggerHostGroupCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper
 						.insertTriggerHostgroupRelations(triggerHostGroupCollection);
-				triggerHostGroupCollection = new ArrayList<TriggerHostGroupRelation>(
-						RECORDS_PER_INSERT_BATCH);
+				triggerHostGroupCollection.clear();
 			}
 		}
 		databaseHelper.insertTriggers(triggerCollection);
@@ -2009,5 +1953,22 @@ public class ZabbixRemoteAPI {
 	// transformProgressStart = start;
 	// transformProgressEnd = end;
 	// }
+	
+	/**
+	 * Creates a comma-separated string containing the names of all hosts in the
+	 * given list.
+	 * 
+	 * @param hosts
+	 *            list of hosts
+	 * @return comma-separated host names
+	 */
+	private String createHostNamesString(List<Host> hosts) {
+
+		List<String> hostnames = new ArrayList<String>();
+		for (Host h : hosts) {
+			hostnames.add(h.getName());
+		}
+		return hostnames.toString().replaceAll("[\\[\\]]", "");
+	}
 
 }

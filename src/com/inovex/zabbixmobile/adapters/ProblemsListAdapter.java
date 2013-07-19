@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -52,8 +53,12 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 		Trigger t = getItem(position);
 		description.setText(String.valueOf(t.getDescription()));
 
-		// TODO: replace with host names
-		title.setText("Trigger " + "[id: " + t.getId() + "]");
+		String hostNames = t.getHostNames();
+		if (hostNames == null) {
+			hostNames = "";
+			Log.w(TAG, "No host defined for Event with ID " + t.getId());
+		}
+		title.setText(hostNames);
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(t.getLastChange());
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
