@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,12 +41,13 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	TabPageIndicator mSeverityListTabIndicator;
 
 	private OnSeveritySelectedListener mCallbackMain;
-	
+
 	private boolean mLoadingSpinnerVisible = true;
 
 	class SeverityListPagerAdapter extends FragmentPagerAdapter {
 
-		private Collection<BaseSeverityFilterListPage> instantiatedPages = new ArrayList<BaseSeverityFilterListPage>();
+		private BaseSeverityFilterListPage[] instantiatedPages = new BaseSeverityFilterListPage[TriggerSeverity
+				.values().length];
 
 		public SeverityListPagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -56,7 +58,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 			BaseSeverityFilterListPage f = instantiatePage();
 			f.setSeverity(TriggerSeverity.getSeverityByPosition(i));
 			f.setHostGroupId(mCurrentHostGroupId);
-			if(!mLoadingSpinnerVisible)
+			if (!mLoadingSpinnerVisible)
 				f.dismissLoadingSpinner();
 			Log.d(TAG, "getItem: " + f.toString());
 			return f;
@@ -78,8 +80,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 					.instantiateItem(container, position);
 			// save instantiated page
 			Log.d(TAG, "instantiateItem: " + instantiatedItem.toString());
-			instantiatedPages
-					.add((BaseSeverityFilterListPage) instantiatedItem);
+			instantiatedPages[position] = (BaseSeverityFilterListPage) instantiatedItem;
 			return instantiatedItem;
 		}
 
@@ -89,7 +90,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		 * 
 		 * @return instantiated pages
 		 */
-		public Collection<BaseSeverityFilterListPage> getPages() {
+		public BaseSeverityFilterListPage[] getPages() {
 			return instantiatedPages;
 		}
 	}
@@ -118,7 +119,8 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 			setCurrentSeverity(TriggerSeverity
 					.getSeverityByNumber(savedInstanceState.getInt(
 							ARG_SEVERITY, TriggerSeverity.ALL.getNumber())));
-			mLoadingSpinnerVisible = savedInstanceState.getBoolean(ARG_SPINNER_VISIBLE, false);
+			mLoadingSpinnerVisible = savedInstanceState.getBoolean(
+					ARG_SPINNER_VISIBLE, false);
 		}
 	}
 
@@ -196,19 +198,20 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	}
 
 	public void selectItem(int position) {
-		if (mSeverityListPagerAdapter == null || mSeverityListPagerAdapter.getCount() == 0)
+		if (mSeverityListPagerAdapter == null
+				|| mSeverityListPagerAdapter.getCount() == 0)
 			return;
-		if(position > mSeverityListPagerAdapter.getCount() - 1)
+		if (position > mSeverityListPagerAdapter.getCount() - 1)
 			position = 0;
-		BaseSeverityFilterListPage f = (BaseSeverityFilterListPage) mSeverityListPagerAdapter
+		BaseSeverityFilterListPage currentPage = (BaseSeverityFilterListPage) mSeverityListPagerAdapter
 				.instantiateItem(mSeverityListPager,
 						mSeverityListPager.getCurrentItem());
 		Log.d(TAG, "selectItem(" + position + ")");
-		f.selectItem(position);
+		currentPage.selectItem(position);
 		mCurrentPosition = position;
 	}
 
-	protected void setCurrentPosition(int currentPosition) {
+	public void setCurrentPosition(int currentPosition) {
 		this.mCurrentPosition = currentPosition;
 	}
 
@@ -224,7 +227,8 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		this.mCurrentHostGroupId = itemId;
 		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
 				.getPages()) {
-			p.setHostGroupId(itemId);
+			if (p != null)
+				p.setHostGroupId(itemId);
 		}
 	}
 
@@ -232,15 +236,17 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		mLoadingSpinnerVisible = true;
 		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
 				.getPages()) {
-			p.showLoadingSpinner();
+			if (p != null)
+				p.showLoadingSpinner();
 		}
 	}
-	
+
 	public void dismissLoadingSpinner() {
 		mLoadingSpinnerVisible = false;
 		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
 				.getPages()) {
-			p.dismissLoadingSpinner();
+			if (p != null)
+				p.dismissLoadingSpinner();
 		}
 	}
 
