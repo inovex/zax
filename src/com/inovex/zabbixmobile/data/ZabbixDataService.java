@@ -100,6 +100,9 @@ public class ZabbixDataService extends Service {
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
 	private ZabbixRemoteAPI mRemoteAPI;
+	
+	protected boolean mLoggedIn = false;
+	private int bindings = 0;
 
 	/**
 	 * Class used for the client Binder. Because we know this service always
@@ -110,6 +113,10 @@ public class ZabbixDataService extends Service {
 			// Return this service instance so clients can call public methods
 			return ZabbixDataService.this;
 		}
+	}
+
+	public boolean isLoggedIn() {
+		return mLoggedIn;
 	}
 
 	/**
@@ -286,8 +293,6 @@ public class ZabbixDataService extends Service {
 		return null;
 	}
 
-	private int bindings = 0;
-
 	@Override
 	public IBinder onBind(Intent intent) {
 		bindings++;
@@ -355,6 +360,7 @@ public class ZabbixDataService extends Service {
 					FatalException {
 				mRemoteAPI.authenticate();
 				success = true;
+				mLoggedIn = true;
 			}
 
 			@Override

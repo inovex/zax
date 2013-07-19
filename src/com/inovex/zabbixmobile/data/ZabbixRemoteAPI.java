@@ -977,6 +977,7 @@ public class ZabbixRemoteAPI {
 					int selI = 0;
 					while ((historydetail = historydetails.next()) != null) {
 						// save only every 20th
+						// TODO: This may produce odd graphs for a small amount of values
 						if (selI++ % 20 != 0) {
 							while (historydetail.nextValueToken()) {
 								historydetail.nextProperty();

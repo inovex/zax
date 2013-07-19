@@ -30,7 +30,6 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 	protected ActionBar mActionBar;
 	private LoginProgressDialogFragment mLoginProgress;
-	protected static boolean mLoggedIn = false;
 
 	private boolean mPreferencesClosed = false;
 
@@ -44,7 +43,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		ZabbixDataBinder zabbixBinder = (ZabbixDataBinder) binder;
 		mZabbixDataService = zabbixBinder.getService();
 		mZabbixDataService.setActivityContext(BaseActivity.this);
-		if (!mLoggedIn)
+		if (!mZabbixDataService.isLoggedIn())
 			mZabbixDataService.performZabbixLogin(this);
 
 	}
@@ -148,7 +147,6 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		if (success) {
 			Toast.makeText(this, R.string.zabbix_login_successful,
 					Toast.LENGTH_LONG).show();
-			mLoggedIn = true;
 			enableUI();
 		}
 	}

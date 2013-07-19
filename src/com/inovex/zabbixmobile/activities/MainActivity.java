@@ -63,7 +63,7 @@ public class MainActivity extends BaseActivity implements
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		super.onServiceConnected(className, service);
 
-		if (new ZaxPreferences(this).isConfigurated()) {
+		if (mZabbixDataService.isLoggedIn()) {
 
 			// mZabbixService.performZabbixLogin(this);
 
@@ -71,6 +71,14 @@ public class MainActivity extends BaseActivity implements
 					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true, this);
 		}
 
+	}
+
+	@Override
+	public void onLoginFinished(boolean success) {
+		super.onLoginFinished(success);
+		if (success)
+			mZabbixDataService.loadProblemsBySeverityAndHostGroup(
+					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true, this);
 	}
 
 	@Override
