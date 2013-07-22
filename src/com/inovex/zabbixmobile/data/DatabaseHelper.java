@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.app.ActionBar.Tab;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
@@ -58,6 +59,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private Savepoint mSavePoint;
 	private int mTransactionSize;
 
+	private Class<?>[] mTables = { Event.class, Trigger.class, Item.class,
+			Host.class, HostGroup.class, Application.class,
+			TriggerHostGroupRelation.class, HostHostGroupRelation.class,
+			ApplicationItemRelation.class, HistoryDetail.class, Screen.class,
+			ScreenItem.class, Graph.class, GraphItem.class, Cache.class };
+
 	/**
 	 * Pass-through constructor to be used by subclasses (specifically
 	 * {@link MockDatabaseHelper}).
@@ -82,24 +89,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void onCreate(SQLiteDatabase db, ConnectionSource connectionSource) {
 		try {
 			Log.i(DatabaseHelper.class.getName(), "onCreate");
-			TableUtils.createTable(connectionSource, Event.class);
-			TableUtils.createTable(connectionSource, Trigger.class);
-			TableUtils.createTable(connectionSource, Item.class);
-			TableUtils.createTable(connectionSource, Host.class);
-			TableUtils.createTable(connectionSource, HostGroup.class);
-			TableUtils.createTable(connectionSource, Application.class);
-			TableUtils.createTable(connectionSource,
-					TriggerHostGroupRelation.class);
-			TableUtils.createTable(connectionSource,
-					HostHostGroupRelation.class);
-			TableUtils.createTable(connectionSource,
-					ApplicationItemRelation.class);
-			TableUtils.createTable(connectionSource, HistoryDetail.class);
-			TableUtils.createTable(connectionSource, Screen.class);
-			TableUtils.createTable(connectionSource, ScreenItem.class);
-			TableUtils.createTable(connectionSource, Graph.class);
-			TableUtils.createTable(connectionSource, GraphItem.class);
-			TableUtils.createTable(connectionSource, Cache.class);
+			for (Class<?> table : mTables)
+				TableUtils.createTable(connectionSource, table);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
 			throw new RuntimeException(e);
@@ -112,24 +103,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			int oldVersion, int newVersion) {
 		try {
 			Log.i(DatabaseHelper.class.getName(), "onUpgrade");
-			TableUtils.dropTable(connectionSource, Event.class, true);
-			TableUtils.dropTable(connectionSource, Trigger.class, true);
-			TableUtils.dropTable(connectionSource, Item.class, true);
-			TableUtils.dropTable(connectionSource, Host.class, true);
-			TableUtils.dropTable(connectionSource, HostGroup.class, true);
-			TableUtils.dropTable(connectionSource, Application.class, true);
-			TableUtils.dropTable(connectionSource,
-					TriggerHostGroupRelation.class, true);
-			TableUtils.dropTable(connectionSource, HostHostGroupRelation.class,
-					true);
-			TableUtils.dropTable(connectionSource,
-					ApplicationItemRelation.class, true);
-			TableUtils.dropTable(connectionSource, HistoryDetail.class, true);
-			TableUtils.dropTable(connectionSource, Screen.class, true);
-			TableUtils.dropTable(connectionSource, ScreenItem.class, true);
-			TableUtils.dropTable(connectionSource, Graph.class, true);
-			TableUtils.dropTable(connectionSource, GraphItem.class, true);
-			TableUtils.dropTable(connectionSource, Cache.class, true);
+			for (Class<?> table : mTables)
+				TableUtils.dropTable(connectionSource, table, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
 		} catch (SQLException e) {
@@ -461,7 +436,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public Collection<GraphItem> getGraphItemsByGraph(Graph graph)
 			throws SQLException {
 		Dao<GraphItem, Long> graphItemDao = getDao(GraphItem.class);
-		
+
 		return graphItemDao.queryForEq(GraphItem.COLUMN_GRAPHID, graph.getId());
 	}
 
@@ -537,7 +512,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 
 			for (Host host : hosts) {
-				hostDao.createOrUpdate(host);
+				hostDao.createIfNotExists(host);
 			}
 
 		} finally {
@@ -881,6 +856,17 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private <T> void clearTable(Class<T> c) throws SQLException {
 		Dao<T, Long> dao = getDao(c);
 		dao.deleteBuilder().delete();
+	}
+
+	/**
+	 * Clears the entire database.
+	 * 
+	 * @throws SQLException
+	 */
+	public void clearAllData() throws SQLException {
+		for (Class<?> table : mTables) {
+			clearTable(table);
+		}
 	}
 
 	/**

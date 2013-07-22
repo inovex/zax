@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.ChecksItemsPagerAdapter;
@@ -33,6 +34,8 @@ public class ChecksItemsDetailsFragment extends BaseServiceConnectedFragment {
 	protected ChecksItemsPagerAdapter mDetailsPagerAdapter;
 
 	private OnChecksItemSelectedListener mCallbackMain;
+
+	private boolean mLoadingSpinnerVisible = false;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -146,6 +149,37 @@ public class ChecksItemsDetailsFragment extends BaseServiceConnectedFragment {
 		// If the fragment manager is not set to null, there will be issues when
 		// the activity is destroyed and there are pending transactions
 		mDetailsPagerAdapter.setFragmentManager(null);
+	}
+	
+	/**
+	 * Shows a loading spinner instead of the item details.
+	 */
+	public void showLoadingSpinner() {
+		mLoadingSpinnerVisible  = true;
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.progress_layout);
+			if (progressLayout != null)
+				progressLayout.setVisibility(View.VISIBLE);
+		}
+	}
+
+	/**
+	 * Dismisses the loading spinner view.
+	 * 
+	 * If the view has not yet been created, the status is saved and when the
+	 * view is created, the spinner will not be shown at all.
+	 */
+	public void dismissLoadingSpinner() {
+		mLoadingSpinnerVisible = false;
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.progress_layout);
+			if (progressLayout != null) {
+				progressLayout.setVisibility(View.GONE);
+			}
+		}
+
 	}
 
 }

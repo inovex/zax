@@ -62,7 +62,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		// have been changed), we start a relogin.
 		if (mPreferencesClosed && mZabbixDataService != null) {
 			mZabbixDataService.performZabbixLogin(this);
-			// TODO: refresh data
+			mPreferencesClosed = false;
 		}
 
 	}
@@ -122,31 +122,49 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.menuitem_preferences) {
+		switch(item.getItemId()) {
+		case R.id.menuitem_preferences:
 			Intent intent = new Intent(getApplicationContext(),
 					ZaxPreferenceActivity.class);
 			startActivityForResult(intent, REQUEST_CODE_PREFERENCES);
 			return true;
+		case R.id.menuitem_clear:
+			refreshData();
+			return true;
 		}
-		return false;
+		return super.onOptionsItemSelected(item);
 	}
+
+	protected void refreshData() {
+		mZabbixDataService.clearAllData();
+		loadData();
+	}
+
+	protected abstract void loadData();
 
 	@Override
 	public void onLoginStarted() {
 		disableUI();
 		if (!this.isFinishing())
 			mLoginProgress.show(getSupportFragmentManager(),
-		LoginProgressDialogFragment.TAG);
+					LoginProgressDialogFragment.TAG);
 	}
-	
+
 	@Override
 	public void onLoginFinished(boolean success) {
-		if (mLoginProgress != null && mLoginProgress.isInLayout()) {
-			mLoginProgress.dismiss();
+		if (mLoginProgress != null) {
+			try {
+				mLoginProgress.dismiss();
+			} catch (NullPointerException e) {
+				// in case the progress is not being shown right now, a
+				// NullPointerException will be thrown, which we can safely
+				// ignore.
+			}
 		}
 		if (success) {
 			Toast.makeText(this, R.string.zabbix_login_successful,
 					Toast.LENGTH_LONG).show();
+			refreshData();
 			enableUI();
 		}
 	}
@@ -158,7 +176,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "onActivityResult");
-		
+
 		if (requestCode == REQUEST_CODE_PREFERENCES)
 			mPreferencesClosed = true;
 	}

@@ -577,8 +577,7 @@ public class ZabbixRemoteAPI {
 		try {
 			params = new JSONObject().put("output", "extend")
 					.put("limit", ZabbixConfig.APPLICATION_GET_LIMIT)
-					// .put(isVersion2 ? "selectHosts" : "select_hosts",
-					// "extend")
+					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
 					// .put(isVersion2 ? "selectItems" : "select_items",
 					// "extend")
 					.put("source", 0);

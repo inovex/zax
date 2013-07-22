@@ -163,4 +163,10 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	@Override
 	protected abstract void loadAdapterContent(boolean hostGroupChanged);
 
+	@Override
+	protected void loadData() {
+		super.loadData();
+		mListFragment.showLoadingSpinner();
+		loadAdapterContent(true);
+	}
 }

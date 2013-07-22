@@ -52,7 +52,7 @@ public class ScreensActivity extends BaseActivity implements
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder binder) {
 		super.onServiceConnected(className, binder);
-		mZabbixDataService.loadScreens(this);
+		loadData();
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class ScreensActivity extends BaseActivity implements
 			}
 			break;
 		}
-		return false;
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -119,6 +119,14 @@ public class ScreensActivity extends BaseActivity implements
 	protected void enableUI() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	protected void loadData() {
+		mListFragment.showLoadingSpinner();
+		mZabbixDataService.loadScreens(this);
+		mDetailsFragment.showGraphLoadingSpinner();
+		mDetailsFragment.loadGraphs();
 	}
 
 }

@@ -12,6 +12,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
 import com.inovex.zabbixmobile.model.Graph;
@@ -63,7 +64,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 
 		if (mGraphLoadingSpinnerVisible)
 			showGraphLoadingSpinner();
-		else
+		if(mScreen != null)
 			showGraphs();
 
 	}
@@ -71,9 +72,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 	public void setScreen(Screen screen) {
 		this.mScreen = screen;
 		if (getView() != null) {
-			if (mZabbixDataService != null) {
-				mZabbixDataService.loadGraphsByScreen(mScreen, this);
-			}
+			loadGraphs();
 		}
 	}
 
@@ -107,7 +106,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 			for (GraphItem gi : graph.getGraphItems()) {
 				item = gi.getItem();
 				historyDetails = item.getHistoryDetails();
-				if (historyDetails.size() > 0) {
+				if (historyDetails != null && historyDetails.size() > 0) {
 					GraphViewData[] values = new GraphViewData[historyDetails
 							.size()];
 					int i = 0;
@@ -115,13 +114,11 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 						long clock = detail.getClock() / 1000;
 						double value = detail.getValue();
 						values[i] = new GraphViewData(clock, value);
-						highestclock = Math.max(highestclock,
-								clock);
-						lowestclock = Math
-								.min(lowestclock, clock);
+						highestclock = Math.max(highestclock, clock);
+						lowestclock = Math.min(lowestclock, clock);
 						i++;
 					}
-					
+
 					series = new GraphViewSeries(item.getDescription(),
 							new GraphViewSeriesStyle(gi.getColor(), 3), values);
 					// series = new GraphViewSeries(values);
@@ -139,7 +136,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 					.getColor(android.R.color.black));
 			style.setVerticalLabelsColor(getSherlockActivity().getResources()
 					.getColor(android.R.color.black));
-			graphView.setGraphViewStyle(style); 
+			graphView.setGraphViewStyle(style);
 
 			LinearLayout graphLayout = new LinearLayout(getSherlockActivity());
 			graphLayout.addView(graphView);
@@ -167,8 +164,12 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 	}
 
 	protected void showGraphs() {
-		for (Graph g : mScreen.getGraphs()) {
-			showGraph(g);
+		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
+		layout.removeAllViews();
+		if (mScreen != null) {
+			for (Graph g : mScreen.getGraphs()) {
+				showGraph(g);
+			}
 		}
 	}
 
@@ -201,4 +202,9 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 
 	}
 
+	public void loadGraphs() {
+		if (mZabbixDataService != null && mScreen != null) {
+			mZabbixDataService.loadGraphsByScreen(mScreen, this);
+		}
+	}
 }

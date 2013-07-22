@@ -230,6 +230,17 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		// This is ugly, but we need it to redraw the page indicator
 		mApplicationsFragment.redrawPageIndicator();
 		mApplicationsFragment.dismissApplicationsLoadingSpinner();
+		mItemDetailsFragment.dismissLoadingSpinner();
+	}
+
+	@Override
+	protected void loadData() {
+		// This loads the host list and - if necessary (i.e. currentHostId is
+		// set) - the applications.
+		mHostListFragment.showLoadingSpinner();
+		mApplicationsFragment.showApplicationsLoadingSpinner();
+		mItemDetailsFragment.showLoadingSpinner();
+		loadAdapterContent(true);
 	}
 
 }

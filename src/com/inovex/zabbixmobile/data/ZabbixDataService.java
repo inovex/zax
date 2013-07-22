@@ -22,6 +22,7 @@ import com.inovex.zabbixmobile.activities.fragments.EventsListPage;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsListPage;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
+import com.inovex.zabbixmobile.adapters.BaseServicePagerAdapter;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ChecksApplicationsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ChecksItemsListAdapter;
@@ -100,7 +101,7 @@ public class ZabbixDataService extends Service {
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
 	private ZabbixRemoteAPI mRemoteAPI;
-	
+
 	protected boolean mLoggedIn = false;
 	private int bindings = 0;
 
@@ -117,6 +118,48 @@ public class ZabbixDataService extends Service {
 
 	public boolean isLoggedIn() {
 		return mLoggedIn;
+	}
+
+	/**
+	 * Clears all data in the database and in the adapters.
+	 */
+	public void clearAllData() {
+		
+		try {
+			mDatabaseHelper.clearAllData();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// clear adapters
+		
+		ArrayList<BaseServiceAdapter<?>> listAdapters = new ArrayList<BaseServiceAdapter<?>>();
+		listAdapters.add(mHostGroupsSpinnerAdapter);
+		listAdapters.addAll(mEventsListAdapters.values());
+		listAdapters.addAll(mProblemsListAdapters.values());
+		listAdapters.add(mProblemsMainListAdapter);
+		listAdapters.add(mHostsListAdapter);
+		listAdapters.add(mChecksItemsListAdapter);
+		listAdapters.add(mScreensListAdapter);
+		
+		for(BaseServiceAdapter<?> adapter : listAdapters) {
+			adapter.clear();
+			adapter.notifyDataSetChanged();
+		}
+		
+		ArrayList<BaseServicePagerAdapter<?>> pagerAdapters = new ArrayList<BaseServicePagerAdapter<?>>();
+		pagerAdapters.addAll(mEventsDetailsPagerAdapters.values());
+		pagerAdapters.addAll(mProblemsDetailsPagerAdapters.values());
+		pagerAdapters.add(mChecksApplicationsPagerAdapter);
+		pagerAdapters.add(mChecksItemsPagerAdapter);
+		
+		for(BaseServicePagerAdapter<?> adapter : pagerAdapters) {
+			adapter.clear();
+			adapter.notifyDataSetChanged();
+		}
+		
+		
 	}
 
 	/**

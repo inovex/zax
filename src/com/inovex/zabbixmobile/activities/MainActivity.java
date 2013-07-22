@@ -15,7 +15,6 @@ import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.inovex.zabbixmobile.model.ZaxPreferences;
 
 public class MainActivity extends BaseActivity implements
 		OnSeverityListAdapterLoadedListener {
@@ -71,8 +70,7 @@ public class MainActivity extends BaseActivity implements
 
 			// mZabbixService.performZabbixLogin(this);
 
-			mZabbixDataService.loadProblemsBySeverityAndHostGroup(
-					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true, this);
+			loadData();
 		}
 
 	}
@@ -81,8 +79,7 @@ public class MainActivity extends BaseActivity implements
 	public void onLoginFinished(boolean success) {
 		super.onLoginFinished(success);
 		if (success)
-			mZabbixDataService.loadProblemsBySeverityAndHostGroup(
-					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true, this);
+			loadData();
 	}
 
 	@Override
@@ -106,6 +103,13 @@ public class MainActivity extends BaseActivity implements
 			boolean hostGroupChanged) {
 		mProblemsFragment.dismissLoadingSpinner();
 
+	}
+
+	@Override
+	protected void loadData() {
+		mProblemsFragment.showLoadingSpinner();
+		mZabbixDataService.loadProblemsBySeverityAndHostGroup(
+				TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true, this);		
 	}
 
 }

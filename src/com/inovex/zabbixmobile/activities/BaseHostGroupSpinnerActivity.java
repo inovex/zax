@@ -111,4 +111,11 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 	protected abstract void loadAdapterContent(boolean hostGroupChanged);
 
+	@Override
+	protected void loadData() {
+		mZabbixDataService.loadHostGroups();		
+	}
+	
+	
+
 }
