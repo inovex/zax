@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
@@ -26,6 +27,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	private static final String ARG_ITEM_POSITION = "arg_item_position";
 	private static final String ARG_ITEM_ID = "arg_item_id";
 	private static final String ARG_SEVERITY = "arg_severity";
+	private static final String ARG_SPINNER_VISIBLE = "arg_spinner_visible";
+	
 	protected ViewPager mDetailsPager;
 	protected int mPosition = 0;
 	protected long mItemId = 0;
@@ -35,6 +38,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	protected BaseSeverityPagerAdapter<T> mDetailsPagerAdapter;
 
 	private long mHostGroupId = HostGroup.GROUP_ID_ALL;
+
+	private boolean mLoadingSpinnerVisible;
 
 	/**
 	 * Selects an event which shall be displayed in the view pager.
@@ -118,6 +123,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 			mItemId = savedInstanceState.getLong(ARG_ITEM_ID, 0);
 			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
 					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
+			mLoadingSpinnerVisible = savedInstanceState.getBoolean(
+					ARG_SPINNER_VISIBLE, false);
 		}
 		setRetainInstance(true);
 	}
@@ -135,6 +142,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
+		if (mLoadingSpinnerVisible)
+			showLoadingSpinner();
 		Log.d(TAG, "onViewCreated");
 	}
 
@@ -149,6 +158,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		outState.putInt(ARG_ITEM_POSITION, mPosition);
 		outState.putLong(ARG_ITEM_ID, mItemId);
 		outState.putInt(ARG_SEVERITY, mSeverity.getNumber());
+		outState.putBoolean(ARG_SPINNER_VISIBLE,
+				mLoadingSpinnerVisible);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -239,6 +250,37 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	public void redrawPageIndicator() {
 		if(mDetailsPageIndicator != null)
 			mDetailsPageIndicator.invalidate();
+	}
+	
+	/**
+	 * Shows a loading spinner instead of this page's list view.
+	 */
+	public void showLoadingSpinner() {
+		mLoadingSpinnerVisible = true;
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.severity_details_progress_layout);
+			if (progressLayout != null)
+				progressLayout.setVisibility(View.VISIBLE);
+		}
+	}
+
+	/**
+	 * Dismisses the loading spinner view.
+	 * 
+	 * If the view has not yet been created, the status is saved and when the
+	 * view is created, the spinner will not be shown at all.
+	 */
+	public void dismissLoadingSpinner() {
+		mLoadingSpinnerVisible = false;
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.severity_details_progress_layout);
+			if (progressLayout != null) {
+				progressLayout.setVisibility(View.GONE);
+			}
+		}
+
 	}
 
 }

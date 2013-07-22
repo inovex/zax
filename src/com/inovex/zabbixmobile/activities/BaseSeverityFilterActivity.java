@@ -75,6 +75,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	@Override
 	public void selectHostGroupInSpinner(int position, long itemId) {
 		mListFragment.showLoadingSpinner();
+		mDetailsFragment.showLoadingSpinner();
 		super.selectHostGroupInSpinner(position, itemId);
 		mListFragment.setHostGroupId(itemId);
 		mDetailsFragment.setHostGroupId(itemId);
@@ -144,6 +145,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 			boolean hostGroupChanged) {
 		mListFragment.dismissLoadingSpinner();
 		mDetailsFragment.redrawPageIndicator();
+		mDetailsFragment.dismissLoadingSpinner();
 	}
 
 	/**
@@ -171,6 +173,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	protected void loadData() {
 		super.loadData();
 		mListFragment.showLoadingSpinner();
+		mDetailsFragment.showLoadingSpinner();
 		loadAdapterContent(true);
 	}
 }

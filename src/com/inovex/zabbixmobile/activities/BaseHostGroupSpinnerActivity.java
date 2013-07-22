@@ -22,10 +22,10 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 	protected HostGroupsSpinnerAdapter mSpinnerAdapter;
 
+	private boolean mFirstCall = true;
+	
 	protected class SpinnerNavigationListener implements
 			ActionBar.OnNavigationListener {
-
-		private boolean firstCall = true;
 
 		@Override
 		public boolean onNavigationItemSelected(int position, long itemId) {
@@ -33,8 +33,8 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 			// means that during a configuration change, the saved state of
 			// the spinner (selected item) might be overwritten. Hence, we
 			// ignore the first call.
-			if (firstCall) {
-				firstCall = false;
+			if (mFirstCall) {
+				mFirstCall = false;
 				return true;
 			}
 
@@ -113,6 +113,9 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 	@Override
 	protected void loadData() {
+		// "simulate" a first call such that the host group selection is not altered. 
+		// This would happen because the host group adapter is emptied and refilled.
+		mFirstCall = true;
 		mZabbixDataService.loadHostGroups();		
 	}
 	
