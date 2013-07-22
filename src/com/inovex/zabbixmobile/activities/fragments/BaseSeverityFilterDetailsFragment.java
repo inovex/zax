@@ -237,4 +237,9 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 				});
 	}
 
+	public void redrawPageIndicator() {
+		if(mDetailsPageIndicator != null)
+			mDetailsPageIndicator.invalidate();
+	}
+
 }

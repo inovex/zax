@@ -136,12 +136,12 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		disableUI();
 		if (!this.isFinishing())
 			mLoginProgress.show(getSupportFragmentManager(),
-					LoginProgressDialogFragment.TAG);
+		LoginProgressDialogFragment.TAG);
 	}
 	
 	@Override
 	public void onLoginFinished(boolean success) {
-		if (mLoginProgress != null) {
+		if (mLoginProgress != null && mLoginProgress.isInLayout()) {
 			mLoginProgress.dismiss();
 		}
 		if (success) {

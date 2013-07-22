@@ -44,12 +44,16 @@ public class MainActivity extends BaseActivity implements
 	protected void disableUI() {
 		// mProblemsButton.setEnabled(false);
 		// mListAdapter.setEnabled(false);
+		mMenuFragment.disableUI();
+		mProblemsFragment.disableUI();
 	}
 
 	@Override
 	protected void enableUI() {
 		// mProblemsButton.setEnabled(true);
 		// mListAdapter.setEnabled(true);
+		mMenuFragment.enableUI();
+		mProblemsFragment.enableUI();
 	}
 
 	@Override

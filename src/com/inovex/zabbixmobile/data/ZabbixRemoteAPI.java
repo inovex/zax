@@ -562,7 +562,8 @@ public class ZabbixRemoteAPI {
 	}
 
 	/**
-	 * Imports all applications from Zabbix.
+	 * Imports all applications from Zabbix. This does not include any items;
+	 * they have to be imported separately.
 	 * 
 	 * @param hostIds
 	 *            collection of host ids to filter the applications by; null: no
@@ -570,15 +571,14 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 */
-	@Deprecated
 	public void importApplicationsByHostIds(Collection<Long> hostIds)
 			throws FatalException, ZabbixLoginRequiredException {
-		// TODO: ignore empty applications
 		JSONObject params;
 		try {
 			params = new JSONObject().put("output", "extend")
 					.put("limit", ZabbixConfig.APPLICATION_GET_LIMIT)
-					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
+					// .put(isVersion2 ? "selectHosts" : "select_hosts",
+					// "extend")
 					// .put(isVersion2 ? "selectItems" : "select_items",
 					// "extend")
 					.put("source", 0);
@@ -788,10 +788,6 @@ public class ZabbixRemoteAPI {
 
 			int numEvents = ZabbixConfig.EVENTS_GET_LIMIT;
 
-			// TODO: There is an issue when the number of events in the
-			// specified time range is larger than the specified limit. Then,
-			// the oldest events (and not the newest one, as expected) will be
-			// fetched.
 			JSONObject params;
 			params = new JSONObject()
 					.put("output", "extend")
@@ -1039,8 +1035,9 @@ public class ZabbixRemoteAPI {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	private List<HostGroup> importHostGroupsFromStream(JsonArrayOrObjectReader jsonReader)
-			throws JsonParseException, IOException, SQLException {
+	private List<HostGroup> importHostGroupsFromStream(
+			JsonArrayOrObjectReader jsonReader) throws JsonParseException,
+			IOException, SQLException {
 		long firstHostGroupId = -1;
 		ArrayList<HostGroup> hostGroupCollection = new ArrayList<HostGroup>();
 		JsonObjectReader hostReader;
@@ -1060,7 +1057,6 @@ public class ZabbixRemoteAPI {
 				}
 			}
 			hostGroupCollection.add(h);
-			// TODO: hostGroupCollection.clear() ? Testen
 			if (hostGroupCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper.insertHostGroups(hostGroupCollection);
 				hostGroupCollection.clear();
@@ -1953,7 +1949,7 @@ public class ZabbixRemoteAPI {
 	// transformProgressStart = start;
 	// transformProgressEnd = end;
 	// }
-	
+
 	/**
 	 * Creates a comma-separated string containing the names of all hosts in the
 	 * given list.

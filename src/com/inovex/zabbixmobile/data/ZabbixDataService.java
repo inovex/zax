@@ -465,8 +465,6 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				// TODO: update the data set instead of removing and re-adding
-				// all items
 				if (listAdapter != null) {
 					if (hostGroupChanged)
 						listAdapter.clear();
@@ -660,8 +658,6 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				// TODO: update the data set instead of removing and re-adding
-				// all items
 				if (hostsAdapter != null) {
 					if (hostGroupChanged)
 						hostsAdapter.clear();

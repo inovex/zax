@@ -136,4 +136,12 @@ public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 
 	}
 
+	public void disableUI() {
+		mProblemsButton.setEnabled(false);
+	}
+
+	public void enableUI() {
+		mProblemsButton.setEnabled(false);
+	}
+
 }

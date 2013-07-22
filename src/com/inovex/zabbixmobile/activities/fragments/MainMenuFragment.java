@@ -48,7 +48,7 @@ public class MainMenuFragment extends SherlockListFragment {
 		super.onCreate(savedInstanceState);
 
 		mListAdapter = new MenuListAdapter(getSherlockActivity(),
-				android.R.layout.simple_expandable_list_item_1, getResources()
+				R.layout.list_item_simple, getResources()
 						.getStringArray(R.array.activities));
 	}
 
@@ -81,6 +81,14 @@ public class MainMenuFragment extends SherlockListFragment {
 				getSherlockActivity().startActivity(intent);
 			}
 		});
+	}
+
+	public void disableUI() {
+		mListAdapter.setEnabled(false);
+	}
+
+	public void enableUI() {
+		mListAdapter.setEnabled(true);
 	}
 
 }

@@ -82,6 +82,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 		mListFragment.setHostGroupId(itemId);
 		mDetailsFragment.setHostGroupId(itemId);
 		if (!mFirstCallSelectHostGroup) {
+			mDetailsFragment.redrawPageIndicator();
 			mListFragment.selectItem(0);
 			mDetailsFragment.selectItem(0);
 			mFirstCallSelectHostGroup = false;
@@ -107,6 +108,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	public void onSeveritySelected(TriggerSeverity severity) {
 		mSeverity = severity;
 		mDetailsFragment.setSeverity(severity);
+		mDetailsFragment.redrawPageIndicator();
 		mListFragment.selectItem(0);
 		mDetailsFragment.selectItem(0);
 	}
@@ -144,6 +146,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	public void onSeverityListAdapterLoaded(TriggerSeverity severity,
 			boolean hostGroupChanged) {
 		mListFragment.dismissLoadingSpinner();
+		mDetailsFragment.redrawPageIndicator();
 		if (severity == mSeverity && !mFirstCallSeverityListAdapterFilled) {
 			mFirstCallSeverityListAdapterFilled = false;
 			if (hostGroupChanged) {
