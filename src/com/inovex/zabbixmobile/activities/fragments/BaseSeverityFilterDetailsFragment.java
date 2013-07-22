@@ -112,7 +112,6 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
 		Log.d(TAG, "onCreate");
 		if (savedInstanceState != null) {
 			mPosition = savedInstanceState.getInt(ARG_ITEM_POSITION, 0);

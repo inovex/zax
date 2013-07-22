@@ -166,7 +166,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 	protected void showGraphs() {
 		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
 		layout.removeAllViews();
-		if (mScreen != null) {
+		if (mScreen != null && mScreen.getGraphs() != null) {
 			for (Graph g : mScreen.getGraphs()) {
 				showGraph(g);
 			}

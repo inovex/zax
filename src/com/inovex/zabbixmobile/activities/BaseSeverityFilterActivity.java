@@ -34,10 +34,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	protected BaseSeverityFilterDetailsFragment<T> mDetailsFragment;
 	protected BaseSeverityFilterListFragment mListFragment;
 
-	// These flags are necessary to select the correct element when coming from
-	// another activity (e.g. Problems list in MainActivity)
 	private boolean mFirstCallSelectHostGroup = true;
-	private boolean mFirstCallSeverityListAdapterFilled = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -147,17 +144,24 @@ public abstract class BaseSeverityFilterActivity<T> extends
 			boolean hostGroupChanged) {
 		mListFragment.dismissLoadingSpinner();
 		mDetailsFragment.redrawPageIndicator();
-		if (severity == mSeverity && !mFirstCallSeverityListAdapterFilled) {
-			mFirstCallSeverityListAdapterFilled = false;
-			if (hostGroupChanged) {
-				mDetailsFragment.selectItem(0);
-				mListFragment.selectItem(0);
-				// TODO: maybe: save current item per severity and host group
-				return;
-			}
-			mDetailsFragment.selectItem(mCurrentItemPosition);
-			mListFragment.selectItem(mCurrentItemPosition);
+	}
+
+	/**
+	 * Selects an item in both fragments. If the host group has been changed,
+	 * the first item will be selected; otherwise, the saved position will be
+	 * restored.
+	 * 
+	 * @param hostGroupChanged whether the host group has been changed
+	 */
+	protected void selectInitialItem(boolean hostGroupChanged) {
+		if (hostGroupChanged) {
+			mDetailsFragment.selectItem(0);
+			mListFragment.selectItem(0);
+			// TODO: maybe: save current item per severity and host group
+			return;
 		}
+		mDetailsFragment.selectItem(mCurrentItemPosition);
+		mListFragment.selectItem(mCurrentItemPosition);
 	}
 
 	@Override

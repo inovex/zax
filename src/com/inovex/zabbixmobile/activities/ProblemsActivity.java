@@ -1,9 +1,6 @@
 package com.inovex.zabbixmobile.activities;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.AttributeSet;
-import android.view.View;
 import android.widget.ViewFlipper;
 
 import com.inovex.zabbixmobile.R;
@@ -27,6 +24,10 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 	 */
 	private boolean mBackToMain = false;
 
+	// This flag is necessary to select the correct element when coming from
+	// another activity (e.g. Problems list in MainActivity)
+	private boolean mFirstCallSeverityListAdapterFilled = true;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,7 +48,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			if (position != -1 && id != -1) {
 				mShowDetailsFragment = true;
 				mBackToMain = true;
-//				mDetailsFragment.selectItem(position);
+				// mDetailsFragment.selectItem(position);
 				mListFragment.setCurrentPosition(position);
 				mDetailsFragment.setPosition(position);
 				showDetailsFragment();
@@ -62,7 +63,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		// problem, we do not want to show the list fragment on startup
 		if (!mListFragment.isVisible() && !mShowDetailsFragment)
 			showListFragment();
-		if(mShowDetailsFragment)
+		if (mShowDetailsFragment)
 			mShowDetailsFragment = false;
 	}
 
@@ -105,6 +106,17 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 				mZabbixDataService.loadProblemsBySeverityAndHostGroup(severity,
 						mHostGroupId, hostGroupChanged, this);
 			}
+		}
+	}
+
+	@Override
+	public void onSeverityListAdapterLoaded(TriggerSeverity severity,
+			boolean hostGroupChanged) {
+		super.onSeverityListAdapterLoaded(severity, hostGroupChanged);
+
+		if (severity == mSeverity && !mFirstCallSeverityListAdapterFilled) {
+			mFirstCallSeverityListAdapterFilled = false;
+			selectInitialItem(hostGroupChanged);
 		}
 	}
 

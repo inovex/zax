@@ -41,7 +41,7 @@ public class EventsDetailsFragment extends
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(false);
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -73,22 +73,36 @@ public class EventsDetailsFragment extends
 	 * @param enabled
 	 *            true: enable; false: disable the button
 	 */
-	public void setAcknowledgeButtonEnabled(boolean enabled) {
+	private void setAcknowledgeButtonEnabled(boolean enabled) {
 		if (mMenuItemAcknowledge != null)
 			mMenuItemAcknowledge.setVisible(enabled);
 	}
 
 	@Override
-	public void selectItem(int position) {
-		super.selectItem(position);
-		if (mDetailsPagerAdapter == null
-				|| mDetailsPagerAdapter.getCount() == 0)
+	public void setHasOptionsMenu(boolean hasMenu) {
+		super.setHasOptionsMenu(hasMenu);
+		if(hasMenu == false)
 			return;
+		updateMenu();
+	}
+
+	protected void updateMenu() {
+		if (mDetailsPagerAdapter == null
+				|| mDetailsPagerAdapter.getCount() == 0) {
+			this.setAcknowledgeButtonEnabled(false);
+			return;
+		}
 		Event e = mDetailsPagerAdapter.getCurrentItem();
 		if (e.isAcknowledged())
 			this.setAcknowledgeButtonEnabled(false);
 		else
 			this.setAcknowledgeButtonEnabled(true);
+	}
+
+	@Override
+	public void selectItem(int position) {
+		super.selectItem(position);
+		updateMenu();
 	}
 
 	/**

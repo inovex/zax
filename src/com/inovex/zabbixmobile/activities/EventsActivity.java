@@ -34,8 +34,9 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		Log.d(TAG, mListFragment.toString());
 		Log.d(TAG, mDetailsFragment.toString());
 		
-		if(!mDetailsFragment.isVisible())
+		if(mFlipper != null)
 			mDetailsFragment.setHasOptionsMenu(false);
+//			((EventsDetailsFragment)mDetailsFragment).setAcknowledgeButtonEnabled(false);
 		
 	}
 
@@ -69,7 +70,8 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	protected void showListFragment() {
 		super.showListFragment();
 		// details fragment becomes invisible -> disable menu
-		mDetailsFragment.setHasOptionsMenu(false);
+		if(mFlipper != null) // portrait
+			mDetailsFragment.setHasOptionsMenu(false);
 	}
 
 	@Override
@@ -78,6 +80,16 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		for (TriggerSeverity severity : TriggerSeverity.values()) {
 			mZabbixDataService.loadEventsBySeverityAndHostGroup(severity,
 					mHostGroupId, hostGroupChanged, this);
+		}
+	}
+	
+	@Override
+	public void onSeverityListAdapterLoaded(TriggerSeverity severity,
+			boolean hostGroupChanged) {
+		super.onSeverityListAdapterLoaded(severity, hostGroupChanged);
+		
+		if (severity == mSeverity) {
+			selectInitialItem(hostGroupChanged);
 		}
 	}
 
