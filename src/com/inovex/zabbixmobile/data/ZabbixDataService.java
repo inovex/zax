@@ -741,8 +741,8 @@ public class ZabbixDataService extends Service {
 					hostIds.add(hostId);
 					// We only import applications with corresponding hosts
 					// (this way templates are ignored)
-					mRemoteAPI.importApplicationsByHostIds(hostIds);
-					mRemoteAPI.importItemsByHostIds(hostIds);
+					mRemoteAPI.importApplicationsByHostId(hostId);
+					mRemoteAPI.importItemsByHostId(hostId);
 				} finally {
 					try {
 						applications = mDatabaseHelper

@@ -562,17 +562,18 @@ public class ZabbixRemoteAPI {
 	}
 
 	/**
-	 * Imports all applications from Zabbix. This does not include any items;
-	 * they have to be imported separately.
+	 * Imports all applications for a particular host from Zabbix. This does not
+	 * include any items; they have to be imported separately.
 	 * 
-	 * @param hostIds
-	 *            collection of host ids to filter the applications by; null: no
-	 *            filtering
+	 * @param hostId
+	 *            host ID to filter the applications by; null: no filtering
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 */
-	public void importApplicationsByHostIds(Collection<Long> hostIds)
-			throws FatalException, ZabbixLoginRequiredException {
+	public void importApplicationsByHostId(Long hostId) throws FatalException,
+			ZabbixLoginRequiredException {
+		if (databaseHelper.isCached(CacheDataType.APPLICATION, hostId))
+			return;
 		JSONObject params;
 		try {
 			params = new JSONObject().put("output", "extend")
@@ -585,8 +586,8 @@ public class ZabbixRemoteAPI {
 				// in Zabbix version <2.0, this is not default
 				params.put("sortfield", "clock").put("sortorder", "DESC");
 			}
-			if (hostIds != null)
-				params.put("hostids", new JSONArray(hostIds));
+			if (hostId != null)
+				params.put("hostids", new JSONArray().put(hostId));
 			JsonArrayOrObjectReader applications = _queryStream(
 					"application.get", params);
 			importApplicationsFromStream(applications);
@@ -598,6 +599,8 @@ public class ZabbixRemoteAPI {
 		} catch (JSONException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
+
+		databaseHelper.setCached(CacheDataType.APPLICATION, hostId);
 	}
 
 	/**
@@ -772,14 +775,9 @@ public class ZabbixRemoteAPI {
 	public void importEvents() throws ZabbixLoginRequiredException,
 			FatalException {
 
-		try {
-			if (databaseHelper.isCached(CacheDataType.EVENT)) {
-				Log.d(TAG, "Events do not need to be refreshed.");
-				return;
-			}
-		} catch (SQLException e1) {
-			// ignore this because the worst that can happen is an unnecessary
-			// API call
+		if (databaseHelper.isCached(CacheDataType.EVENT, null)) {
+			Log.d(TAG, "Events do not need to be refreshed.");
+			return;
 		}
 
 		try {
@@ -806,7 +804,7 @@ public class ZabbixRemoteAPI {
 			JsonArrayOrObjectReader events = _queryStream("event.get", params);
 			importEventsFromStream(events);
 			// events.close();
-			databaseHelper.setCached(CacheDataType.EVENT);
+			databaseHelper.setCached(CacheDataType.EVENT, null);
 		} catch (SQLException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
@@ -898,10 +896,8 @@ public class ZabbixRemoteAPI {
 
 	public void importHistoryDetails(long itemId)
 			throws ZabbixLoginRequiredException, FatalException {
-		// if (!isCached(HistoryDetailData.TABLE_NAME, itemid)) {
-		// _startTransaction();
-		// zabbixLocalDB.delete(HistoryDetailData.TABLE_NAME,
-		// HistoryDetailData.COLUMN_ITEMID+"="+itemid, null);
+		if (databaseHelper.isCached(CacheDataType.HISTORY_DETAILS, itemId))
+			return;
 
 		// delete old history items
 		try {
@@ -1020,8 +1016,7 @@ public class ZabbixRemoteAPI {
 		} catch (JSONException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
-		// setCached(HistoryDetailData.TABLE_NAME, itemid,
-		// ZabbixConfig.CACHE_LIFETIME_HISTORY_DETAILS);
+		databaseHelper.setCached(CacheDataType.HISTORY_DETAILS, itemId);
 	}
 
 	/**
@@ -1145,16 +1140,9 @@ public class ZabbixRemoteAPI {
 	 */
 	public void importHostsAndGroups() throws ZabbixLoginRequiredException,
 			FatalException {
-		// if (!isCached(HostData.TABLE_NAME, null)) {
-		try {
-			if (databaseHelper.isCached(CacheDataType.HOST)) {
-				Log.d(TAG, "Hosts do not need to be refreshed.");
-				return;
-			}
-		} catch (SQLException e1) {
-			// ignore this because the worst that can happen is an unnecessary
-			// API call
-		}
+		if (databaseHelper.isCached(CacheDataType.HOST, null)
+				&& databaseHelper.isCached(CacheDataType.HOSTGROUP, null))
+			return;
 		try {
 			// hosts in the local database may not be empty; hence we prevent
 			// multiple database operations on the hosts table (as soon as
@@ -1181,7 +1169,6 @@ public class ZabbixRemoteAPI {
 										: "select_groups", "extend"));
 				importHostsFromStream(hosts, null);
 				hosts.close();
-				databaseHelper.setCached(CacheDataType.HOST);
 			}
 
 		} catch (SQLException e) {
@@ -1192,9 +1179,9 @@ public class ZabbixRemoteAPI {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
 
-		// setCached(HostData.TABLE_NAME, null,
-		// ZabbixConfig.CACHE_LIFETIME_HOSTS);
-		// }
+		databaseHelper.setCached(CacheDataType.HOST, null);
+		databaseHelper.setCached(CacheDataType.HOSTGROUP, null);
+
 	}
 
 	/**
@@ -1331,9 +1318,18 @@ public class ZabbixRemoteAPI {
 		return itemsComplete;
 	}
 
-	public void importItemsByHostIds(Collection<Long> hostIds)
-			throws FatalException, ZabbixLoginRequiredException {
-		// if (!isCached(ItemData.TABLE_NAME, "hostid=" + hostid)) {
+	/**
+	 * Imports all items for a particular host from Zabbix.
+	 * 
+	 * @param hostId
+	 *            host ID to filter the applications by; null: no filtering
+	 * @throws FatalException
+	 * @throws ZabbixLoginRequiredException
+	 */
+	public void importItemsByHostId(Long hostId) throws FatalException,
+			ZabbixLoginRequiredException {
+		if (databaseHelper.isCached(CacheDataType.ITEM, hostId))
+			return;
 		// zabbixLocalDB.delete(ApplicationItemRelationData.TABLE_NAME,
 		// ApplicationItemRelationData.COLUMN_HOSTID + "=" + hostid,
 		// null);
@@ -1354,8 +1350,8 @@ public class ZabbixRemoteAPI {
 					.put(isVersion2 ? "selectApplications"
 							: "select_applications", "refer")
 					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend");
-			if (hostIds != null)
-				params.put("hostids", new JSONArray(hostIds));
+			if (hostId != null)
+				params.put("hostids", new JSONArray().put(hostId));
 			JsonArrayOrObjectReader items = _queryStream("item.get", params);
 			importItemsFromStream(items, 0, false);
 			items.close();
@@ -1370,9 +1366,8 @@ public class ZabbixRemoteAPI {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
 
-		// setCached(ItemData.TABLE_NAME, "hostid=" + hostid,
-		// ZabbixConfig.CACHE_LIFETIME_ITEMS);
-		// }
+		databaseHelper.setCached(CacheDataType.ITEM, hostId);
+
 	}
 
 	private void importScreenItemsFromStream(JsonArrayOrObjectReader jsonReader)
@@ -1423,8 +1418,8 @@ public class ZabbixRemoteAPI {
 	 */
 	public void importScreens() throws ZabbixLoginRequiredException,
 			FatalException {
-		// if (!isCached(ScreenData.TABLE_NAME, null)) {
-		// _startTransaction();
+		if (databaseHelper.isCached(CacheDataType.SCREEN, null))
+			return;
 		//
 		// zabbixLocalDB.delete(ScreenData.TABLE_NAME, null, null);
 		// zabbixLocalDB.delete(ScreenItemData.TABLE_NAME, null, null);
@@ -1480,9 +1475,7 @@ public class ZabbixRemoteAPI {
 			e.printStackTrace();
 		}
 
-		// setCached(ScreenData.TABLE_NAME, null,
-		// ZabbixConfig.CACHE_LIFETIME_SCREENS);
-		// _endTransaction();
+		databaseHelper.setCached(CacheDataType.SCREEN, null);
 	}
 
 	/**
@@ -1534,8 +1527,8 @@ public class ZabbixRemoteAPI {
 	 */
 	public void importGraphsByScreen(Screen screen)
 			throws ZabbixLoginRequiredException, FatalException {
-		// if (!isCached(GraphData.TABLE_NAME, "screenid="+screenid)) {
-		// _startTransaction();
+		if (databaseHelper.isCached(CacheDataType.GRAPH, screen.getId()))
+			return;
 
 		JsonArrayOrObjectReader graphs;
 		try {
@@ -1624,10 +1617,8 @@ public class ZabbixRemoteAPI {
 			e.printStackTrace();
 		}
 
-		// setCached(GraphData.TABLE_NAME, "screenid="+screenid,
-		// ZabbixConfig.CACHE_LIFETIME_SCREENS);
-		// _endTransaction();
-		// }
+		databaseHelper.setCached(CacheDataType.GRAPH, screen.getId());
+
 	}
 
 	// public void importTrigger(String triggerid) throws JSONException,
@@ -1708,11 +1699,27 @@ public class ZabbixRemoteAPI {
 	 */
 	public void importActiveTriggers() throws ZabbixLoginRequiredException,
 			FatalException {
+		if (databaseHelper.isCached(CacheDataType.TRIGGER, null))
+			return;
 		importTriggersByIds(null, true);
+		databaseHelper.setCached(CacheDataType.TRIGGER, null);
 	}
 
 	/**
 	 * Imports the triggers with matching IDs.
+	 * 
+	 * We do not need to take care of caching here, because this method is
+	 * called in two situations:
+	 * 
+	 * 1. Import of events. If events (and the corresponding triggers) are
+	 * cached, the method {@link ZabbixRemoteAPI#importEvents()} does not call
+	 * this method at all. Hence the caching of the corresponding triggers is
+	 * directly linked to caching of the events (just like triggers are linked
+	 * to events in the data model).
+	 * 
+	 * 2. Import of all active triggers. The method
+	 * {@link ZabbixRemoteAPI#importActiveTriggers()} takes care of caching by
+	 * itself.
 	 * 
 	 * @param triggerIds
 	 *            collection of trigger ids to be matched; null: import all
@@ -1728,6 +1735,7 @@ public class ZabbixRemoteAPI {
 	private void importTriggersByIds(Collection<Long> triggerIds,
 			boolean onlyActive) throws ZabbixLoginRequiredException,
 			FatalException {
+
 		// clear triggers
 		// databaseHelper.clearTriggers();
 

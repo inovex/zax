@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import android.app.ActionBar.Tab;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
@@ -56,8 +55,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
 	private static final String TAG = DatabaseHelper.class.getSimpleName();
 	private DatabaseConnection mThreadConnection;
-	private Savepoint mSavePoint;
-	private int mTransactionSize;
 
 	private Class<?>[] mTables = { Event.class, Trigger.class, Item.class,
 			Host.class, HostGroup.class, Application.class,
@@ -957,11 +954,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param type
 	 *            the data type
+	 * @param itemId
+	 *            ID of the item which has been cached or null if an entire
+	 *            table has been cached
 	 * @throws SQLException
 	 */
-	public void setCached(CacheDataType type) throws SQLException {
-		Dao<Cache, CacheDataType> cacheDao = getDao(Cache.class);
-		cacheDao.createOrUpdate(new Cache(type));
+	public void setCached(CacheDataType type, Long itemId) {
+		if(itemId == null)
+			itemId = (long) Cache.DEFAULT_ID;
+		try {
+			Dao<Cache, CacheDataType> cacheDao = getDao(Cache.class);
+			cacheDao.createOrUpdate(new Cache(type, itemId));
+		} catch (SQLException e) {
+			// As caching is only a performance optimization, there is nothing
+			// more to do here. If something is wrong with the database, caching
+			// will simply not be used.
+			Log.d(TAG, "Could not set " + type + "(id: " + itemId
+					+ ") cached. Exception: " + e.getMessage());
+		}
 	}
 
 	/**
@@ -969,16 +979,40 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param type
 	 *            the data type
+	 * @param itemId
+	 *            ID of the item to be checked or null, if an entire table shall
+	 *            be checked
 	 * @return true, if a cache entry for this data type exists and is still
 	 *         up-to-date; false, otherwise
 	 * @throws SQLException
 	 */
-	public boolean isCached(CacheDataType type) throws SQLException {
-		Dao<Cache, CacheDataType> cacheDao = getDao(Cache.class);
-		Cache c = cacheDao.queryForId(type);
-		if (c == null || c.getExpireTime() < System.currentTimeMillis())
+	public boolean isCached(CacheDataType type, Long itemId) {
+		Dao<Cache, CacheDataType> cacheDao;
+		if(itemId == null)
+			itemId = (long) Cache.DEFAULT_ID;
+		try {
+			cacheDao = getDao(Cache.class);
+
+			Cache c;
+			QueryBuilder<Cache, CacheDataType> query = cacheDao.queryBuilder();
+			query.where().eq(Cache.COLUMN_TYPE, type).and()
+					.eq(Cache.COLUMN_ITEM_ID, itemId);
+			c = query.queryForFirst();
+			if (c != null && c.getExpireTime() < System.currentTimeMillis()) {
+				cacheDao.delete(c);
+				c = null;
+			}
+			if (c == null) {
+				Log.d(TAG, type + " (id: " + itemId + ") was not cached.");
+				return false;
+			}
+			Log.d(TAG, type + " (id: " + itemId + ") was cached.");
+			return true;
+		} catch (SQLException e) {
+			Log.d(TAG, "Could not check whether " + type + "(id: " + itemId
+					+ ") is cached. Exception: " + e.getMessage());
 			return false;
-		return true;
+		}
 	}
 
 }

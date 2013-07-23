@@ -7,8 +7,9 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Cache {
 
 	public enum CacheDataType {
-		EVENT(2 * 60), TRIGGER(2 * 60), HOST(2 * 24 * 60 * 60), ITEM(4 * 60);
-		// TODO: add all data types
+		HOSTGROUP(7 * 24 * 60 * 60), HOST(2 * 24 * 60 * 60), EVENT(2 * 60), TRIGGER(
+				2 * 60), APPLICATION(2 * 24 * 60 * 60), ITEM(4 * 60), HISTORY_DETAILS(
+				4 * 60), GRAPH(2 * 24 * 60 * 60), SCREEN(2 * 24 * 60 * 60);
 
 		private final long lifeTime;
 
@@ -31,8 +32,18 @@ public class Cache {
 		}
 	}
 
-	@DatabaseField(id = true)
+	public static final int DEFAULT_ID = -1;
+	
+	public static final String COLUMN_TYPE = "type";
+	public static final String COLUMN_ITEM_ID = "item_id";
+	private static final String INDEX_CACHE = "cache_idx";
+
+	@DatabaseField(generatedId = true)
+	private long id;
+	@DatabaseField(uniqueIndexName = INDEX_CACHE, columnName = COLUMN_TYPE)
 	private CacheDataType type;
+	@DatabaseField(uniqueIndexName = INDEX_CACHE, columnName = COLUMN_ITEM_ID, canBeNull = true)
+	private Long itemId;
 	@DatabaseField
 	private long expireTime;
 
@@ -40,10 +51,11 @@ public class Cache {
 
 	}
 
-	public Cache(CacheDataType type) {
+	public Cache(CacheDataType type, Long itemId) {
 		this.type = type;
 		this.expireTime = System.currentTimeMillis() + type.getLifeTime()
 				* 1000;
+		this.itemId = itemId;
 	}
 
 	public CacheDataType getType() {
