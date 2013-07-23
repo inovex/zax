@@ -912,6 +912,58 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
+	 * Removes all applications for a given host.
+	 * 
+	 * @param hostId
+	 *            the host ID
+	 */
+	public void deleteItemsByHostId(Long hostId) {
+		Log.d(TAG, "deleting items for host ID " + hostId);
+		try {
+			// delete application item relations (they will be rebuilt by the
+			// next items import)
+			Dao<ApplicationItemRelation, Long> relationDao = getDao(ApplicationItemRelation.class);
+			DeleteBuilder<ApplicationItemRelation, Long> relationDeleteBuilder = relationDao
+					.deleteBuilder();
+			relationDeleteBuilder.where().eq(
+					ApplicationItemRelation.COLUMN_HOSTID, hostId);
+			relationDeleteBuilder.delete();
+			// delete items
+			Dao<Item, Long> itemDao = getDao(Item.class);
+			DeleteBuilder<Item, Long> itemDeleteBuilder = itemDao
+					.deleteBuilder();
+			itemDeleteBuilder.where().eq(Item.COLUMN_HOSTID, hostId);
+			itemDeleteBuilder.delete();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Removes all applications for a given host.
+	 * 
+	 * @param hostId
+	 *            the host ID
+	 */
+	public void deleteApplicationsByHostId(Long hostId) {
+		Log.d(TAG, "deleting applications for host ID " + hostId);
+		try {
+			// delete applications
+			Dao<Application, Long> appDao = getDao(Application.class);
+			DeleteBuilder<Application, Long> deleteBuilder = appDao
+					.deleteBuilder();
+			deleteBuilder.where().eq(Application.COLUMN_HOSTID, hostId);
+			deleteBuilder.delete();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Deletes history details which are older than the specified time.
 	 * 
 	 * @param threshold
@@ -960,7 +1012,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @throws SQLException
 	 */
 	public void setCached(CacheDataType type, Long itemId) {
-		if(itemId == null)
+		if (itemId == null)
 			itemId = (long) Cache.DEFAULT_ID;
 		try {
 			Dao<Cache, CacheDataType> cacheDao = getDao(Cache.class);
@@ -973,7 +1025,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ ") cached. Exception: " + e.getMessage());
 		}
 	}
-
+	
 	/**
 	 * Checks whether a data type is cached in the local SQLite database.
 	 * 
@@ -988,7 +1040,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	public boolean isCached(CacheDataType type, Long itemId) {
 		Dao<Cache, CacheDataType> cacheDao;
-		if(itemId == null)
+		if (itemId == null)
 			itemId = (long) Cache.DEFAULT_ID;
 		try {
 			cacheDao = getDao(Cache.class);

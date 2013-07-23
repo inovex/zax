@@ -574,6 +574,9 @@ public class ZabbixRemoteAPI {
 			ZabbixLoginRequiredException {
 		if (databaseHelper.isCached(CacheDataType.APPLICATION, hostId))
 			return;
+
+		databaseHelper.deleteApplicationsByHostId(hostId);
+
 		JSONObject params;
 		try {
 			params = new JSONObject().put("output", "extend")
@@ -899,7 +902,9 @@ public class ZabbixRemoteAPI {
 		if (databaseHelper.isCached(CacheDataType.HISTORY_DETAILS, itemId))
 			return;
 
-		// delete old history items
+		// delete old history items - as old history items are still valid, we
+		// can keep history details which are within the time range in the local
+		// database
 		try {
 			databaseHelper.deleteOldHistoryDetails(System.currentTimeMillis()
 					- (ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT * 1000));
@@ -1304,7 +1309,7 @@ public class ZabbixRemoteAPI {
 			for (Application app : applications) {
 				app.setHost(item.getHost());
 				applicationItemRelations.add(new ApplicationItemRelation(app,
-						item));
+						item.getHost(), item));
 			}
 			if (applicationItemRelations.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper
@@ -1330,12 +1335,10 @@ public class ZabbixRemoteAPI {
 			ZabbixLoginRequiredException {
 		if (databaseHelper.isCached(CacheDataType.ITEM, hostId))
 			return;
-		// zabbixLocalDB.delete(ApplicationItemRelationData.TABLE_NAME,
-		// ApplicationItemRelationData.COLUMN_HOSTID + "=" + hostid,
-		// null);
-		try {
-			databaseHelper.clearItems();
 
+		databaseHelper.deleteItemsByHostId(hostId);
+
+		try {
 			// count of items
 			// JSONObject result = _queryBuffer(
 			// "item.get",

@@ -11,8 +11,11 @@ public class ApplicationItemRelation {
 	public static final String COLUMN_APPLICATIONID = "applicationid";
 	@DatabaseField(uniqueIndexName = "app_item_idx", foreign = true, columnName = COLUMN_APPLICATIONID)
 	private Application application;
+	public static final String COLUMN_HOSTID = "hostid";
+	@DatabaseField(foreign = true, columnName = COLUMN_HOSTID)
+	private Host host;
 	public static final String COLUMN_ITEMID = "itemid";
-	@DatabaseField(uniqueIndexName = "app_item_idx", foreign = true, columnName = COLUMN_ITEMID)
+	@DatabaseField(uniqueIndexName = "app_item_idx", foreign = true, foreignAutoRefresh = true, columnName = COLUMN_ITEMID)
 	private Item item;
 
 	// @DatabaseField
@@ -22,8 +25,9 @@ public class ApplicationItemRelation {
 
 	}
 
-	public ApplicationItemRelation(Application app, Item item) {
+	public ApplicationItemRelation(Application app, Host host, Item item) {
 		this.application = app;
+		this.host = host;
 		this.item = item;
 	}
 
@@ -37,6 +41,14 @@ public class ApplicationItemRelation {
 
 	public Item getItem() {
 		return item;
+	}
+
+	public Host getHost() {
+		return host;
+	}
+
+	public void setHost(Host host) {
+		this.host = host;
 	}
 
 	public void setId(long id) {
