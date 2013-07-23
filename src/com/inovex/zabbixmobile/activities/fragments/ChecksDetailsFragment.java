@@ -68,7 +68,7 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 			mItemsLoadingSpinnerVisible = savedInstanceState.getBoolean(
 					ARG_ITEMS_SPINNER_VISIBLE, false);
 		}
-//		setRetainInstance(true);
+		// setRetainInstance(true);
 		Log.d(TAG, "Host position: " + mHostPosition + "; id: " + mHostId);
 	}
 
@@ -202,10 +202,12 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 	 */
 	public void showApplicationsLoadingSpinner() {
 		mApplicationsLoadingSpinnerVisible = true;
-		LinearLayout progressLayout = (LinearLayout) getView().findViewById(
-				R.id.applications_progress_layout);
-		if (progressLayout != null)
-			progressLayout.setVisibility(View.VISIBLE);
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.applications_progress_layout);
+			if (progressLayout != null)
+				progressLayout.setVisibility(View.VISIBLE);
+		}
 	}
 
 	/**
@@ -277,13 +279,13 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 	}
 
 	public void selectItem(int position) {
-		if (mDetailsPagerAdapter == null || mDetailsPagerAdapter.getCount() == 0)
+		if (mDetailsPagerAdapter == null
+				|| mDetailsPagerAdapter.getCount() == 0)
 			return;
-		if(position > mDetailsPagerAdapter.getCount() - 1)
+		if (position > mDetailsPagerAdapter.getCount() - 1)
 			position = 0;
 		ChecksDetailsPage f = (ChecksDetailsPage) mDetailsPagerAdapter
-				.instantiateItem(mDetailsPager,
-						mDetailsPager.getCurrentItem());
+				.instantiateItem(mDetailsPager, mDetailsPager.getCurrentItem());
 		Log.d(TAG, "selectItem(" + position + ")");
 		f.selectItem(position);
 	}

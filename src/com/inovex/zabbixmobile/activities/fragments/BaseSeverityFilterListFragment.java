@@ -201,8 +201,6 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		if (mSeverityListPagerAdapter == null
 				|| mSeverityListPagerAdapter.getCount() == 0)
 			return;
-		if (position > mSeverityListPagerAdapter.getCount() - 1)
-			position = 0;
 		BaseSeverityFilterListPage currentPage = (BaseSeverityFilterListPage) mSeverityListPagerAdapter
 				.instantiateItem(mSeverityListPager,
 						mSeverityListPager.getCurrentItem());

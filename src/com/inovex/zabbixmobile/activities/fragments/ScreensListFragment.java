@@ -58,11 +58,11 @@ public class ScreensListFragment extends BaseServiceConnectedListFragment {
 		setCurrentItemId(id);
 		mCallbackMain.onScreenSelected(mListAdapter.getItem(position));
 	}
-	
+
 	public long selectItem(int position) {
 		if (mListAdapter == null || mListAdapter.getCount() == 0)
 			return -1;
-		if(position > mListAdapter.getCount() - 1)
+		if (position > mListAdapter.getCount() - 1)
 			position = 0;
 		mCurrentPosition = position;
 		// check if the view has already been created -> if not, calls will be
@@ -87,11 +87,12 @@ public class ScreensListFragment extends BaseServiceConnectedListFragment {
 		if (savedInstanceState != null) {
 			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION);
 			mCurrentItemId = savedInstanceState.getLong(ARG_ITEM_ID);
-			mLoadingSpinnerVisible = savedInstanceState.getBoolean(ARG_SPINNER_VISIBLE, false);
+			mLoadingSpinnerVisible = savedInstanceState.getBoolean(
+					ARG_SPINNER_VISIBLE, false);
 		}
 		Log.d(TAG, "pos: " + mCurrentPosition + "; id: " + mCurrentItemId);
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -115,16 +116,18 @@ public class ScreensListFragment extends BaseServiceConnectedListFragment {
 		outState.putLong(ARG_ITEM_ID, mCurrentItemId);
 		super.onSaveInstanceState(outState);
 	}
-	
+
 	/**
 	 * Shows a loading spinner instead of this page's list view.
 	 */
 	public void showLoadingSpinner() {
 		mLoadingSpinnerVisible = true;
-		LinearLayout progressLayout = (LinearLayout) getView().findViewById(
-				R.id.list_progress_layout);
-		if (progressLayout != null)
-			progressLayout.setVisibility(View.VISIBLE);
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.list_progress_layout);
+			if (progressLayout != null)
+				progressLayout.setVisibility(View.VISIBLE);
+		}
 	}
 
 	/**

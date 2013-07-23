@@ -2,6 +2,7 @@
     android:id="@+id/severity_details_base"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     android:orientation="vertical" >
 
     <LinearLayout
@@ -17,17 +18,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
-    
-    <TextView
-        android:id="@+id/severity_details_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/severity_view_pager"
         android:layout_width="match_parent"
         android:layout_height="0px"
-        android:layout_weight="1" >
+        android:layout_weight="1"
+        android:padding="@dimen/default_content_padding" >
     </android.support.v4.view.ViewPager>
 
     <com.viewpagerindicator.TitlePageIndicator

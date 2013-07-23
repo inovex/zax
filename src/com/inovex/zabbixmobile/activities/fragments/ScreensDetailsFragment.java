@@ -64,7 +64,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 
 		if (mGraphLoadingSpinnerVisible)
 			showGraphLoadingSpinner();
-		if(mScreen != null)
+		if (mScreen != null)
 			showGraphs();
 
 	}
@@ -178,10 +178,12 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 	 */
 	public void showGraphLoadingSpinner() {
 		mGraphLoadingSpinnerVisible = true;
-		LinearLayout progressLayout = (LinearLayout) getView().findViewById(
-				R.id.graphs_progress_layout);
-		if (progressLayout != null)
-			progressLayout.setVisibility(View.VISIBLE);
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.graphs_progress_layout);
+			if (progressLayout != null)
+				progressLayout.setVisibility(View.VISIBLE);
+		}
 	}
 
 	/**

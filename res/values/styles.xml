@@ -16,25 +16,17 @@
     <style name="AppTheme" parent="AppBaseTheme">
         All customizations that are NOT specific to a particular API-level can go here.
         <item name="vpiTabPageIndicatorStyle">@style/MyTabPageIndicator</item>
-        <item name="vpiCirclePageIndicatorStyle">@style/MyCirclePageIndicator</item>
+        <item name="android:textColor">@color/text</item>
     </style>
     
     <style name="MyTabPageIndicator" parent="Widget.TabPageIndicator">
-        <item name="android:textColor">@color/vpi__light_theme</item>
-    </style>
-    
-    <style name="MyCirclePageIndicator">
-        <item name="fillColor">#FF000000</item>
-        <item name="strokeColor">#FF000000</item>
-        <item name="strokeWidth">1dp</item>
-        <item name="radius">4dp</item>
-        <item name="centered">true</item>
+        <item name="android:textColor">@color/text</item>
     </style>
     
     <style name="SeverityDetailsTitlePageIndicator">
-        <item name="android:textColor">@color/vpi__light_theme</item>
-        <item name="android:background">#FFCCCCCC</item>
-        <item name="selectedColor">@color/vpi__light_theme</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:background">@color/background_grey</item>
+        <item name="selectedColor">@color/text</item>
         <item name="footerLineHeight">0dp</item>
         <item name="footerIndicatorHeight">0dp</item>
         <item name="footerIndicatorStyle">none</item>
@@ -42,9 +34,9 @@
     </style>
     
     <style name="ItemsDetailsTitlePageIndicator">
-        <item name="android:textColor">@color/vpi__light_theme</item>
-        <item name="android:background">#FFCCCCCC</item>
-        <item name="selectedColor">@color/vpi__light_theme</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:background">@color/background_grey</item>
+        <item name="selectedColor">@color/text</item>
         <item name="footerLineHeight">0dp</item>
         <item name="footerIndicatorHeight">0dp</item>
         <item name="footerIndicatorStyle">none</item>
@@ -52,8 +44,16 @@
     </style>
     
     <style name="ChecksTitlePageIndicator">
-        <item name="android:textColor">@color/vpi__light_theme</item>
-        <item name="selectedColor">@color/vpi__light_theme</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="selectedColor">@color/text</item>
+    </style>
+    
+    <style name="ListFragment">
+        <item name="android:background">@drawable/list_fragment</item>
+    </style>
+    
+    <style name="ListFragmentWhiteBackground">
+        <item name="android:background">@drawable/list_fragment_white_background</item>
     </style>
 
 </resources>

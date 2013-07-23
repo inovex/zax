@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <color name="background">#ffffffff</color>
+    <color name="background_light_grey">#fff5f5f5</color>
+    <color name="background_grey">#ffcccccc</color>
+    <color name="border_list">#ffb2b2b2</color>
+    <color name="text">@color/vpi__light_theme</color>
+</resources>

@@ -3,7 +3,9 @@ package com.inovex.zabbixmobile.activities.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -50,6 +52,13 @@ public class MainMenuFragment extends SherlockListFragment {
 		mListAdapter = new MenuListAdapter(getSherlockActivity(),
 				R.layout.list_item_simple, getResources()
 						.getStringArray(R.array.activities));
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View rootView = inflater.inflate(R.layout.fragment_main_menu, null);
+		return rootView;
 	}
 
 	@Override

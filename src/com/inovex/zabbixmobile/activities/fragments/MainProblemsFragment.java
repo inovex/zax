@@ -23,22 +23,24 @@ import com.inovex.zabbixmobile.model.Trigger;
 
 public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 
-	private static final String TAG = MainProblemsFragment.class.getSimpleName();
-	
+	private static final String TAG = MainProblemsFragment.class
+			.getSimpleName();
+
 	private static final String ARG_SPINNER_VISIBLE = "arg_spinner_visible";
-	
+
 	private ListView mProblemsList;
 	private Button mProblemsButton;
-	
+
 	private boolean mLoadingSpinnerVisible = true;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			mLoadingSpinnerVisible = savedInstanceState.getBoolean(ARG_SPINNER_VISIBLE, false);
+			mLoadingSpinnerVisible = savedInstanceState.getBoolean(
+					ARG_SPINNER_VISIBLE, false);
 		}
-		
+
 	}
 
 	@Override
@@ -50,8 +52,9 @@ public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		
-		mProblemsButton = (Button) getView().findViewById(R.id.main_problems_button);
+
+		mProblemsButton = (Button) getView().findViewById(
+				R.id.main_problems_button);
 		mProblemsButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -61,7 +64,7 @@ public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 				getSherlockActivity().startActivity(intent);
 			}
 		});
-		
+
 		mProblemsList = getListView();
 		mProblemsList.setOnItemClickListener(new OnItemClickListener() {
 
@@ -71,8 +74,7 @@ public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 				Log.d(TAG, "onItemClick(pos: " + position + ", id: " + id);
 				Intent intent = new Intent(getSherlockActivity(),
 						ProblemsActivity.class);
-				intent.putExtra(ProblemsActivity.ARG_ITEM_POSITION,
-						position);
+				intent.putExtra(ProblemsActivity.ARG_ITEM_POSITION, position);
 				intent.putExtra(ProblemsActivity.ARG_ITEM_ID, id);
 				startActivity(intent);
 			}
@@ -83,7 +85,6 @@ public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 		if (emptyView != null)
 			emptyView.setText(R.string.no_items_to_display);
 
-		
 		if (mLoadingSpinnerVisible)
 			showLoadingSpinner();
 	}
@@ -93,29 +94,31 @@ public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 		super.onServiceConnected(name, service);
 		setupListAdapter();
 	}
-	
+
 	@Override
 	protected void setupListAdapter() {
 		BaseServiceAdapter<Trigger> adapter = mZabbixDataService
 				.getProblemsMainListAdapter();
-		setListAdapter(adapter);		
+		setListAdapter(adapter);
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putBoolean(ARG_SPINNER_VISIBLE, mLoadingSpinnerVisible);
 	}
-	
+
 	/**
 	 * Shows a loading spinner instead of this page's list view.
 	 */
 	public void showLoadingSpinner() {
 		mLoadingSpinnerVisible = true;
-		LinearLayout progressLayout = (LinearLayout) getView().findViewById(
-				R.id.list_progress_layout);
-		if (progressLayout != null)
-			progressLayout.setVisibility(View.VISIBLE);
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.list_progress_layout);
+			if (progressLayout != null)
+				progressLayout.setVisibility(View.VISIBLE);
+		}
 	}
 
 	/**

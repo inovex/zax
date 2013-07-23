@@ -15,14 +15,14 @@
         android:id="@+id/main_menu"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="4"
         class="com.inovex.zabbixmobile.activities.fragments.MainMenuFragment" />
 
     <fragment
         android:id="@+id/main_problems"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="5"
         class="com.inovex.zabbixmobile.activities.fragments.MainProblemsFragment" />
 
 </LinearLayout>
