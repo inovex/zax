@@ -33,7 +33,7 @@ public class Cache {
 	}
 
 	public static final int DEFAULT_ID = -1;
-	
+
 	public static final String COLUMN_TYPE = "type";
 	public static final String COLUMN_ITEM_ID = "item_id";
 	private static final String INDEX_CACHE = "cache_idx";

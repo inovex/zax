@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
+import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.model.Trigger;
 
 /**
@@ -52,28 +53,34 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 	@Override
 	protected void fillDetailsText() {
 		if (mTrigger != null) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("\nTrigger:\n\n");
-			sb.append("ID: " + mTrigger.getId() + "\n");
-			sb.append("severity: " + mTrigger.getPriority() + "\n");
-			sb.append("status: " + mTrigger.getStatus() + "\n");
-			sb.append("description: " + mTrigger.getDescription() + "\n");
-			sb.append("comments: " + mTrigger.getComments() + "\n");
-			sb.append("expression: " + mTrigger.getExpression() + "\n");
-			sb.append("URL: " + mTrigger.getUrl() + "\n");
-			sb.append("value: " + mTrigger.getValue() + "\n");
-			Calendar cal = Calendar.getInstance();
-			cal.setTimeInMillis(mTrigger.getLastChange());
-			DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
-					SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
-					Locale.getDefault());
-			sb.append("lastchange: "
-					+ String.valueOf(dateFormatter.format(cal.getTime()))
-					+ "\n");
-			TextView text = (TextView) getView().findViewById(
-					R.id.trigger_details);
-			sb.append("Host(s): " + mTrigger.getHostNames() + "\n");
-			text.setText(sb.toString());
+
+			((TextView) getView().findViewById(R.id.trigger_details_host))
+					.setText(mTrigger.getHostNames());
+			((TextView) getView().findViewById(R.id.trigger_details_trigger))
+					.setText(mTrigger.getDescription());
+			((TextView) getView().findViewById(R.id.trigger_details_severity))
+					.setText(mTrigger.getPriority().getName());
+			((TextView) getView().findViewById(R.id.trigger_details_expression))
+					.setText(mTrigger.getExpression());
+			((TextView) getView().findViewById(R.id.trigger_details_disabled))
+					.setText(mTrigger.getStatus() == Trigger.STATUS_ENABLED ? R.string.no
+							: R.string.yes);
+
+			Item i = mTrigger.getItem();
+			if (i != null) {
+				Calendar cal = Calendar.getInstance();
+				cal.setTimeInMillis(i.getLastClock());
+				DateFormat dateFormatter = SimpleDateFormat
+						.getDateTimeInstance(SimpleDateFormat.SHORT,
+								SimpleDateFormat.SHORT, Locale.getDefault());
+				cal.setTimeInMillis(i.getLastClock());
+				((TextView) getView().findViewById(R.id.latest_data)).setText(i
+						.getLastValue()
+						+ " "
+						+ getResources().getString(R.string.at)
+						+ " "
+						+ dateFormatter.format(cal.getTime()));
+			}
 		}
 	}
 
@@ -88,8 +95,9 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 			this.mTrigger = mZabbixDataService.getTriggerById(mTriggerId);
 			fillDetailsText();
 		}
-		if(!mHistoryDetailsImported && mTrigger.getItem() != null)
-			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(), this);
+		if (!mHistoryDetailsImported && mTrigger.getItem() != null)
+			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(),
+					this);
 	}
 
 	@Override
@@ -101,8 +109,9 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 	public void setTrigger(Trigger trigger) {
 		this.mTrigger = trigger;
 		this.mTriggerId = trigger.getId();
-		if(!mHistoryDetailsImported && getView() != null)
-			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(), this);
+		if (!mHistoryDetailsImported && getView() != null)
+			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(),
+					this);
 	}
 
 	public void setTitle(String title) {
@@ -112,7 +121,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 	public String getTitle() {
 		return mTitle;
 	}
-	
+
 	@Override
 	protected void showGraph() {
 		showGraph(mTrigger.getItem());

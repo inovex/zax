@@ -14,13 +14,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.HistoryDetail;
+import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.model.Trigger;
 
 /**
@@ -36,7 +37,7 @@ public class EventsDetailsPage extends BaseDetailsPage {
 	private Event mEvent;
 	private String mTitle = "";
 	private long mEventId = -1;
-	
+
 	private boolean mHistoryDetailsImported = false;
 
 	private Collection<HistoryDetail> mHistoryDetails;
@@ -68,35 +69,58 @@ public class EventsDetailsPage extends BaseDetailsPage {
 	protected void fillDetailsText() {
 
 		if (mEvent != null) {
+
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(mEvent.getClock());
+			DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
+					SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
+					Locale.getDefault());
+			((TextView) getView().findViewById(R.id.event_details_time))
+					.setText(dateFormatter.format(cal.getTime()));
+			((ImageView) getView().findViewById(R.id.event_details_status_img))
+					.setImageResource(mEvent.getValue() == Event.VALUE_OK ? R.drawable.ok
+							: R.drawable.problem);
+			((TextView) getView().findViewById(R.id.event_details_status))
+					.setText((mEvent.getValue() == Event.VALUE_OK) ? R.string.ok
+							: R.string.problem);
+			((ImageView) getView().findViewById(
+					R.id.event_details_acknowledged_img))
+					.setImageResource(mEvent.isAcknowledged() ? R.drawable.ok
+							: R.drawable.problem);
+			((TextView) getView().findViewById(R.id.event_details_acknowledged))
+					.setText((mEvent.isAcknowledged()) ? R.string.yes
+							: R.string.no);
+
 			StringBuilder sb = new StringBuilder();
-			sb.append("Event: \n\n");
-			sb.append("ID: " + mEvent.getId() + "\n");
-			sb.append("source: " + mEvent.getObjectId() + "\n");
-			sb.append("value: " + mEvent.getValue() + "\n");
-			sb.append("clock: " + mEvent.getClock() + "\n");
 			Trigger t = mEvent.getTrigger();
 			if (t != null) {
-				sb.append("\nTrigger:\n\n");
-				sb.append("ID: " + t.getId() + "\n");
-				sb.append("severity: " + t.getPriority() + "\n");
-				sb.append("status: " + t.getStatus() + "\n");
-				sb.append("description: " + t.getDescription() + "\n");
-				sb.append("comments: " + t.getComments() + "\n");
-				sb.append("expression: " + t.getExpression() + "\n");
-				sb.append("URL: " + t.getUrl() + "\n");
-				sb.append("value: " + t.getValue() + "\n");
-				Calendar cal = Calendar.getInstance();
-				cal.setTimeInMillis(t.getLastChange());
-				DateFormat dateFormatter = SimpleDateFormat
-						.getDateTimeInstance(SimpleDateFormat.SHORT,
-								SimpleDateFormat.SHORT, Locale.getDefault());
-				sb.append("lastchange: "
-						+ String.valueOf(dateFormatter.format(cal.getTime()))
-						+ "\n");
+
+				((TextView) getView().findViewById(R.id.trigger_details_host))
+						.setText(t.getHostNames());
+				((TextView) getView()
+						.findViewById(R.id.trigger_details_trigger)).setText(t
+						.getDescription());
+				((TextView) getView().findViewById(
+						R.id.trigger_details_severity)).setText(t.getPriority()
+						.getName());
+				((TextView) getView().findViewById(
+						R.id.trigger_details_expression)).setText(t
+						.getExpression());
+				((TextView) getView().findViewById(
+						R.id.trigger_details_disabled))
+						.setText(t.getStatus() == Trigger.STATUS_ENABLED ? R.string.no
+								: R.string.yes);
+				
+				Item i = t.getItem();
+				if(i != null) {
+					cal.setTimeInMillis(i.getLastClock());
+					((TextView) getView().findViewById(
+							R.id.latest_data))
+							.setText(i.getLastValue() + " " + getResources().getString(R.string.at) + " " + dateFormatter.format(cal.getTime()));
+				}
 			}
-			TextView detailsText = (TextView) getView().findViewById(
-					R.id.event_details);
-			detailsText.setText(sb.toString());
+			
+			// TODO: update view on acknowledge
 
 		}
 	}
@@ -111,9 +135,10 @@ public class EventsDetailsPage extends BaseDetailsPage {
 			this.mEvent = mZabbixDataService.getEventById(mEventId);
 			fillDetailsText();
 		}
-		
-		if(!mHistoryDetailsImported && mEvent.getTrigger().getItem() != null)
-			mZabbixDataService.loadHistoryDetailsByItem(mEvent.getTrigger().getItem(), this);
+
+		if (!mHistoryDetailsImported && mEvent.getTrigger().getItem() != null)
+			mZabbixDataService.loadHistoryDetailsByItem(mEvent.getTrigger()
+					.getItem(), this);
 	}
 
 	@Override
@@ -126,8 +151,9 @@ public class EventsDetailsPage extends BaseDetailsPage {
 	public void setEvent(Event event) {
 		this.mEvent = event;
 		this.mEventId = event.getId();
-		if(!mHistoryDetailsImported && getView() != null)
-			mZabbixDataService.loadHistoryDetailsByItem(mEvent.getTrigger().getItem(), this);
+		if (!mHistoryDetailsImported && getView() != null)
+			mZabbixDataService.loadHistoryDetailsByItem(mEvent.getTrigger()
+					.getItem(), this);
 	}
 
 	public void setTitle(String title) {
@@ -137,7 +163,7 @@ public class EventsDetailsPage extends BaseDetailsPage {
 	public String getTitle() {
 		return mTitle;
 	}
-	
+
 	@Override
 	protected void showGraph() {
 		showGraph(mEvent.getTrigger().getItem());

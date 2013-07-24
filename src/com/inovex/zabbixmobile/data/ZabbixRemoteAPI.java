@@ -902,9 +902,9 @@ public class ZabbixRemoteAPI {
 		if (databaseHelper.isCached(CacheDataType.HISTORY_DETAILS, itemId))
 			return;
 
-		// delete old history items - as old history items are still valid, we
-		// can keep history details which are within the time range in the local
-		// database
+		// delete old history items - as cached history items are still valid,
+		// we keep history details which are within the time range in the local
+		// database and fetch only newer objects (history doesn't change...)
 		long timeTill = new Date().getTime() / 1000;
 		long timeFrom = timeTill - ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT;
 		try {
@@ -1017,8 +1017,8 @@ public class ZabbixRemoteAPI {
 							historyDetailsCollection.clear();
 						}
 					}
-					Log.d(TAG, "itemID " + itemId + ": imported "
-							+ (selI / 20) + " history details.");
+					Log.d(TAG, "itemID " + itemId + ": imported " + (selI / 20)
+							+ " history details.");
 				} catch (NumberFormatException e) {
 					// data are unuseable, e.g. because it's a string
 				}

@@ -4,6 +4,6 @@
     android:orientation="vertical" 
     style="@style/ListFragmentWhiteBackground">
 
-    <include layout="@layout/view_list_with_loading_spinner" />
+    <include layout="@layout/inc_list_with_loading_spinner" />
 
 </LinearLayout>
