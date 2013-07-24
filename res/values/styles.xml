@@ -14,15 +14,14 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        All customizations that are NOT specific to a particular API-level can go here.
-        <item name="vpiTabPageIndicatorStyle">@style/MyTabPageIndicator</item>
+        All customizations that are NOT specific to a particular API-level can go here.        <item name="vpiTabPageIndicatorStyle">@style/MyTabPageIndicator</item>
         <item name="android:textColor">@color/text</item>
     </style>
-    
+
     <style name="MyTabPageIndicator" parent="Widget.TabPageIndicator">
         <item name="android:textColor">@color/text</item>
     </style>
-    
+
     <style name="SeverityDetailsTitlePageIndicator">
         <item name="android:textColor">@color/text</item>
         <item name="android:background">@color/background_grey</item>
@@ -32,7 +31,7 @@
         <item name="footerIndicatorStyle">none</item>
         <item name="android:textSize">12sp</item>
     </style>
-    
+
     <style name="ItemsDetailsTitlePageIndicator">
         <item name="android:textColor">@color/text</item>
         <item name="android:background">@color/background_grey</item>
@@ -42,16 +41,16 @@
         <item name="footerIndicatorStyle">none</item>
         <item name="android:textSize">12sp</item>
     </style>
-    
+
     <style name="ChecksTitlePageIndicator">
         <item name="android:textColor">@color/text</item>
         <item name="selectedColor">@color/text</item>
     </style>
-    
+
     <style name="ListFragment">
         <item name="android:background">@drawable/list_fragment</item>
     </style>
-    
+
     <style name="ListFragmentWhiteBackground">
         <item name="android:background">@drawable/list_fragment_white_background</item>
     </style>
