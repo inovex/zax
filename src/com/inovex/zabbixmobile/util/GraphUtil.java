@@ -7,10 +7,10 @@ import android.content.Context;
 import android.text.format.DateFormat;
 
 import com.inovex.zabbixmobile.model.HistoryDetail;
+import com.jjoe64.graphview.GraphView.GraphViewData;
 import com.jjoe64.graphview.GraphViewSeries;
 import com.jjoe64.graphview.GraphViewStyle;
 import com.jjoe64.graphview.LineGraphView;
-import com.jjoe64.graphview.GraphView.GraphViewData;
 
 public class GraphUtil {
 	
@@ -50,13 +50,11 @@ public class GraphUtil {
 			}
 		};
 		graph.addSeries(new GraphViewSeries(values));
-		graph.setDrawBackground(true);
-		long size = (highestclock - lowestclock) * 2 / 3; // we show 2/3
-		// graph.setViewPort(highestclock - size, size);
-		graph.setViewPort(lowestclock, (highestclock - lowestclock));
-		graph.setScalable(true);
-		graph.setDiscableTouch(true);
-		// graph.setScalable(false);
+		//long size = (highestclock - lowestclock) * 2 / 3; // we show 2/3
+		//graph.setViewPort(highestclock - size, size);
+		//graph.setScalable(true);
+		//graph.setViewPort(lowestclock, (highestclock - lowestclock));
+		//graph.setDisableTouch(true);
 		GraphViewStyle style = new GraphViewStyle();
 		style.setHorizontalLabelsColor(context.getResources().getColor(
 				android.R.color.black));
