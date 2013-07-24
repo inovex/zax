@@ -3,6 +3,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <include layout="@layout/view_list_with_loading_spinner" />
+    <include layout="@layout/inc_list_with_loading_spinner" />
 
 </LinearLayout>

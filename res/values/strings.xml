@@ -77,6 +77,8 @@
     <string name="invalid_subscribe_key">Invalid Pubnub Subscribe Key. Go to preferences and change it or unable push notifications.</string>
     <string name="event_details">Event Details</string>
     <string name="show_item_details">Show Item Details</string>
+    <string name="latest_data">Latest data</string>
+    <string name="at">at</string>
     <string name="graph_text" formatted="false">Latest data: %s at %s</string>
     <string name="ringtone">Ringtone</string>
     <string name="acknowledge">Acknowledge</string>

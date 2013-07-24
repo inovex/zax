@@ -13,6 +13,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "events")
 public class Event implements Comparable<Event> {
 
+	public static final int VALUE_OK = 0;
+	
 	public static final String COLUMN_ID = "eventid";
 	@DatabaseField(id = true, columnName = COLUMN_ID)
 	long id;

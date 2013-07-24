@@ -3,15 +3,101 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical" android:paddingTop="5dip">
 
         <TextView
-            android:id="@+id/event_details"
+            android:id="@+id/event_details_title"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="@string/event_details"
+            android:textStyle="bold" >
+        </TextView>
+
+        <TableLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="100dip"
+                    android:layout_height="wrap_content"
+                    android:text="@string/time" >
+                </TextView>
+
+                <TextView
+                    android:id="@+id/event_details_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </TextView>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/status" >
+                </TextView>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <ImageView
+                        android:id="@+id/event_details_status_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="10dip"
+                        android:src="@drawable/problem" />
+
+                    <TextView
+                        android:id="@+id/event_details_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" >
+                    </TextView>
+                </LinearLayout>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/acknowledged" >
+                </TextView>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <ImageView
+                        android:id="@+id/event_details_acknowledged_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="10dip"
+                        android:src="@drawable/problem" />
+
+                    <TextView
+                        android:id="@+id/event_details_acknowledged"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                </LinearLayout>
+            </TableRow>
+        </TableLayout>
         
-        <include layout="@layout/graph_view"/>
+        <include layout="@layout/inc_details_trigger" />
         
+        <include layout="@layout/inc_latest_data" />
+
+        <include layout="@layout/inc_graph_view" />
     </LinearLayout>
 
 </ScrollView>

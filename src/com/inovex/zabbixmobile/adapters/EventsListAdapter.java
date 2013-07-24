@@ -24,8 +24,6 @@ import com.inovex.zabbixmobile.model.Trigger;
 public class EventsListAdapter extends BaseServiceAdapter<Event> {
 
 	private static final String TAG = EventsListAdapter.class.getSimpleName();
-	private static final int STATUS_OK = 0;
-	private static final int STATUS_PROBLEM = 0;
 	private int mTextViewResourceId = R.layout.list_item_severity;
 
 	/**
@@ -73,10 +71,10 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 				Locale.getDefault());
 		clock.setText(String.valueOf(dateFormatter.format(cal.getTime())));
 
-		if (e.getValue() == STATUS_PROBLEM)
-			statusImage.setImageResource(R.drawable.problem);
-		else
+		if (e.getValue() == Event.VALUE_OK)
 			statusImage.setImageResource(R.drawable.ok);
+		else
+			statusImage.setImageResource(R.drawable.problem);
 		if (t == null) {
 			Log.w(TAG, "No trigger defined for Event with ID " + e.getId());
 		} else
