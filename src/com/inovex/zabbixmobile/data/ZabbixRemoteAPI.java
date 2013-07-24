@@ -905,17 +905,27 @@ public class ZabbixRemoteAPI {
 		// delete old history items - as old history items are still valid, we
 		// can keep history details which are within the time range in the local
 		// database
+		long timeTill = new Date().getTime() / 1000;
+		long timeFrom = timeTill - ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT;
 		try {
-			databaseHelper.deleteOldHistoryDetails(System.currentTimeMillis()
-					- (ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT * 1000));
+			databaseHelper
+					.deleteOldHistoryDetailsByItemId(
+							itemId,
+							System.currentTimeMillis()
+									- (ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT * 1000));
+			long timeNewest = databaseHelper
+					.getNewestHistoryDetailsClockByItemId(itemId) / 1000;
+			if (timeNewest > timeFrom) {
+				Log.d(TAG, "timeNewest: " + timeNewest + " - timeFrom: "
+						+ timeFrom);
+				timeFrom = timeNewest;
+			}
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 		try {
-			long timeTill = new Date().getTime() / 1000;
-			long timeFrom = timeTill - ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT;
 
 			// Workaround: historydetails only comes if you use the correct
 			// "history"-parameter. This parameter can be "null" or a number
@@ -1007,6 +1017,8 @@ public class ZabbixRemoteAPI {
 							historyDetailsCollection.clear();
 						}
 					}
+					Log.d(TAG, "itemID " + itemId + ": imported "
+							+ (selI / 20) + " history details.");
 				} catch (NumberFormatException e) {
 					// data are unuseable, e.g. because it's a string
 				}
@@ -1532,7 +1544,7 @@ public class ZabbixRemoteAPI {
 		// import screens just to be sure (if screens have already been
 		// imported, this will do nothing
 		importScreens();
-		
+
 		JsonArrayOrObjectReader graphs;
 		try {
 

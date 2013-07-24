@@ -375,6 +375,27 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		query.orderBy(HistoryDetail.COLUMN_CLOCK, true);
 		return query.query();
 	}
+	
+	/**
+	 * Queries all history details for a specified item from the database.
+	 * 
+	 * @param itemId
+	 * 
+	 * @return list of history details
+	 * @throws SQLException
+	 */
+	public long getNewestHistoryDetailsClockByItemId(long itemId)
+			throws SQLException {
+		Dao<HistoryDetail, Long> historyDao = getDao(HistoryDetail.class);
+		QueryBuilder<HistoryDetail, Long> query = historyDao.queryBuilder();
+		query.where().eq(HistoryDetail.COLUMN_ITEMID, itemId);
+		query.orderBy(HistoryDetail.COLUMN_CLOCK, false);
+		HistoryDetail newest = query.queryForFirst();
+		if(newest != null)
+			return newest.getClock();
+		else
+			return 0;
+	}
 
 	/**
 	 * Queries all screens from the database.
@@ -982,11 +1003,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 *            deleted
 	 * @throws SQLException
 	 */
-	public void deleteOldHistoryDetails(long threshold) throws SQLException {
+	public void deleteOldHistoryDetailsByItemId(long itemId, long threshold)
+			throws SQLException {
 		Dao<HistoryDetail, Long> historyDao = getDao(HistoryDetail.class);
 		DeleteBuilder<HistoryDetail, Long> deleteBuilder = historyDao
 				.deleteBuilder();
-//		deleteBuilder.where().lt(HistoryDetail.COLUMN_CLOCK, threshold);
+		deleteBuilder.where().eq(HistoryDetail.COLUMN_ITEMID, itemId).and()
+				.lt(HistoryDetail.COLUMN_CLOCK, threshold);
 		int n = deleteBuilder.delete();
 		Log.d(TAG, "deleted " + n + " history details.");
 	}
