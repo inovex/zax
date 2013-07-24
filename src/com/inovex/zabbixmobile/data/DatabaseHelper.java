@@ -47,6 +47,7 @@ import com.j256.ormlite.table.TableUtils;
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
+	// TODO: handle SQLExceptions in this class!
 	// name of the database file for your application -- change to something
 	// appropriate for your app
 	private static final String DATABASE_NAME = "zabbixmobile.db";
@@ -690,7 +691,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 
 			for (Item item : itemCollection) {
-				dao.createOrUpdate(item);
+				dao.createIfNotExists(item);
 			}
 
 		} finally {
@@ -912,6 +913,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
+	 * Removes all screens and screen items from the database.
+	 * 
+	 * @throws SQLException
+	 */
+	public void clearScreens() throws SQLException {
+		clearTable(Screen.class);
+		clearTable(ScreenItem.class);
+	}
+
+	/**
 	 * Removes all applications for a given host.
 	 * 
 	 * @param hostId
@@ -956,7 +967,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					.deleteBuilder();
 			deleteBuilder.where().eq(Application.COLUMN_HOSTID, hostId);
 			deleteBuilder.delete();
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -975,7 +986,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		Dao<HistoryDetail, Long> historyDao = getDao(HistoryDetail.class);
 		DeleteBuilder<HistoryDetail, Long> deleteBuilder = historyDao
 				.deleteBuilder();
-		deleteBuilder.where().lt(HistoryDetail.COLUMN_CLOCK, threshold);
+//		deleteBuilder.where().lt(HistoryDetail.COLUMN_CLOCK, threshold);
 		int n = deleteBuilder.delete();
 		Log.d(TAG, "deleted " + n + " history details.");
 	}
@@ -988,16 +999,27 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 *            deleted
 	 * @throws SQLException
 	 */
-	public void deleteGraphsByScreenId(long screenId) throws SQLException {
-		Dao<Graph, Long> graphDao = getDao(Graph.class);
-		Dao<ScreenItem, Long> screenItemDao = getDao(ScreenItem.class);
+	public void deleteGraphsByIds(Set<Long> graphIds) {
 
-		QueryBuilder<Graph, Long> graphQuery = graphDao.queryBuilder();
-		QueryBuilder<ScreenItem, Long> screenItemQuery = screenItemDao
-				.queryBuilder();
-		screenItemQuery.where().eq(ScreenItem.COLUMN_SCREENID, screenId);
-		graphQuery.join(screenItemQuery);
-		// TODO: finish
+		try {
+
+			Dao<Graph, Long> graphDao = getDao(Graph.class);
+			DeleteBuilder<Graph, Long> graphDeleteBuilder = graphDao
+					.deleteBuilder();
+			graphDeleteBuilder.where().in(Graph.COLUMN_GRAPHID, graphIds);
+			graphDeleteBuilder.delete();
+
+			Dao<GraphItem, Long> graphItemDao = getDao(GraphItem.class);
+			DeleteBuilder<GraphItem, Long> graphItemDeleteBuilder = graphItemDao
+					.deleteBuilder();
+			graphItemDeleteBuilder.where().in(GraphItem.COLUMN_GRAPHID,
+					graphIds);
+			graphItemDeleteBuilder.delete();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// TODO: test
 
 	}
 
@@ -1025,7 +1047,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ ") cached. Exception: " + e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Checks whether a data type is cached in the local SQLite database.
 	 * 

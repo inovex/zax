@@ -1423,14 +1423,10 @@ public class ZabbixRemoteAPI {
 			FatalException {
 		if (databaseHelper.isCached(CacheDataType.SCREEN, null))
 			return;
-		//
-		// zabbixLocalDB.delete(ScreenData.TABLE_NAME, null, null);
-		// zabbixLocalDB.delete(ScreenItemData.TABLE_NAME, null, null);
-		// zabbixLocalDB.delete(CacheData.TABLE_NAME,
-		// CacheData.COLUMN_KIND+"='"+ScreenData.TABLE_NAME+"'", null);
 
 		JsonArrayOrObjectReader jsonReader;
 		try {
+			databaseHelper.clearScreens();
 			JSONObject params = new JSONObject();
 			params.put("output", "extend");
 			params.put(isVersion2 ? "selectScreenItems" : "select_screenitems",
@@ -1533,12 +1529,17 @@ public class ZabbixRemoteAPI {
 		if (databaseHelper.isCached(CacheDataType.GRAPH, screen.getId()))
 			return;
 
+		// import screens just to be sure (if screens have already been
+		// imported, this will do nothing
+		importScreens();
+		
 		JsonArrayOrObjectReader graphs;
 		try {
 
 			// collect all graphids
-			Set<Long> graphids = databaseHelper.getGraphIdsByScreen(screen);
+			Set<Long> graphIds = databaseHelper.getGraphIdsByScreen(screen);
 
+			databaseHelper.deleteGraphsByIds(graphIds);
 			// TODO: delete old graphs
 			// String str_graphids = graphids.toString().replace("[",
 			// "").replace("]",
@@ -1559,7 +1560,7 @@ public class ZabbixRemoteAPI {
 									: "select_graph_items", "extend")
 							.put(isVersion2 ? "selectItems" : "select_items",
 									"extend").put("output", "extend")
-							.put("graphids", new JSONArray(graphids)));
+							.put("graphids", new JSONArray(graphIds)));
 
 			JsonObjectReader graphReader;
 			ArrayList<Graph> graphsCollection = new ArrayList<Graph>(
