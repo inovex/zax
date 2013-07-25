@@ -16,7 +16,6 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.ChecksApplicationsPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
-import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.Host;
 import com.viewpagerindicator.TitlePageIndicator;
 

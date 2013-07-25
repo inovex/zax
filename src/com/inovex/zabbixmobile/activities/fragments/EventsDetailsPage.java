@@ -110,16 +110,17 @@ public class EventsDetailsPage extends BaseDetailsPage {
 						R.id.trigger_details_disabled))
 						.setText(t.getStatus() == Trigger.STATUS_ENABLED ? R.string.no
 								: R.string.yes);
-				
+
 				Item i = t.getItem();
-				if(i != null) {
+				if (i != null) {
 					cal.setTimeInMillis(i.getLastClock());
-					((TextView) getView().findViewById(
-							R.id.latest_data))
-							.setText(i.getLastValue() + " " + getResources().getString(R.string.at) + " " + dateFormatter.format(cal.getTime()));
+					((TextView) getView().findViewById(R.id.latest_data))
+							.setText(i.getLastValue() + i.getUnits() + " "
+									+ getResources().getString(R.string.at)
+									+ " " + dateFormatter.format(cal.getTime()));
 				}
 			}
-			
+
 			// TODO: update view on acknowledge
 
 		}

@@ -51,7 +51,8 @@
     <string name="all">all</string>
     <string name="events">Events</string>
     <string name="checks">Checks</string>
-    <string name="item_details">Details</string>
+    <string name="item_details">Item Details</string>
+    <string name="name">Name</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="problem">Problem</string>

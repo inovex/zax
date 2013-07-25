@@ -1,38 +1,52 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/items_details_base"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background"
-    android:orientation="vertical" >
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <LinearLayout
-        android:id="@+id/progress_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone" >
-
-        <ProgressBar
-            android:id="@+id/progress_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </ProgressBar>
-    </LinearLayout>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/items_view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="1"
-        android:padding="@dimen/default_content_padding" >
-    </android.support.v4.view.ViewPager>
-
-    <com.viewpagerindicator.TitlePageIndicator
-        android:id="@+id/items_page_indicator"
-        style="@style/ItemsDetailsTitlePageIndicator"
+        android:id="@+id/items_details_base"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="2dip" />
+        android:background="@color/background"
+        android:orientation="vertical"
+        android:padding="@dimen/default_content_padding" >
 
-</LinearLayout>
+        <LinearLayout
+            android:id="@+id/progress_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <ProgressBar
+                android:id="@+id/progress_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+            </ProgressBar>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/event_details_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/item_details"
+                android:textStyle="bold" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/item_details_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="3" >
+            </TextView>
+
+            <include layout="@layout/inc_latest_data" />
+
+            <include layout="@layout/inc_graph_view" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

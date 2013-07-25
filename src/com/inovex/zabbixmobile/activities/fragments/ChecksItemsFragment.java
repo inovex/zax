@@ -1,53 +1,34 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
-import android.app.Activity;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.adapters.ChecksItemsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
-import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
-import com.viewpagerindicator.TitlePageIndicator;
+import com.inovex.zabbixmobile.model.Item;
 
 /**
  * Fragment which displays event details using a ViewPager (adapter:
  * {@link EventsDetailsPagerAdapter}).
  * 
  */
-public class ChecksItemsFragment extends BaseServiceConnectedFragment {
+public class ChecksItemsFragment extends BaseDetailsPage {
 
-	public static final String TAG = ChecksItemsFragment.class
-			.getSimpleName();
+	public static final String TAG = ChecksItemsFragment.class.getSimpleName();
 
-	private int mPosition = 0;
-
-	protected ViewPager mDetailsPager;
-	protected TitlePageIndicator mDetailsPageIndicator;
-	protected ChecksItemsPagerAdapter mDetailsPagerAdapter;
-
-	private OnChecksItemSelectedListener mCallbackMain;
+	private Item mItem;
 
 	private boolean mLoadingSpinnerVisible = false;
-
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-
-		try {
-			mCallbackMain = (OnChecksItemSelectedListener) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString()
-					+ " must implement OnChecksItemSelectedListener.");
-		}
-	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,98 +45,38 @@ public class ChecksItemsFragment extends BaseServiceConnectedFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+
+		if (mLoadingSpinnerVisible)
+			showLoadingSpinner();
 	}
 
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		super.onServiceConnected(name, service);
-
-		setupDetailsViewPager();
-	}
-
-	public void selectItem(int position) {
-		this.mPosition = position;
-		// update view pager
-		mDetailsPageIndicator.setCurrentItem(position);
+		if (mItem != null)
+			mZabbixDataService.loadHistoryDetailsByItem(mItem, this);
 	}
 
 	/**
-	 * Performs the setup of the view pager used to swipe between details pages.
+	 * Sets the item for this page. This also triggers an import of history
+	 * details for displaying the graph.
+	 * 
+	 * @param item
 	 */
-	protected void setupDetailsViewPager() {
-		Log.d(TAG, "setupViewPager");
-
-		retrievePagerAdapter();
-		if (mDetailsPagerAdapter != null) {
-			mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
-
-			// initialize the view pager
-			mDetailsPager = (ViewPager) getView().findViewById(
-					R.id.items_view_pager);
-			mDetailsPager.setAdapter(mDetailsPagerAdapter);
-
-			// Initialize the page indicator
-			mDetailsPageIndicator = (TitlePageIndicator) getView()
-					.findViewById(R.id.items_page_indicator);
-			mDetailsPageIndicator.setViewPager(mDetailsPager);
-			mDetailsPageIndicator.setCurrentItem(mPosition);
-			mDetailsPageIndicator
-					.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-						@Override
-						public void onPageScrollStateChanged(int arg0) {
-							// TODO Auto-generated method stub
-
-						}
-
-						@Override
-						public void onPageScrolled(int arg0, float arg1,
-								int arg2) {
-							// TODO Auto-generated method stub
-
-						}
-
-						@Override
-						public void onPageSelected(int position) {
-							Log.d(TAG, "detail page selected: " + position);
-
-							mDetailsPagerAdapter.setCurrentPosition(position);
-							// mZabbixDataService
-							// .loadItemsByApplicationId(mDetailsPagerAdapter
-							// .getCurrentItem().getId());
-
-							// propagate page change only if there actually was
-							// a
-							// change -> prevent infinite propagation
-							// mDetailsPagerAdapter.setCurrentPosition(position);
-							if (position != mPosition)
-								mCallbackMain.onItemSelected(position);
-						}
-					});
+	public void setItem(Item item) {
+		this.mItem = item;
+		if (mZabbixDataService != null && item != null) {
+			fillDetailsText();
+			showGraphLoadingSpinner();
+			mZabbixDataService.loadHistoryDetailsByItem(mItem, this);
 		}
 	}
 
-	protected void retrievePagerAdapter() {
-		mDetailsPagerAdapter = mZabbixDataService.getChecksItemsPagerAdapter();
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		// This is a fix for the issue with the child fragment manager;
-		// described here:
-		// http://stackoverflow.com/questions/15207305/getting-the-error-java-lang-illegalstateexception-activity-has-been-destroyed
-		// and here: https://code.google.com/p/android/issues/detail?id=42601
-		// If the fragment manager is not set to null, there will be issues when
-		// the activity is destroyed and there are pending transactions
-		mDetailsPagerAdapter.setFragmentManager(null);
-	}
-	
 	/**
 	 * Shows a loading spinner instead of the item details.
 	 */
 	public void showLoadingSpinner() {
-		mLoadingSpinnerVisible  = true;
+		mLoadingSpinnerVisible = true;
 		if (getView() != null) {
 			LinearLayout progressLayout = (LinearLayout) getView()
 					.findViewById(R.id.progress_layout);
@@ -180,6 +101,31 @@ public class ChecksItemsFragment extends BaseServiceConnectedFragment {
 			}
 		}
 
+	}
+
+	protected void showGraph() {
+		showGraph(mItem);
+	}
+
+	@Override
+	protected void fillDetailsText() {
+		if (mItem != null) {
+			((TextView) getView().findViewById(R.id.item_details_name))
+					.setText(mItem.getDescription());
+
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(mItem.getLastClock());
+			java.text.DateFormat dateFormatter = SimpleDateFormat
+					.getDateTimeInstance(SimpleDateFormat.SHORT,
+							SimpleDateFormat.SHORT, Locale.getDefault());
+			((TextView) getView().findViewById(R.id.latest_data)).setText(mItem
+					.getLastValue()
+					+ mItem.getUnits()
+					+ " "
+					+ getResources().getString(R.string.at)
+					+ " "
+					+ dateFormatter.format(cal.getTime()));
+		}
 	}
 
 }

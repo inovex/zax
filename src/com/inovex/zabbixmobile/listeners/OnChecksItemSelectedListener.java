@@ -1,5 +1,7 @@
 package com.inovex.zabbixmobile.listeners;
 
+import com.inovex.zabbixmobile.model.Item;
+
 // Container Activity must implement this interface
 public interface OnChecksItemSelectedListener {
 
@@ -12,7 +14,7 @@ public interface OnChecksItemSelectedListener {
 	 *            event ID (Zabbix event_id)
 	 */
 	public void onHostSelected(int position, long id);
-	
+
 	public void onApplicationSelected(int position);
 
 	/**
@@ -20,7 +22,9 @@ public interface OnChecksItemSelectedListener {
 	 * 
 	 * @param position
 	 *            list position
+	 * @param item
+	 *            the selected item
 	 */
-	public void onItemSelected(int position);
+	public void onItemSelected(int position, Item item);
 
 }
