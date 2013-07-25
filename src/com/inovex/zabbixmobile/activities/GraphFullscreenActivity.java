@@ -64,7 +64,7 @@ public class GraphFullscreenActivity extends BaseActivity {
 		// load data by item
 		if (mItemId != -1) {
 			final Item item = mZabbixDataService.getItemById(mItemId);
-			mZabbixDataService.loadHistoryDetailsByItem(item, new OnHistoryDetailsLoadedListener() {
+			mZabbixDataService.loadHistoryDetailsByItem(item, false, new OnHistoryDetailsLoadedListener() {
 				@Override
 				public void onHistoryDetailsLoaded() {
 					Collection<HistoryDetail> historyDetails = item.getHistoryDetails();
