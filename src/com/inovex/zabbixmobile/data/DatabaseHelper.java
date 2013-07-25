@@ -57,7 +57,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final String TAG = DatabaseHelper.class.getSimpleName();
 	private DatabaseConnection mThreadConnection;
 
-	private Class<?>[] mTables = { Event.class, Trigger.class, Item.class,
+	private final Class<?>[] mTables = { Event.class, Trigger.class, Item.class,
 			Host.class, HostGroup.class, Application.class,
 			TriggerHostGroupRelation.class, HostHostGroupRelation.class,
 			ApplicationItemRelation.class, HistoryDetail.class, Screen.class,
@@ -1112,4 +1112,29 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
+	/**
+	 * Queries a item by its ID.
+	 * 
+	 * This method is synchronized on the {@link Dao} for {@link Item} to ensure
+	 * that item is actually present in the database (see
+	 * {@link ZabbixRemoteAPI#importItemsByHostId(Long)}).
+	 * 
+	 * @param itemId
+	 *            ID of the item
+	 * @return item with the given ID
+	 * @throws SQLException
+	 */
+	public Item getItemById(long itemId) throws SQLException {
+		Dao<Item, Long> itemDao = getDao(Item.class);
+		synchronized (itemDao) {
+			return itemDao.queryForId(itemId);
+		}
+	}
+
+	public Graph getGraphById(long graphId) throws SQLException {
+		Dao<Graph, Long> graphDao = getDao(Graph.class);
+		synchronized (graphDao) {
+			return graphDao.queryForId(graphId);
+		}
+	}
 }

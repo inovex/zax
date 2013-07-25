@@ -87,9 +87,11 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		bindService();
 		mActionBar = getSupportActionBar();
 
-		mActionBar.setHomeButtonEnabled(true);
-		mActionBar.setDisplayHomeAsUpEnabled(true);
-		mActionBar.setDisplayShowTitleEnabled(true);
+		if (mActionBar != null) {
+			mActionBar.setHomeButtonEnabled(true);
+			mActionBar.setDisplayHomeAsUpEnabled(true);
+			mActionBar.setDisplayShowTitleEnabled(true);
+		}
 
 		// (re-) instantiate progress dialog
 		mLoginProgress = (LoginProgressDialogFragment) getSupportFragmentManager()

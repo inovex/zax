@@ -21,6 +21,7 @@ import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListPage;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsListPage;
+import com.inovex.zabbixmobile.activities.fragments.ScreensListFragment;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.adapters.BaseServicePagerAdapter;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
@@ -297,6 +298,23 @@ public class ZabbixDataService extends Service {
 	public Host getHostById(long hostId) {
 		try {
 			return mDatabaseHelper.getHostById(hostId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Retrieves the item with the given ID from the database.
+	 * No remote api call
+	 * 
+	 * @param itemId
+	 * @return
+	 */
+	public Item getItemById(long itemId) {
+		try {
+			return mDatabaseHelper.getItemById(itemId);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1047,6 +1065,48 @@ public class ZabbixDataService extends Service {
 		bindings--;
 		Log.d(TAG, "onUnbind: " + bindings);
 		return super.onUnbind(intent);
+	}
+
+	public Graph getGraphById(long graphId) {
+		try {
+			return mDatabaseHelper.getGraphById(graphId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void loadGraph(final Graph graph,
+			final OnGraphsLoadedListener callback) {
+		new RemoteAPITask(mRemoteAPI) {
+
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				try {
+					for (GraphItem gi : graph.getGraphItems()) {
+						Item item = gi.getItem();
+						mRemoteAPI.importHistoryDetails(item.getId());
+						item.setHistoryDetails(mDatabaseHelper
+								.getHistoryDetailsByItemId(item.getId()));
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} finally {
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+
+				if (callback != null)
+					callback.onGraphsLoaded();
+			}
+
+		}.execute();
 	}
 
 }

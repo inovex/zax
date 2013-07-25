@@ -54,5 +54,7 @@
     <style name="ListFragmentWhiteBackground">
         <item name="android:background">@drawable/list_fragment_white_background</item>
     </style>
+    
+    <style name="GraphFullscreenTheme" parent="android:Theme.Holo" />
 
 </resources>

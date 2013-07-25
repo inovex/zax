@@ -56,6 +56,10 @@
             android:name="com.inovex.zabbixmobile.activities.ZaxPreferenceActivity"
             android:label="@string/activity_preferences" >
         </activity>
+        <activity
+            android:name=".activities.GraphFullscreenActivity"
+            android:theme="@style/GraphFullscreenTheme">
+        </activity>
 
         <service android:name="com.inovex.zabbixmobile.data.ZabbixDataService" >
         </service>
