@@ -3,6 +3,7 @@ package com.inovex.zabbixmobile.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -155,7 +156,8 @@ public class ZabbixRemoteAPI {
 		public static final int CACHE_LIFETIME_ITEMS = 4 * 60;
 		public static final int CACHE_LIFETIME_TRIGGERS = 2 * 60;
 		public static final long STATUS_SHOW_TRIGGER_TIME = 14 * 24 * 60 * 60;
-		public static final int HTTP_CONNECTION_TIMEOUT = 30000;
+		public static final int HTTP_CONNECTION_TIMEOUT = 10000;
+		public static final int HTTP_SOCKET_TIMEOUT = 30000;
 	}
 
 	private final HttpClientWrapper httpClient;
@@ -222,6 +224,17 @@ public class ZabbixRemoteAPI {
 			// ignore for unit test
 		}
 
+		// not for testing...
+		if (httpClientMock == null) {
+			HttpClientParams.setRedirecting(params, true); // redirecting
+			HttpConnectionParams.setConnectionTimeout(params,
+					ZabbixConfig.HTTP_CONNECTION_TIMEOUT);
+			HttpConnectionParams.setSoTimeout(params,
+					ZabbixConfig.HTTP_SOCKET_TIMEOUT);
+			// TODO: The timeouts do not work properly (neither in the emulator
+			// nor on a real device)
+		}
+
 		if (httpClientMock != null) {
 			httpClient = httpClientMock;
 		} else {
@@ -246,13 +259,6 @@ public class ZabbixRemoteAPI {
 			// for unit test
 		}
 
-		// not for testing...
-		if (httpClientMock == null) {
-			params = httpClient.getParams();
-			HttpClientParams.setRedirecting(params, true); // redirecting
-			HttpConnectionParams.setConnectionTimeout(params,
-					ZabbixConfig.HTTP_CONNECTION_TIMEOUT);
-		}
 		this.mContext = context;
 		this.databaseHelper = databaseHelper;
 	}
@@ -418,6 +424,11 @@ public class ZabbixRemoteAPI {
 			throw new FatalException(Type.CONNECTION_TIMEOUT, e);
 		} catch (UnknownHostException e) {
 			throw new FatalException(Type.SERVER_NOT_FOUND, e);
+		} catch (InterruptedIOException e) {
+			// this exception is thrown when the task querying data from Zabbix
+			// is cancelled. The interruption happens by design, so we can
+			// ignore this.
+			return null;
 		}
 	}
 

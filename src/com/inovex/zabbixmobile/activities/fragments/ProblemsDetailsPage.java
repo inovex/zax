@@ -76,6 +76,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 				cal.setTimeInMillis(i.getLastClock());
 				((TextView) getView().findViewById(R.id.latest_data)).setText(i
 						.getLastValue()
+						+ i.getUnits()
 						+ " "
 						+ getResources().getString(R.string.at)
 						+ " "
@@ -96,7 +97,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 			fillDetailsText();
 		}
 		if (!mHistoryDetailsImported && mTrigger.getItem() != null)
-			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(),
+			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(), false,
 					this);
 	}
 
@@ -110,7 +111,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 		this.mTrigger = trigger;
 		this.mTriggerId = trigger.getId();
 		if (!mHistoryDetailsImported && getView() != null)
-			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(),
+			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(), false,
 					this);
 	}
 

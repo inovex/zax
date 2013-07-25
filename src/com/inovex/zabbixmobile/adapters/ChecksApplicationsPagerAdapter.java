@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.ViewGroup;
 
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListPage;
-import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsPage;
+import com.inovex.zabbixmobile.activities.fragments.ChecksApplicationsPage;
 import com.inovex.zabbixmobile.model.Application;
 
 public class ChecksApplicationsPagerAdapter extends
@@ -31,7 +31,7 @@ public class ChecksApplicationsPagerAdapter extends
 
 	@Override
 	protected Fragment getPage(int position) {
-		ChecksDetailsPage p = new ChecksDetailsPage();
+		ChecksApplicationsPage p = new ChecksApplicationsPage();
 		p.setApplication(getItem(position));
 //		if(!mLoadingSpinnerVisible )
 //			p.dismissLoadingSpinner();

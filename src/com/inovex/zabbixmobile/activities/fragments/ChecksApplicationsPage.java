@@ -1,30 +1,25 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
-import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.model.Application;
 
-public class ChecksDetailsPage extends BaseServiceConnectedListFragment
-		 {
+public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 
 	private Application mApplication;
 	private String mTitle = "";
 
-	public static String TAG = ChecksDetailsPage.class.getSimpleName();
+	public static String TAG = ChecksApplicationsPage.class.getSimpleName();
 
 	private static final String ARG_POSITION = "arg_position";
 
@@ -89,15 +84,15 @@ public class ChecksDetailsPage extends BaseServiceConnectedListFragment
 	public void setCurrentItemId(long currentItemId) {
 		this.mCurrentItemId = currentItemId;
 	}
-	
+
 	public void selectItem(int position) {
 		setCurrentPosition(position);
-		if(getView() != null) {
+		if (getView() != null) {
 			getListView().setItemChecked(position, true);
 			getListView().setSelection(position);
 		}
 		ListAdapter adapter = getListAdapter();
-		if(adapter != null && adapter.getCount() > position) {
+		if (adapter != null && adapter.getCount() > position) {
 			long id = adapter.getItemId(position);
 			setCurrentItemId(id);
 		}
@@ -110,7 +105,8 @@ public class ChecksDetailsPage extends BaseServiceConnectedListFragment
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		mCallbackMain.onItemSelected(position);
+		mCallbackMain.onItemSelected(position, mZabbixDataService
+				.getChecksItemsListAdapter().getItem(position));
 	}
 
 	public void setApplication(Application app) {

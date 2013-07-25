@@ -12,7 +12,7 @@ import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
-		OnAcknowledgeEventListener{
+		OnAcknowledgeEventListener {
 
 	private static final String TAG = EventsActivity.class.getSimpleName();
 
@@ -33,11 +33,18 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 			Log.d(TAG, mFlipper.toString());
 		Log.d(TAG, mListFragment.toString());
 		Log.d(TAG, mDetailsFragment.toString());
-		
-		if(mFlipper != null)
+
+		if (mFlipper != null)
 			mDetailsFragment.setHasOptionsMenu(false);
-//			((EventsDetailsFragment)mDetailsFragment).setAcknowledgeButtonEnabled(false);
-		
+		// ((EventsDetailsFragment)mDetailsFragment).setAcknowledgeButtonEnabled(false);
+
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mZabbixDataService.cancelLoadEventsTasks();
+		mZabbixDataService.cancelLoadHistoryDetailsTasks();
 	}
 
 	@Override
@@ -45,7 +52,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		Log.d(TAG, "acknowledgeEvent(" + event + ", " + comment + ")");
 		mZabbixDataService.acknowledgeEvent(event, comment, this);
 	}
-	
+
 	@Override
 	public void onEventAcknowledged() {
 		// select refreshes the action bar menu
@@ -70,7 +77,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	protected void showListFragment() {
 		super.showListFragment();
 		// details fragment becomes invisible -> disable menu
-		if(mFlipper != null) // portrait
+		if (mFlipper != null) // portrait
 			mDetailsFragment.setHasOptionsMenu(false);
 	}
 
@@ -82,12 +89,12 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 					mHostGroupId, hostGroupChanged, this);
 		}
 	}
-	
+
 	@Override
 	public void onSeverityListAdapterLoaded(TriggerSeverity severity,
 			boolean hostGroupChanged) {
 		super.onSeverityListAdapterLoaded(severity, hostGroupChanged);
-		
+
 		if (severity == mSeverity) {
 			selectInitialItem(hostGroupChanged);
 		}

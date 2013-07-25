@@ -3,12 +3,16 @@ package com.inovex.zabbixmobile.data;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -27,7 +31,6 @@ import com.inovex.zabbixmobile.adapters.BaseServicePagerAdapter;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ChecksApplicationsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ChecksItemsListAdapter;
-import com.inovex.zabbixmobile.adapters.ChecksItemsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.EventsListAdapter;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
@@ -41,6 +44,7 @@ import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
 import com.inovex.zabbixmobile.listeners.OnApplicationsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnHistoryDetailsLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnHostsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnListItemsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
@@ -94,17 +98,23 @@ public class ZabbixDataService extends Service {
 	private HostsListAdapter mHostsListAdapter;
 	private ChecksApplicationsPagerAdapter mChecksApplicationsPagerAdapter;
 	private ChecksItemsListAdapter mChecksItemsListAdapter;
-	private ChecksItemsPagerAdapter mChecksItemsPagerAdapter;
 
 	// Screens
 	private ScreensListAdapter mScreensListAdapter;
+
+	private Set<RemoteAPITask> mCurrentLoadHistoryDetailsTasks;
+	private Map<TriggerSeverity, RemoteAPITask> mCurrentLoadEventsTasks;
+	private Map<TriggerSeverity, RemoteAPITask> mCurrentLoadProblemsTasks;
+	private RemoteAPITask mCurrentLoadApplicationsTask;
+	private RemoteAPITask mCurrentLoadItemsTask;
+	private RemoteAPITask mCurrentLoadGraphsTask;
 
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
 	private ZabbixRemoteAPI mRemoteAPI;
 
 	protected boolean mLoggedIn = false;
-	private int bindings = 0;
+	private int mBindings = 0;
 
 	/**
 	 * Class used for the client Binder. Because we know this service always
@@ -125,16 +135,16 @@ public class ZabbixDataService extends Service {
 	 * Clears all data in the database and in the adapters.
 	 */
 	public void clearAllData() {
-		
+
 		try {
 			mDatabaseHelper.clearAllData();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		// clear adapters
-		
+
 		ArrayList<BaseServiceAdapter<?>> listAdapters = new ArrayList<BaseServiceAdapter<?>>();
 		listAdapters.add(mHostGroupsSpinnerAdapter);
 		listAdapters.addAll(mEventsListAdapters.values());
@@ -143,24 +153,22 @@ public class ZabbixDataService extends Service {
 		listAdapters.add(mHostsListAdapter);
 		listAdapters.add(mChecksItemsListAdapter);
 		listAdapters.add(mScreensListAdapter);
-		
-		for(BaseServiceAdapter<?> adapter : listAdapters) {
+
+		for (BaseServiceAdapter<?> adapter : listAdapters) {
 			adapter.clear();
 			adapter.notifyDataSetChanged();
 		}
-		
+
 		ArrayList<BaseServicePagerAdapter<?>> pagerAdapters = new ArrayList<BaseServicePagerAdapter<?>>();
 		pagerAdapters.addAll(mEventsDetailsPagerAdapters.values());
 		pagerAdapters.addAll(mProblemsDetailsPagerAdapters.values());
 		pagerAdapters.add(mChecksApplicationsPagerAdapter);
-		pagerAdapters.add(mChecksItemsPagerAdapter);
-		
-		for(BaseServicePagerAdapter<?> adapter : pagerAdapters) {
+
+		for (BaseServicePagerAdapter<?> adapter : pagerAdapters) {
 			adapter.clear();
 			adapter.notifyDataSetChanged();
 		}
-		
-		
+
 	}
 
 	/**
@@ -281,15 +289,6 @@ public class ZabbixDataService extends Service {
 	}
 
 	/**
-	 * Returns the application items pager adapter.
-	 * 
-	 * @return
-	 */
-	public ChecksItemsPagerAdapter getChecksItemsPagerAdapter() {
-		return mChecksItemsPagerAdapter;
-	}
-
-	/**
 	 * Retrieves the host with the given ID from the database.
 	 * 
 	 * @param hostId
@@ -356,8 +355,8 @@ public class ZabbixDataService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		bindings++;
-		Log.d(TAG, "onBind: " + bindings);
+		mBindings++;
+		Log.d(TAG, "onBind: " + mBindings);
 		Log.d(TAG,
 				"Binder " + this.toString() + ": intent " + intent.toString()
 						+ " bound.");
@@ -468,9 +467,12 @@ public class ZabbixDataService extends Service {
 		mHostsListAdapter = new HostsListAdapter(this);
 		mChecksApplicationsPagerAdapter = new ChecksApplicationsPagerAdapter();
 		mChecksItemsListAdapter = new ChecksItemsListAdapter(this);
-		mChecksItemsPagerAdapter = new ChecksItemsPagerAdapter();
 
 		mScreensListAdapter = new ScreensListAdapter(this);
+
+		mCurrentLoadHistoryDetailsTasks = new HashSet<RemoteAPITask>();
+		mCurrentLoadEventsTasks = new HashMap<TriggerSeverity, RemoteAPITask>();
+		mCurrentLoadProblemsTasks = new HashMap<TriggerSeverity, RemoteAPITask>();
 
 	}
 
@@ -495,7 +497,9 @@ public class ZabbixDataService extends Service {
 			final boolean hostGroupChanged,
 			final OnSeverityListAdapterLoadedListener callback) {
 
-		new RemoteAPITask(mRemoteAPI) {
+		cancelTask(mCurrentLoadEventsTasks.get(severity));
+
+		RemoteAPITask currentLoadEventsTask = new RemoteAPITask(mRemoteAPI) {
 
 			private List<Event> events;
 			private final BaseServiceAdapter<Event> listAdapter = mEventsListAdapters
@@ -545,7 +549,11 @@ public class ZabbixDataService extends Service {
 							hostGroupChanged);
 			}
 
-		}.execute();
+		};
+
+		mCurrentLoadEventsTasks.put(severity, currentLoadEventsTask);
+
+		currentLoadEventsTask.execute();
 
 	}
 
@@ -570,7 +578,8 @@ public class ZabbixDataService extends Service {
 			final boolean hostGroupChanged,
 			final OnSeverityListAdapterLoadedListener callback) {
 
-		new RemoteAPITask(mRemoteAPI) {
+		cancelTask(mCurrentLoadProblemsTasks.get(severity));
+		RemoteAPITask currentLoadProblemsTask = new RemoteAPITask(mRemoteAPI) {
 
 			private List<Trigger> triggers;
 			private final BaseServiceAdapter<Trigger> adapter = mProblemsListAdapters
@@ -626,7 +635,11 @@ public class ZabbixDataService extends Service {
 							hostGroupChanged);
 			}
 
-		}.execute();
+		};
+
+		mCurrentLoadProblemsTasks.put(severity, currentLoadProblemsTask);
+
+		currentLoadProblemsTask.execute();
 
 	}
 
@@ -690,8 +703,7 @@ public class ZabbixDataService extends Service {
 	 *            listener to be called when the adapter has been updated
 	 */
 	public void loadHostsByHostGroup(final long hostGroupId,
-			final boolean hostGroupChanged,
-			final OnListItemsLoadedListener callback) {
+			final boolean hostGroupChanged, final OnHostsLoadedListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
 			private List<Host> hosts;
@@ -726,7 +738,7 @@ public class ZabbixDataService extends Service {
 					hostsAdapter.notifyDataSetChanged();
 				}
 				if (callback != null)
-					callback.onListItemsLoaded();
+					callback.onHostsLoaded();
 				Log.d(TAG, "Hosts imported.");
 
 			}
@@ -746,7 +758,9 @@ public class ZabbixDataService extends Service {
 	 */
 	public void loadApplicationsByHostId(final long hostId,
 			final OnApplicationsLoadedListener callback) {
-		new RemoteAPITask(mRemoteAPI) {
+
+		cancelTask(mCurrentLoadApplicationsTask);
+		mCurrentLoadApplicationsTask = new RemoteAPITask(mRemoteAPI) {
 
 			List<Host> hosts;
 			List<Application> applications;
@@ -755,8 +769,6 @@ public class ZabbixDataService extends Service {
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
 				try {
-					List<Long> hostIds = new ArrayList<Long>();
-					hostIds.add(hostId);
 					// We only import applications with corresponding hosts
 					// (this way templates are ignored)
 					mRemoteAPI.importApplicationsByHostId(hostId);
@@ -788,7 +800,9 @@ public class ZabbixDataService extends Service {
 
 			}
 
-		}.execute();
+		};
+
+		mCurrentLoadApplicationsTask.execute();
 	}
 
 	/**
@@ -807,7 +821,8 @@ public class ZabbixDataService extends Service {
 	 */
 	public void loadItemsByApplicationId(final long applicationId,
 			final OnItemsLoadedListener callback) {
-		new RemoteAPITask(mRemoteAPI) {
+		cancelTask(mCurrentLoadItemsTask);
+		mCurrentLoadItemsTask = new RemoteAPITask(mRemoteAPI) {
 
 			List<Item> items;
 
@@ -820,10 +835,6 @@ public class ZabbixDataService extends Service {
 					mChecksItemsListAdapter.notifyDataSetChanged();
 				}
 
-				if (mChecksItemsPagerAdapter != null) {
-					mChecksItemsPagerAdapter.clear();
-					mChecksItemsPagerAdapter.notifyDataSetChanged();
-				}
 			}
 
 			@Override
@@ -848,18 +859,14 @@ public class ZabbixDataService extends Service {
 					mChecksItemsListAdapter.addAll(items);
 					mChecksItemsListAdapter.notifyDataSetChanged();
 				}
-				if (mChecksItemsPagerAdapter != null) {
-					mChecksItemsPagerAdapter.clear();
-					mChecksItemsPagerAdapter.addAll(items);
-					mChecksItemsPagerAdapter.notifyDataSetChanged();
-				}
 
 				if (callback != null)
 					callback.onItemsLoaded();
 
 			}
 
-		}.execute();
+		};
+		mCurrentLoadItemsTask.execute();
 	}
 
 	/**
@@ -869,8 +876,14 @@ public class ZabbixDataService extends Service {
 	 * @param item
 	 */
 	public void loadHistoryDetailsByItem(final Item item,
+			boolean cancelPreviousTasks,
 			final OnHistoryDetailsLoadedListener callback) {
-		new RemoteAPITask(mRemoteAPI) {
+		Log.d(TAG, "Loading history for item " + item.toString());
+		if (cancelPreviousTasks) {
+			cancelLoadHistoryDetailsTasks();
+		}
+
+		RemoteAPITask currentTask = new RemoteAPITask(mRemoteAPI) {
 
 			List<HistoryDetail> historyDetails;
 
@@ -901,7 +914,11 @@ public class ZabbixDataService extends Service {
 					callback.onHistoryDetailsLoaded();
 			}
 
-		}.execute();
+		};
+
+		mCurrentLoadHistoryDetailsTasks.add(currentTask);
+
+		currentTask.execute();
 	}
 
 	/**
@@ -956,7 +973,8 @@ public class ZabbixDataService extends Service {
 	 */
 	public void loadGraphsByScreen(final Screen screen,
 			final OnGraphsLoadedListener callback) {
-		new RemoteAPITask(mRemoteAPI) {
+		cancelTask(mCurrentLoadGraphsTask);
+		mCurrentLoadGraphsTask = new RemoteAPITask(mRemoteAPI) {
 
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
@@ -987,7 +1005,65 @@ public class ZabbixDataService extends Service {
 					callback.onGraphsLoaded();
 			}
 
-		}.execute();
+		};
+		mCurrentLoadGraphsTask.execute();
+	}
+	
+	private void cancelTask(RemoteAPITask task) {
+		if (task != null && task.getStatus() != AsyncTask.Status.FINISHED) {
+			if (task.cancel(true))
+				Log.d(TAG, "Cancelled task: " + task);
+			else
+				Log.d(TAG, "Task was already done: " + task);
+		}
+	}
+	
+	/**
+	 * Cancels all tasks currently loading events. 
+	 */
+	public void cancelLoadEventsTasks() {
+		for(TriggerSeverity severity : TriggerSeverity.values())
+			cancelTask(mCurrentLoadEventsTasks.get(severity));
+		mCurrentLoadEventsTasks.clear();
+	}
+	
+	/**
+	 * Cancels all tasks currently loading problems. 
+	 */
+	public void cancelLoadProblemsTasks() {
+		for(TriggerSeverity severity : TriggerSeverity.values())
+			cancelTask(mCurrentLoadProblemsTasks.get(severity));
+		mCurrentLoadProblemsTasks.clear();
+	}
+	
+	/**
+	 * Cancels all tasks currently loading problems. 
+	 */
+	public void cancelLoadHistoryDetailsTasks() {
+		for(RemoteAPITask task : mCurrentLoadHistoryDetailsTasks)
+			cancelTask(task);
+		mCurrentLoadHistoryDetailsTasks.clear();
+	}
+	
+	/**
+	 * Cancels the task currently loading applications. 
+	 */
+	public void cancelLoadApplicationsTask() {
+		cancelTask(mCurrentLoadApplicationsTask);
+	}
+	
+	/**
+	 * Cancels the task currently loading items. 
+	 */
+	public void cancelLoadItemsTask() {
+		cancelTask(mCurrentLoadItemsTask);
+	}
+	
+	/**
+	 * Cancels the task currently loading graphs. 
+	 */
+	public void cancelLoadGraphsTask() {
+		cancelTask(mCurrentLoadGraphsTask);
 	}
 
 	/**
@@ -1062,8 +1138,8 @@ public class ZabbixDataService extends Service {
 
 	@Override
 	public boolean onUnbind(Intent intent) {
-		bindings--;
-		Log.d(TAG, "onUnbind: " + bindings);
+		mBindings--;
+		Log.d(TAG, "onUnbind: " + mBindings);
 		return super.onUnbind(intent);
 	}
 
