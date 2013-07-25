@@ -55,6 +55,13 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			}
 		}
 	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mZabbixDataService.cancelLoadProblemsTasks();
+		mZabbixDataService.cancelLoadHistoryDetailsTasks();
+	}
 
 	@Override
 	public void selectHostGroupInSpinner(int position, long itemId) {

@@ -59,6 +59,13 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 				.findFragmentById(R.id.checks_items_details);
 		showHostListFragment();
 	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mZabbixDataService.cancelLoadApplicationsTask();
+		mZabbixDataService.cancelLoadItemsTask();
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

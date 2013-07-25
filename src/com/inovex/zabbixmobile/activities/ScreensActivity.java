@@ -54,6 +54,12 @@ public class ScreensActivity extends BaseActivity implements
 		super.onServiceConnected(className, binder);
 		loadData();
 	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mZabbixDataService.cancelLoadGraphsTask();
+	}
 
 	@Override
 	public void onScreenSelected(Screen screen) {

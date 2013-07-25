@@ -54,7 +54,7 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		super.onServiceConnected(name, service);
 		if (mItem != null)
-			mZabbixDataService.loadHistoryDetailsByItem(mItem, this);
+			mZabbixDataService.loadHistoryDetailsByItem(mItem, true, this);
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 		if (mZabbixDataService != null && item != null) {
 			fillDetailsText();
 			showGraphLoadingSpinner();
-			mZabbixDataService.loadHistoryDetailsByItem(mItem, this);
+			mZabbixDataService.loadHistoryDetailsByItem(mItem, true, this);
 		}
 	}
 

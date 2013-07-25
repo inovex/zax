@@ -97,7 +97,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 			fillDetailsText();
 		}
 		if (!mHistoryDetailsImported && mTrigger.getItem() != null)
-			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(),
+			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(), false,
 					this);
 	}
 
@@ -111,7 +111,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 		this.mTrigger = trigger;
 		this.mTriggerId = trigger.getId();
 		if (!mHistoryDetailsImported && getView() != null)
-			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(),
+			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(), false,
 					this);
 	}
 
