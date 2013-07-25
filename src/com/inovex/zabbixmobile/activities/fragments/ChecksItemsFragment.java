@@ -22,9 +22,9 @@ import com.viewpagerindicator.TitlePageIndicator;
  * {@link EventsDetailsPagerAdapter}).
  * 
  */
-public class ChecksItemsDetailsFragment extends BaseServiceConnectedFragment {
+public class ChecksItemsFragment extends BaseServiceConnectedFragment {
 
-	public static final String TAG = ChecksItemsDetailsFragment.class
+	public static final String TAG = ChecksItemsFragment.class
 			.getSimpleName();
 
 	private int mPosition = 0;

@@ -18,12 +18,12 @@
         android:id="@+id/checks_details"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="com.inovex.zabbixmobile.activities.fragments.ChecksDetailsFragment" />
+        class="com.inovex.zabbixmobile.activities.fragments.ChecksApplicationsFragment" />
     
     <fragment
         android:id="@+id/checks_items_details"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="com.inovex.zabbixmobile.activities.fragments.ChecksItemsDetailsFragment" />
+        class="com.inovex.zabbixmobile.activities.fragments.ChecksItemsFragment" />
 
 </ViewFlipper>

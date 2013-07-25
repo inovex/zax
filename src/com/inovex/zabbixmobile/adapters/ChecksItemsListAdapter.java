@@ -10,12 +10,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsPage;
+import com.inovex.zabbixmobile.activities.fragments.ChecksApplicationsPage;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.Item;
 
 /**
- * Adapter for the list of items used by {@link ChecksDetailsPage}.
+ * Adapter for the list of items used by {@link ChecksApplicationsPage}.
  * 
  */
 public class ChecksItemsListAdapter extends BaseServiceAdapter<Item> {

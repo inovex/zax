@@ -18,13 +18,13 @@ import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.model.Application;
 
-public class ChecksDetailsPage extends BaseServiceConnectedListFragment
+public class ChecksApplicationsPage extends BaseServiceConnectedListFragment
 		 {
 
 	private Application mApplication;
 	private String mTitle = "";
 
-	public static String TAG = ChecksDetailsPage.class.getSimpleName();
+	public static String TAG = ChecksApplicationsPage.class.getSimpleName();
 
 	private static final String ARG_POSITION = "arg_position";
 

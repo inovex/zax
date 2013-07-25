@@ -20,10 +20,10 @@ import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.Host;
 import com.viewpagerindicator.TitlePageIndicator;
 
-public class ChecksDetailsFragment extends BaseServiceConnectedFragment
+public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		implements OnItemsLoadedListener {
 
-	public static final String TAG = ChecksDetailsFragment.class
+	public static final String TAG = ChecksApplicationsFragment.class
 			.getSimpleName();
 
 	private int mHostPosition = 0;
@@ -178,7 +178,7 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 							mZabbixDataService.loadItemsByApplicationId(
 									mDetailsPagerAdapter.getCurrentItem()
 											.getId(),
-									ChecksDetailsFragment.this);
+									ChecksApplicationsFragment.this);
 
 							// propagate page change only if there actually was
 							// a
@@ -282,12 +282,10 @@ public class ChecksDetailsFragment extends BaseServiceConnectedFragment
 		if (mDetailsPagerAdapter == null
 				|| mDetailsPagerAdapter.getCount() == 0)
 			return;
-		if (position > mDetailsPagerAdapter.getCount() - 1)
-			position = 0;
-		ChecksDetailsPage f = (ChecksDetailsPage) mDetailsPagerAdapter
+		ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mDetailsPagerAdapter
 				.instantiateItem(mDetailsPager, mDetailsPager.getCurrentItem());
 		Log.d(TAG, "selectItem(" + position + ")");
-		f.selectItem(position);
+		currentPage.selectItem(position);
 	}
 
 }

@@ -25,7 +25,7 @@ import com.inovex.zabbixmobile.model.Item;
  * {@link EventsDetailsPagerAdapter} ). Shows the details of a specific event.
  * 
  */
-public class ChecksItemsDetailsPage extends BaseDetailsPage {
+public class ChecksItemsPage extends BaseDetailsPage {
 
 	private Item mItem;
 	private String mTitle = "";
@@ -52,22 +52,17 @@ public class ChecksItemsDetailsPage extends BaseDetailsPage {
 	protected void fillDetailsText() {
 		StringBuilder sb = new StringBuilder();
 		if (mItem != null) {
-			sb.append("Item: \n\n");
-			sb.append("ID: " + mItem.getId() + "\n");
-			sb.append("description: " + mItem.getDescription() + "\n");
-			sb.append("last value: " + mItem.getLastValue() + mItem.getUnits()
-					+ "\n");
 			Calendar cal = Calendar.getInstance();
 			cal.setTimeInMillis(mItem.getLastClock());
 			java.text.DateFormat dateFormatter = SimpleDateFormat
 					.getDateTimeInstance(SimpleDateFormat.SHORT,
 							SimpleDateFormat.SHORT, Locale.getDefault());
-			sb.append("last clock: "
-					+ String.valueOf(dateFormatter.format(cal.getTime()))
-					+ "\n");
-			TextView text = (TextView) getView()
-					.findViewById(R.id.item_details);
-			text.setText(sb.toString());
+			((TextView) getView().findViewById(R.id.latest_data)).setText(mItem
+					.getLastValue()
+					+ " "
+					+ getResources().getString(R.string.at)
+					+ " "
+					+ dateFormatter.format(cal.getTime()));
 		}
 	}
 

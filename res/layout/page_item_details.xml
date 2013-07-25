@@ -6,9 +6,14 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/item_details"
+            android:id="@+id/event_details_title"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="@string/item_details"
+            android:textStyle="bold" >
+        </TextView>
+
+        <include layout="@layout/inc_latest_data" />
 
         <include layout="@layout/inc_graph_view" />
     </LinearLayout>

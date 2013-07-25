@@ -11,8 +11,8 @@ import android.widget.ViewFlipper;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.activities.fragments.ChecksDetailsFragment;
-import com.inovex.zabbixmobile.activities.fragments.ChecksItemsDetailsFragment;
+import com.inovex.zabbixmobile.activities.fragments.ChecksApplicationsFragment;
+import com.inovex.zabbixmobile.activities.fragments.ChecksItemsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
 import com.inovex.zabbixmobile.listeners.OnApplicationsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
@@ -32,8 +32,8 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	protected FragmentManager mFragmentManager;
 	protected ViewFlipper mFlipper;
 	protected ChecksListFragment mHostListFragment;
-	protected ChecksDetailsFragment mApplicationsFragment;
-	protected ChecksItemsDetailsFragment mItemDetailsFragment;
+	protected ChecksApplicationsFragment mApplicationsFragment;
+	protected ChecksItemsFragment mItemDetailsFragment;
 
 	protected int mCurrentHostPosition;
 	private long mCurrentHostId;
@@ -52,9 +52,9 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		mFlipper = (ViewFlipper) findViewById(R.id.checks_flipper);
 		mHostListFragment = (ChecksListFragment) mFragmentManager
 				.findFragmentById(R.id.checks_list);
-		mApplicationsFragment = (ChecksDetailsFragment) mFragmentManager
+		mApplicationsFragment = (ChecksApplicationsFragment) mFragmentManager
 				.findFragmentById(R.id.checks_details);
-		mItemDetailsFragment = (ChecksItemsDetailsFragment) mFragmentManager
+		mItemDetailsFragment = (ChecksItemsFragment) mFragmentManager
 				.findFragmentById(R.id.checks_items_details);
 		showHostListFragment();
 	}
