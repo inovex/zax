@@ -44,14 +44,12 @@ public class GraphUtil {
 			}
 		};
 		
-		if (!isFullscreen) {
-			GraphViewStyle style = new GraphViewStyle();
-			style.setHorizontalLabelsColor(context.getResources()
-					.getColor(android.R.color.black));
-			style.setVerticalLabelsColor(context.getResources()
-					.getColor(android.R.color.black));
-			graphView.setGraphViewStyle(style);
-		}
+		GraphViewStyle style = new GraphViewStyle();
+		style.setHorizontalLabelsColor(context.getResources()
+				.getColor(android.R.color.black));
+		style.setVerticalLabelsColor(context.getResources()
+				.getColor(android.R.color.black));
+		graphView.setGraphViewStyle(style);
 		
 		/*
 		 * click to open graph in fullscreen
@@ -145,7 +143,7 @@ public class GraphUtil {
 	public static LineGraphView createItemGraphFullscreen(Context context,
 			Collection<HistoryDetail> historyDetails, String title) {
 		LineGraphView graph = createGraph(context, title, true, null);
-		graph.setDrawBackground(true);
+		//graph.setDrawBackground(true);
 		
 		int numEntries = historyDetails.size();
 		long lowestclock = 0;

@@ -60,7 +60,6 @@ public class GraphFullscreenActivity extends BaseActivity {
 		final LoadingDialogFragment loadingDlg = new LoadingDialogFragment();
 		loadingDlg.show(fm, LoadingDialogFragment.TAG);
 		
-
 		// load data by item
 		if (mItemId != -1) {
 			final Item item = mZabbixDataService.getItemById(mItemId);
