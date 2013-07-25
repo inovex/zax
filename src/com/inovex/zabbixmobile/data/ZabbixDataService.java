@@ -305,6 +305,23 @@ public class ZabbixDataService extends Service {
 	}
 
 	/**
+	 * Retrieves the item with the given ID from the database.
+	 * No remote api call
+	 * 
+	 * @param itemId
+	 * @return
+	 */
+	public Item getItemById(long itemId) {
+		try {
+			return mDatabaseHelper.getItemById(itemId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
 	 * Retrieves the event with the given ID from the database.
 	 * 
 	 * @param eventId
@@ -1140,6 +1157,48 @@ public class ZabbixDataService extends Service {
 		mBindings--;
 		Log.d(TAG, "onUnbind: " + mBindings);
 		return super.onUnbind(intent);
+	}
+
+	public Graph getGraphById(long graphId) {
+		try {
+			return mDatabaseHelper.getGraphById(graphId);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void loadGraph(final Graph graph,
+			final OnGraphsLoadedListener callback) {
+		new RemoteAPITask(mRemoteAPI) {
+
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				try {
+					for (GraphItem gi : graph.getGraphItems()) {
+						Item item = gi.getItem();
+						mRemoteAPI.importHistoryDetails(item.getId());
+						item.setHistoryDetails(mDatabaseHelper
+								.getHistoryDetailsByItemId(item.getId()));
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} finally {
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+
+				if (callback != null)
+					callback.onGraphsLoaded();
+			}
+
+		}.execute();
 	}
 
 }

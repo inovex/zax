@@ -60,7 +60,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 
 	protected abstract void fillDetailsText();
 
-	protected void showGraph(Item item) {
+	protected void showGraph(final Item item) {
 		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
 		dismissGraphLoadingSpinner();
 		if (item != null) {
@@ -68,9 +68,9 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 			// create graph and add it to the layout
 			int numEntries = historyDetails.size();
 			if (numEntries > 0) {
-				LineGraphView graph = GraphUtil.createItemGraph(
+				final LineGraphView graph = GraphUtil.createItemGraphPreview(
 						getSherlockActivity(), historyDetails,
-						item.getDescription());
+						item);
 				layout.removeAllViews();
 				layout.addView(graph);
 			} else {

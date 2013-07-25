@@ -1,10 +1,6 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
-import java.util.Collection;
-import java.util.Date;
-
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,15 +12,8 @@ import android.widget.TextView;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
 import com.inovex.zabbixmobile.model.Graph;
-import com.inovex.zabbixmobile.model.GraphItem;
-import com.inovex.zabbixmobile.model.HistoryDetail;
-import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.model.Screen;
-import com.jjoe64.graphview.GraphView.GraphViewData;
-import com.jjoe64.graphview.GraphView.LegendAlign;
-import com.jjoe64.graphview.GraphViewSeries;
-import com.jjoe64.graphview.GraphViewSeries.GraphViewSeriesStyle;
-import com.jjoe64.graphview.GraphViewStyle;
+import com.inovex.zabbixmobile.util.GraphUtil;
 import com.jjoe64.graphview.LineGraphView;
 
 public class ScreensDetailsFragment extends BaseServiceConnectedFragment
@@ -85,72 +74,8 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 	 */
 	private boolean showGraph(Graph graph) {
 		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
-		if (graph == null)
-			return false;
-		Collection<HistoryDetail> historyDetails = null;
-		Item item = null;
-
-		final java.text.DateFormat dateTimeFormatter = DateFormat
-				.getTimeFormat(getSherlockActivity());
-		LineGraphView graphView = new LineGraphView(getSherlockActivity(),
-				graph.getName()) {
-			@Override
-			protected String formatLabel(double value, boolean isValueX) {
-				if (isValueX) {
-					// transform number to time
-					return dateTimeFormatter.format(new Date(
-							(long) value * 1000));
-				} else
-					return super.formatLabel(value, isValueX);
-			}
-		};
-		graphView.setShowLegend(true);
-		graphView.setLegendAlign(LegendAlign.TOP);
-		graphView.setLegendWidth(250);
-
-		GraphViewSeries series;
-		long highestclock = Long.MIN_VALUE;
-		long lowestclock = Long.MAX_VALUE;
-		boolean emptyGraph = true;
-		;
-		for (GraphItem gi : graph.getGraphItems()) {
-			item = gi.getItem();
-			historyDetails = item.getHistoryDetails();
-			if (historyDetails != null && historyDetails.size() > 0) {
-				emptyGraph = false;
-				GraphViewData[] values = new GraphViewData[historyDetails
-						.size()];
-				int i = 0;
-				for (HistoryDetail detail : historyDetails) {
-					long clock = detail.getClock() / 1000;
-					double value = detail.getValue();
-					values[i] = new GraphViewData(clock, value);
-					highestclock = Math.max(highestclock, clock);
-					lowestclock = Math.min(lowestclock, clock);
-					i++;
-				}
-
-				series = new GraphViewSeries(item.getDescription(),
-						new GraphViewSeriesStyle(gi.getColor(), 3), values);
-				// series = new GraphViewSeries(values);
-				graphView.addSeries(series);
-			}
-		}
-
-		if (!emptyGraph) {
-
-			// create graph and add it to the layout
-			long size = (highestclock - lowestclock) * 2 / 3; // we show 2/3
-			graphView.setViewPort(highestclock - size, size);
-			graphView.setScalable(true);
-
-			GraphViewStyle style = new GraphViewStyle();
-			style.setHorizontalLabelsColor(getSherlockActivity().getResources()
-					.getColor(android.R.color.black));
-			style.setVerticalLabelsColor(getSherlockActivity().getResources()
-					.getColor(android.R.color.black));
-			graphView.setGraphViewStyle(style);
-
+		if (graph != null) {
+			LineGraphView graphView = GraphUtil.createScreenGraphPreview(getActivity(), graph);
 			LinearLayout graphLayout = new LinearLayout(getSherlockActivity());
 			graphLayout.addView(graphView);
 
