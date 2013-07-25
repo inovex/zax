@@ -17,7 +17,7 @@ import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
  * be displayed by the UI.
  * 
  */
-public abstract class RemoteAPITask extends AsyncTask<Void, Void, Void> {
+public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 
 	private static final String TAG = RemoteAPITask.class.getSimpleName();
 	private final ZabbixRemoteAPI api;
@@ -88,5 +88,9 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Void, Void> {
 	 */
 	protected abstract void executeTask() throws ZabbixLoginRequiredException,
 			FatalException;
-
+	
+	public void updateProgress(Integer... values) {
+		publishProgress(values);
+	}
+	
 }

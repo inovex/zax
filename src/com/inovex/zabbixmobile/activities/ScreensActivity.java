@@ -131,7 +131,7 @@ public class ScreensActivity extends BaseActivity implements
 	protected void loadData() {
 		mListFragment.showLoadingSpinner();
 		mZabbixDataService.loadScreens(this);
-		mDetailsFragment.showGraphLoadingSpinner();
+		mDetailsFragment.showProgressBar();
 		mDetailsFragment.loadGraphs();
 	}
 

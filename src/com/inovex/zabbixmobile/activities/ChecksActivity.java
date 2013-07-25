@@ -243,6 +243,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	@Override
 	protected void loadData() {
+		super.loadData();
 		// This loads the host list and - if necessary (i.e. currentHostId is
 		// set) - the applications.
 		mHostListFragment.showLoadingSpinner();

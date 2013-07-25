@@ -2,22 +2,22 @@
 
     <!--
         Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
     <style name="AppBaseTheme" parent="Theme.Sherlock.Light.DarkActionBar">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
+            backward-compatibility can go here.
         -->
     </style>
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        All customizations that are NOT specific to a particular API-level can go here.        <item name="vpiTabPageIndicatorStyle">@style/MyTabPageIndicator</item>
+        All customizations that are NOT specific to a particular API-level can go here.                <item name="vpiTabPageIndicatorStyle">@style/MyTabPageIndicator</item>
         <item name="android:textViewStyle">@style/MyTextViewStyle</item>
     </style>
-    
+
     <style name="MyTextViewStyle" parent="android:Widget.TextView">
         <item name="android:textColor">@color/text</item>
     </style>
@@ -57,6 +57,15 @@
 
     <style name="ListFragmentWhiteBackground">
         <item name="android:background">@drawable/list_fragment_white_background</item>
+    </style>
+
+    <style name="MyProgressBarStyle" parent="android:Widget.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@android:drawable/progress_horizontal</item>
+        <item name="android:minHeight">8dip</item>
+        <item name="android:maxHeight">8dip</item>
+        <item name="android:minWidth">100dip</item>
+        <item name="android:maxWidth">200dip</item>
+        <item name="android:max">100</item>
     </style>
 
 </resources>

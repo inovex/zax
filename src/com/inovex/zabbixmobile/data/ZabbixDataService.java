@@ -965,19 +965,35 @@ public class ZabbixDataService extends Service {
 				try {
 					mRemoteAPI.importGraphsByScreen(screen);
 					screen.setGraphs(mDatabaseHelper.getGraphsByScreen(screen));
+					int numGraphs = screen.getGraphs().size();
+					int j = 0;
 					for (Graph g : screen.getGraphs()) {
+						int numItems = g.getGraphItems().size();
+						int k = 0;
 						for (GraphItem gi : g.getGraphItems()) {
 							Item item = gi.getItem();
 							mRemoteAPI.importHistoryDetails(item.getId());
 							item.setHistoryDetails(mDatabaseHelper
 									.getHistoryDetailsByItemId(item.getId()));
+							k++;
+							updateProgress((100 * j + ((100 * k) / numItems))
+									/ numGraphs);
 						}
+						j++;
+//						updateProgress((100 * j) / numGraphs);
 					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} finally {
 				}
+			}
+
+			@Override
+			protected void onProgressUpdate(Integer... values) {
+				super.onProgressUpdate(values);
+				Log.d(TAG, "onProgressUpdate: " + values[0]);
+				callback.onGraphsProgressUpdate(values[0]);
 			}
 
 			@Override
@@ -991,7 +1007,7 @@ public class ZabbixDataService extends Service {
 		};
 		mCurrentLoadGraphsTask.execute();
 	}
-	
+
 	private void cancelTask(RemoteAPITask task) {
 		if (task != null && task.getStatus() != AsyncTask.Status.FINISHED) {
 			if (task.cancel(true))
@@ -1000,50 +1016,50 @@ public class ZabbixDataService extends Service {
 				Log.d(TAG, "Task was already done: " + task);
 		}
 	}
-	
+
 	/**
-	 * Cancels all tasks currently loading events. 
+	 * Cancels all tasks currently loading events.
 	 */
 	public void cancelLoadEventsTasks() {
-		for(TriggerSeverity severity : TriggerSeverity.values())
+		for (TriggerSeverity severity : TriggerSeverity.values())
 			cancelTask(mCurrentLoadEventsTasks.get(severity));
 		mCurrentLoadEventsTasks.clear();
 	}
-	
+
 	/**
-	 * Cancels all tasks currently loading problems. 
+	 * Cancels all tasks currently loading problems.
 	 */
 	public void cancelLoadProblemsTasks() {
-		for(TriggerSeverity severity : TriggerSeverity.values())
+		for (TriggerSeverity severity : TriggerSeverity.values())
 			cancelTask(mCurrentLoadProblemsTasks.get(severity));
 		mCurrentLoadProblemsTasks.clear();
 	}
-	
+
 	/**
-	 * Cancels all tasks currently loading problems. 
+	 * Cancels all tasks currently loading problems.
 	 */
 	public void cancelLoadHistoryDetailsTasks() {
-		for(RemoteAPITask task : mCurrentLoadHistoryDetailsTasks)
+		for (RemoteAPITask task : mCurrentLoadHistoryDetailsTasks)
 			cancelTask(task);
 		mCurrentLoadHistoryDetailsTasks.clear();
 	}
-	
+
 	/**
-	 * Cancels the task currently loading applications. 
+	 * Cancels the task currently loading applications.
 	 */
 	public void cancelLoadApplicationsTask() {
 		cancelTask(mCurrentLoadApplicationsTask);
 	}
-	
+
 	/**
-	 * Cancels the task currently loading items. 
+	 * Cancels the task currently loading items.
 	 */
 	public void cancelLoadItemsTask() {
 		cancelTask(mCurrentLoadItemsTask);
 	}
-	
+
 	/**
-	 * Cancels the task currently loading graphs. 
+	 * Cancels the task currently loading graphs.
 	 */
 	public void cancelLoadGraphsTask() {
 		cancelTask(mCurrentLoadGraphsTask);

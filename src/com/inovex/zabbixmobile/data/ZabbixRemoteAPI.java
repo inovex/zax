@@ -1563,19 +1563,6 @@ public class ZabbixRemoteAPI {
 			Set<Long> graphIds = databaseHelper.getGraphIdsByScreen(screen);
 
 			databaseHelper.deleteGraphsByIds(graphIds);
-			// TODO: delete old graphs
-			// String str_graphids = graphids.toString().replace("[",
-			// "").replace("]",
-			// "");
-			// if (str_graphids.length()>0) {
-			// zabbixLocalDB.delete(GraphData.TABLE_NAME,
-			// GraphData.COLUMN_GRAPHID+" IN ("+str_graphids+")", null);
-			// zabbixLocalDB.delete(GraphItemData.TABLE_NAME,
-			// GraphItemData.COLUMN_GRAPHID+" IN ("+str_graphids+")", null);
-			// }
-			// zabbixLocalDB.delete(CacheData.TABLE_NAME,
-			// CacheData.COLUMN_KIND+"='"+GraphData.TABLE_NAME+"' AND "+CacheData.COLUMN_FILTER+"='screenid="+screenid+'\'',
-			// null);
 			graphs = _queryStream(
 					"graph.get",
 					new JSONObject()
@@ -1590,6 +1577,7 @@ public class ZabbixRemoteAPI {
 					RECORDS_PER_INSERT_BATCH);
 			ArrayList<GraphItem> graphItemsCollection = new ArrayList<GraphItem>();
 			Map<Long, Item> itemsMap = new HashMap<Long, Item>();
+			
 			while ((graphReader = graphs.next()) != null) {
 				Graph graph = new Graph();
 				while (graphReader.nextValueToken()) {

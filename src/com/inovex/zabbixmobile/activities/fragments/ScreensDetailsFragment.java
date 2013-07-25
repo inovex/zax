@@ -10,9 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
 import com.inovex.zabbixmobile.model.Graph;
@@ -33,13 +33,13 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 	private static final String ARG_GRAPH_SPINNER_VISIBLE = "arg_graph_spinner_visible";
 
 	private Screen mScreen;
-	private boolean mGraphLoadingSpinnerVisible = true;
+	private boolean mProgressBarVisible = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			mGraphLoadingSpinnerVisible = savedInstanceState.getBoolean(
+			mProgressBarVisible = savedInstanceState.getBoolean(
 					ARG_GRAPH_SPINNER_VISIBLE, true);
 		}
 
@@ -47,8 +47,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putBoolean(ARG_GRAPH_SPINNER_VISIBLE,
-				mGraphLoadingSpinnerVisible);
+		outState.putBoolean(ARG_GRAPH_SPINNER_VISIBLE, mProgressBarVisible);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -62,8 +61,8 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		if (mGraphLoadingSpinnerVisible)
-			showGraphLoadingSpinner();
+		if (mProgressBarVisible)
+			showProgressBar();
 		if (mScreen != null)
 			showGraphs();
 
@@ -71,60 +70,74 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 
 	public void setScreen(Screen screen) {
 		this.mScreen = screen;
+		showProgressBar();
 		if (getView() != null) {
 			loadGraphs();
 		}
 	}
 
-	private void showGraph(Graph graph) {
+	/**
+	 * Shows a graph.
+	 * 
+	 * @param graph
+	 * @return true: Graph has been added to the layout; false: graph could not
+	 *         be displayed due to missing history data
+	 */
+	private boolean showGraph(Graph graph) {
 		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
-		if (graph != null) {
-			Collection<HistoryDetail> historyDetails = null;
-			Item item = null;
+		if (graph == null)
+			return false;
+		Collection<HistoryDetail> historyDetails = null;
+		Item item = null;
 
-			final java.text.DateFormat dateTimeFormatter = DateFormat
-					.getTimeFormat(getSherlockActivity());
-			LineGraphView graphView = new LineGraphView(getSherlockActivity(),
-					graph.getName()) {
-				@Override
-				protected String formatLabel(double value, boolean isValueX) {
-					if (isValueX) {
-						// transform number to time
-						return dateTimeFormatter.format(new Date(
-								(long) value * 1000));
-					} else
-						return super.formatLabel(value, isValueX);
-				}
-			};
-			graphView.setShowLegend(true);
-			graphView.setLegendAlign(LegendAlign.TOP);
-			graphView.setLegendWidth(250);
-
-			GraphViewSeries series;
-			long highestclock = Long.MIN_VALUE;
-			long lowestclock = Long.MAX_VALUE;
-			for (GraphItem gi : graph.getGraphItems()) {
-				item = gi.getItem();
-				historyDetails = item.getHistoryDetails();
-				if (historyDetails != null && historyDetails.size() > 0) {
-					GraphViewData[] values = new GraphViewData[historyDetails
-							.size()];
-					int i = 0;
-					for (HistoryDetail detail : historyDetails) {
-						long clock = detail.getClock() / 1000;
-						double value = detail.getValue();
-						values[i] = new GraphViewData(clock, value);
-						highestclock = Math.max(highestclock, clock);
-						lowestclock = Math.min(lowestclock, clock);
-						i++;
-					}
-
-					series = new GraphViewSeries(item.getDescription(),
-							new GraphViewSeriesStyle(gi.getColor(), 3), values);
-					// series = new GraphViewSeries(values);
-					graphView.addSeries(series);
-				}
+		final java.text.DateFormat dateTimeFormatter = DateFormat
+				.getTimeFormat(getSherlockActivity());
+		LineGraphView graphView = new LineGraphView(getSherlockActivity(),
+				graph.getName()) {
+			@Override
+			protected String formatLabel(double value, boolean isValueX) {
+				if (isValueX) {
+					// transform number to time
+					return dateTimeFormatter.format(new Date(
+							(long) value * 1000));
+				} else
+					return super.formatLabel(value, isValueX);
 			}
+		};
+		graphView.setShowLegend(true);
+		graphView.setLegendAlign(LegendAlign.TOP);
+		graphView.setLegendWidth(250);
+
+		GraphViewSeries series;
+		long highestclock = Long.MIN_VALUE;
+		long lowestclock = Long.MAX_VALUE;
+		boolean emptyGraph = true;
+		;
+		for (GraphItem gi : graph.getGraphItems()) {
+			item = gi.getItem();
+			historyDetails = item.getHistoryDetails();
+			if (historyDetails != null && historyDetails.size() > 0) {
+				emptyGraph = false;
+				GraphViewData[] values = new GraphViewData[historyDetails
+						.size()];
+				int i = 0;
+				for (HistoryDetail detail : historyDetails) {
+					long clock = detail.getClock() / 1000;
+					double value = detail.getValue();
+					values[i] = new GraphViewData(clock, value);
+					highestclock = Math.max(highestclock, clock);
+					lowestclock = Math.min(lowestclock, clock);
+					i++;
+				}
+
+				series = new GraphViewSeries(item.getDescription(),
+						new GraphViewSeriesStyle(gi.getColor(), 3), values);
+				// series = new GraphViewSeries(values);
+				graphView.addSeries(series);
+			}
+		}
+
+		if (!emptyGraph) {
 
 			// create graph and add it to the layout
 			long size = (highestclock - lowestclock) * 2 / 3; // we show 2/3
@@ -143,13 +156,9 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 
 			layout.addView(graphLayout, new LayoutParams(
 					LayoutParams.MATCH_PARENT, 300));
-		} else {
-			// no history data available
-			// layout.removeAllViews();
-			TextView noGraphDataView = new TextView(getSherlockActivity());
-			noGraphDataView.setText(R.string.no_history_data_found);
-			layout.addView(noGraphDataView);
+			return true;
 		}
+		return false;
 	}
 
 	@Override
@@ -158,7 +167,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 		if (getView() != null) {
 			showGraphs();
 		}
-		dismissGraphLoadingSpinner();
+		dismissGraphProgressBar();
 		// if (mScreen.getGraphs() != null)
 		// showGraph((Graph) mScreen.getGraphs().toArray()[0]);
 	}
@@ -166,23 +175,36 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 	protected void showGraphs() {
 		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
 		layout.removeAllViews();
+		boolean graphsDisplayed = false;
 		if (mScreen != null && mScreen.getGraphs() != null) {
 			for (Graph g : mScreen.getGraphs()) {
-				showGraph(g);
+				if (showGraph(g))
+					graphsDisplayed = true;
 			}
 		}
+		if (!graphsDisplayed) {
+			// no graphs have been shown (due to missing history data)
+			layout.removeAllViews();
+			TextView noGraphDataView = new TextView(getSherlockActivity());
+			noGraphDataView.setText(R.string.no_items_to_display);
+			layout.addView(noGraphDataView);
+		}
+
 	}
 
 	/**
 	 * Shows a loading spinner instead of the graph view.
 	 */
-	public void showGraphLoadingSpinner() {
-		mGraphLoadingSpinnerVisible = true;
+	public void showProgressBar() {
+		mProgressBarVisible = true;
 		if (getView() != null) {
 			LinearLayout progressLayout = (LinearLayout) getView()
 					.findViewById(R.id.graphs_progress_layout);
 			if (progressLayout != null)
 				progressLayout.setVisibility(View.VISIBLE);
+			ProgressBar graphProgress = (ProgressBar) getView().findViewById(
+					R.id.graphs_progress);
+			graphProgress.setProgress(0);
 		}
 	}
 
@@ -192,8 +214,8 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 	 * If the view has not yet been created, the status is saved and when the
 	 * view is created, the spinner will not be shown at all.
 	 */
-	public void dismissGraphLoadingSpinner() {
-		mGraphLoadingSpinnerVisible = false;
+	public void dismissGraphProgressBar() {
+		mProgressBarVisible = false;
 		if (getView() != null) {
 			LinearLayout progressLayout = (LinearLayout) getView()
 					.findViewById(R.id.graphs_progress_layout);
@@ -207,6 +229,15 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 	public void loadGraphs() {
 		if (mZabbixDataService != null && mScreen != null) {
 			mZabbixDataService.loadGraphsByScreen(mScreen, this);
+		}
+	}
+
+	@Override
+	public void onGraphsProgressUpdate(int progress) {
+		if (getView() != null) {
+			ProgressBar graphProgress = (ProgressBar) getView().findViewById(
+					R.id.graphs_progress);
+			graphProgress.setProgress(progress);
 		}
 	}
 }
