@@ -242,6 +242,11 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	}
 
 	@Override
+	public void onApplicationsProgressUpdate(int progress) {
+		mApplicationsFragment.updateProgress(progress);
+	}
+
+	@Override
 	protected void loadData() {
 		super.loadData();
 		// This loads the host list and - if necessary (i.e. currentHostId is

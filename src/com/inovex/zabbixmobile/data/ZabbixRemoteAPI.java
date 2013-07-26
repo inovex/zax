@@ -338,6 +338,11 @@ public class ZabbixRemoteAPI {
 			throw new FatalException(Type.CONNECTION_TIMEOUT, e);
 		} catch (UnknownHostException e) {
 			throw new FatalException(Type.SERVER_NOT_FOUND, e);
+		} catch (InterruptedIOException e) {
+			// this exception is thrown when the task querying data from Zabbix
+			// is cancelled. The interruption happens by design, so we can
+			// ignore this.
+			return null;
 		}
 	}
 
@@ -578,11 +583,13 @@ public class ZabbixRemoteAPI {
 	 * 
 	 * @param hostId
 	 *            host ID to filter the applications by; null: no filtering
+	 * @param task
+	 *            task to be notified about progress
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 */
-	public void importApplicationsByHostId(Long hostId) throws FatalException,
-			ZabbixLoginRequiredException {
+	public void importApplicationsByHostId(Long hostId, RemoteAPITask task)
+			throws FatalException, ZabbixLoginRequiredException {
 		if (databaseHelper.isCached(CacheDataType.APPLICATION, hostId))
 			return;
 
@@ -590,11 +597,24 @@ public class ZabbixRemoteAPI {
 
 		JSONObject params;
 		try {
-			params = new JSONObject().put("output", "extend")
+			params = new JSONObject();
+			int numApplications;
+
+			params.put("output", "extend").put("countOutput", 1);
+			if (hostId != null)
+				params.put("hostids", new JSONArray().put(hostId));
+
+			// count of events
+			JSONObject result = _queryBuffer("application.get", params);
+
+			// Zabbix does not support limit when countOutput is used
+			numApplications = Math.min(ZabbixConfig.APPLICATION_GET_LIMIT,
+					getOutputCount(result));
+
+			params = new JSONObject();
+			params.put("output", "extend")
 					.put("limit", ZabbixConfig.APPLICATION_GET_LIMIT)
 					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
-					// .put(isVersion2 ? "selectItems" : "select_items",
-					// "extend")
 					.put("source", 0);
 			if (!isVersion2) {
 				// in Zabbix version <2.0, this is not default
@@ -604,7 +624,7 @@ public class ZabbixRemoteAPI {
 				params.put("hostids", new JSONArray().put(hostId));
 			JsonArrayOrObjectReader applications = _queryStream(
 					"application.get", params);
-			importApplicationsFromStream(applications);
+			importApplicationsFromStream(applications, task, numApplications);
 			// events.close();
 		} catch (SQLException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
@@ -622,19 +642,24 @@ public class ZabbixRemoteAPI {
 	 * 
 	 * @param jsonReader
 	 *            JSON stream reader
+	 * @param task
+	 *            task to be notified about progress
+	 * @param numApplications
+	 *            total number of applications that will be imported
 	 * @throws JsonParseException
 	 * @throws NumberFormatException
 	 * @throws IOException
 	 * @throws SQLException
 	 */
 	private Collection<Application> importApplicationsFromStream(
-			JsonArrayOrObjectReader jsonReader) throws JsonParseException,
+			JsonArrayOrObjectReader jsonReader, RemoteAPITask task,
+			int numApplications) throws JsonParseException,
 			NumberFormatException, IOException, SQLException {
-		int num = 0;
 		List<Application> applicationsComplete = new ArrayList<Application>();
 		List<Application> applicationsPerBatch = new ArrayList<Application>(
 				RECORDS_PER_INSERT_BATCH);
 		JsonObjectReader application;
+		int i = 0;
 		while ((application = jsonReader.next()) != null) {
 			Application app = new Application();
 			while (application.nextValueToken()) {
@@ -655,9 +680,6 @@ public class ZabbixRemoteAPI {
 						app.setHost(h);
 					// app.set(ApplicationData.COLUMN_HOSTID,
 					// Long.parseLong(application.getText()));
-				} else if (propName.equals("items")) {
-					importItemsFromStream(
-							application.getJsonArrayOrObjectReader(), 0, false);
 				} else if (propName.equals("hosts")) {
 					// import hosts
 					List<Host> hosts = importHostsFromStream(
@@ -685,7 +707,6 @@ public class ZabbixRemoteAPI {
 				}
 			}
 
-			num++;
 			applicationsPerBatch.add(app);
 			applicationsComplete.add(app);
 
@@ -693,6 +714,10 @@ public class ZabbixRemoteAPI {
 				databaseHelper.insertApplications(applicationsPerBatch);
 				applicationsPerBatch.clear();
 			}
+
+			i++;
+
+			task.updateProgress(((i * 20) / numApplications));
 
 		}
 		// insert the last batch of applications
@@ -805,16 +830,14 @@ public class ZabbixRemoteAPI {
 			// count of events
 			JSONObject result = _queryBuffer(
 					"event.get",
-					new JSONObject()
-							.put("output", "extend")
-							.put("countOutput", 1)
-							.put("time_from",
-									(new Date().getTime() / 1000)
-											- ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT));
-			
+					new JSONObject().put("countOutput", 1).put(
+							"time_from",
+							(new Date().getTime() / 1000)
+									- ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT));
+
 			// Zabbix does not support limit when countOutput is used
 			numEvents = Math.min(ZabbixConfig.EVENTS_GET_LIMIT,
-					result.getInt("result"));
+					getOutputCount(result));
 
 			JSONObject params;
 			params = new JSONObject()
@@ -844,6 +867,27 @@ public class ZabbixRemoteAPI {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
 
+	}
+
+	/**
+	 * Returns the number of objects returned by an API call using countOutput.
+	 * Usually, the numer is returned directly, but in Zabbix 1.8, the parameter
+	 * "rowscount" may be used (e.g. event.get).
+	 * 
+	 * @param result
+	 *            result of the API call
+	 * @return number of objects
+	 */
+	private int getOutputCount(JSONObject result) {
+		try {
+			return result.getInt("result");
+		} catch (JSONException e) {
+			try {
+				return ((JSONObject) result.get("result")).getInt("rowscount");
+			} catch (JSONException e1) {
+				return Integer.MAX_VALUE;
+			}
+		}
 	}
 
 	/**
@@ -1257,6 +1301,8 @@ public class ZabbixRemoteAPI {
 	 * 
 	 * @param jsonReader
 	 *            stream
+	 * @param task
+	 *            task to be notified about progress
 	 * @param numItems
 	 *            count for progressbar, if 0 no progressbarupdate
 	 * @param checkBeforeInsert
@@ -1267,16 +1313,16 @@ public class ZabbixRemoteAPI {
 	 * @throws SQLException
 	 */
 	private List<Item> importItemsFromStream(
-			JsonArrayOrObjectReader jsonReader, int numItems,
-			boolean checkBeforeInsert) throws JsonParseException, IOException,
-			SQLException {
+			JsonArrayOrObjectReader jsonReader, RemoteAPITask task,
+			int numItems, boolean checkBeforeInsert) throws JsonParseException,
+			IOException, SQLException {
 		long firstItemId = -1;
-		int curI = 0;
 		JsonObjectReader itemReader;
 		List<Item> itemsComplete = new ArrayList<Item>();
 		List<Item> itemsPerBatch = new ArrayList<Item>(RECORDS_PER_INSERT_BATCH);
 		List<ApplicationItemRelation> applicationItemRelations = new ArrayList<ApplicationItemRelation>(
 				RECORDS_PER_INSERT_BATCH);
+		int i = 0;
 		while ((itemReader = jsonReader.next()) != null) {
 			Item item = new Item();
 			Collection<Application> applications = new ArrayList<Application>();
@@ -1379,6 +1425,9 @@ public class ZabbixRemoteAPI {
 						.insertApplicationItemRelations(applicationItemRelations);
 				applicationItemRelations.clear();
 			}
+			i++;
+			if (task != null)
+				task.updateProgress(20 + ((i * 80) / numItems));
 		}
 		// insert the last batch of events
 		databaseHelper.insertItems(itemsPerBatch);
@@ -1391,11 +1440,13 @@ public class ZabbixRemoteAPI {
 	 * 
 	 * @param hostId
 	 *            host ID to filter the applications by; null: no filtering
+	 * @param task
+	 *            task to be notified about progress
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 */
-	public void importItemsByHostId(Long hostId) throws FatalException,
-			ZabbixLoginRequiredException {
+	public void importItemsByHostId(Long hostId, RemoteAPITask task)
+			throws FatalException, ZabbixLoginRequiredException {
 		if (databaseHelper.isCached(CacheDataType.ITEM, hostId))
 			return;
 
@@ -1403,14 +1454,17 @@ public class ZabbixRemoteAPI {
 
 		try {
 			// count of items
-			// JSONObject result = _queryBuffer(
-			// "item.get",
-			// new JSONObject().put("output", "extend")
-			// .put("countOutput", 1)
-			// .put("limit", ZabbixConfig.ITEM_GET_LIMIT)
-			// .put("hostids", new JSONArray().put(hostid)));
-			// int numItems = result.getInt("result");
 			JSONObject params = new JSONObject();
+			params.put("output", "extend").put("countOutput", 1);
+			if (hostId != null)
+				params.put("hostids", new JSONArray().put(hostId));
+
+			JSONObject result = _queryBuffer("item.get", params);
+			// Zabbix does not support limit when countOutput is set
+			int numItems = Math.min(ZabbixConfig.ITEM_GET_LIMIT,
+					getOutputCount(result));
+
+			params = new JSONObject();
 			params.put("output", "extend")
 					.put("limit", ZabbixConfig.ITEM_GET_LIMIT)
 					.put(isVersion2 ? "selectApplications"
@@ -1419,7 +1473,7 @@ public class ZabbixRemoteAPI {
 			if (hostId != null)
 				params.put("hostids", new JSONArray().put(hostId));
 			JsonArrayOrObjectReader items = _queryStream("item.get", params);
-			importItemsFromStream(items, 0, false);
+			importItemsFromStream(items, task, numItems, false);
 			items.close();
 
 			// Log.d(TAG, _queryBuffer("item.get", params).toString());
@@ -1632,8 +1686,8 @@ public class ZabbixRemoteAPI {
 										.getJsonArrayOrObjectReader()));
 					} else if (propName.equals("items")) {
 						Collection<Item> items = importItemsFromStream(
-								graphReader.getJsonArrayOrObjectReader(), 0,
-								true);
+								graphReader.getJsonArrayOrObjectReader(), null,
+								0, true);
 						for (Item i : items) {
 							itemsMap.put(i.getId(), i);
 						}
@@ -1820,7 +1874,7 @@ public class ZabbixRemoteAPI {
 
 			// The Zabbix API does not support limit when countOutput is used
 			numTriggers = Math.min(ZabbixConfig.TRIGGER_GET_LIMIT,
-					result.getInt("result"));
+					getOutputCount(result));
 
 			params = new JSONObject();
 			params.put("output", "extend")
@@ -1924,7 +1978,8 @@ public class ZabbixRemoteAPI {
 				} else if (propName.equals("items")) {
 					// store the first item
 					List<Item> items = importItemsFromStream(
-							triggerReader.getJsonArrayOrObjectReader(), 1, true);
+							triggerReader.getJsonArrayOrObjectReader(), null,
+							1, true);
 					if (items.size() > 0)
 						t.setItem(items.get(0));
 				} else {

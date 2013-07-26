@@ -774,7 +774,6 @@ public class ZabbixDataService extends Service {
 		cancelTask(mCurrentLoadApplicationsTask);
 		mCurrentLoadApplicationsTask = new RemoteAPITask(mRemoteAPI) {
 
-			List<Host> hosts;
 			List<Application> applications;
 
 			@Override
@@ -783,8 +782,8 @@ public class ZabbixDataService extends Service {
 				try {
 					// We only import applications with corresponding hosts
 					// (this way templates are ignored)
-					mRemoteAPI.importApplicationsByHostId(hostId);
-					mRemoteAPI.importItemsByHostId(hostId);
+					mRemoteAPI.importApplicationsByHostId(hostId, this);
+					mRemoteAPI.importItemsByHostId(hostId, this);
 				} finally {
 					try {
 						applications = mDatabaseHelper
@@ -810,6 +809,13 @@ public class ZabbixDataService extends Service {
 						callback.onApplicationsLoaded();
 				}
 
+			}
+
+			@Override
+			protected void onProgressUpdate(Integer... values) {
+				super.onProgressUpdate(values);
+				Log.d(TAG, "progress: " + values[0]);
+				callback.onApplicationsProgressUpdate(values[0]);
 			}
 
 		};

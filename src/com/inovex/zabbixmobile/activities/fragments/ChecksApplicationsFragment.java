@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
@@ -268,6 +269,9 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 			if (progressLayout != null) {
 				progressLayout.setVisibility(View.GONE);
 			}
+			ProgressBar listProgress = (ProgressBar) getView().findViewById(
+					R.id.applications_progress);
+			listProgress.setProgress(0);
 		}
 
 	}
@@ -285,6 +289,14 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 				.instantiateItem(mDetailsPager, mDetailsPager.getCurrentItem());
 		Log.d(TAG, "selectItem(" + position + ")");
 		currentPage.selectItem(position);
+	}
+
+	public void updateProgress(int progress) {
+		if (getView() != null) {
+			ProgressBar listProgress = (ProgressBar) getView().findViewById(
+					R.id.applications_progress);
+			listProgress.setProgress(progress);
+		}			
 	}
 
 }
