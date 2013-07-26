@@ -133,13 +133,16 @@ public class EventsDetailsPage extends BaseDetailsPage {
 		// need to refresh the event data
 		if (mEvent == null) {
 			Log.d(TAG, "event was null, loading event from database.");
-			this.mEvent = mZabbixDataService.getEventById(mEventId);
-			fillDetailsText();
+			mEvent = mZabbixDataService.getEventById(mEventId);
 		}
 
-		if (!mHistoryDetailsImported && mEvent.getTrigger().getItem() != null)
-			mZabbixDataService.loadHistoryDetailsByItem(mEvent.getTrigger()
-					.getItem(), false, this);
+		if (mEvent != null) {
+			fillDetailsText();
+			if (!mHistoryDetailsImported && mEvent.getTrigger() != null
+					&& mEvent.getTrigger().getItem() != null)
+				mZabbixDataService.loadHistoryDetailsByItem(mEvent.getTrigger()
+						.getItem(), false, this);
+		}
 	}
 
 	@Override

@@ -59,7 +59,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 				.findFragmentById(R.id.checks_items_details);
 		showHostListFragment();
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -74,11 +74,20 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			if ((mApplicationsFragment.isVisible() || mItemDetailsFragment
-					.isVisible()) && mFlipper != null) {
-				mFlipper.showPrevious();
-			} else
-				finish();
+			if(mFlipper != null) {
+				if ((mApplicationsFragment.isVisible() || mItemDetailsFragment
+						.isVisible()) && mFlipper != null) {
+					mFlipper.showPrevious();
+					return true;
+				}	
+			} else {
+				if (mApplicationsFragment.isVisible()
+						&& mItemDetailsFragment.isVisible()) {
+					showHostListFragment();
+					return true;
+				}
+			}
+			finish();
 			break;
 		}
 		return false;

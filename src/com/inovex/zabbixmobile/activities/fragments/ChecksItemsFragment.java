@@ -33,7 +33,6 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setRetainInstance(true);
 	}
 
 	@Override

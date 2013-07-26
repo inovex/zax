@@ -200,6 +200,12 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 	}
 
 	public void setCurrentPosition(int position) {
+		try {
+			Log.d(TAG, "position: " + position);
+			throw new RuntimeException();
+		} catch(RuntimeException e) {
+			e.printStackTrace();
+		}
 		this.mCurrentPosition = position;
 	}
 

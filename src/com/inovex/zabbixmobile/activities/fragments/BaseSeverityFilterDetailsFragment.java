@@ -126,7 +126,6 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 			mLoadingSpinnerVisible = savedInstanceState.getBoolean(
 					ARG_SPINNER_VISIBLE, false);
 		}
-		setRetainInstance(true);
 	}
 
 	@Override

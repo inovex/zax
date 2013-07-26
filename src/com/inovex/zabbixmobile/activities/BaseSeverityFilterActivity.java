@@ -26,6 +26,9 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	private static final int FLIPPER_LIST_FRAGMENT = 0;
 	private static final int FLIPPER_DETAILS_FRAGMENT = 1;
 
+	private static final String CURRENT_ITEM_POSITION = "current_item_position";
+	private static final String CURRENT_SEVERITY = "current_severity";
+
 	protected int mCurrentItemPosition = 0;
 	protected long mCurrentItemId = 0;
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
@@ -39,6 +42,12 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if (savedInstanceState != null) {
+			mCurrentItemPosition = savedInstanceState.getInt(
+					CURRENT_ITEM_POSITION, 0);
+			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
+					.getInt(CURRENT_SEVERITY, TriggerSeverity.ALL.getNumber()));
+		}
 		// We'll be using a spinner menu
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		mActionBar.setDisplayShowTitleEnabled(false);
@@ -46,6 +55,8 @@ public abstract class BaseSeverityFilterActivity<T> extends
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
+		outState.putInt(CURRENT_ITEM_POSITION, mCurrentItemPosition);
+		outState.putInt(CURRENT_SEVERITY, mSeverity.getNumber());
 		super.onSaveInstanceState(outState);
 	}
 
@@ -159,7 +170,8 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	 * the first item will be selected; otherwise, the saved position will be
 	 * restored.
 	 * 
-	 * @param hostGroupChanged whether the host group has been changed
+	 * @param hostGroupChanged
+	 *            whether the host group has been changed
 	 */
 	protected void selectInitialItem(boolean hostGroupChanged) {
 		if (hostGroupChanged) {

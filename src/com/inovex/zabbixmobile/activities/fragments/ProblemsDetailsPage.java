@@ -94,11 +94,13 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 		if (mTrigger == null) {
 			Log.d(TAG, "trigger was null, loading trigger from database.");
 			this.mTrigger = mZabbixDataService.getTriggerById(mTriggerId);
-			fillDetailsText();
 		}
-		if (!mHistoryDetailsImported && mTrigger.getItem() != null)
-			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(), false,
-					this);
+		if (mTrigger != null) {
+			fillDetailsText();
+			if (!mHistoryDetailsImported && mTrigger.getItem() != null)
+				mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(),
+						false, this);
+		}
 	}
 
 	@Override
@@ -111,8 +113,8 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 		this.mTrigger = trigger;
 		this.mTriggerId = trigger.getId();
 		if (!mHistoryDetailsImported && getView() != null)
-			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(), false,
-					this);
+			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(),
+					false, this);
 	}
 
 	public void setTitle(String title) {
