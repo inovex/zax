@@ -96,6 +96,10 @@ public class MainActivity extends BaseActivity implements
 	protected void onStart() {
 		super.onStart();
 		Log.d(TAG, "onStart");
+		// check whether we're coming back from another activity; if that's the
+		// case, we reload the problems because there might have been a refresh
+		if (mZabbixDataService != null)
+			loadData();
 	}
 
 	@Override
