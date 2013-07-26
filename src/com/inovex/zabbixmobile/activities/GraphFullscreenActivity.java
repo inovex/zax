@@ -14,6 +14,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnGraphDataLoadedListener;
@@ -43,54 +44,75 @@ public class GraphFullscreenActivity extends BaseActivity {
 			finish();
 			return;
 		}
-		
+
 		mLayout = new LinearLayout(this);
 
 		setContentView(mLayout);
 	}
-	
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (super.onOptionsItemSelected(item))
+			return true;
+
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder binder) {
 		super.onServiceConnected(className, binder);
 		loadGraphData();
 	}
-	
+
 	private void loadGraphData() {
 		FragmentManager fm = getSupportFragmentManager();
 		final LoadingDialogFragment loadingDlg = new LoadingDialogFragment();
 		loadingDlg.show(fm, LoadingDialogFragment.TAG);
-		
+
 		// load data by item
 		if (mItemId != -1) {
 			final Item item = mZabbixDataService.getItemById(mItemId);
-			mZabbixDataService.loadHistoryDetailsByItem(item, false, new OnGraphDataLoadedListener() {
-				@Override
-				public void onGraphDataLoaded() {
-					Collection<HistoryDetail> historyDetails = item.getHistoryDetails();
-					LineGraphView graph = GraphUtil.createItemGraphFullscreen(GraphFullscreenActivity.this, historyDetails, item.getDescription());
-					if (mLayout != null) {
-						mLayout.addView(graph);
-					}
-					if (loadingDlg != null) {
-						loadingDlg.dismiss();
-					}
-				}
+			mZabbixDataService.loadHistoryDetailsByItem(item, false,
+					new OnGraphDataLoadedListener() {
+						@Override
+						public void onGraphDataLoaded() {
+							Collection<HistoryDetail> historyDetails = item
+									.getHistoryDetails();
+							LineGraphView graph = GraphUtil
+									.createItemGraphFullscreen(
+											GraphFullscreenActivity.this,
+											historyDetails,
+											item.getDescription());
+							if (mLayout != null) {
+								mLayout.addView(graph);
+							}
+							if (loadingDlg != null) {
+								loadingDlg.dismiss();
+							}
+						}
 
-				@Override
-				public void onGraphDataProgressUpdate(int progress) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
+						@Override
+						public void onGraphDataProgressUpdate(int progress) {
+							// TODO Auto-generated method stub
+
+						}
+					});
 		}
-		
+
 		// load data by graph
 		else if (mGraphId != -1) {
 			final Graph graph = mZabbixDataService.getGraphById(mGraphId);
 			mZabbixDataService.loadGraph(graph, new OnGraphsLoadedListener() {
 				@Override
 				public void onGraphsLoaded() {
-					LineGraphView graphview = GraphUtil.createScreenGraphFullscreen(GraphFullscreenActivity.this, graph);
+					LineGraphView graphview = GraphUtil
+							.createScreenGraphFullscreen(
+									GraphFullscreenActivity.this, graph);
 					if (mLayout != null) {
 						mLayout.addView(graphview);
 					}
@@ -102,7 +124,7 @@ public class GraphFullscreenActivity extends BaseActivity {
 				@Override
 				public void onGraphsProgressUpdate(int progress) {
 					// TODO Auto-generated method stub
-					
+
 				}
 			});
 		}
@@ -119,7 +141,7 @@ public class GraphFullscreenActivity extends BaseActivity {
 	@Override
 	protected void enableUI() {
 	}
-	
+
 	/**
 	 * The dialog displayed when an event shall be acknowledged.
 	 * 
@@ -132,7 +154,8 @@ public class GraphFullscreenActivity extends BaseActivity {
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			ProgressDialog mLoadingDlg = new ProgressDialog(getActivity());
-			mLoadingDlg.setMessage(getActivity().getResources().getString(R.string.loading));
+			mLoadingDlg.setMessage(getActivity().getResources().getString(
+					R.string.loading));
 			return mLoadingDlg;
 		}
 	}
