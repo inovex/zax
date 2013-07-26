@@ -682,8 +682,8 @@ public class ZabbixRemoteAPI {
 					// Long.parseLong(application.getText()));
 				} else if (propName.equals("hosts")) {
 					// import hosts
-					List<Host> hosts = importHostsFromStream(
-							application.getJsonArrayOrObjectReader(), null);
+					List<Host> hosts = importHostsFromStream(application
+							.getJsonArrayOrObjectReader());
 					if (hosts.size() > 0) {
 						Host h = hosts.get(0);
 						if (h != null) {
@@ -928,8 +928,8 @@ public class ZabbixRemoteAPI {
 				String propName = eventReader.getCurrentName();
 				if (propName.equals("hosts")) {
 					// import hosts
-					List<Host> hosts = importHostsFromStream(
-							eventReader.getJsonArrayOrObjectReader(), null);
+					List<Host> hosts = importHostsFromStream(eventReader
+							.getJsonArrayOrObjectReader());
 					String hostNames = createHostNamesString(hosts);
 					// store hosts names
 					e.setHostNames(hostNames);
@@ -1183,6 +1183,8 @@ public class ZabbixRemoteAPI {
 	 * 
 	 * @param jsonReader
 	 *            JSON stream reader
+	 * @param task
+	 *            task to be notified about progress
 	 * @param numHosts
 	 *            count of hosts for progressbar; null if unknown
 	 * @return list of hosts retrieved from the stream
@@ -1190,15 +1192,13 @@ public class ZabbixRemoteAPI {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	private List<Host> importHostsFromStream(
-			JsonArrayOrObjectReader jsonReader, Integer numHosts)
+	private List<Host> importHostsFromStream(JsonArrayOrObjectReader jsonReader)
 			throws JsonParseException, IOException, SQLException {
 
 		List<Host> hostCollection = new ArrayList<Host>();
 		List<HostHostGroupRelation> hostHostGroupCollection = new ArrayList<HostHostGroupRelation>();
 		long firstHostId = -1;
 		JsonObjectReader hostReader;
-		int i = 0;
 		while ((hostReader = jsonReader.next()) != null) {
 			Host h = new Host();
 			while (hostReader.nextValueToken()) {
@@ -1262,16 +1262,6 @@ public class ZabbixRemoteAPI {
 			synchronized (databaseHelper.getDao(Host.class)) {
 				databaseHelper.clearHosts();
 				databaseHelper.clearHostGroups();
-				// get count of hosts
-				// TODO: progress bar
-				// JSONObject result = _queryBuffer(
-				// "host.get",
-				// new JSONObject()
-				// .put("countOutput", 1)
-				// .put("limit", ZabbixConfig.HOST_GET_LIMIT)
-				// .put(isVersion2 ? "selectGroups" : "select_groups",
-				// "extend"));
-				// int numHosts = result.getInt("result");
 				JsonArrayOrObjectReader hosts = _queryStream(
 						"host.get",
 						new JSONObject()
@@ -1279,7 +1269,7 @@ public class ZabbixRemoteAPI {
 								.put("limit", ZabbixConfig.HOST_GET_LIMIT)
 								.put(isVersion2 ? "selectGroups"
 										: "select_groups", "extend"));
-				importHostsFromStream(hosts, null);
+				importHostsFromStream(hosts);
 				hosts.close();
 			}
 
@@ -1340,11 +1330,11 @@ public class ZabbixRemoteAPI {
 					if (h != null)
 						item.setHost(h);
 				} else if (propName.equals(Item.COLUMN_DESCRIPTION)
-						|| propName.equals(Item.COLUMN_DESCRIPTION_NEW)) {
+						|| propName.equals(Item.COLUMN_DESCRIPTION_V2)) {
 					// since zabbix 2.x is the name of the item "name"
 					// before zabbix 2.x the name field was "description"
 					if (isVersion2
-							&& propName.equals(Item.COLUMN_DESCRIPTION_NEW)) {
+							&& propName.equals(Item.COLUMN_DESCRIPTION_V2)) {
 						item.setDescription(itemReader.getText());
 					} else if (!isVersion2) {
 						item.setDescription(itemReader.getText());
@@ -1963,8 +1953,8 @@ public class ZabbixRemoteAPI {
 					t.setUrl(triggerReader.getText());
 				} else if (propName.equals("hosts")) {
 					// import hosts
-					List<Host> hosts = importHostsFromStream(
-							triggerReader.getJsonArrayOrObjectReader(), null);
+					List<Host> hosts = importHostsFromStream(triggerReader
+							.getJsonArrayOrObjectReader());
 					String hostNames = createHostNamesString(hosts);
 					// store hosts names
 					t.setHostNames(hostNames);

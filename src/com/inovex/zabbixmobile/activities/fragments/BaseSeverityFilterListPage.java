@@ -169,6 +169,10 @@ public abstract class BaseSeverityFilterListPage extends
 			if (progressLayout != null) {
 				progressLayout.setVisibility(View.GONE);
 			}
+			// reset progress
+			ProgressBar listProgress = (ProgressBar) getView().findViewById(
+					R.id.list_progress);
+			listProgress.setProgress(0);
 		}
 
 	}

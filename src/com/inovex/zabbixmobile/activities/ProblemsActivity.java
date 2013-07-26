@@ -55,11 +55,11 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			}
 		}
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mZabbixDataService.cancelLoadProblemsTasks();
+		mZabbixDataService.cancelLoadProblemsTask();
 		mZabbixDataService.cancelLoadHistoryDetailsTasks();
 	}
 
@@ -109,10 +109,8 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		if (mZabbixDataService != null) {
-			for (TriggerSeverity severity : TriggerSeverity.values()) {
-				mZabbixDataService.loadProblemsBySeverityAndHostGroup(severity,
-						mHostGroupId, hostGroupChanged, this);
-			}
+			mZabbixDataService.loadProblemsByHostGroup(mHostGroupId,
+					hostGroupChanged, this);
 		}
 	}
 

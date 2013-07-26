@@ -18,7 +18,7 @@ public class Item implements Comparable<Item> {
 	@DatabaseField(columnName = COLUMN_VALUE_TYPE)
 	int valueType;
 	public static final String COLUMN_DESCRIPTION = "description";
-	public static final String COLUMN_DESCRIPTION_NEW = "name";
+	public static final String COLUMN_DESCRIPTION_V2 = "name";
 	@DatabaseField(columnName = COLUMN_DESCRIPTION)
 	String description;
 	public static final String COLUMN_LASTCLOCK = "lastclock";

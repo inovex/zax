@@ -108,8 +108,8 @@ public class MainActivity extends BaseActivity implements
 	@Override
 	protected void loadData() {
 		mProblemsFragment.showLoadingSpinner();
-		mZabbixDataService.loadProblemsBySeverityAndHostGroup(
-				TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true, this);		
+		mZabbixDataService.loadProblemsByHostGroup(HostGroup.GROUP_ID_ALL,
+				true, this);
 	}
 
 	@Override

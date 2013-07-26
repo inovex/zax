@@ -43,7 +43,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mZabbixDataService.cancelLoadEventsTasks();
+		mZabbixDataService.cancelLoadEventsTask();
 		mZabbixDataService.cancelLoadHistoryDetailsTasks();
 	}
 
@@ -84,10 +84,8 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	@Override
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		Log.d(TAG, "loadAdapterContent");
-		for (TriggerSeverity severity : TriggerSeverity.values()) {
-			mZabbixDataService.loadEventsBySeverityAndHostGroup(severity,
-					mHostGroupId, hostGroupChanged, this);
-		}
+		mZabbixDataService.loadEventsByHostGroup(mHostGroupId,
+				hostGroupChanged, this);
 	}
 
 	@Override
