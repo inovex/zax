@@ -933,6 +933,13 @@ public class ZabbixDataService extends Service {
 					callback.onGraphDataLoaded();
 			}
 
+			@Override
+			protected void onProgressUpdate(Integer... values) {
+				super.onProgressUpdate(values);
+				callback.onGraphDataProgressUpdate(values[0]);
+				Log.d("PROGRESS", "" + values[0]);
+			}
+
 		};
 
 		mCurrentLoadHistoryDetailsTasks.add(currentTask);
