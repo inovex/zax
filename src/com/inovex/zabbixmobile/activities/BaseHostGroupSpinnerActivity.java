@@ -115,7 +115,8 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	protected void loadData() {
 		// "simulate" a first call such that the host group selection is not altered. 
 		// This would happen because the host group adapter is emptied and refilled.
-		mFirstCall = true;
+		if(mHostGroupPosition != 0)
+			mFirstCall = true;
 		mZabbixDataService.loadHostGroups();		
 	}
 	
