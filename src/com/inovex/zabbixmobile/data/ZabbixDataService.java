@@ -43,7 +43,7 @@ import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
 import com.inovex.zabbixmobile.listeners.OnApplicationsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
-import com.inovex.zabbixmobile.listeners.OnHistoryDetailsLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnGraphDataLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnHostsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnListItemsLoadedListener;
@@ -512,7 +512,7 @@ public class ZabbixDataService extends Service {
 					FatalException {
 				events = new ArrayList<Event>();
 				try {
-					mRemoteAPI.importEvents();
+					mRemoteAPI.importEvents(this);
 				} finally {
 					// even if the api call is not successful, we can still use
 					// the cached events
@@ -547,6 +547,12 @@ public class ZabbixDataService extends Service {
 				if (callback != null)
 					callback.onSeverityListAdapterLoaded(severity,
 							hostGroupChanged);
+			}
+			
+			@Override
+			protected void onProgressUpdate(Integer... values) {
+				super.onProgressUpdate(values);
+				callback.onSeverityListAdapterProgressUpdate(values[0]);
 			}
 
 		};
@@ -593,7 +599,7 @@ public class ZabbixDataService extends Service {
 					FatalException {
 				triggers = new ArrayList<Trigger>();
 				try {
-					mRemoteAPI.importActiveTriggers();
+					mRemoteAPI.importActiveTriggers(this);
 					// even if the api call is not successful, we can still use
 					// the cached events
 				} finally {
@@ -633,6 +639,12 @@ public class ZabbixDataService extends Service {
 				if (callback != null)
 					callback.onSeverityListAdapterLoaded(severity,
 							hostGroupChanged);
+			}
+
+			@Override
+			protected void onProgressUpdate(Integer... values) {
+				super.onProgressUpdate(values);
+				callback.onSeverityListAdapterProgressUpdate(values[0]);
 			}
 
 		};
@@ -877,7 +889,7 @@ public class ZabbixDataService extends Service {
 	 */
 	public void loadHistoryDetailsByItem(final Item item,
 			boolean cancelPreviousTasks,
-			final OnHistoryDetailsLoadedListener callback) {
+			final OnGraphDataLoadedListener callback) {
 		Log.d(TAG, "Loading history for item " + item.toString());
 		if (cancelPreviousTasks) {
 			cancelLoadHistoryDetailsTasks();
@@ -891,7 +903,7 @@ public class ZabbixDataService extends Service {
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
 				try {
-					mRemoteAPI.importHistoryDetails(item.getId());
+					mRemoteAPI.importHistoryDetails(item.getId(), this);
 				} finally {
 					try {
 						historyDetails = mDatabaseHelper
@@ -911,7 +923,7 @@ public class ZabbixDataService extends Service {
 				item.setHistoryDetails(historyDetails);
 
 				if (callback != null)
-					callback.onHistoryDetailsLoaded();
+					callback.onGraphDataLoaded();
 			}
 
 		};
@@ -989,7 +1001,7 @@ public class ZabbixDataService extends Service {
 						int k = 0;
 						for (GraphItem gi : g.getGraphItems()) {
 							Item item = gi.getItem();
-							mRemoteAPI.importHistoryDetails(item.getId());
+							mRemoteAPI.importHistoryDetails(item.getId(), null);
 							item.setHistoryDetails(mDatabaseHelper
 									.getHistoryDetailsByItemId(item.getId()));
 							k++;
@@ -1009,7 +1021,6 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onProgressUpdate(Integer... values) {
 				super.onProgressUpdate(values);
-				Log.d(TAG, "onProgressUpdate: " + values[0]);
 				callback.onGraphsProgressUpdate(values[0]);
 			}
 
@@ -1179,7 +1190,7 @@ public class ZabbixDataService extends Service {
 				try {
 					for (GraphItem gi : graph.getGraphItems()) {
 						Item item = gi.getItem();
-						mRemoteAPI.importHistoryDetails(item.getId());
+						mRemoteAPI.importHistoryDetails(item.getId(), this);
 						item.setHistoryDetails(mDatabaseHelper
 								.getHistoryDetailsByItemId(item.getId()));
 					}

@@ -783,11 +783,14 @@ public class ZabbixRemoteAPI {
 	 * Import the newest events if they are not cached in the local database
 	 * already.
 	 * 
+	 * @param task
+	 *            task to notify about progress
+	 * 
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 */
-	public void importEvents() throws ZabbixLoginRequiredException,
-			FatalException {
+	public void importEvents(RemoteAPITask task)
+			throws ZabbixLoginRequiredException, FatalException {
 
 		if (databaseHelper.isCached(CacheDataType.EVENT, null)) {
 			Log.d(TAG, "Events do not need to be refreshed.");
@@ -797,7 +800,21 @@ public class ZabbixRemoteAPI {
 		try {
 			databaseHelper.clearEvents();
 
-			int numEvents = ZabbixConfig.EVENTS_GET_LIMIT;
+			int numEvents;
+
+			// count of events
+			JSONObject result = _queryBuffer(
+					"event.get",
+					new JSONObject()
+							.put("output", "extend")
+							.put("countOutput", 1)
+							.put("time_from",
+									(new Date().getTime() / 1000)
+											- ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT));
+			
+			// Zabbix does not support limit when countOutput is used
+			numEvents = Math.min(ZabbixConfig.EVENTS_GET_LIMIT,
+					result.getInt("result"));
 
 			JSONObject params;
 			params = new JSONObject()
@@ -816,7 +833,7 @@ public class ZabbixRemoteAPI {
 				params.put("sortfield", "clock").put("sortorder", "DESC");
 			}
 			JsonArrayOrObjectReader events = _queryStream("event.get", params);
-			importEventsFromStream(events);
+			importEventsFromStream(events, task, numEvents);
 			// events.close();
 			databaseHelper.setCached(CacheDataType.EVENT, null);
 		} catch (SQLException e) {
@@ -840,6 +857,10 @@ public class ZabbixRemoteAPI {
 	 * 
 	 * @param jsonReader
 	 *            JSON stream reader
+	 * @param task
+	 *            task to be notified about progress; can be null
+	 * @param numEvents
+	 *            total number of events that will be imported
 	 * @throws JsonParseException
 	 * @throws IOException
 	 * @throws SQLException
@@ -847,14 +868,17 @@ public class ZabbixRemoteAPI {
 	 * @throws ZabbixLoginRequiredException
 	 * @throws JSONException
 	 */
-	private void importEventsFromStream(JsonArrayOrObjectReader jsonReader)
-			throws JsonParseException, IOException, SQLException,
-			JSONException, ZabbixLoginRequiredException, FatalException {
+	private void importEventsFromStream(JsonArrayOrObjectReader jsonReader,
+			RemoteAPITask task, int numEvents) throws JsonParseException,
+			IOException, SQLException, JSONException,
+			ZabbixLoginRequiredException, FatalException {
 		JsonObjectReader eventReader;
 		List<Event> eventsCollection = new ArrayList<Event>(
 				RECORDS_PER_INSERT_BATCH);
 		HashSet<Long> triggerIds = new HashSet<Long>();
+		int i = 0;
 		while ((eventReader = jsonReader.next()) != null) {
+			i++;
 			Event e = new Event();
 			while (eventReader.nextValueToken()) {
 				String propName = eventReader.getCurrentName();
@@ -867,8 +891,8 @@ public class ZabbixRemoteAPI {
 					e.setHostNames(hostNames);
 				} else if (propName.equals("triggers")) {
 					// import triggers
-					List<Trigger> triggers = importTriggersFromStream(eventReader
-							.getJsonArrayOrObjectReader());
+					List<Trigger> triggers = importTriggersFromStream(
+							eventReader.getJsonArrayOrObjectReader(), null, 0);
 					if (triggers.size() > 0) {
 						Trigger t = triggers.get(0);
 						e.setTrigger(t);
@@ -900,15 +924,28 @@ public class ZabbixRemoteAPI {
 				databaseHelper.insertEvents(eventsCollection);
 				eventsCollection.clear();
 			}
+			if (task != null)
+				task.updateProgress((i * 100) / numEvents);
 		}
 		// insert the last batch of events
 		databaseHelper.insertEvents(eventsCollection);
 		// we need to close here to be able to start another import (triggers)
 		jsonReader.close();
-		importTriggersByIds(triggerIds, false);
+		// TODO: progress update on triggers?
+		importTriggersByIds(triggerIds, false, null);
 	}
 
-	public void importHistoryDetails(long itemId)
+	/**
+	 * Imports history details for an item.
+	 * 
+	 * @param itemId
+	 * @param task
+	 *            task to be notified about the progress; may be null if no task
+	 *            shall be notified
+	 * @throws ZabbixLoginRequiredException
+	 * @throws FatalException
+	 */
+	public void importHistoryDetails(long itemId, RemoteAPITask task)
 			throws ZabbixLoginRequiredException, FatalException {
 		if (databaseHelper.isCached(CacheDataType.HISTORY_DETAILS, itemId))
 			return;
@@ -1027,6 +1064,9 @@ public class ZabbixRemoteAPI {
 									.insertHistoryDetails(historyDetailsCollection);
 							historyDetailsCollection.clear();
 						}
+						if (task != null)
+							task.updateProgress(Math.min(selI * 100
+									/ numDetails, 84));
 					}
 					Log.d(TAG, "itemID " + itemId + ": imported " + (selI / 20)
 							+ " history details.");
@@ -1577,7 +1617,7 @@ public class ZabbixRemoteAPI {
 					RECORDS_PER_INSERT_BATCH);
 			ArrayList<GraphItem> graphItemsCollection = new ArrayList<GraphItem>();
 			Map<Long, Item> itemsMap = new HashMap<Long, Item>();
-			
+
 			while ((graphReader = graphs.next()) != null) {
 				Graph graph = new Graph();
 				while (graphReader.nextValueToken()) {
@@ -1709,14 +1749,17 @@ public class ZabbixRemoteAPI {
 	/**
 	 * Imports active triggers.
 	 * 
+	 * @param task
+	 *            task to be notified of progress
+	 * 
 	 * @throws ZabbixLoginRequiredException
 	 * @throws FatalException
 	 */
-	public void importActiveTriggers() throws ZabbixLoginRequiredException,
-			FatalException {
+	public void importActiveTriggers(RemoteAPITask task)
+			throws ZabbixLoginRequiredException, FatalException {
 		if (databaseHelper.isCached(CacheDataType.TRIGGER, null))
 			return;
-		importTriggersByIds(null, true);
+		importTriggersByIds(null, true, task);
 		databaseHelper.setCached(CacheDataType.TRIGGER, null);
 	}
 
@@ -1741,6 +1784,8 @@ public class ZabbixRemoteAPI {
 	 *            triggers
 	 * @param onlyActive
 	 *            true: import only active triggers; false: import all
+	 * @param task
+	 *            task to be notified of progress update
 	 * @throws JSONException
 	 * @throws IOException
 	 * @throws SQLException
@@ -1748,10 +1793,10 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException
 	 */
 	private void importTriggersByIds(Collection<Long> triggerIds,
-			boolean onlyActive) throws ZabbixLoginRequiredException,
-			FatalException {
+			boolean onlyActive, RemoteAPITask task)
+			throws ZabbixLoginRequiredException, FatalException {
 
-		// clear triggers
+		// TODO: clear triggers if necessary
 		// databaseHelper.clearTriggers();
 
 		try {
@@ -1759,7 +1804,25 @@ public class ZabbixRemoteAPI {
 			long min = (new Date().getTime() / 1000)
 					- ZabbixConfig.STATUS_SHOW_TRIGGER_TIME;
 
+			int numTriggers;
+
 			JSONObject params = new JSONObject();
+			params.put("output", "extend").put("countOutput", 1)
+					.put("lastChangeSince", min).put("expandDescription", true);
+			if (triggerIds != null) {
+				params.put("triggerids", new JSONArray(triggerIds));
+			}
+			if (onlyActive)
+				params.put("only_true", "1");
+
+			// count of events
+			JSONObject result = _queryBuffer("trigger.get", params);
+
+			// The Zabbix API does not support limit when countOutput is used
+			numTriggers = Math.min(ZabbixConfig.TRIGGER_GET_LIMIT,
+					result.getInt("result"));
+
+			params = new JSONObject();
 			params.put("output", "extend")
 					.put("sortfield", "lastchange")
 					.put("sortorder", "desc")
@@ -1778,7 +1841,7 @@ public class ZabbixRemoteAPI {
 				params.put("only_true", "1");
 			JsonArrayOrObjectReader triggers = _queryStream("trigger.get",
 					params);
-			importTriggersFromStream(triggers);
+			importTriggersFromStream(triggers, task, numTriggers);
 			triggers.close();
 		} catch (SQLException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
@@ -1798,19 +1861,25 @@ public class ZabbixRemoteAPI {
 	 * 
 	 * @param jsonReader
 	 *            JSON stream reader
+	 * @param task
+	 *            task to be notified of progress
+	 * @param numTriggers
+	 *            total number of triggers that will be imported
 	 * @return list of imported triggers
 	 * @throws JsonParseException
 	 * @throws IOException
 	 * @throws SQLException
 	 */
 	private List<Trigger> importTriggersFromStream(
-			JsonArrayOrObjectReader jsonReader) throws JsonParseException,
-			IOException, SQLException {
+			JsonArrayOrObjectReader jsonReader, RemoteAPITask task,
+			int numTriggers) throws JsonParseException, IOException,
+			SQLException {
 		List<Trigger> triggerCollection = new ArrayList<Trigger>(
 				RECORDS_PER_INSERT_BATCH);
 		List<TriggerHostGroupRelation> triggerHostGroupCollection = new ArrayList<TriggerHostGroupRelation>(
 				RECORDS_PER_INSERT_BATCH);
 		JsonObjectReader triggerReader;
+		int i = 0;
 		while ((triggerReader = jsonReader.next()) != null) {
 			Trigger t = new Trigger();
 			while (triggerReader.nextValueToken()) {
@@ -1872,6 +1941,9 @@ public class ZabbixRemoteAPI {
 						.insertTriggerHostgroupRelations(triggerHostGroupCollection);
 				triggerHostGroupCollection.clear();
 			}
+			i++;
+			if (task != null)
+				task.updateProgress((i * 100) / numTriggers);
 		}
 		databaseHelper.insertTriggers(triggerCollection);
 		databaseHelper

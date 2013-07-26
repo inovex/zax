@@ -7,17 +7,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.listeners.OnHistoryDetailsLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnGraphDataLoadedListener;
 import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.util.GraphUtil;
 import com.jjoe64.graphview.LineGraphView;
 
 public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
-		implements OnHistoryDetailsLoadedListener {
+		implements OnGraphDataLoadedListener {
 
 	protected boolean mHistoryDetailsImported = false;
 	private boolean mGraphLoadingSpinnerVisible = true;
@@ -66,11 +67,9 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 		if (item != null) {
 			Collection<HistoryDetail> historyDetails = item.getHistoryDetails();
 			// create graph and add it to the layout
-			int numEntries = historyDetails.size();
-			if (numEntries > 0) {
-				final LineGraphView graph = GraphUtil.createItemGraphPreview(
-						getSherlockActivity(), historyDetails,
-						item);
+			final LineGraphView graph = GraphUtil.createItemGraphPreview(
+					getSherlockActivity(), historyDetails, item);
+			if (graph != null) {
 				layout.removeAllViews();
 				layout.addView(graph);
 			} else {
@@ -86,7 +85,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 	protected abstract void showGraph();
 
 	@Override
-	public void onHistoryDetailsLoaded() {
+	public void onGraphDataLoaded() {
 		mHistoryDetailsImported = true;
 		if (getView() != null) {
 			showGraph();
@@ -122,6 +121,15 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 			}
 		}
 
+	}
+	
+	@Override
+	public void onGraphDataProgressUpdate(int progress) {
+		if (getView() != null) {
+			ProgressBar graphProgress = (ProgressBar) getView().findViewById(
+					R.id.graph_progress);
+			graphProgress.setProgress(progress);
+		}
 	}
 
 }

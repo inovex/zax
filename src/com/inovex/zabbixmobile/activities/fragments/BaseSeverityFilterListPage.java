@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
@@ -170,6 +171,14 @@ public abstract class BaseSeverityFilterListPage extends
 			}
 		}
 
+	}
+
+	public void updateProgress(int progress) {
+		if (getView() != null) {
+			ProgressBar listProgress = (ProgressBar) getView().findViewById(
+					R.id.list_progress);
+			listProgress.setProgress(progress);
+		}		
 	}
 
 }

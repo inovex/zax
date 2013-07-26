@@ -76,6 +76,8 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
 		if (graph != null) {
 			LineGraphView graphView = GraphUtil.createScreenGraphPreview(getActivity(), graph);
+			if(graphView == null)
+				return false;
 			LinearLayout graphLayout = new LinearLayout(getSherlockActivity());
 			graphLayout.addView(graphView);
 
@@ -93,8 +95,6 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 			showGraphs();
 		}
 		dismissGraphProgressBar();
-		// if (mScreen.getGraphs() != null)
-		// showGraph((Graph) mScreen.getGraphs().toArray()[0]);
 	}
 
 	protected void showGraphs() {

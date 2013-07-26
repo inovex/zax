@@ -5,4 +5,6 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
 public interface OnSeverityListAdapterLoadedListener {
 
 	public void onSeverityListAdapterLoaded(TriggerSeverity severity, boolean hostGroupChanged);
+	
+	public void onSeverityListAdapterProgressUpdate(int progress);
 }

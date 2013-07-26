@@ -91,10 +91,12 @@ public class GraphUtil {
 		graphView.setLegendWidth(250);
 
 		GraphViewSeries series;
+		boolean emptyGraph = true;
 		for (GraphItem gi : graph.getGraphItems()) {
 			Item item = gi.getItem();
 			Collection<HistoryDetail> historyDetails = item.getHistoryDetails();
 			if (historyDetails != null && historyDetails.size() > 0) {
+				emptyGraph = false;
 				GraphViewData[] values = new GraphViewData[historyDetails
 						.size()];
 				int i = 0;
@@ -111,7 +113,9 @@ public class GraphUtil {
 				graphView.addSeries(series);
 			}
 		}
-
+		if(emptyGraph)
+			return null;
+		
 		return graphView;
 	}
 	
@@ -129,6 +133,8 @@ public class GraphUtil {
 		int numEntries = historyDetails.size();
 		GraphViewData[] values = new GraphViewData[numEntries];
 		int i = 0;
+		if(historyDetails == null || historyDetails.size() == 0)
+			return null;
 		for (HistoryDetail detail : historyDetails) {
 			long clock = detail.getClock() / 1000;
 			double value = detail.getValue();

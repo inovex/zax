@@ -248,4 +248,12 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		}
 	}
 
+	public void updateProgress(int progress) {
+		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
+				.getPages()) {
+			if (p != null)
+				p.updateProgress(progress);
+		}
+	}
+
 }

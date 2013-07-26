@@ -148,6 +148,12 @@ public abstract class BaseSeverityFilterActivity<T> extends
 		mDetailsFragment.dismissLoadingSpinner();
 	}
 
+	@Override
+	public void onSeverityListAdapterProgressUpdate(int progress) {
+		Log.d(TAG, "progress update: " + progress);
+		mListFragment.updateProgress(progress);
+	}
+
 	/**
 	 * Selects an item in both fragments. If the host group has been changed,
 	 * the first item will be selected; otherwise, the saved position will be

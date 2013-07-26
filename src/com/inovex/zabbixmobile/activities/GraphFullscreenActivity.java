@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
-import com.inovex.zabbixmobile.listeners.OnHistoryDetailsLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnGraphDataLoadedListener;
 import com.inovex.zabbixmobile.model.Graph;
 import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Item;
@@ -63,9 +63,9 @@ public class GraphFullscreenActivity extends BaseActivity {
 		// load data by item
 		if (mItemId != -1) {
 			final Item item = mZabbixDataService.getItemById(mItemId);
-			mZabbixDataService.loadHistoryDetailsByItem(item, false, new OnHistoryDetailsLoadedListener() {
+			mZabbixDataService.loadHistoryDetailsByItem(item, false, new OnGraphDataLoadedListener() {
 				@Override
-				public void onHistoryDetailsLoaded() {
+				public void onGraphDataLoaded() {
 					Collection<HistoryDetail> historyDetails = item.getHistoryDetails();
 					LineGraphView graph = GraphUtil.createItemGraphFullscreen(GraphFullscreenActivity.this, historyDetails, item.getDescription());
 					if (mLayout != null) {
@@ -74,6 +74,12 @@ public class GraphFullscreenActivity extends BaseActivity {
 					if (loadingDlg != null) {
 						loadingDlg.dismiss();
 					}
+				}
+
+				@Override
+				public void onGraphDataProgressUpdate(int progress) {
+					// TODO Auto-generated method stub
+					
 				}
 			});
 		}

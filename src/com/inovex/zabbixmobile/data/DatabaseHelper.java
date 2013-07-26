@@ -557,7 +557,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 
 			for (HostGroup group : hostGroups) {
-				hostGroupDao.createOrUpdate(group);
+				hostGroupDao.createIfNotExists(group);
 			}
 
 		} finally {

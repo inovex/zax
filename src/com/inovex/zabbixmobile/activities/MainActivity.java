@@ -112,4 +112,10 @@ public class MainActivity extends BaseActivity implements
 				TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL, true, this);		
 	}
 
+	@Override
+	public void onSeverityListAdapterProgressUpdate(int progress) {
+		Log.d(TAG, "progress: " + progress);
+		mProblemsFragment.updateProgress(progress);
+	}
+
 }
