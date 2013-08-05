@@ -89,6 +89,10 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 		mHistoryDetailsImported = true;
 		if (getView() != null) {
 			showGraph();
+			// reset progress
+			ProgressBar graphProgress = (ProgressBar) getView().findViewById(
+					R.id.graph_progress);
+			graphProgress.setProgress(0);
 		}
 	}
 
@@ -122,7 +126,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 		}
 
 	}
-	
+
 	@Override
 	public void onGraphDataProgressUpdate(int progress) {
 		if (getView() != null) {

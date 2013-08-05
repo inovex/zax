@@ -5,7 +5,11 @@ import java.util.Collection;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
@@ -14,29 +18,38 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
+import com.inovex.zabbixmobile.data.ZabbixDataService;
+import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.listeners.OnGraphDataLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
 import com.inovex.zabbixmobile.model.Graph;
 import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.util.GraphUtil;
 import com.jjoe64.graphview.LineGraphView;
 
-public class GraphFullscreenActivity extends BaseActivity {
+public class GraphFullscreenActivity extends SherlockFragmentActivity implements ServiceConnection {
 	private LinearLayout mLayout;
 	private long mItemId;
 	private long mGraphId;
+	
+	protected ZabbixDataService mZabbixDataService;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		super.onCreate(savedInstanceState);
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+			return;
+		
+		bindService();
 
 		mItemId = getIntent().getLongExtra("itemid", -1);
 		mGraphId = getIntent().getLongExtra("graphid", -1);
@@ -48,6 +61,15 @@ public class GraphFullscreenActivity extends BaseActivity {
 		mLayout = new LinearLayout(this);
 
 		setContentView(mLayout);
+	}
+	
+	/**
+	 * Binds the Zabbix service.
+	 */
+	protected void bindService() {
+		Intent intent = new Intent(this, ZabbixDataService.class);
+		getApplicationContext().bindService(intent, this,
+				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
@@ -65,7 +87,8 @@ public class GraphFullscreenActivity extends BaseActivity {
 
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder binder) {
-		super.onServiceConnected(className, binder);
+		ZabbixDataBinder zabbixBinder = (ZabbixDataBinder) binder;
+		mZabbixDataService = zabbixBinder.getService();
 		loadGraphData();
 	}
 
@@ -130,18 +153,6 @@ public class GraphFullscreenActivity extends BaseActivity {
 		}
 	}
 
-	@Override
-	protected void loadData() {
-	}
-
-	@Override
-	protected void disableUI() {
-	}
-
-	@Override
-	protected void enableUI() {
-	}
-
 	/**
 	 * The dialog displayed when an event shall be acknowledged.
 	 * 
@@ -158,6 +169,12 @@ public class GraphFullscreenActivity extends BaseActivity {
 					R.string.loading));
 			return mLoadingDlg;
 		}
+	}
+
+	@Override
+	public void onServiceDisconnected(ComponentName name) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

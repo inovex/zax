@@ -561,7 +561,7 @@ public class ZabbixRemoteAPI {
 		} else {
 			throw new ZabbixLoginRequiredException();
 		}
-		return token != null;
+		return true;
 	}
 
 	/**

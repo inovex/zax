@@ -98,7 +98,7 @@ public class MainActivity extends BaseActivity implements
 		Log.d(TAG, "onStart");
 		// check whether we're coming back from another activity; if that's the
 		// case, we reload the problems because there might have been a refresh
-		if (mZabbixDataService != null)
+		if (mZabbixDataService != null && mZabbixDataService.isLoggedIn()) 
 			loadData();
 	}
 
