@@ -108,7 +108,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 						+ ((h == null) ? "null" : h.toString()));
 		// mApplicationsFragment.selectHost(position, id);
 		mApplicationsFragment.setHost(h);
-		mApplicationsFragment.showApplicationsLoadingSpinner();
+		mApplicationsFragment.showApplicationsProgressBar();
 		showApplicationsFragment();
 		mZabbixDataService.loadApplicationsByHostId(id, this);
 
@@ -246,7 +246,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	public void onApplicationsLoaded() {
 		// This is ugly, but we need it to redraw the page indicator
 		mApplicationsFragment.redrawPageIndicator();
-		mApplicationsFragment.dismissApplicationsLoadingSpinner();
+		mApplicationsFragment.dismissApplicationsProgressBar();
 		mItemDetailsFragment.dismissLoadingSpinner();
 	}
 
@@ -261,7 +261,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		// This loads the host list and - if necessary (i.e. currentHostId is
 		// set) - the applications.
 		mHostListFragment.showLoadingSpinner();
-		mApplicationsFragment.showApplicationsLoadingSpinner();
+		mApplicationsFragment.showApplicationsProgressBar();
 		mItemDetailsFragment.showLoadingSpinner();
 		loadAdapterContent(true);
 	}

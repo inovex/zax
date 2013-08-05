@@ -42,7 +42,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 
 	private OnSeveritySelectedListener mCallbackMain;
 
-	private boolean mLoadingSpinnerVisible = true;
+	private boolean mProgressBarVisible = true;
 
 	class SeverityListPagerAdapter extends FragmentPagerAdapter {
 
@@ -58,8 +58,8 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 			BaseSeverityFilterListPage f = instantiatePage();
 			f.setSeverity(TriggerSeverity.getSeverityByPosition(i));
 			f.setHostGroupId(mCurrentHostGroupId);
-			if (!mLoadingSpinnerVisible)
-				f.dismissLoadingSpinner();
+			if (!mProgressBarVisible)
+				f.dismissProgressBar();
 			Log.d(TAG, "getItem: " + f.toString());
 			return f;
 		}
@@ -119,7 +119,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 			setCurrentSeverity(TriggerSeverity
 					.getSeverityByNumber(savedInstanceState.getInt(
 							ARG_SEVERITY, TriggerSeverity.ALL.getNumber())));
-			mLoadingSpinnerVisible = savedInstanceState.getBoolean(
+			mProgressBarVisible = savedInstanceState.getBoolean(
 					ARG_SPINNER_VISIBLE, false);
 		}
 	}
@@ -145,7 +145,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		outState.putInt(ARG_POSITION, mCurrentPosition);
 		outState.putLong(ARG_ITEM_ID, mCurrentItemId);
 		outState.putInt(ARG_SEVERITY, mCurrentSeverity.getNumber());
-		outState.putBoolean(ARG_SPINNER_VISIBLE, mLoadingSpinnerVisible);
+		outState.putBoolean(ARG_SPINNER_VISIBLE, mProgressBarVisible);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -230,21 +230,21 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		}
 	}
 
-	public void showLoadingSpinner() {
-		mLoadingSpinnerVisible = true;
+	public void showProgressBar() {
+		mProgressBarVisible = true;
 		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
 				.getPages()) {
 			if (p != null)
-				p.showLoadingSpinner();
+				p.showProgressBar();
 		}
 	}
 
-	public void dismissLoadingSpinner() {
-		mLoadingSpinnerVisible = false;
+	public void dismissProgressBar() {
+		mProgressBarVisible = false;
 		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
 				.getPages()) {
 			if (p != null)
-				p.dismissLoadingSpinner();
+				p.dismissProgressBar();
 		}
 	}
 

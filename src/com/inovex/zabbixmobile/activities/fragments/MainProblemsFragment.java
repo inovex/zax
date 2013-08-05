@@ -32,13 +32,13 @@ public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 	private ListView mProblemsList;
 	private Button mProblemsButton;
 
-	private boolean mLoadingSpinnerVisible = true;
+	private boolean mProgressBarVisible = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			mLoadingSpinnerVisible = savedInstanceState.getBoolean(
+			mProgressBarVisible = savedInstanceState.getBoolean(
 					ARG_SPINNER_VISIBLE, false);
 		}
 
@@ -86,8 +86,8 @@ public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 		if (emptyView != null)
 			emptyView.setText(R.string.no_items_to_display);
 
-		if (mLoadingSpinnerVisible)
-			showLoadingSpinner();
+		if (mProgressBarVisible)
+			showProgressBar();
 	}
 
 	@Override
@@ -106,14 +106,14 @@ public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putBoolean(ARG_SPINNER_VISIBLE, mLoadingSpinnerVisible);
+		outState.putBoolean(ARG_SPINNER_VISIBLE, mProgressBarVisible);
 	}
 
 	/**
 	 * Shows a loading spinner instead of this page's list view.
 	 */
-	public void showLoadingSpinner() {
-		mLoadingSpinnerVisible = true;
+	public void showProgressBar() {
+		mProgressBarVisible = true;
 		if (getView() != null) {
 			LinearLayout progressLayout = (LinearLayout) getView()
 					.findViewById(R.id.list_progress_layout);
@@ -128,8 +128,8 @@ public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 	 * If the view has not yet been created, the status is saved and when the
 	 * view is created, the spinner will not be shown at all.
 	 */
-	public void dismissLoadingSpinner() {
-		mLoadingSpinnerVisible = false;
+	public void dismissProgressBar() {
+		mProgressBarVisible = false;
 		if (getView() != null) {
 			LinearLayout progressLayout = (LinearLayout) getView()
 					.findViewById(R.id.list_progress_layout);
@@ -139,6 +139,14 @@ public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 		}
 
 	}
+	
+	public void updateProgress(int progress) {
+		if (getView() != null) {
+			ProgressBar listProgress = (ProgressBar) getView().findViewById(
+					R.id.list_progress);
+			listProgress.setProgress(progress);
+		}
+	}
 
 	public void disableUI() {
 		mProblemsButton.setEnabled(false);
@@ -146,14 +154,6 @@ public class MainProblemsFragment extends BaseServiceConnectedListFragment {
 
 	public void enableUI() {
 		mProblemsButton.setEnabled(true);
-	}
-
-	public void updateProgress(int progress) {
-		if (getView() != null) {
-			ProgressBar listProgress = (ProgressBar) getView().findViewById(
-					R.id.list_progress);
-			listProgress.setProgress(progress);
-		}
 	}
 
 }

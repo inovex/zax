@@ -1,13 +1,7 @@
 package com.inovex.zabbixmobile.adapters;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.ViewGroup;
 
-import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListPage;
 import com.inovex.zabbixmobile.activities.fragments.ChecksApplicationsPage;
 import com.inovex.zabbixmobile.model.Application;
 
@@ -15,13 +9,10 @@ public class ChecksApplicationsPagerAdapter extends
 		BaseServicePagerAdapter<Application> {
 
 	private static final String TAG = ChecksApplicationsPagerAdapter.class.getSimpleName();
-	private boolean mLoadingSpinnerVisible = true;
 	
 	@Override
 	public CharSequence getPageTitle(int position) {
 		return getItem(position).getName();
-		// return ((ChecksDetailsPage)getPage(position)).getTitle();
-		// return "TITLE";
 	}
 
 	@Override
@@ -33,8 +24,6 @@ public class ChecksApplicationsPagerAdapter extends
 	protected Fragment getPage(int position) {
 		ChecksApplicationsPage p = new ChecksApplicationsPage();
 		p.setApplication(getItem(position));
-//		if(!mLoadingSpinnerVisible )
-//			p.dismissLoadingSpinner();
 		return p;
 	}
 	
@@ -46,8 +35,4 @@ public class ChecksApplicationsPagerAdapter extends
 		return POSITION_NONE;
 	}
 	
-	public void setLoadingSpinnerVisible(boolean loadingSpinnerVisible) {
-		this.mLoadingSpinnerVisible = loadingSpinnerVisible;
-	}
-
 }

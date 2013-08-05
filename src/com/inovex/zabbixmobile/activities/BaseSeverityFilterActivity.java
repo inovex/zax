@@ -85,7 +85,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 
 	@Override
 	public void selectHostGroupInSpinner(int position, long itemId) {
-		mListFragment.showLoadingSpinner();
+		mListFragment.showProgressBar();
 		mDetailsFragment.showLoadingSpinner();
 		super.selectHostGroupInSpinner(position, itemId);
 		mListFragment.setHostGroupId(itemId);
@@ -154,7 +154,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	@Override
 	public void onSeverityListAdapterLoaded(TriggerSeverity severity,
 			boolean hostGroupChanged) {
-		mListFragment.dismissLoadingSpinner();
+		mListFragment.dismissProgressBar();
 		mDetailsFragment.redrawPageIndicator();
 		mDetailsFragment.dismissLoadingSpinner();
 	}
@@ -190,7 +190,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	@Override
 	protected void loadData() {
 		super.loadData();
-		mListFragment.showLoadingSpinner();
+		mListFragment.showProgressBar();
 		mDetailsFragment.showLoadingSpinner();
 		loadAdapterContent(true);
 	}

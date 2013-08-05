@@ -29,7 +29,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	private int mHostPosition = 0;
 	private long mHostId;
 	private Host mHost;
-	private boolean mApplicationsLoadingSpinnerVisible = true;
+	private boolean mApplicationsProgressBarVisible = true;
 	private boolean mItemsLoadingSpinnerVisible = true;
 
 	private static final String ARG_HOST_POSITION = "arg_host_position";
@@ -63,7 +63,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		if (savedInstanceState != null) {
 			mHostPosition = savedInstanceState.getInt(ARG_HOST_POSITION, 0);
 			mHostId = savedInstanceState.getLong(ARG_HOST_ID, 0);
-			mApplicationsLoadingSpinnerVisible = savedInstanceState.getBoolean(
+			mApplicationsProgressBarVisible = savedInstanceState.getBoolean(
 					ARG_APPLICATIONS_SPINNER_VISIBLE, false);
 			mItemsLoadingSpinnerVisible = savedInstanceState.getBoolean(
 					ARG_ITEMS_SPINNER_VISIBLE, false);
@@ -82,8 +82,8 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		mTitleView = (TextView) view.findViewById(R.id.checks_title);
-		if (mApplicationsLoadingSpinnerVisible)
-			showApplicationsLoadingSpinner();
+		if (mApplicationsProgressBarVisible)
+			showApplicationsProgressBar();
 		// if (mItemsLoadingSpinnerVisible)
 		// showItemsLoadingSpinner();
 	}
@@ -93,7 +93,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		outState.putInt(ARG_HOST_POSITION, mHostPosition);
 		outState.putLong(ARG_HOST_ID, mHostId);
 		outState.putBoolean(ARG_APPLICATIONS_SPINNER_VISIBLE,
-				mApplicationsLoadingSpinnerVisible);
+				mApplicationsProgressBarVisible);
 		outState.putBoolean(ARG_ITEMS_SPINNER_VISIBLE,
 				mItemsLoadingSpinnerVisible);
 		super.onSaveInstanceState(outState);
@@ -200,8 +200,8 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	/**
 	 * Shows a loading spinner instead of this page's list view.
 	 */
-	public void showApplicationsLoadingSpinner() {
-		mApplicationsLoadingSpinnerVisible = true;
+	public void showApplicationsProgressBar() {
+		mApplicationsProgressBarVisible = true;
 		if (getView() != null) {
 			LinearLayout progressLayout = (LinearLayout) getView()
 					.findViewById(R.id.applications_progress_layout);
@@ -216,8 +216,8 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	 * If the view has not yet been created, the status is saved and when the
 	 * view is created, the spinner will not be shown at all.
 	 */
-	public void dismissApplicationsLoadingSpinner() {
-		mApplicationsLoadingSpinnerVisible = false;
+	public void dismissApplicationsProgressBar() {
+		mApplicationsProgressBarVisible = false;
 		if (getView() != null) {
 			LinearLayout progressLayout = (LinearLayout) getView()
 					.findViewById(R.id.applications_progress_layout);

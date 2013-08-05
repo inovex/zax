@@ -66,7 +66,7 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 		this.mItem = item;
 		if (mZabbixDataService != null && item != null) {
 			fillDetailsText();
-			showGraphLoadingSpinner();
+			showGraphProgressBar();
 			mZabbixDataService.loadHistoryDetailsByItem(mItem, true, this);
 		}
 	}

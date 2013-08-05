@@ -21,14 +21,14 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 		implements OnGraphDataLoadedListener {
 
 	protected boolean mHistoryDetailsImported = false;
-	private boolean mGraphLoadingSpinnerVisible = true;
+	private boolean mGraphProgressBarVisible = true;
 	private static final String ARG_GRAPH_SPINNER_VISIBLE = "arg_graph_spinner_visible";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			mGraphLoadingSpinnerVisible = savedInstanceState.getBoolean(
+			mGraphProgressBarVisible = savedInstanceState.getBoolean(
 					ARG_GRAPH_SPINNER_VISIBLE, true);
 		}
 	}
@@ -36,7 +36,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putBoolean(ARG_GRAPH_SPINNER_VISIBLE,
-				mGraphLoadingSpinnerVisible);
+				mGraphProgressBarVisible);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -50,8 +50,8 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		if (mGraphLoadingSpinnerVisible)
-			showGraphLoadingSpinner();
+		if (mGraphProgressBarVisible)
+			showGraphProgressBar();
 
 		fillDetailsText();
 
@@ -63,7 +63,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 
 	protected void showGraph(final Item item) {
 		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
-		dismissGraphLoadingSpinner();
+		dismissGraphProgressBar();
 		if (item != null) {
 			Collection<HistoryDetail> historyDetails = item.getHistoryDetails();
 			// create graph and add it to the layout
@@ -99,8 +99,8 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 	/**
 	 * Shows a loading spinner instead of the graph view.
 	 */
-	public void showGraphLoadingSpinner() {
-		mGraphLoadingSpinnerVisible = true;
+	public void showGraphProgressBar() {
+		mGraphProgressBarVisible = true;
 		if (getView() != null) {
 			LinearLayout progressLayout = (LinearLayout) getView()
 					.findViewById(R.id.graph_progress_layout);
@@ -115,8 +115,8 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 	 * If the view has not yet been created, the status is saved and when the
 	 * view is created, the spinner will not be shown at all.
 	 */
-	public void dismissGraphLoadingSpinner() {
-		mGraphLoadingSpinnerVisible = false;
+	public void dismissGraphProgressBar() {
+		mGraphProgressBarVisible = false;
 		if (getView() != null) {
 			LinearLayout progressLayout = (LinearLayout) getView()
 					.findViewById(R.id.graph_progress_layout);

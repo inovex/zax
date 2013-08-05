@@ -105,13 +105,13 @@ public class MainActivity extends BaseActivity implements
 	@Override
 	public void onSeverityListAdapterLoaded(TriggerSeverity severity,
 			boolean hostGroupChanged) {
-		mProblemsFragment.dismissLoadingSpinner();
+		mProblemsFragment.dismissProgressBar();
 
 	}
 
 	@Override
 	protected void loadData() {
-		mProblemsFragment.showLoadingSpinner();
+		mProblemsFragment.showProgressBar();
 		mZabbixDataService.loadProblemsByHostGroup(HostGroup.GROUP_ID_ALL,
 				true, this);
 	}
