@@ -64,6 +64,18 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 	 */
 	public void setItem(Item item) {
 		this.mItem = item;
+		if (item == null) {
+			if (getView() != null) {
+				((TextView) getView().findViewById(R.id.item_details_name))
+						.setText("");
+
+				((TextView) getView().findViewById(R.id.latest_data))
+						.setText("");
+				
+				ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
+				layout.removeAllViews();
+			}
+		}
 		if (mZabbixDataService != null && item != null) {
 			fillDetailsText();
 			showGraphProgressBar();

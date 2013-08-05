@@ -24,7 +24,10 @@ public interface OnChecksItemSelectedListener {
 	 *            list position
 	 * @param item
 	 *            the selected item
+	 * @param showItemDetails
+	 *            whether or not the item details shall be shown (at activity
+	 *            startup, the details shall not be shown)
 	 */
-	public void onItemSelected(int position, Item item);
+	public void onItemSelected(int position, Item item, boolean showItemDetails);
 
 }

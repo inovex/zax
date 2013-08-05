@@ -21,8 +21,6 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 
 	public static String TAG = ChecksApplicationsPage.class.getSimpleName();
 
-	private static final String ARG_POSITION = "arg_position";
-
 	private int mCurrentPosition = 0;
 	private long mCurrentItemId = 0;
 
@@ -44,9 +42,6 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate: " + this.toString());
-		if (savedInstanceState != null) {
-			mCurrentPosition = savedInstanceState.getInt(ARG_POSITION, 0);
-		}
 	}
 
 	@Override
@@ -71,12 +66,6 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 
 	}
 
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putInt(ARG_POSITION, mCurrentPosition);
-	}
-
 	public void setCurrentPosition(int currentPosition) {
 		this.mCurrentPosition = currentPosition;
 	}
@@ -98,6 +87,18 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 		}
 	}
 
+	public void restoreItemSelection() {
+		if (mZabbixDataService == null
+				|| mZabbixDataService.getChecksItemsListAdapter().getCount() <= 0)
+			return;
+		if (mCurrentPosition >= mZabbixDataService.getChecksItemsListAdapter()
+				.getCount())
+			mCurrentPosition = 0;
+		// selectItem(mCurrentPosition);
+		mCallbackMain.onItemSelected(mCurrentPosition, mZabbixDataService
+				.getChecksItemsListAdapter().getItem(mCurrentPosition), false);
+	}
+
 	@Override
 	protected void setupListAdapter() {
 		setListAdapter(mZabbixDataService.getChecksItemsListAdapter());
@@ -106,7 +107,7 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		mCallbackMain.onItemSelected(position, mZabbixDataService
-				.getChecksItemsListAdapter().getItem(position));
+				.getChecksItemsListAdapter().getItem(position), true);
 	}
 
 	public void setApplication(Application app) {

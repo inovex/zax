@@ -3,6 +3,7 @@ package com.inovex.zabbixmobile.activities.fragments;
 import java.util.Collection;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 	protected boolean mHistoryDetailsImported = false;
 	private boolean mGraphProgressBarVisible = true;
 	private static final String ARG_GRAPH_SPINNER_VISIBLE = "arg_graph_spinner_visible";
+	private static final String TAG = BaseDetailsPage.class.getSimpleName();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 			mGraphProgressBarVisible = savedInstanceState.getBoolean(
 					ARG_GRAPH_SPINNER_VISIBLE, true);
 		}
+		Log.d(TAG, "onCreate");
 	}
 
 	@Override
@@ -38,17 +41,20 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 		outState.putBoolean(ARG_GRAPH_SPINNER_VISIBLE,
 				mGraphProgressBarVisible);
 		super.onSaveInstanceState(outState);
+		Log.d(TAG, "onSaveInstanceState");
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		Log.d(TAG, "onCreateView");
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		Log.d(TAG, "onViewCreated");
 
 		if (mGraphProgressBarVisible)
 			showGraphProgressBar();
@@ -62,6 +68,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 	protected abstract void fillDetailsText();
 
 	protected void showGraph(final Item item) {
+		Log.d(TAG, "showGraph(" + item + ")");
 		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
 		dismissGraphProgressBar();
 		if (item != null) {
@@ -86,6 +93,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 
 	@Override
 	public void onGraphDataLoaded() {
+		Log.d(TAG, "onGraphDataLoaded");
 		mHistoryDetailsImported = true;
 		if (getView() != null) {
 			showGraph();

@@ -42,6 +42,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d(TAG, "onCreate");
 		setContentView(R.layout.activity_checks);
 
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -115,10 +116,14 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	}
 
 	@Override
-	public void onItemSelected(int position, Item item) {
-		mApplicationsFragment.selectItem(position);
+	public void onItemSelected(int position, Item item, boolean showItemDetails) {
 		mItemDetailsFragment.setItem(item);
-		showItemDetailsFragment();
+		mItemDetailsFragment.dismissLoadingSpinner();
+		if(showItemDetails) {
+			showItemDetailsFragment();
+		}
+		if(showItemDetails || mItemDetailsFragment.isVisible())
+			mApplicationsFragment.selectItem(position);
 	}
 
 	@Override
@@ -126,9 +131,9 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		// Selecting an application never makes the item details visible. If
 		// item details are already visible, we select the first item of the
 		// chosen application.
-		if (mItemDetailsFragment.isVisible()) {
-			mApplicationsFragment.selectItem(0);
-			mItemDetailsFragment.setItem(null);
+		if (mFlipper != null && mItemDetailsFragment.isVisible()) {
+//			mApplicationsFragment.selectItem(0);
+//			mItemDetailsFragment.setItem(null);
 		}
 	}
 
@@ -246,6 +251,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	public void onApplicationsLoaded() {
 		// This is ugly, but we need it to redraw the page indicator
 		mApplicationsFragment.redrawPageIndicator();
+		mApplicationsFragment.restoreApplicationSelection();
 		mApplicationsFragment.dismissApplicationsProgressBar();
 		mItemDetailsFragment.dismissLoadingSpinner();
 	}
@@ -263,6 +269,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		mHostListFragment.showLoadingSpinner();
 		mApplicationsFragment.showApplicationsProgressBar();
 		mItemDetailsFragment.showLoadingSpinner();
+		mItemDetailsFragment.setItem(null);
 		loadAdapterContent(true);
 	}
 

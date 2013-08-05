@@ -31,9 +31,13 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	private Host mHost;
 	private boolean mApplicationsProgressBarVisible = true;
 	private boolean mItemsLoadingSpinnerVisible = true;
+	private int mApplicationPosition = 0;
+	private int mItemPosition = 0;
 
 	private static final String ARG_HOST_POSITION = "arg_host_position";
 	private static final String ARG_HOST_ID = "arg_host_id";
+	private static final String ARG_APPLICATION_POSITION = "arg_application_position";
+	private static final String ARG_ITEM_POSITION = "arg_item_position";
 	private static final String ARG_APPLICATIONS_SPINNER_VISIBLE = "arg_applications_spinner_visible";
 	private static final String ARG_ITEMS_SPINNER_VISIBLE = "arg_items_spinner_visible";
 
@@ -63,12 +67,15 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		if (savedInstanceState != null) {
 			mHostPosition = savedInstanceState.getInt(ARG_HOST_POSITION, 0);
 			mHostId = savedInstanceState.getLong(ARG_HOST_ID, 0);
+			mApplicationPosition = savedInstanceState.getInt(
+					ARG_APPLICATION_POSITION, 0);
+			mItemPosition = savedInstanceState.getInt(
+					ARG_ITEM_POSITION, 0);
 			mApplicationsProgressBarVisible = savedInstanceState.getBoolean(
 					ARG_APPLICATIONS_SPINNER_VISIBLE, false);
 			mItemsLoadingSpinnerVisible = savedInstanceState.getBoolean(
 					ARG_ITEMS_SPINNER_VISIBLE, false);
 		}
-		// setRetainInstance(true);
 		Log.d(TAG, "Host position: " + mHostPosition + "; id: " + mHostId);
 	}
 
@@ -92,11 +99,14 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putInt(ARG_HOST_POSITION, mHostPosition);
 		outState.putLong(ARG_HOST_ID, mHostId);
+		outState.putInt(ARG_APPLICATION_POSITION, mApplicationPosition);
+		outState.putInt(ARG_ITEM_POSITION, mItemPosition);
 		outState.putBoolean(ARG_APPLICATIONS_SPINNER_VISIBLE,
 				mApplicationsProgressBarVisible);
 		outState.putBoolean(ARG_ITEMS_SPINNER_VISIBLE,
 				mItemsLoadingSpinnerVisible);
 		super.onSaveInstanceState(outState);
+		Log.d(TAG, "onSaveInstanceState");
 	}
 
 	@Override
@@ -167,9 +177,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 						public void onPageSelected(int position) {
 							Log.d(TAG, "detail page selected: " + position);
 
-							mDetailsPagerAdapter.setCurrentPosition(position);
-							mDetailsPager.setCurrentItem(position);
-							mDetailsPageIndicator.setCurrentItem(position);
+							selectApplication(position);
 
 							// mDetailsPagerAdapter.getCurrentPage().selectItem(0);
 							mCallbackMain.onApplicationSelected(position);
@@ -180,14 +188,8 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 											.getId(),
 									ChecksApplicationsFragment.this);
 
-							// propagate page change only if there actually was
-							// a
-							// change -> prevent infinite propagation
-							// mDetailsPagerAdapter.setCurrentPosition(position);
-							// if (position != mPosition)
-							// mCallbackMain.onListItemSelected(position,
-							// mDetailsPagerAdapter.getItemId(position));
 						}
+
 					});
 		}
 	}
@@ -278,17 +280,52 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 
 	@Override
 	public void onItemsLoaded() {
+		restoreItemSelection();
 		dismissItemsLoadingSpinner();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		restoreApplicationSelection();
+		restoreItemSelection();
+		Log.d(TAG, "onResume");
+	}
+
+	protected void selectApplication(int position) {
+		this.mApplicationPosition = position;
+		if (mDetailsPagerAdapter != null) {
+			mDetailsPagerAdapter.setCurrentPosition(position);
+			mDetailsPager.setCurrentItem(position);
+			mDetailsPageIndicator.setCurrentItem(position);
+		}
 	}
 
 	public void selectItem(int position) {
 		if (mDetailsPagerAdapter == null
 				|| mDetailsPagerAdapter.getCount() == 0)
 			return;
+		mItemPosition = position;
 		ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mDetailsPagerAdapter
 				.instantiateItem(mDetailsPager, mDetailsPager.getCurrentItem());
 		Log.d(TAG, "selectItem(" + position + ")");
 		currentPage.selectItem(position);
+	}
+
+	public void restoreApplicationSelection() {
+		if (mDetailsPageIndicator != null)
+			mDetailsPageIndicator.onPageSelected(mApplicationPosition);
+	}
+
+	public void restoreItemSelection() {
+		selectApplication(mApplicationPosition);
+		if (mDetailsPagerAdapter != null) {
+			ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mDetailsPagerAdapter
+					.instantiateItem(mDetailsPager,
+							mDetailsPager.getCurrentItem());
+			currentPage.selectItem(mItemPosition);
+			currentPage.restoreItemSelection();
+		}
 	}
 
 	public void updateProgress(int progress) {
@@ -296,7 +333,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 			ProgressBar listProgress = (ProgressBar) getView().findViewById(
 					R.id.applications_progress);
 			listProgress.setProgress(progress);
-		}			
+		}
 	}
 
 }
