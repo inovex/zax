@@ -313,7 +313,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	}
 
 	public void restoreApplicationSelection() {
-		if (mDetailsPageIndicator != null)
+		if (mDetailsPageIndicator != null && mDetailsPagerAdapter.getCount() > mApplicationPosition)
 			mDetailsPageIndicator.onPageSelected(mApplicationPosition);
 	}
 
