@@ -15,6 +15,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
+import com.inovex.zabbixmobile.push.PushService;
 
 public class MainActivity extends BaseActivity implements
 		OnSeverityListAdapterLoadedListener {
@@ -36,6 +37,8 @@ public class MainActivity extends BaseActivity implements
 				.findFragmentById(R.id.main_menu);
 		mProblemsFragment = (MainProblemsFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.main_problems);
+		
+		PushService.startPushService(this);
 
 	}
 
