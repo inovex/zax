@@ -12,8 +12,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -86,10 +88,12 @@ public class PushService extends Service {
 	}
 
 	int numNotifications = 0;
+	protected static final int NUM_STACKED_NOTIFICATIONS = 5;
 	ArrayBlockingQueue<CharSequence> previousMessages = new ArrayBlockingQueue<CharSequence>(
-			5);
+			NUM_STACKED_NOTIFICATIONS);
 
 	class PushReceiver implements Callback {
+
 		@Override
 		public boolean execute(Object input) {
 			Log.i("PushService", "execute");
@@ -137,22 +141,28 @@ public class PushService extends Service {
 					notificationBuilder.setSmallIcon(R.drawable.icon);
 					notificationBuilder.setTicker(notMessage);
 					notificationBuilder.setWhen(System.currentTimeMillis());
-					Intent notificationIntent = new Intent(PushService.this,
-							MainActivity.class);
+
+					// we do not start MainActivity directly, but send a
+					// broadcast which will be received by a
+					// NotificationBroadcastReceiver which resets the
+					// notification status and starts MainActivity.
+					Intent notificationIntent = new Intent();
 					notificationIntent.putExtra("pushNotificationTriggerid",
 							triggerid);
-					PendingIntent pendingIntent = PendingIntent.getActivity(
+					notificationIntent.setAction(ACTION_ZABBIX_NOTIFICATION);
+					PendingIntent pendingIntent = PendingIntent.getBroadcast(
 							PushService.this, uniqueRequestCode(),
 							notificationIntent,
 							PendingIntent.FLAG_CANCEL_CURRENT);
-					notificationBuilder.setContentTitle("Zabbix Notification");
+					notificationBuilder.setContentTitle(getResources()
+							.getString(R.string.notification_title));
 					notificationBuilder.setContentText(message);
 					notificationBuilder.setContentIntent(pendingIntent);
 					notificationBuilder.setNumber(++numNotifications);
 
 					notificationBuilder.setAutoCancel(true);
 
-					if (previousMessages.size() == 5)
+					if (previousMessages.size() == NUM_STACKED_NOTIFICATIONS)
 						previousMessages.poll();
 					previousMessages.offer(message);
 					// if there are several notifications, we stack them in the
@@ -160,14 +170,16 @@ public class PushService extends Service {
 					if (numNotifications > 1) {
 						NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 						// Sets a title for the Inbox style big view
-						inboxStyle.setBigContentTitle("Zabbix triggers:");
+						inboxStyle.setBigContentTitle(getResources().getString(
+								R.string.notification_title));
 						// Moves events into the big view
 						for (CharSequence prevMessage : previousMessages) {
 							inboxStyle.addLine(prevMessage);
 						}
-						if (numNotifications > 5) {
-							inboxStyle.setSummaryText((numNotifications - 5)
-									+ " more");
+						if (numNotifications > NUM_STACKED_NOTIFICATIONS) {
+							inboxStyle
+									.setSummaryText((numNotifications - NUM_STACKED_NOTIFICATIONS)
+											+ " more");
 						}
 						// Moves the big view style object into the notification
 						// object.
@@ -203,6 +215,35 @@ public class PushService extends Service {
 			Log.i("PushService", message.toString());
 			return false;
 		}
+	}
+
+	public static final String ACTION_ZABBIX_NOTIFICATION = "com.inovex.zabbixmobile.push.PushService.ACTION_ZABBIX_NOTIFICATION";
+
+	/**
+	 * This broadcast receiver reacts on a click on a notification by performing
+	 * the following tasks:
+	 * 
+	 * 1. Reset the notification numbers and previous messages.
+	 * 
+	 * 2. Start the main activity.
+	 * 
+	 */
+	public class NotificationBroadcastReceiver extends BroadcastReceiver {
+
+		public NotificationBroadcastReceiver() {
+			super();
+		}
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			numNotifications = 0;
+			previousMessages.clear();
+			Intent notificationIntent = new Intent(context, MainActivity.class);
+			notificationIntent.putExtras(intent.getExtras());
+			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			context.startActivity(notificationIntent);
+		}
+
 	}
 
 	private static int lastRequestCode = 0;
@@ -241,6 +282,10 @@ public class PushService extends Service {
 			mPushListener.execute(PUSHCHANNEL);
 			Log.i("PushService", "start ");
 		}
+		// Register the notification broadcast receiver.
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(ACTION_ZABBIX_NOTIFICATION);
+		registerReceiver(new NotificationBroadcastReceiver(), filter);
 		return START_STICKY_COMPATIBILITY;
 	}
 

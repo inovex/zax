@@ -110,5 +110,7 @@
      <string name="empty_list_checks">No items found for this application.</string>
      <string name="empty_list_events">No events found for this severity.</string>
      <string name="empty_list_problems">No problems found for this severity.</string>
+     
+     <string name="notification_title">Zabbix triggers</string>
 
 </resources>
