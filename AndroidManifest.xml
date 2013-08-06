@@ -28,7 +28,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.inovex.zabbixmobile.activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,23 +37,23 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.inovex.zabbixmobile.activities.EventsActivity"
+            android:name=".activities.EventsActivity"
             android:label="@string/activity_events" >
         </activity>
         <activity
-            android:name="com.inovex.zabbixmobile.activities.ProblemsActivity"
+            android:name=".activities.ProblemsActivity"
             android:label="@string/activity_problems" >
         </activity>
         <activity
-            android:name="com.inovex.zabbixmobile.activities.ChecksActivity"
+            android:name=".activities.ChecksActivity"
             android:label="@string/activity_checks" >
         </activity>
         <activity
-            android:name="com.inovex.zabbixmobile.activities.ScreensActivity"
+            android:name=".activities.ScreensActivity"
             android:label="@string/activity_screens" >
         </activity>
         <activity
-            android:name="com.inovex.zabbixmobile.activities.ZaxPreferenceActivity"
+            android:name=".activities.ZaxPreferenceActivity"
             android:label="@string/activity_preferences" >
         </activity>
         <activity
@@ -69,6 +69,14 @@
                 </action>
             </intent-filter>
         </receiver>
+        
+        <receiver android:name=".push.BootCompletedIntentReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
+			</intent-filter>
+		</receiver>
+        
+        <service android:name=".push.PushService" android:process=":pushservice"></service>
     </application>
 
 </manifest>
