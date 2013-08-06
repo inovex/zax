@@ -185,16 +185,16 @@ public class PushService extends Service {
 						// object.
 						notificationBuilder.setStyle(inboxStyle);
 					}
-
-					Notification notification = notificationBuilder.build();
-
+					
 					SharedPreferences preference = PreferenceManager
 							.getDefaultSharedPreferences(PushService.this);
 					String strRingtonePreference = preference.getString(
 							"zabbix_push_ringtone", null);
 					if (strRingtonePreference != null) {
-						notification.sound = Uri.parse(strRingtonePreference);
+						notificationBuilder.setSound(Uri.parse(strRingtonePreference));
 					}
+
+					Notification notification = notificationBuilder.build();
 
 					NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 					mNotificationManager.notify(triggerid == null ? 0
