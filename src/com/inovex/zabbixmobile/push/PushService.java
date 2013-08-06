@@ -1,6 +1,8 @@
 package com.inovex.zabbixmobile.push;
 
+import java.util.ArrayDeque;
 import java.util.HashMap;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +15,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
@@ -82,6 +85,10 @@ public class PushService extends Service {
 		}
 	}
 
+	int numNotifications = 0;
+	ArrayBlockingQueue<CharSequence> previousMessages = new ArrayBlockingQueue<CharSequence>(
+			5);
+
 	class PushReceiver implements Callback {
 		@Override
 		public boolean execute(Object input) {
@@ -123,11 +130,13 @@ public class PushService extends Service {
 						notMessage = jsonObj.toString();
 					}
 
-					NotificationCompat.Builder notificationBuilder =new NotificationCompat.Builder(
+					NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
 							PushService.this);
-					notificationBuilder.setSmallIcon(notIcon)
-							.setTicker(notMessage)
-							.setWhen(System.currentTimeMillis());
+					notificationBuilder.setLargeIcon(BitmapFactory
+							.decodeResource(getResources(), notIcon));
+					notificationBuilder.setSmallIcon(R.drawable.icon);
+					notificationBuilder.setTicker(notMessage);
+					notificationBuilder.setWhen(System.currentTimeMillis());
 					Intent notificationIntent = new Intent(PushService.this,
 							MainActivity.class);
 					notificationIntent.putExtra("pushNotificationTriggerid",
@@ -139,9 +148,32 @@ public class PushService extends Service {
 					notificationBuilder.setContentTitle("Zabbix Notification");
 					notificationBuilder.setContentText(message);
 					notificationBuilder.setContentIntent(pendingIntent);
-					
+					notificationBuilder.setNumber(++numNotifications);
+
 					notificationBuilder.setAutoCancel(true);
-					
+
+					if (previousMessages.size() == 5)
+						previousMessages.poll();
+					previousMessages.offer(message);
+					// if there are several notifications, we stack them in the
+					// extended view
+					if (numNotifications > 1) {
+						NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+						// Sets a title for the Inbox style big view
+						inboxStyle.setBigContentTitle("Zabbix triggers:");
+						// Moves events into the big view
+						for (CharSequence prevMessage : previousMessages) {
+							inboxStyle.addLine(prevMessage);
+						}
+						if (numNotifications > 5) {
+							inboxStyle.setSummaryText((numNotifications - 5)
+									+ " more");
+						}
+						// Moves the big view style object into the notification
+						// object.
+						notificationBuilder.setStyle(inboxStyle);
+					}
+
 					Notification notification = notificationBuilder.build();
 
 					SharedPreferences preference = PreferenceManager
@@ -215,20 +247,21 @@ public class PushService extends Service {
 	private int uniqueRequestCode() {
 		return lastRequestCode++;
 	}
-	
+
 	private static AlarmManager am;
 
 	public static void startPushService(Context context) {
 		// start the push receiver, if it is enabled
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
 		boolean push = prefs.getBoolean("zabbix_push_enabled", false);
 		if (push) {
 			am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 			setRepeatingAlarm(context);
 		}
-		
+
 	}
-	
+
 	public static void setRepeatingAlarm(Context context) {
 		Intent messageservice = new Intent(context, PushService.class);
 		context.startService(messageservice);
@@ -237,6 +270,8 @@ public class PushService extends Service {
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
 				intent, PendingIntent.FLAG_CANCEL_CURRENT);
 		am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
-				(1 * 60 * 1000), pendingIntent); //wake up every 5 minutes to ensure service stays alive
+				(1 * 60 * 1000), pendingIntent); // wake up every 5 minutes to
+													// ensure service stays
+													// alive
 	}
 }
