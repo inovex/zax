@@ -5,19 +5,20 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 public class ZaxPreferences {
-	
+
 	private final SharedPreferences mPref;
-	
+
 	public ZaxPreferences(Context context) {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		mPref = pref;
 	}
-	
+
 	public boolean isConfigurated() {
-		return !getUsername().isEmpty() && !getZabbixUrl().isEmpty();
+		return !(getUsername().length() == 0)
+				&& !(getZabbixUrl().length() == 0);
 	}
-	
+
 	public String getUsername() {
 		return mPref.getString("zabbix_username", "");
 	}
@@ -41,8 +42,20 @@ public class ZaxPreferences {
 	public String getHttpAuthPassword() {
 		return mPref.getString("http_auth_password", "");
 	}
-	
+
 	public String getZabbixUrl() {
 		return mPref.getString("zabbix_url", "");
+	}
+
+	public boolean isPushEnabled() {
+		return mPref.getBoolean("zabbix_push_enabled", false);
+	}
+
+	public String getPushRingtone() {
+		return mPref.getString("zabbix_push_ringtone", null);
+	}
+
+	public String getPushSubscribeKey() {
+		return mPref.getString("zabbix_push_subscribe_key", "").trim();
 	}
 }

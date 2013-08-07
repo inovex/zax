@@ -1,6 +1,5 @@
 package com.inovex.zabbixmobile.push;
 
-import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -16,17 +15,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.hardware.Camera.ShutterCallback;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.MainActivity;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
 
 public class PushService extends Service {
 	// Callback Interface when a channel is connected
@@ -185,13 +185,14 @@ public class PushService extends Service {
 						// object.
 						notificationBuilder.setStyle(inboxStyle);
 					}
-					
-					SharedPreferences preference = PreferenceManager
-							.getDefaultSharedPreferences(PushService.this);
-					String strRingtonePreference = preference.getString(
-							"zabbix_push_ringtone", null);
+
+					ZaxPreferences preferences = new ZaxPreferences(
+							PushService.this);
+					String strRingtonePreference = preferences
+							.getPushRingtone();
 					if (strRingtonePreference != null) {
-						notificationBuilder.setSound(Uri.parse(strRingtonePreference));
+						notificationBuilder.setSound(Uri
+								.parse(strRingtonePreference));
 					}
 
 					Notification notification = notificationBuilder.build();
@@ -251,6 +252,7 @@ public class PushService extends Service {
 	Pubnub pubnub;
 	PushReceiver mPushReceiver = new PushReceiver();
 	PushListener mPushListener = new PushListener();
+	private BroadcastReceiver mNotificationBroadcastReceiver;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -261,10 +263,8 @@ public class PushService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		String subscribe_key = prefs.getString("zabbix_push_subscribe_key", "")
-				.trim();
+		ZaxPreferences preferences = new ZaxPreferences(this);
+		String subscribe_key = preferences.getPushSubscribeKey();
 
 		pubnub = new Pubnub("", // PUBLISH_KEY
 				subscribe_key, // SUBSCRIBE_KEY
@@ -285,8 +285,19 @@ public class PushService extends Service {
 		// Register the notification broadcast receiver.
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(ACTION_ZABBIX_NOTIFICATION);
-		registerReceiver(new NotificationBroadcastReceiver(), filter);
-		return START_STICKY_COMPATIBILITY;
+		mNotificationBroadcastReceiver = new NotificationBroadcastReceiver();
+		registerReceiver(mNotificationBroadcastReceiver, filter);
+		return START_NOT_STICKY;
+	}
+
+	@Override
+	public void onDestroy() {
+		Log.d("PushService", "onDestroy");
+		mPushListener.cancel(true);
+		HashMap<String, Object> args = new HashMap<String, Object>(1);
+		args.put("channel", PUSHCHANNEL);
+		pubnub.unsubscribe(args);
+		unregisterReceiver(mNotificationBroadcastReceiver);
 	}
 
 	private int uniqueRequestCode() {
@@ -295,21 +306,30 @@ public class PushService extends Service {
 
 	private static AlarmManager am;
 
-	public static void startPushService(Context context) {
+	/**
+	 * This starts or stops the push service depending on the user's settings.
+	 * 
+	 * @param context
+	 */
+	public static void startOrStopPushService(Context context) {
 		// start the push receiver, if it is enabled
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		boolean push = prefs.getBoolean("zabbix_push_enabled", false);
-		if (push) {
+		ZaxPreferences preferences = new ZaxPreferences(context);
+		boolean push = preferences.isPushEnabled();
+		if (am == null)
 			am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		if (push) {
+			Intent messageService = new Intent(context, PushService.class);
+			context.startService(messageService);
 			setRepeatingAlarm(context);
+		} else {
+			Intent messageService = new Intent(context, PushService.class);
+			context.stopService(messageService);
+			stopRepeatingAlarm(context);
 		}
 
 	}
 
-	public static void setRepeatingAlarm(Context context) {
-		Intent messageservice = new Intent(context, PushService.class);
-		context.startService(messageservice);
+	private static void setRepeatingAlarm(Context context) {
 
 		Intent intent = new Intent(context, PushAlarm.class);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
@@ -318,5 +338,13 @@ public class PushService extends Service {
 				(1 * 60 * 1000), pendingIntent); // wake up every 5 minutes to
 													// ensure service stays
 													// alive
+	}
+
+	private static void stopRepeatingAlarm(Context context) {
+
+		Intent intent = new Intent(context, PushAlarm.class);
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
+				intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		am.cancel(pendingIntent);
 	}
 }

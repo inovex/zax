@@ -20,6 +20,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
+import com.inovex.zabbixmobile.push.PushService;
 
 public abstract class BaseActivity extends SherlockFragmentActivity implements
 		ServiceConnection, OnLoginProgressListener {
@@ -58,6 +59,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	protected void onResume() {
 		super.onResume();
 		Log.d(TAG, "onResume");
+		PushService.startOrStopPushService(this);
 		// if the preferences activity has been closed (and possibly preferences
 		// have been changed), we start a relogin.
 		if (mPreferencesClosed && mZabbixDataService != null) {

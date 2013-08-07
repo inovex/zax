@@ -38,8 +38,6 @@ public class MainActivity extends BaseActivity implements
 		mProblemsFragment = (MainProblemsFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.main_problems);
 		
-		PushService.startPushService(this);
-
 	}
 
 	@Override
