@@ -198,8 +198,13 @@ public class PushService extends Service {
 					Notification notification = notificationBuilder.build();
 
 					NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-					mNotificationManager.notify(triggerid == null ? 0
-							: (int) (long) triggerid, notification);
+					// mNotificationManager.notify(triggerid == null ? 0
+					// : (int) (long) triggerid, notification);
+					// We use the same ID because we want to stack the
+					// notifications and we don't really care about the trigger
+					// ID anyway (clicking the notification just starts the main
+					// activity).
+					mNotificationManager.notify(0, notification);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
