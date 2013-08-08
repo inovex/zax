@@ -50,6 +50,12 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
+	public void onServiceDisconnected(ComponentName arg0) {
+		Log.d(TAG, "onServiceDisconnected()");
+		mZabbixDataService = null;
+	}
+
+	@Override
 	protected void onPause() {
 		super.onPause();
 		Log.d(TAG, "onPause");
@@ -67,11 +73,6 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			mPreferencesClosed = false;
 		}
 
-	}
-
-	@Override
-	public void onServiceDisconnected(ComponentName arg0) {
-		Log.d(TAG, "onServiceDisconnected()");
 	}
 
 	/**
@@ -205,7 +206,6 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			loginProgress.setTitle(R.string.zabbix_login);
 			loginProgress.setMessage(getResources().getString(
 					R.string.zabbix_login_in_progress));
-			// mLoginProgress.setCancelable(false);
 			loginProgress.setIndeterminate(true);
 			return loginProgress;
 		}

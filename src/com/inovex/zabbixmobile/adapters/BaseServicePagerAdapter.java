@@ -45,6 +45,8 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 
 	@Override
 	public Object instantiateItem(ViewGroup container, int position) {
+		if (mFragmentManager == null)
+			return null;
 		if (mCurTransaction == null) {
 			mCurTransaction = mFragmentManager.beginTransaction();
 		}

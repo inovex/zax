@@ -69,8 +69,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 			mHostId = savedInstanceState.getLong(ARG_HOST_ID, 0);
 			mApplicationPosition = savedInstanceState.getInt(
 					ARG_APPLICATION_POSITION, 0);
-			mItemPosition = savedInstanceState.getInt(
-					ARG_ITEM_POSITION, 0);
+			mItemPosition = savedInstanceState.getInt(ARG_ITEM_POSITION, 0);
 			mApplicationsProgressBarVisible = savedInstanceState.getBoolean(
 					ARG_APPLICATIONS_SPINNER_VISIBLE, false);
 			mItemsLoadingSpinnerVisible = savedInstanceState.getBoolean(
@@ -309,11 +308,13 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mDetailsPagerAdapter
 				.instantiateItem(mDetailsPager, mDetailsPager.getCurrentItem());
 		Log.d(TAG, "selectItem(" + position + ")");
-		currentPage.selectItem(position);
+		if(currentPage != null)
+			currentPage.selectItem(position);
 	}
 
 	public void restoreApplicationSelection() {
-		if (mDetailsPageIndicator != null && mDetailsPagerAdapter.getCount() > mApplicationPosition)
+		if (mDetailsPageIndicator != null
+				&& mDetailsPagerAdapter.getCount() > mApplicationPosition)
 			mDetailsPageIndicator.onPageSelected(mApplicationPosition);
 	}
 
@@ -323,8 +324,10 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 			ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mDetailsPagerAdapter
 					.instantiateItem(mDetailsPager,
 							mDetailsPager.getCurrentItem());
-			currentPage.selectItem(mItemPosition);
-			currentPage.restoreItemSelection();
+			if (currentPage != null) {
+				currentPage.selectItem(mItemPosition);
+				currentPage.restoreItemSelection();
+			}
 		}
 	}
 
