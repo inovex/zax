@@ -161,6 +161,7 @@ public class PushService extends Service {
 					notificationBuilder.setNumber(++numNotifications);
 
 					notificationBuilder.setAutoCancel(true);
+					notificationBuilder.setOnlyAlertOnce(false);
 
 					if (previousMessages.size() == NUM_STACKED_NOTIFICATIONS)
 						previousMessages.poll();

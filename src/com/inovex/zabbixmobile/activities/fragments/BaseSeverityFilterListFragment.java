@@ -1,22 +1,18 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TabPageIndicator;
@@ -37,65 +33,12 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	private long mCurrentHostGroupId;
 
 	ViewPager mSeverityListPager;
-	SeverityListPagerAdapter mSeverityListPagerAdapter;
+	BaseSeverityListPagerAdapter mSeverityListPagerAdapter;
 	TabPageIndicator mSeverityListTabIndicator;
 
 	private OnSeveritySelectedListener mCallbackMain;
 
 	private boolean mProgressBarVisible = true;
-
-	class SeverityListPagerAdapter extends FragmentPagerAdapter {
-
-		private BaseSeverityFilterListPage[] instantiatedPages = new BaseSeverityFilterListPage[TriggerSeverity
-				.values().length];
-
-		public SeverityListPagerAdapter(FragmentManager fm) {
-			super(fm);
-		}
-
-		@Override
-		public Fragment getItem(int i) {
-			BaseSeverityFilterListPage f = instantiatePage();
-			f.setSeverity(TriggerSeverity.getSeverityByPosition(i));
-			f.setHostGroupId(mCurrentHostGroupId);
-			if (!mProgressBarVisible)
-				f.dismissProgressBar();
-			Log.d(TAG, "getItem: " + f.toString());
-			return f;
-		}
-
-		@Override
-		public int getCount() {
-			return TriggerSeverity.values().length;
-		}
-
-		@Override
-		public CharSequence getPageTitle(int position) {
-			return TriggerSeverity.getSeverityByPosition(position).getName();
-		}
-
-		@Override
-		public Object instantiateItem(ViewGroup container, int position) {
-			Object instantiatedItem = super
-					.instantiateItem(container, position);
-			// save instantiated page
-			Log.d(TAG, "instantiateItem: " + instantiatedItem.toString());
-			instantiatedPages[position] = (BaseSeverityFilterListPage) instantiatedItem;
-			return instantiatedItem;
-		}
-
-		/**
-		 * Returns all pages in this view pager which have already been
-		 * instantiated.
-		 * 
-		 * @return instantiated pages
-		 */
-		public BaseSeverityFilterListPage[] getPages() {
-			return instantiatedPages;
-		}
-	}
-
-	protected abstract BaseSeverityFilterListPage instantiatePage();
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -153,8 +96,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		// Set up the ViewPager, attaching the adapter and setting up a listener
 		// for when the
 		// user swipes between sections.
-		mSeverityListPagerAdapter = new SeverityListPagerAdapter(
-				getChildFragmentManager());
+		mSeverityListPagerAdapter = createPagerAdapter();
 		mSeverityListPager = (ViewPager) getView().findViewById(
 				R.id.severity_list_viewpager);
 		mSeverityListPager.setAdapter(mSeverityListPagerAdapter);
@@ -197,6 +139,8 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 
 	}
 
+	protected abstract BaseSeverityListPagerAdapter createPagerAdapter();
+
 	public void selectItem(int position) {
 		if (mSeverityListPagerAdapter == null
 				|| mSeverityListPagerAdapter.getCount() == 0)
@@ -223,36 +167,37 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 
 	public void setHostGroupId(long itemId) {
 		this.mCurrentHostGroupId = itemId;
-		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
-				.getPages()) {
-			if (p != null)
-				p.setHostGroupId(itemId);
-		}
 	}
 
 	public void showProgressBar() {
 		mProgressBarVisible = true;
-		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
-				.getPages()) {
-			if (p != null)
-				p.showProgressBar();
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.severity_list_progress_layout);
+			if (progressLayout != null)
+				progressLayout.setVisibility(View.VISIBLE);
 		}
 	}
 
 	public void dismissProgressBar() {
 		mProgressBarVisible = false;
-		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
-				.getPages()) {
-			if (p != null)
-				p.dismissProgressBar();
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.severity_list_progress_layout);
+			if (progressLayout != null) {
+				progressLayout.setVisibility(View.GONE);
+			}
+			ProgressBar listProgress = (ProgressBar) getView().findViewById(
+					R.id.severity_list_progress);
+			listProgress.setProgress(0);
 		}
 	}
 
 	public void updateProgress(int progress) {
-		for (BaseSeverityFilterListPage p : mSeverityListPagerAdapter
-				.getPages()) {
-			if (p != null)
-				p.updateProgress(progress);
+		if (getView() != null) {
+			ProgressBar listProgress = (ProgressBar) getView().findViewById(
+					R.id.severity_list_progress);
+			listProgress.setProgress(progress);
 		}
 	}
 
