@@ -1,8 +1,6 @@
 package com.inovex.zabbixmobile.activities;
 
 import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -11,11 +9,9 @@ import com.actionbarsherlock.view.Menu;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.MainMenuFragment;
 import com.inovex.zabbixmobile.activities.fragments.MainProblemsFragment;
-import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.inovex.zabbixmobile.push.PushService;
 
 public class MainActivity extends BaseActivity implements
 		OnSeverityListAdapterLoadedListener {
@@ -68,9 +64,6 @@ public class MainActivity extends BaseActivity implements
 		super.onServiceConnected(className, service);
 
 		if (mZabbixDataService.isLoggedIn()) {
-
-			// mZabbixService.performZabbixLogin(this);
-
 			loadData();
 		}
 
@@ -81,16 +74,6 @@ public class MainActivity extends BaseActivity implements
 		super.onLoginFinished(success);
 		if (success)
 			loadData();
-	}
-
-	@Override
-	protected void bindService() {
-		Intent intent = new Intent(this, ZabbixDataService.class);
-		boolean useMockData = getIntent().getBooleanExtra(
-				ZabbixDataService.EXTRA_IS_TESTING, false);
-		intent.putExtra(ZabbixDataService.EXTRA_IS_TESTING, useMockData);
-		getApplicationContext().bindService(intent, this,
-				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override

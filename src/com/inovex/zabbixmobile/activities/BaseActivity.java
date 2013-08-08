@@ -80,6 +80,9 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	 */
 	protected void bindService() {
 		Intent intent = new Intent(this, ZabbixDataService.class);
+		boolean useMockData = getIntent().getBooleanExtra(
+				ZabbixDataService.EXTRA_IS_TESTING, false);
+		intent.putExtra(ZabbixDataService.EXTRA_IS_TESTING, useMockData);
 		getApplicationContext().bindService(intent, this,
 				Context.BIND_AUTO_CREATE);
 	}
