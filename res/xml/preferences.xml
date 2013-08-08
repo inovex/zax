@@ -23,31 +23,27 @@
         <CheckBoxPreference
             android:key="zabbix_trust_all_ssl_ca"
             android:title="@string/trust_all_ssl_certificates" />
-
-        <PreferenceScreen
-            android:summary="@string/http_auth_description"
-            android:title="@string/http_auth" >
-            <CheckBoxPreference
-                android:key="http_auth_enabled"
-                android:title="@string/enabled" >
-            </CheckBoxPreference>
-
-            <EditTextPreference
-                android:dependency="http_auth_enabled"
-                android:inputType="text"
-                android:key="http_auth_username"
-                android:title="@string/username" >
-            </EditTextPreference>
-            <EditTextPreference
-                android:dependency="http_auth_enabled"
-                android:inputType="textPassword"
-                android:key="http_auth_password"
-                android:title="@string/password" >
-            </EditTextPreference>
-        </PreferenceScreen>
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/http_auth" >
+        <CheckBoxPreference
+            android:key="http_auth_enabled"
+            android:title="@string/enabled" >
+        </CheckBoxPreference>
 
-    <PreferenceScreen android:title="@string/push_notifications" >
+        <EditTextPreference
+            android:dependency="http_auth_enabled"
+            android:inputType="text"
+            android:key="http_auth_username"
+            android:title="@string/username" >
+        </EditTextPreference>
+        <EditTextPreference
+            android:dependency="http_auth_enabled"
+            android:inputType="textPassword"
+            android:key="http_auth_password"
+            android:title="@string/password" >
+        </EditTextPreference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/push_notifications" >
         <CheckBoxPreference
             android:key="zabbix_push_enabled"
             android:title="@string/enabled" >
@@ -67,8 +63,7 @@
             android:showSilent="true"
             android:title="@string/ringtone" >
         </RingtonePreference>
-    </PreferenceScreen>
-
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/homescreen_widget" >
         <EditTextPreference
             android:defaultValue="15"
