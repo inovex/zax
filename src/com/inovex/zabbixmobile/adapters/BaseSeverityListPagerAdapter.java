@@ -1,18 +1,19 @@
 package com.inovex.zabbixmobile.adapters;
 
+import java.util.Arrays;
+
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
 
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListPage;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
-public abstract class BaseSeverityListPagerAdapter extends FragmentPagerAdapter {
+public abstract class BaseSeverityListPagerAdapter extends BaseServicePagerAdapter<TriggerSeverity> {
 
-	public BaseSeverityListPagerAdapter(FragmentManager fm) {
-		super(fm);
+	public BaseSeverityListPagerAdapter() {
+		super();
+		this.addAll(Arrays.asList(TriggerSeverity.values()));
 	}
 
 	@Override

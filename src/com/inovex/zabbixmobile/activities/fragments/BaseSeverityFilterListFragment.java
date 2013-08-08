@@ -1,7 +1,9 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,14 +12,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TabPageIndicator;
 
-public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
+public abstract class BaseSeverityFilterListFragment extends BaseServiceConnectedFragment {
 
 	public static final String TAG = BaseSeverityFilterListFragment.class
 			.getSimpleName();
@@ -78,9 +79,13 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-
-		setupListViewPager();
 		Log.d(TAG, "onViewCreated");
+	}
+
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		super.onServiceConnected(name, service);
+		setupListViewPager();
 	}
 
 	@Override
@@ -96,7 +101,8 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 		// Set up the ViewPager, attaching the adapter and setting up a listener
 		// for when the
 		// user swipes between sections.
-		mSeverityListPagerAdapter = createPagerAdapter();
+		mSeverityListPagerAdapter = retrievePagerAdapter();
+		mSeverityListPagerAdapter.setFragmentManager(getChildFragmentManager());
 		mSeverityListPager = (ViewPager) getView().findViewById(
 				R.id.severity_list_viewpager);
 		mSeverityListPager.setAdapter(mSeverityListPagerAdapter);
@@ -139,7 +145,7 @@ public abstract class BaseSeverityFilterListFragment extends SherlockFragment {
 
 	}
 
-	protected abstract BaseSeverityListPagerAdapter createPagerAdapter();
+	protected abstract BaseSeverityListPagerAdapter retrievePagerAdapter();
 
 	public void selectItem(int position) {
 		if (mSeverityListPagerAdapter == null

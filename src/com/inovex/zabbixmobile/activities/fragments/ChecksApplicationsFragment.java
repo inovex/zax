@@ -183,7 +183,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 
 							showItemsLoadingSpinner();
 							mZabbixDataService.loadItemsByApplicationId(
-									mDetailsPagerAdapter.getCurrentItem()
+									mDetailsPagerAdapter.getCurrentObject()
 											.getId(),
 									ChecksApplicationsFragment.this);
 

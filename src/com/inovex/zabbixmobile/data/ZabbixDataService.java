@@ -28,22 +28,25 @@ import com.inovex.zabbixmobile.activities.fragments.ProblemsListPage;
 import com.inovex.zabbixmobile.activities.fragments.ScreensListFragment;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.adapters.BaseServicePagerAdapter;
+import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ChecksApplicationsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ChecksItemsListAdapter;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.EventsListAdapter;
+import com.inovex.zabbixmobile.adapters.EventsListPagerAdapter;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 import com.inovex.zabbixmobile.adapters.HostsListAdapter;
 import com.inovex.zabbixmobile.adapters.ProblemsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ProblemsListAdapter;
+import com.inovex.zabbixmobile.adapters.ProblemsListPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ScreensListAdapter;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
 import com.inovex.zabbixmobile.listeners.OnApplicationsLoadedListener;
-import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnGraphDataLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnHostsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnListItemsLoadedListener;
@@ -86,12 +89,14 @@ public class ZabbixDataService extends Service {
 	 * Adapters maintained by {@link ZabbixDataService}.
 	 */
 	// Events
+	private EventsListPagerAdapter mEventsListPagerAdapter;
 	private HashMap<TriggerSeverity, EventsListAdapter> mEventsListAdapters;
 	private HashMap<TriggerSeverity, EventsDetailsPagerAdapter> mEventsDetailsPagerAdapters;
 
 	// Problems
-	private HashMap<TriggerSeverity, ProblemsListAdapter> mProblemsListAdapters;
+	private ProblemsListPagerAdapter mProblemsListPagerAdapter;
 	private ProblemsListAdapter mProblemsMainListAdapter;
+	private HashMap<TriggerSeverity, ProblemsListAdapter> mProblemsListAdapters;
 	private HashMap<TriggerSeverity, ProblemsDetailsPagerAdapter> mProblemsDetailsPagerAdapters;
 
 	// Checks
@@ -170,6 +175,15 @@ public class ZabbixDataService extends Service {
 		}
 
 	}
+	
+	/**
+	 * Returns the event list pager adapter.
+	 * 
+	 * @return list pager adapter
+	 */
+	public BaseSeverityListPagerAdapter getEventsListPagerAdapter() {
+		return mEventsListPagerAdapter;
+	}
 
 	/**
 	 * Returns an event list adapter.
@@ -210,6 +224,15 @@ public class ZabbixDataService extends Service {
 		return mHostGroupsSpinnerAdapter;
 	}
 
+	/**
+	 * Returns the problems list pager adapter.
+	 * 
+	 * @return list pager adapter
+	 */
+	public BaseSeverityListPagerAdapter getProblemsListPagerAdapter() {
+		return mProblemsListPagerAdapter;
+	}
+	
 	/**
 	 * Returns the problems list adapter for the main view. This adapter
 	 * contains all active problems regardless of severity and hostgroup.
@@ -439,6 +462,7 @@ public class ZabbixDataService extends Service {
 		Log.d(TAG, "onCreate");
 
 		// set up adapters
+		mEventsListPagerAdapter = new EventsListPagerAdapter();
 		mEventsListAdapters = new HashMap<TriggerSeverity, EventsListAdapter>(
 				TriggerSeverity.values().length);
 		mEventsDetailsPagerAdapters = new HashMap<TriggerSeverity, EventsDetailsPagerAdapter>(
@@ -450,6 +474,7 @@ public class ZabbixDataService extends Service {
 					.put(s, new EventsDetailsPagerAdapter(s));
 		}
 
+		mProblemsListPagerAdapter = new ProblemsListPagerAdapter();
 		mProblemsListAdapters = new HashMap<TriggerSeverity, ProblemsListAdapter>(
 				TriggerSeverity.values().length);
 		mProblemsMainListAdapter = new ProblemsListAdapter(this);

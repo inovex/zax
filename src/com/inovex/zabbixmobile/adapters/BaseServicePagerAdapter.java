@@ -61,7 +61,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 				Log.v(TAG, "Attaching item #" + itemId + ": f=" + fragment);
 			mCurTransaction.attach(fragment);
 		} else {
-			fragment = getPage(position);
+			fragment = getItem(position);
 			if (DEBUG)
 				Log.v(TAG, "Adding item #" + itemId + ": f=" + fragment);
 			mCurTransaction.add(container.getId(), fragment,
@@ -152,7 +152,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 	 *            the position within the adapter
 	 * @return the created fragment
 	 */
-	protected abstract Fragment getPage(int position);
+	protected abstract Fragment getItem(int position);
 
 	@Override
 	public int getCount() {
@@ -176,7 +176,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public T getItem(int position) {
+	public T getObject(int position) {
 		return (T) mObjects.toArray()[position];
 	}
 
@@ -186,7 +186,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public T getCurrentItem() {
+	public T getCurrentObject() {
 		return (T) mObjects.toArray()[mCurrentPosition];
 	}
 

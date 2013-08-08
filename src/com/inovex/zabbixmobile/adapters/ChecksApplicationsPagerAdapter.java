@@ -12,18 +12,18 @@ public class ChecksApplicationsPagerAdapter extends
 	
 	@Override
 	public CharSequence getPageTitle(int position) {
-		return getItem(position).getName();
+		return getObject(position).getName();
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return getItem(position).getId();
+		return getObject(position).getId();
 	}
 
 	@Override
-	protected Fragment getPage(int position) {
+	protected Fragment getItem(int position) {
 		ChecksApplicationsPage p = new ChecksApplicationsPage();
-		p.setApplication(getItem(position));
+		p.setApplication(getObject(position));
 		return p;
 	}
 	

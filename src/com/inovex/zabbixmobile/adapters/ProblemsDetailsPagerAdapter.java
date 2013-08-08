@@ -28,16 +28,16 @@ public class ProblemsDetailsPagerAdapter extends
 	}
 
 	@Override
-	protected Fragment getPage(int position) {
+	protected Fragment getItem(int position) {
 		ProblemsDetailsPage f = new ProblemsDetailsPage();
-		Trigger trigger = getItem(position);
+		Trigger trigger = getObject(position);
 		f.setTrigger(trigger);
 		return f;
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return getItem(position).getId();
+		return getObject(position).getId();
 	}
 
 }

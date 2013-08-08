@@ -54,7 +54,7 @@ public class EventsDetailsFragment extends
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menuitem_acknowledge_event:
-			Event e = mDetailsPagerAdapter.getCurrentItem();
+			Event e = mDetailsPagerAdapter.getCurrentObject();
 			Log.d(TAG, "Acknowledge event: " + e);
 			// show dialog
 			AcknowledgeDialogFragment dialog = AcknowledgeDialogFragment
@@ -92,7 +92,7 @@ public class EventsDetailsFragment extends
 			this.setAcknowledgeButtonEnabled(false);
 			return;
 		}
-		Event e = mDetailsPagerAdapter.getCurrentItem();
+		Event e = mDetailsPagerAdapter.getCurrentObject();
 		if (e.isAcknowledged())
 			this.setAcknowledgeButtonEnabled(false);
 		else

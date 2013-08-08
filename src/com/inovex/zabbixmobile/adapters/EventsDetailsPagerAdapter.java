@@ -27,16 +27,16 @@ public class EventsDetailsPagerAdapter extends BaseSeverityPagerAdapter<Event> {
 	}
 
 	@Override
-	protected Fragment getPage(int position) {
+	protected Fragment getItem(int position) {
 		EventsDetailsPage f = new EventsDetailsPage();
-		Event event = getItem(position);
+		Event event = getObject(position);
 		f.setEvent(event);
 		return f;
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return getItem(position).getId();
+		return getObject(position).getId();
 	}
 
 }
