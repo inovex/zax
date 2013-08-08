@@ -18,7 +18,8 @@ import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TabPageIndicator;
 
-public abstract class BaseSeverityFilterListFragment extends BaseServiceConnectedFragment {
+public abstract class BaseSeverityFilterListFragment extends
+		BaseServiceConnectedFragment {
 
 	public static final String TAG = BaseSeverityFilterListFragment.class
 			.getSimpleName();
@@ -101,16 +102,16 @@ public abstract class BaseSeverityFilterListFragment extends BaseServiceConnecte
 		// Set up the ViewPager, attaching the adapter and setting up a listener
 		// for when the
 		// user swipes between sections.
-		mSeverityListPagerAdapter = retrievePagerAdapter();
-		mSeverityListPagerAdapter.setFragmentManager(getChildFragmentManager());
 		mSeverityListPager = (ViewPager) getView().findViewById(
 				R.id.severity_list_viewpager);
-		mSeverityListPager.setAdapter(mSeverityListPagerAdapter);
-		mSeverityListPager.setOffscreenPageLimit(1);
-
-		// Bind the tab indicator to the adapter
 		mSeverityListTabIndicator = (TabPageIndicator) getView().findViewById(
 				R.id.severity_list_tabindicator);
+		// Bind the tab indicator to the adapter
+		mSeverityListPagerAdapter = retrievePagerAdapter();
+		Log.d(TAG, "current severity: " + mSeverityListPagerAdapter.getCurrentObject());
+		mSeverityListPagerAdapter.setFragmentManager(getChildFragmentManager());
+		mSeverityListPager.setAdapter(mSeverityListPagerAdapter);
+		mSeverityListPager.setOffscreenPageLimit(1);
 		mSeverityListTabIndicator.setViewPager(mSeverityListPager);
 
 		mSeverityListTabIndicator
@@ -128,6 +129,8 @@ public abstract class BaseSeverityFilterListFragment extends BaseServiceConnecte
 						// categoryNumber = position;
 						BaseSeverityFilterListPage currentPage = (BaseSeverityFilterListPage) mSeverityListPagerAdapter
 								.getItem(position);
+						
+						mSeverityListPagerAdapter.setCurrentPosition(position);
 
 						mCallbackMain.onSeveritySelected(currentPage
 								.getSeverity());

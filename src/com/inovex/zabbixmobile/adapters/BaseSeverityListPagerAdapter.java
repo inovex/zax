@@ -13,7 +13,8 @@ public abstract class BaseSeverityListPagerAdapter extends BaseServicePagerAdapt
 
 	public BaseSeverityListPagerAdapter() {
 		super();
-		this.addAll(Arrays.asList(TriggerSeverity.values()));
+		addAll(Arrays.asList(TriggerSeverity.values()));
+		notifyDataSetChanged();
 	}
 
 	@Override

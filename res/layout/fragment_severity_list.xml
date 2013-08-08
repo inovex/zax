@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <com.viewpagerindicator.TabPageIndicator
+    <com.inovex.zabbixmobile.util.ServiceTabPageIndicator
         android:id="@+id/severity_list_tabindicator"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
