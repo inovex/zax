@@ -1,7 +1,9 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,26 +12,28 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 /**
  * Represents one page of a list view pager. Shows a list of items
  * (events/problems) for a specific severity.
+ * @param <T>
  */
-public abstract class BaseSeverityFilterListPage extends
+public abstract class BaseSeverityFilterListPage<T> extends
 		BaseServiceConnectedListFragment {
 
 	private static final String TAG = BaseSeverityFilterListPage.class
 			.getSimpleName();
 
-	private static final String ARG_POSITION = "arg_position";
 	private static final String ARG_SEVERITY = "arg_severity";
 
 	private OnListItemSelectedListener mCallbackMain;
 
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
-	private int mPosition = 0;
+	
+	protected BaseServiceAdapter<T> mListAdapter;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -50,7 +54,6 @@ public abstract class BaseSeverityFilterListPage extends
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate: " + this.toString());
 		if (savedInstanceState != null) {
-			mPosition = savedInstanceState.getInt(ARG_POSITION, 0);
 			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
 					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
 		}
@@ -67,7 +70,6 @@ public abstract class BaseSeverityFilterListPage extends
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putInt(ARG_POSITION, mPosition);
 		outState.putInt(ARG_SEVERITY, mSeverity.getNumber());
 	}
 
@@ -76,12 +78,13 @@ public abstract class BaseSeverityFilterListPage extends
 		super.onViewCreated(view, savedInstanceState);
 		Log.d(TAG, this + " onViewCreated");
 		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		getListView().setItemChecked(mPosition, true);
-		getListView().setSelection(mPosition);
 	}
 
-	public CharSequence getTitle() {
-		return mSeverity.getName();
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		super.onServiceConnected(name, service);
+		getListView().setItemChecked(mListAdapter.getCurrentPosition(), true);
+		getListView().setSelection(mListAdapter.getCurrentPosition());
 	}
 
 	@Override
@@ -89,19 +92,28 @@ public abstract class BaseSeverityFilterListPage extends
 		Log.d(TAG, "onListItemClick(l, v, " + position + ", " + id
 				+ "). severity: " + mSeverity);
 		Log.d(TAG, "list item clicked in: " + this.toString());
-		mPosition = position;
 		mCallbackMain.onListItemSelected(position, id);
 	}
 
 	public void selectItem(int position) {
 
-		mPosition = position;
+		if(mListAdapter != null)
+			mListAdapter.setCurrentPosition(position);
 		// check if the view has already been created -> if not, calls will be
 		// made in onViewCreated().
 		if (getView() != null) {
 			getListView().setItemChecked(position, true);
 			getListView().setSelection(position);
 		}
+	}
+	
+	public void refreshItemSelection() {
+		int position = mListAdapter.getCurrentPosition();
+		if (getView() != null) {
+			getListView().setItemChecked(position, true);
+			getListView().setSelection(position);
+		}
+		
 	}
 
 	public void setSeverity(TriggerSeverity severity) {
@@ -112,11 +124,6 @@ public abstract class BaseSeverityFilterListPage extends
 
 	public TriggerSeverity getSeverity() {
 		return mSeverity;
-	}
-
-	public void setItemSelected(int itemSelected) {
-		this.mPosition = itemSelected;
-
 	}
 
 	public void setCustomEmptyText(CharSequence text) {

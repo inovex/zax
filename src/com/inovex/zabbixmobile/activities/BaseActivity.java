@@ -9,7 +9,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
-import android.test.PerformanceTestCase;
 import android.util.Log;
 import android.widget.Toast;
 

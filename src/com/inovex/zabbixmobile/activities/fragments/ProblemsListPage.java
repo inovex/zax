@@ -4,8 +4,9 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.model.Trigger;
 
-public class ProblemsListPage extends BaseSeverityFilterListPage {
+public class ProblemsListPage extends BaseSeverityFilterListPage<Trigger> {
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -15,7 +16,8 @@ public class ProblemsListPage extends BaseSeverityFilterListPage {
 
 	@Override
 	protected void setupListAdapter() {
-		setListAdapter(mZabbixDataService.getProblemsListAdapter(mSeverity));
+		mListAdapter = mZabbixDataService.getProblemsListAdapter(mSeverity);
+		setListAdapter(mListAdapter);
 	}
 
 }

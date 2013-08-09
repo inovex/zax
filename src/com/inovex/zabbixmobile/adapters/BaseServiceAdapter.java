@@ -3,6 +3,7 @@ package com.inovex.zabbixmobile.adapters;
 import java.util.Collection;
 import java.util.TreeSet;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.BaseAdapter;
 
@@ -18,6 +19,7 @@ public abstract class BaseServiceAdapter<T> extends BaseAdapter {
 
 	protected ZabbixDataService mZabbixDataService;
 	protected TreeSet<T> mObjects;
+	private int mPosition;
 
 	/**
 	 * Creates an adapter.
@@ -64,6 +66,15 @@ public abstract class BaseServiceAdapter<T> extends BaseAdapter {
 	 */
 	protected LayoutInflater getInflater() {
 		return mZabbixDataService.getInflater();
+	}
+
+	public int getCurrentPosition() {
+		return mPosition;
+	}
+	
+	public void setCurrentPosition(int position) {
+		mPosition = position;
+		Log.d("ListAdapter", "selected item: " + position);
 	}
 
 }

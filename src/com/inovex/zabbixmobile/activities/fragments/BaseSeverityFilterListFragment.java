@@ -15,18 +15,15 @@ import android.widget.ProgressBar;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
-import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TabPageIndicator;
 
-public abstract class BaseSeverityFilterListFragment extends
+public abstract class BaseSeverityFilterListFragment<T> extends
 		BaseServiceConnectedFragment {
 
 	public static final String TAG = BaseSeverityFilterListFragment.class
 			.getSimpleName();
 
 	private static final String ARG_SPINNER_VISIBLE = "arg_spinner_visible";
-
-	private long mCurrentHostGroupId;
 
 	ViewPager mSeverityListPager;
 	BaseSeverityListPagerAdapter mSeverityListPagerAdapter;
@@ -143,15 +140,19 @@ public abstract class BaseSeverityFilterListFragment extends
 		if (mSeverityListPagerAdapter == null
 				|| mSeverityListPagerAdapter.getCount() == 0)
 			return;
-		BaseSeverityFilterListPage currentPage = (BaseSeverityFilterListPage) mSeverityListPagerAdapter
+		@SuppressWarnings("unchecked")
+		BaseSeverityFilterListPage<T> currentPage = (BaseSeverityFilterListPage<T>) mSeverityListPagerAdapter
 				.instantiateItem(mSeverityListPager,
 						mSeverityListPager.getCurrentItem());
 		Log.d(TAG, "selectItem(" + position + ")");
 		currentPage.selectItem(position);
 	}
-
-	public void setHostGroupId(long itemId) {
-		this.mCurrentHostGroupId = itemId;
+	
+	public void refreshItemSelection() {
+		BaseSeverityFilterListPage<T> currentPage = (BaseSeverityFilterListPage<T>) mSeverityListPagerAdapter
+				.instantiateItem(mSeverityListPager,
+						mSeverityListPager.getCurrentItem());
+		currentPage.refreshItemSelection();		
 	}
 
 	public void showProgressBar() {

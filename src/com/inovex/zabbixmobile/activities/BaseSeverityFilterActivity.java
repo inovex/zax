@@ -26,14 +26,10 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	private static final int FLIPPER_LIST_FRAGMENT = 0;
 	private static final int FLIPPER_DETAILS_FRAGMENT = 1;
 
-	protected int mCurrentItemPosition = 0;
-	protected long mCurrentItemId = 0;
 	protected FragmentManager mFragmentManager;
 	protected ViewFlipper mFlipper;
 	protected BaseSeverityFilterDetailsFragment<T> mDetailsFragment;
-	protected BaseSeverityFilterListFragment mListFragment;
-
-	private boolean mFirstCallSelectHostGroup = true;
+	protected BaseSeverityFilterListFragment<T> mListFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,21 +65,14 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	@Override
 	public void selectHostGroupInSpinner(int position, long itemId) {
 		super.selectHostGroupInSpinner(position, itemId);
-		mListFragment.setHostGroupId(itemId);
-		mDetailsFragment.setHostGroupId(itemId);
-		if (!mFirstCallSelectHostGroup) {
-			mDetailsFragment.redrawPageIndicator();
-			mListFragment.selectItem(0);
-			mDetailsFragment.selectItem(0);
-			mFirstCallSelectHostGroup = false;
-		}
+		mDetailsFragment.redrawPageIndicator();
+		mListFragment.selectItem(0);
+		mDetailsFragment.selectItem(0);
 	}
 
 	@Override
 	public void onListItemSelected(int position, long id) {
 		Log.d(TAG, "item selected: " + id + ", position: " + position);
-		this.mCurrentItemPosition = position;
-		this.mCurrentItemId = id;
 
 		// Caution: details fragment must be shown before selectItem() is
 		// called! Otherwise the "acknowledge event" button might be displayed
@@ -160,8 +149,12 @@ public abstract class BaseSeverityFilterActivity<T> extends
 			// TODO: maybe: save current item per severity and host group
 			return;
 		}
-		mDetailsFragment.selectItem(mCurrentItemPosition);
-		mListFragment.selectItem(mCurrentItemPosition);
+//		mDetailsFragment.selectItem(mCurrentItemPosition);
+//		mListFragment.selectItem(mCurrentItemPosition);
+//		mDetailsFragment.selectItem(0);
+//		mListFragment.selectItem(0);
+		mDetailsFragment.refreshItemSelection();
+		mListFragment.refreshItemSelection();
 	}
 
 	@Override
@@ -173,7 +166,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	@Override
 	protected void loadData() {
 		super.loadData();
-		loadAdapterContent(true);
+		loadAdapterContent(false);
 	}
-	
+
 }

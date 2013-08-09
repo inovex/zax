@@ -82,8 +82,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	}
 
 	/**
-	 * This method is called when a host group in the spinner is selected. The
-	 * spinner state is maintained in {@link BaseHostGroupSpinnerActivity}. If
+	 * This method is called when a host group in the spinner is selected. If
 	 * additional actions (like updating fragments) have to be performed, this
 	 * method needs to be overwritten.
 	 * 

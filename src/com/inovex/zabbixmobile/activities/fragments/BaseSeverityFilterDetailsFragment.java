@@ -14,7 +14,6 @@ import android.widget.LinearLayout;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
-import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -24,20 +23,14 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	public static final String TAG = BaseSeverityFilterDetailsFragment.class
 			.getSimpleName();
 
-	private static final String ARG_ITEM_POSITION = "arg_item_position";
-	private static final String ARG_ITEM_ID = "arg_item_id";
 	private static final String ARG_SEVERITY = "arg_severity";
 	private static final String ARG_SPINNER_VISIBLE = "arg_spinner_visible";
 	
 	protected ViewPager mDetailsPager;
-	protected int mPosition = 0;
-	protected long mItemId = 0;
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
 	protected TitlePageIndicator mDetailsPageIndicator;
 	private OnListItemSelectedListener mCallbackMain;
 	protected BaseSeverityPagerAdapter<T> mDetailsPagerAdapter;
-
-	private long mHostGroupId = HostGroup.GROUP_ID_ALL;
 
 	private boolean mLoadingSpinnerVisible;
 
@@ -57,7 +50,11 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		if (position > mDetailsPagerAdapter.getCount() - 1)
 			position = 0;
 		setPosition(position);
-		setCurrentItemId(mDetailsPagerAdapter.getItemId(position));
+	}
+	
+
+	public void refreshItemSelection() {
+		setPosition(mDetailsPagerAdapter.getCurrentPosition());
 	}
 
 	/**
@@ -67,16 +64,11 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	 * @param position
 	 */
 	public void setPosition(int position) {
-		this.mPosition = position;
 		if (mDetailsPageIndicator != null) {
 			mDetailsPageIndicator.setCurrentItem(position);
 			mDetailsPager.setCurrentItem(position);
 			mDetailsPagerAdapter.setCurrentPosition(position);
 		}
-	}
-
-	private void setCurrentItemId(long itemId) {
-		this.mItemId = itemId;
 	}
 
 	/**
@@ -98,29 +90,11 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		}
 	}
 
-	/**
-	 * Sets the current host group id and updates the pager adapter.
-	 * 
-	 * @param hostGroupId
-	 *            current severity
-	 */
-	public void setHostGroupId(long hostGroupId) {
-		this.mHostGroupId = hostGroupId;
-		// if (mZabbixDataService != null) {
-		// retrievePagerAdapter();
-		// // the adapter could be fresh -> set fragment manager
-		// mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
-		// mDetailsPager.setAdapter(mDetailsPagerAdapter);
-		// }
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
 		if (savedInstanceState != null) {
-			mPosition = savedInstanceState.getInt(ARG_ITEM_POSITION, 0);
-			mItemId = savedInstanceState.getLong(ARG_ITEM_ID, 0);
 			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
 					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
 			mLoadingSpinnerVisible = savedInstanceState.getBoolean(
@@ -154,8 +128,6 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putInt(ARG_ITEM_POSITION, mPosition);
-		outState.putLong(ARG_ITEM_ID, mItemId);
 		outState.putInt(ARG_SEVERITY, mSeverity.getNumber());
 		outState.putBoolean(ARG_SPINNER_VISIBLE,
 				mLoadingSpinnerVisible);
@@ -214,11 +186,10 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		mDetailsPageIndicator.setViewPager(mDetailsPager);
 
 		Log.d(TAG, "current position: " + mDetailsPagerAdapter.getCurrentPosition());
-		mDetailsPager.setCurrentItem(mPosition);
-		mDetailsPagerAdapter.setCurrentPosition(mPosition);
-		mDetailsPageIndicator.setCurrentItem(mPosition);
+//		mDetailsPagerAdapter.setCurrentPosition(mPosition);
+//		mDetailsPageIndicator.setCurrentItem(mPosition);
 		
-//		mDetailsPageIndicator.setCurrentItem(mDetailsPagerAdapter.getCurrentPosition());
+		mDetailsPageIndicator.setCurrentItem(mDetailsPagerAdapter.getCurrentPosition());
 		
 		mDetailsPageIndicator
 				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -241,8 +212,9 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 						// propagate page change only if there actually was a
 						// change -> prevent infinite propagation
+						int oldPosition = mDetailsPagerAdapter.getCurrentPosition();
 						mDetailsPagerAdapter.setCurrentPosition(position);
-						if (position != mPosition)
+						if (position != oldPosition)
 							mCallbackMain.onListItemSelected(position,
 									mDetailsPagerAdapter.getItemId(position));
 					}
