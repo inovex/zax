@@ -16,7 +16,7 @@ import com.inovex.zabbixmobile.model.HostGroup;
 public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 
 	private String mTitle;
-	private int mPosition;
+	private int mHostGroupPosition;
 	private OnHostGroupSelectedListener mCallback;
 
 	public interface OnHostGroupSelectedListener {
@@ -84,7 +84,15 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 	}
 
 	public void setCurrentPosition(int position) {
-		this.mPosition = position;
+		this.mHostGroupPosition = position;
+	}
+	
+	public int getCurrentPosition() {
+		return mHostGroupPosition;
+	}
+	
+	public long getCurrentItemId() {
+		return getItemId(mHostGroupPosition);
 	}
 
 	@Override
@@ -92,8 +100,8 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 		super.notifyDataSetChanged();
 		// update the current selection (we might have saved this position
 		// before)
-		if(mCallback != null && mObjects.size() > mPosition)
-			mCallback.onHostGroupSelected(mPosition);
+		if(mCallback != null && mObjects.size() > mHostGroupPosition)
+			mCallback.onHostGroupSelected(mHostGroupPosition);
 	}
 
 }

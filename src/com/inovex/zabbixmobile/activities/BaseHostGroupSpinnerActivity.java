@@ -3,27 +3,24 @@ package com.inovex.zabbixmobile.activities;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter.OnHostGroupSelectedListener;
-import com.inovex.zabbixmobile.model.HostGroup;
 
 public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		implements OnHostGroupSelectedListener {
 
-	protected static final String ARG_HOST_GROUP_POSITION = "arg_host_group_position";
-	protected static final String ARG_HOST_GROUP_ID = "arg_host_group_id";
-
-	protected long mHostGroupId = HostGroup.GROUP_ID_ALL;
-	protected int mHostGroupPosition = 0;
+	protected static final String TAG = BaseHostGroupSpinnerActivity.class
+			.getSimpleName();
 
 	protected String mSpinnerTitle;
 
 	protected HostGroupsSpinnerAdapter mSpinnerAdapter;
 
 	private boolean mFirstCall = true;
-	
+
 	protected class SpinnerNavigationListener implements
 			ActionBar.OnNavigationListener {
 
@@ -33,9 +30,14 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 			// means that during a configuration change, the saved state of
 			// the spinner (selected item) might be overwritten. Hence, we
 			// ignore the first call.
+			Log.d(TAG, "onNavigationItemSelected(" + position + ", " + itemId
+					+ ") " + "firstCall: " + mFirstCall);
+
+			// avoid reset after orientation change / data refresh
 			if (mFirstCall) {
 				mFirstCall = false;
-				return true;
+				if (position == 0)
+					return true;
 			}
 
 			selectHostGroupInSpinner(position, itemId);
@@ -47,17 +49,10 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (savedInstanceState != null) {
-			mHostGroupPosition = savedInstanceState.getInt(
-					ARG_HOST_GROUP_POSITION, 0);
-			mHostGroupId = savedInstanceState.getLong(ARG_HOST_GROUP_ID, 0);
-		}
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		outState.putInt(ARG_HOST_GROUP_POSITION, mHostGroupPosition);
-		outState.putLong(ARG_HOST_GROUP_ID, mHostGroupId);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -75,11 +70,9 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 				mOnNavigationListener);
 
 		mSpinnerAdapter.setTitle(mSpinnerTitle);
-		selectHostGroupInSpinner(mHostGroupPosition, mHostGroupId);
+		mSpinnerAdapter.notifyDataSetChanged();
+		// selectHostGroupInSpinner(mHostGroupPosition, mHostGroupId);
 
-		mZabbixDataService.loadHostGroups();
-		
-		// fill all severity adapters
 		loadAdapterContent(false);
 	}
 
@@ -101,25 +94,27 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	 */
 	public void selectHostGroupInSpinner(int position, long itemId) {
 		mSpinnerAdapter.setCurrentPosition(position);
-		if(itemId != mHostGroupId) {
-			mHostGroupId = itemId;
-			mHostGroupPosition = position;
-			// update adapters
-			loadAdapterContent(true);
-		}
+		loadAdapterContent(true);
 	}
 
-	protected abstract void loadAdapterContent(boolean hostGroupChanged);
+	@Override
+	protected void refreshData() {
+		mFirstCall = true;
+		super.refreshData();
+	}
+
+	protected void loadAdapterContent(boolean hostGroupChanged) {
+
+	}
 
 	@Override
 	protected void loadData() {
-		// "simulate" a first call such that the host group selection is not altered. 
-		// This would happen because the host group adapter is emptied and refilled.
-		if(mHostGroupPosition != 0)
+		// "simulate" a first call such that the host group selection is not
+		// altered.
+		// This would happen because the host group adapter is emptied and
+		// refilled.
+		if (mSpinnerAdapter.getCurrentPosition() != 0)
 			mFirstCall = true;
-		mZabbixDataService.loadHostGroups();		
 	}
-	
-	
 
 }

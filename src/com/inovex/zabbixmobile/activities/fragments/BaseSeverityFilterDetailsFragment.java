@@ -212,10 +212,13 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		mDetailsPageIndicator = (TitlePageIndicator) getView().findViewById(
 				R.id.severity_page_indicator);
 		mDetailsPageIndicator.setViewPager(mDetailsPager);
-		
+
+		Log.d(TAG, "current position: " + mDetailsPagerAdapter.getCurrentPosition());
 		mDetailsPager.setCurrentItem(mPosition);
 		mDetailsPagerAdapter.setCurrentPosition(mPosition);
 		mDetailsPageIndicator.setCurrentItem(mPosition);
+		
+//		mDetailsPageIndicator.setCurrentItem(mDetailsPagerAdapter.getCurrentPosition());
 		
 		mDetailsPageIndicator
 				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {

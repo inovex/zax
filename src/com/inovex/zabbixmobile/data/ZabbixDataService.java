@@ -175,7 +175,7 @@ public class ZabbixDataService extends Service {
 		}
 
 	}
-	
+
 	/**
 	 * Returns the event list pager adapter.
 	 * 
@@ -232,7 +232,7 @@ public class ZabbixDataService extends Service {
 	public BaseSeverityListPagerAdapter getProblemsListPagerAdapter() {
 		return mProblemsListPagerAdapter;
 	}
-	
+
 	/**
 	 * Returns the problems list adapter for the main view. This adapter
 	 * contains all active problems regardless of severity and hostgroup.
@@ -423,7 +423,9 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Performs the Zabbix login using the server address and credentials from
-	 * the preferences.
+	 * the preferences. Additionally, this method loads the host groups and
+	 * fills the corresponding adapter because host groups are used at so many
+	 * spots in the program, so they should be available all the time.
 	 * 
 	 * @param listener
 	 *            listener to be informed about start and end of the login
@@ -437,6 +439,8 @@ public class ZabbixDataService extends Service {
 		RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI) {
 
 			private boolean success = false;
+			private List<HostGroup> hostGroups;
+			private final BaseServiceAdapter<HostGroup> groupsAdapter = mHostGroupsSpinnerAdapter;
 
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
@@ -444,11 +448,29 @@ public class ZabbixDataService extends Service {
 				mRemoteAPI.authenticate();
 				success = true;
 				mLoggedIn = true;
+				hostGroups = new ArrayList<HostGroup>();
+				try {
+					mRemoteAPI.importHostsAndGroups();
+					// even if the api call is not successful, we can still use
+					// the cached events
+				} finally {
+					try {
+						hostGroups = mDatabaseHelper.getHostGroups();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
 
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
+				if (groupsAdapter != null) {
+					// adapter.clear();
+					groupsAdapter.addAll(hostGroups);
+					groupsAdapter.notifyDataSetChanged();
+				}
 				listener.onLoginFinished(success);
 			}
 
@@ -661,7 +683,7 @@ public class ZabbixDataService extends Service {
 						detailsAdapter.addAll(triggers.get(severity));
 						detailsAdapter.notifyDataSetChanged();
 					}
-					
+
 					if (callback != null)
 						callback.onSeverityListAdapterLoaded(severity,
 								hostGroupChanged);
@@ -679,48 +701,6 @@ public class ZabbixDataService extends Service {
 
 		mCurrentLoadProblemsTask.execute();
 
-	}
-
-	/**
-	 * Loads host groups from the database (if necessary, a Zabbix API call is
-	 * triggered) and updates the host group spinner adapter.
-	 */
-	public void loadHostGroups() {
-		new RemoteAPITask(mRemoteAPI) {
-
-			private List<HostGroup> hostGroups;
-			private final BaseServiceAdapter<HostGroup> groupsAdapter = mHostGroupsSpinnerAdapter;
-
-			@Override
-			protected void executeTask() throws ZabbixLoginRequiredException,
-					FatalException {
-				hostGroups = new ArrayList<HostGroup>();
-				try {
-					mRemoteAPI.importHostsAndGroups();
-					// even if the api call is not successful, we can still use
-					// the cached events
-				} finally {
-					try {
-						hostGroups = mDatabaseHelper.getHostGroups();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-
-			@Override
-			protected void onPostExecute(Void result) {
-				super.onPostExecute(result);
-				if (groupsAdapter != null) {
-					// adapter.clear();
-					groupsAdapter.addAll(hostGroups);
-					groupsAdapter.notifyDataSetChanged();
-				}
-
-			}
-
-		}.execute();
 	}
 
 	/**

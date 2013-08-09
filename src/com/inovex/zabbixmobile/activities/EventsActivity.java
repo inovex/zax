@@ -84,7 +84,8 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	@Override
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		Log.d(TAG, "loadAdapterContent");
-		mZabbixDataService.loadEventsByHostGroup(mHostGroupId,
+		super.loadAdapterContent(hostGroupChanged);
+		mZabbixDataService.loadEventsByHostGroup(mSpinnerAdapter.getCurrentItemId(),
 				hostGroupChanged, this);
 	}
 
@@ -93,7 +94,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 			boolean hostGroupChanged) {
 		super.onSeverityListAdapterLoaded(severity, hostGroupChanged);
 
-		if (severity == mSeverity) {
+		if(severity == mZabbixDataService.getEventsListPagerAdapter().getCurrentObject()) {
 			selectInitialItem(hostGroupChanged);
 		}
 	}

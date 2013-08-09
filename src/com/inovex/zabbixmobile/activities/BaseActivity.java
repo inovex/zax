@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.DialogFragment;
+import android.test.PerformanceTestCase;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -145,7 +146,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 	protected void refreshData() {
 		mZabbixDataService.clearAllData();
-		loadData();
+		// re-login and load host groups
+		mZabbixDataService.performZabbixLogin(this);
 	}
 
 	protected abstract void loadData();
@@ -172,7 +174,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		if (success) {
 			Toast.makeText(this, R.string.zabbix_login_successful,
 					Toast.LENGTH_LONG).show();
-			refreshData();
+			loadData();
 			enableUI();
 		}
 	}

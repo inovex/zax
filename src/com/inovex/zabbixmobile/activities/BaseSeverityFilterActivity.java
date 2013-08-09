@@ -26,12 +26,8 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	private static final int FLIPPER_LIST_FRAGMENT = 0;
 	private static final int FLIPPER_DETAILS_FRAGMENT = 1;
 
-	private static final String CURRENT_ITEM_POSITION = "current_item_position";
-	private static final String CURRENT_SEVERITY = "current_severity";
-
 	protected int mCurrentItemPosition = 0;
 	protected long mCurrentItemId = 0;
-	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
 	protected FragmentManager mFragmentManager;
 	protected ViewFlipper mFlipper;
 	protected BaseSeverityFilterDetailsFragment<T> mDetailsFragment;
@@ -42,22 +38,9 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (savedInstanceState != null) {
-			mCurrentItemPosition = savedInstanceState.getInt(
-					CURRENT_ITEM_POSITION, 0);
-			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
-					.getInt(CURRENT_SEVERITY, TriggerSeverity.ALL.getNumber()));
-		}
 		// We'll be using a spinner menu
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		mActionBar.setDisplayShowTitleEnabled(false);
-	}
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		outState.putInt(CURRENT_ITEM_POSITION, mCurrentItemPosition);
-		outState.putInt(CURRENT_SEVERITY, mSeverity.getNumber());
-		super.onSaveInstanceState(outState);
 	}
 
 	@Override
@@ -85,8 +68,6 @@ public abstract class BaseSeverityFilterActivity<T> extends
 
 	@Override
 	public void selectHostGroupInSpinner(int position, long itemId) {
-		mListFragment.showProgressBar();
-		mDetailsFragment.showLoadingSpinner();
 		super.selectHostGroupInSpinner(position, itemId);
 		mListFragment.setHostGroupId(itemId);
 		mDetailsFragment.setHostGroupId(itemId);
@@ -115,7 +96,6 @@ public abstract class BaseSeverityFilterActivity<T> extends
 
 	@Override
 	public void onSeveritySelected(TriggerSeverity severity) {
-		mSeverity = severity;
 		mDetailsFragment.setSeverity(severity);
 		mDetailsFragment.redrawPageIndicator();
 		mListFragment.selectItem(0);
@@ -185,13 +165,15 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	}
 
 	@Override
-	protected abstract void loadAdapterContent(boolean hostGroupChanged);
+	protected void loadAdapterContent(boolean hostGroupChanged) {
+		mListFragment.showProgressBar();
+		mDetailsFragment.showLoadingSpinner();
+	}
 
 	@Override
 	protected void loadData() {
 		super.loadData();
-		mListFragment.showProgressBar();
-		mDetailsFragment.showLoadingSpinner();
 		loadAdapterContent(true);
 	}
+	
 }

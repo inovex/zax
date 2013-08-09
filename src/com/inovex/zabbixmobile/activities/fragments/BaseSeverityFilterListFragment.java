@@ -24,14 +24,8 @@ public abstract class BaseSeverityFilterListFragment extends
 	public static final String TAG = BaseSeverityFilterListFragment.class
 			.getSimpleName();
 
-	private static final String ARG_POSITION = "arg_position";
-	private static final String ARG_ITEM_ID = "arg_item_id";
-	private static final String ARG_SEVERITY = "arg_severity";
 	private static final String ARG_SPINNER_VISIBLE = "arg_spinner_visible";
 
-	private int mCurrentPosition = 0;
-	private long mCurrentItemId = 0;
-	private TriggerSeverity mCurrentSeverity = TriggerSeverity.ALL;
 	private long mCurrentHostGroupId;
 
 	ViewPager mSeverityListPager;
@@ -59,11 +53,6 @@ public abstract class BaseSeverityFilterListFragment extends
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
 		if (savedInstanceState != null) {
-			setCurrentPosition(savedInstanceState.getInt(ARG_POSITION, 0));
-			setCurrentItemId(savedInstanceState.getLong(ARG_ITEM_ID, 0));
-			setCurrentSeverity(TriggerSeverity
-					.getSeverityByNumber(savedInstanceState.getInt(
-							ARG_SEVERITY, TriggerSeverity.ALL.getNumber())));
 			mProgressBarVisible = savedInstanceState.getBoolean(
 					ARG_SPINNER_VISIBLE, false);
 		}
@@ -91,9 +80,6 @@ public abstract class BaseSeverityFilterListFragment extends
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putInt(ARG_POSITION, mCurrentPosition);
-		outState.putLong(ARG_ITEM_ID, mCurrentItemId);
-		outState.putInt(ARG_SEVERITY, mCurrentSeverity.getNumber());
 		outState.putBoolean(ARG_SPINNER_VISIBLE, mProgressBarVisible);
 		super.onSaveInstanceState(outState);
 	}
@@ -108,11 +94,17 @@ public abstract class BaseSeverityFilterListFragment extends
 				R.id.severity_list_tabindicator);
 		// Bind the tab indicator to the adapter
 		mSeverityListPagerAdapter = retrievePagerAdapter();
-		Log.d(TAG, "current severity: " + mSeverityListPagerAdapter.getCurrentObject());
+		Log.d(TAG,
+				"current severity: "
+						+ mSeverityListPagerAdapter.getCurrentObject());
 		mSeverityListPagerAdapter.setFragmentManager(getChildFragmentManager());
 		mSeverityListPager.setAdapter(mSeverityListPagerAdapter);
 		mSeverityListPager.setOffscreenPageLimit(1);
 		mSeverityListTabIndicator.setViewPager(mSeverityListPager);
+
+		mSeverityListTabIndicator.setCurrentItem(mSeverityListPagerAdapter
+				.getCurrentPosition());
+		mCallbackMain.onSeveritySelected(mSeverityListPagerAdapter.getCurrentObject());
 
 		mSeverityListTabIndicator
 				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -127,13 +119,10 @@ public abstract class BaseSeverityFilterListFragment extends
 						// mCallbackMain.onCategorySelected(position,
 						// p.getSelectedEventNumber());
 						// categoryNumber = position;
-						BaseSeverityFilterListPage currentPage = (BaseSeverityFilterListPage) mSeverityListPagerAdapter
-								.getItem(position);
-						
+
 						mSeverityListPagerAdapter.setCurrentPosition(position);
 
-						mCallbackMain.onSeveritySelected(currentPage
-								.getSeverity());
+						mCallbackMain.onSeveritySelected(mSeverityListPagerAdapter.getCurrentObject());
 
 					}
 
@@ -159,19 +148,6 @@ public abstract class BaseSeverityFilterListFragment extends
 						mSeverityListPager.getCurrentItem());
 		Log.d(TAG, "selectItem(" + position + ")");
 		currentPage.selectItem(position);
-		mCurrentPosition = position;
-	}
-
-	public void setCurrentPosition(int currentPosition) {
-		this.mCurrentPosition = currentPosition;
-	}
-
-	protected void setCurrentItemId(long currentItemId) {
-		this.mCurrentItemId = currentItemId;
-	}
-
-	protected void setCurrentSeverity(TriggerSeverity currentSeverity) {
-		this.mCurrentSeverity = currentSeverity;
 	}
 
 	public void setHostGroupId(long itemId) {

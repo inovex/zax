@@ -49,7 +49,6 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 				mShowDetailsFragment = true;
 				mBackToMain = true;
 				// mDetailsFragment.selectItem(position);
-				mListFragment.setCurrentPosition(position);
 				mDetailsFragment.setPosition(position);
 				showDetailsFragment();
 			}
@@ -109,7 +108,8 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		if (mZabbixDataService != null) {
-			mZabbixDataService.loadProblemsByHostGroup(mHostGroupId,
+			super.loadAdapterContent(hostGroupChanged);
+			mZabbixDataService.loadProblemsByHostGroup(mSpinnerAdapter.getCurrentItemId(),
 					hostGroupChanged, this);
 		}
 	}
@@ -119,8 +119,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			boolean hostGroupChanged) {
 		super.onSeverityListAdapterLoaded(severity, hostGroupChanged);
 
-		if (severity == mSeverity && !mFirstCallSeverityListAdapterFilled) {
-			mFirstCallSeverityListAdapterFilled = false;
+		if(severity == mZabbixDataService.getProblemsListPagerAdapter().getCurrentObject()) {
 			selectInitialItem(hostGroupChanged);
 		}
 	}
