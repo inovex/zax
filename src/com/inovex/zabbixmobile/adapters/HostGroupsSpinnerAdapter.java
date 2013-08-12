@@ -38,7 +38,7 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 		View actionBarView = getInflater().inflate(
 				R.layout.spinner_host_groups_main, null);
 		TextView title = (TextView) actionBarView
-				.findViewById(R.id.shost_groups_spinner_title);
+				.findViewById(R.id.host_groups_spinner_title);
 		title.setText(mTitle);
 		TextView subtitle = (TextView) actionBarView
 				.findViewById(R.id.host_groups_spinner_subtitle);

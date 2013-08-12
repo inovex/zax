@@ -28,8 +28,8 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".activities.MainActivity"
-            android:label="@string/app_name" >
+            android:name=".activities.ProblemsActivity"
+            android:label="@string/activity_problems" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,10 +39,6 @@
         <activity
             android:name=".activities.EventsActivity"
             android:label="@string/activity_events" >
-        </activity>
-        <activity
-            android:name=".activities.ProblemsActivity"
-            android:label="@string/activity_problems" >
         </activity>
         <activity
             android:name=".activities.ChecksActivity"

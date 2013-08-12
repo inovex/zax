@@ -117,6 +117,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 			mFirstCall = true;
 	}
 
+	// TODO: display title properly
 	@Override
 	protected void onNavigationDrawerClosed() {
 //		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);

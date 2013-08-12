@@ -16,16 +16,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
-import android.hardware.Camera.ShutterCallback;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.activities.MainActivity;
+import com.inovex.zabbixmobile.activities.ProblemsActivity;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 
 public class PushService extends Service {
@@ -245,7 +243,7 @@ public class PushService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			numNotifications = 0;
 			previousMessages.clear();
-			Intent notificationIntent = new Intent(context, MainActivity.class);
+			Intent notificationIntent = new Intent(context, ProblemsActivity.class);
 			notificationIntent.putExtras(intent.getExtras());
 			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			context.startActivity(notificationIntent);
