@@ -89,9 +89,11 @@ import com.inovex.zabbixmobile.util.JsonObjectReader;
 public class ZabbixRemoteAPI {
 	private static final String ZABBIX_ERROR_NO_API_ACCESS = "No API access";
 	private static final String ZABBIX_ERROR_NOT_AUTHORIZED = "Not authorized";
-	private static final String ZABBIX_ERROR_LOGIN_INCORRECT = "Login name or password is incorrect";
+	// Sometimes this message contains a dot in the end, sometimes it doesn't.
+	private static final String ZABBIX_ERROR_LOGIN_INCORRECT = "Login name or password is incorrect(\\.?)";
 	private static final int RECORDS_PER_INSERT_BATCH = 50;
 	private static final String TAG = ZabbixRemoteAPI.class.getSimpleName();
+	private static final String ZABBIX_ACCOUNT_BLOCKED = "Account is blocked for (.*)";
 
 	class CustomSSLSocketFactory extends SSLSocketFactory {
 		SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -309,25 +311,26 @@ public class ZabbixRemoteAPI {
 			}
 			JSONObject result = new JSONObject(total.toString());
 			try {
+				String errorData;
 				if (result.getJSONObject("error") != null) {
-					if (result.getJSONObject("error").getString("data")
-							.equals(ZABBIX_ERROR_NO_API_ACCESS)) {
-						throw new FatalException(Type.NO_API_ACCESS);
-					}
-					if (result.getJSONObject("error").getString("data")
-							.equals(ZABBIX_ERROR_LOGIN_INCORRECT))
-						throw new FatalException(Type.ZABBIX_LOGIN_INCORRECT);
-					throw new FatalException(Type.INTERNAL_ERROR, result
-							.getJSONObject("error").toString());
+					errorData = result.getJSONObject("error").getString("data");
+				} else {
+					errorData = result.getString("data");
 				}
-				if (result.getString("data").equals(
-						ZABBIX_ERROR_LOGIN_INCORRECT))
+				if (errorData.equals(ZABBIX_ERROR_NO_API_ACCESS)) {
+					throw new FatalException(Type.NO_API_ACCESS);
+				}
+				if (errorData.matches(ZABBIX_ERROR_LOGIN_INCORRECT))
 					throw new FatalException(Type.ZABBIX_LOGIN_INCORRECT);
-				if (result.getString("data")
-						.equals(ZABBIX_ERROR_NOT_AUTHORIZED)) {
+				if (errorData.equals(ZABBIX_ERROR_NOT_AUTHORIZED)) {
 					// this should lead to a retry
 					throw new ZabbixLoginRequiredException();
 				}
+				if (errorData.matches(ZABBIX_ACCOUNT_BLOCKED)) {
+					// this should lead to a retry
+					throw new FatalException(Type.ACCOUNT_BLOCKED);
+				}
+				throw new FatalException(Type.INTERNAL_ERROR, errorData);
 			} catch (JSONException e) {
 				// ignore
 			}

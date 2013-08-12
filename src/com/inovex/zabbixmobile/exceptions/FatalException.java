@@ -14,7 +14,8 @@ public class FatalException extends Exception {
 				R.string.exc_no_connection), CONNECTION_TIMEOUT(
 				R.string.exc_connection_timeout), SERVER_NOT_FOUND(
 				R.string.exc_not_found), INTERNAL_ERROR(
-				R.string.exc_internal_error);
+				R.string.exc_internal_error), ACCOUNT_BLOCKED(
+				R.string.exc_account_blocked);
 
 		private int messageResourceId;
 

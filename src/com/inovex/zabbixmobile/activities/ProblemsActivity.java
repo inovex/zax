@@ -26,7 +26,9 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
 	// This flag is necessary to select the correct element when coming from
 	// another activity (e.g. Problems list in MainActivity)
-	private boolean mFirstCallSeverityListAdapterFilled = true;
+	private boolean mFirstCallFromIntent = true;
+	private int mItemPosition;
+	private long mItemId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +45,12 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 				.findFragmentById(R.id.problems_list);
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			int position = extras.getInt(ARG_ITEM_POSITION, -1);
-			long id = extras.getLong(ARG_ITEM_ID, -1);
-			if (position != -1 && id != -1) {
+			mItemPosition = extras.getInt(ARG_ITEM_POSITION, -1);
+			mItemId = extras.getLong(ARG_ITEM_ID, -1);
+			if (mItemPosition != -1 && mItemId != -1) {
+				mFirstCallFromIntent = true;
 				mShowDetailsFragment = true;
 				mBackToMain = true;
-				// mDetailsFragment.selectItem(position);
-				mDetailsFragment.setPosition(position);
 				showDetailsFragment();
 			}
 		}
@@ -109,8 +110,8 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		if (mZabbixDataService != null) {
 			super.loadAdapterContent(hostGroupChanged);
-			mZabbixDataService.loadProblemsByHostGroup(mSpinnerAdapter.getCurrentItemId(),
-					hostGroupChanged, this);
+			mZabbixDataService.loadProblemsByHostGroup(
+					mSpinnerAdapter.getCurrentItemId(), hostGroupChanged, this);
 		}
 	}
 
@@ -119,8 +120,18 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			boolean hostGroupChanged) {
 		super.onSeverityListAdapterLoaded(severity, hostGroupChanged);
 
-		if(severity == mZabbixDataService.getProblemsListPagerAdapter().getCurrentObject()) {
-			selectInitialItem(hostGroupChanged);
+		// If the activity was started with intent extras, we have to select the
+		// correct item.
+		if (mFirstCallFromIntent && mItemId != -1
+				&& mItemPosition != -1) {
+			mListFragment.selectItem(mItemPosition);
+			mDetailsFragment.selectItem(mItemPosition);
+			mFirstCallFromIntent = false;
+		} else {
+			if (severity == mZabbixDataService.getProblemsListPagerAdapter()
+					.getCurrentObject()) {
+				selectInitialItem(hostGroupChanged);
+			}
 		}
 	}
 

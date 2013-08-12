@@ -19,7 +19,7 @@ public abstract class BaseSeverityListPagerAdapter extends BaseServicePagerAdapt
 
 	@Override
 	public Fragment getItem(int i) {
-		BaseSeverityFilterListPage f = instantiatePage();
+		BaseSeverityFilterListPage<TriggerSeverity> f = instantiatePage();
 		f.setSeverity(TriggerSeverity.getSeverityByPosition(i));
 		Log.d(BaseSeverityFilterListFragment.TAG, "getItem: " + f.toString());
 		return f;
@@ -35,6 +35,6 @@ public abstract class BaseSeverityListPagerAdapter extends BaseServicePagerAdapt
 		return TriggerSeverity.getSeverityByPosition(position).getName();
 	}
 	
-	protected abstract BaseSeverityFilterListPage instantiatePage();
+	protected abstract BaseSeverityFilterListPage<TriggerSeverity> instantiatePage();
 
 }

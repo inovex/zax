@@ -66,8 +66,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	public void selectHostGroupInSpinner(int position, long itemId) {
 		super.selectHostGroupInSpinner(position, itemId);
 		mDetailsFragment.redrawPageIndicator();
-		mListFragment.selectItem(0);
-		mDetailsFragment.selectItem(0);
+		selectInitialItem(true);
 	}
 
 	@Override
@@ -78,8 +77,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 		// called! Otherwise the "acknowledge event" button might be displayed
 		// erroneously
 		showDetailsFragment();
-		mDetailsFragment.selectItem(position);
-		mListFragment.selectItem(position);
+		selectItem(position);
 
 	}
 
@@ -87,8 +85,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	public void onSeveritySelected(TriggerSeverity severity) {
 		mDetailsFragment.setSeverity(severity);
 		mDetailsFragment.redrawPageIndicator();
-		mListFragment.selectItem(0);
-		mDetailsFragment.selectItem(0);
+		selectInitialItem(false);
 	}
 
 	@Override
@@ -139,22 +136,21 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	 * the first item will be selected; otherwise, the saved position will be
 	 * restored.
 	 * 
-	 * @param hostGroupChanged
-	 *            whether the host group has been changed
+	 * @param reset
+	 *            whether the item position shall be reset to 0
 	 */
-	protected void selectInitialItem(boolean hostGroupChanged) {
-		if (hostGroupChanged) {
-			mDetailsFragment.selectItem(0);
-			mListFragment.selectItem(0);
-			// TODO: maybe: save current item per severity and host group
-			return;
+	protected void selectInitialItem(boolean reset) {
+		if (reset) {
+			selectItem(0);
+		} else {
+			mDetailsFragment.refreshItemSelection();
+			mListFragment.refreshItemSelection();
 		}
-//		mDetailsFragment.selectItem(mCurrentItemPosition);
-//		mListFragment.selectItem(mCurrentItemPosition);
-//		mDetailsFragment.selectItem(0);
-//		mListFragment.selectItem(0);
-		mDetailsFragment.refreshItemSelection();
-		mListFragment.refreshItemSelection();
+	}
+	
+	protected void selectItem(int position) {
+		mDetailsFragment.selectItem(position);
+		mListFragment.selectItem(position);
 	}
 
 	@Override

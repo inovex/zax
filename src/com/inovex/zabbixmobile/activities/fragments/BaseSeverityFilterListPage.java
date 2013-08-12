@@ -19,6 +19,7 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
 /**
  * Represents one page of a list view pager. Shows a list of items
  * (events/problems) for a specific severity.
+ * 
  * @param <T>
  */
 public abstract class BaseSeverityFilterListPage<T> extends
@@ -32,7 +33,7 @@ public abstract class BaseSeverityFilterListPage<T> extends
 	private OnListItemSelectedListener mCallbackMain;
 
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
-	
+
 	protected BaseServiceAdapter<T> mListAdapter;
 
 	@Override
@@ -95,25 +96,35 @@ public abstract class BaseSeverityFilterListPage<T> extends
 		mCallbackMain.onListItemSelected(position, id);
 	}
 
+	/**
+	 * Selects an item in this fragment's list view.
+	 * 
+	 * @param position
+	 */
 	public void selectItem(int position) {
-
-		if(mListAdapter != null)
+		if (mListAdapter != null)
 			mListAdapter.setCurrentPosition(position);
 		// check if the view has already been created -> if not, calls will be
-		// made in onViewCreated().
+		// made in onServiceConnected().
 		if (getView() != null) {
 			getListView().setItemChecked(position, true);
 			getListView().setSelection(position);
 		}
 	}
-	
+
+	/**
+	 * Updates the list view position using the current position saved in the
+	 * list adapter.
+	 */
 	public void refreshItemSelection() {
+		if (mListAdapter == null)
+			return;
 		int position = mListAdapter.getCurrentPosition();
 		if (getView() != null) {
 			getListView().setItemChecked(position, true);
 			getListView().setSelection(position);
 		}
-		
+
 	}
 
 	public void setSeverity(TriggerSeverity severity) {

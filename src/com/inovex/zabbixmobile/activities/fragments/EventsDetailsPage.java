@@ -3,7 +3,6 @@ package com.inovex.zabbixmobile.activities.fragments;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.model.Event;
-import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.model.Trigger;
 
@@ -35,12 +33,9 @@ public class EventsDetailsPage extends BaseDetailsPage {
 
 	private static final String ARG_EVENT_ID = "arg_event_id";
 	private Event mEvent;
-	private String mTitle = "";
 	private long mEventId = -1;
 
 	private boolean mHistoryDetailsImported = false;
-
-	private Collection<HistoryDetail> mHistoryDetails;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -91,7 +86,6 @@ public class EventsDetailsPage extends BaseDetailsPage {
 					.setText((mEvent.isAcknowledged()) ? R.string.yes
 							: R.string.no);
 
-			StringBuilder sb = new StringBuilder();
 			Trigger t = mEvent.getTrigger();
 			if (t != null) {
 
@@ -158,14 +152,6 @@ public class EventsDetailsPage extends BaseDetailsPage {
 		if (!mHistoryDetailsImported && getView() != null)
 			mZabbixDataService.loadHistoryDetailsByItem(mEvent.getTrigger()
 					.getItem(), false, this);
-	}
-
-	public void setTitle(String title) {
-		this.mTitle = title;
-	}
-
-	public String getTitle() {
-		return mTitle;
 	}
 
 	@Override

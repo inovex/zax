@@ -136,11 +136,11 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 
 	protected abstract BaseSeverityListPagerAdapter retrievePagerAdapter();
 
+	@SuppressWarnings("unchecked")
 	public void selectItem(int position) {
 		if (mSeverityListPagerAdapter == null
 				|| mSeverityListPagerAdapter.getCount() == 0)
 			return;
-		@SuppressWarnings("unchecked")
 		BaseSeverityFilterListPage<T> currentPage = (BaseSeverityFilterListPage<T>) mSeverityListPagerAdapter
 				.instantiateItem(mSeverityListPager,
 						mSeverityListPager.getCurrentItem());
@@ -148,6 +148,7 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 		currentPage.selectItem(position);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void refreshItemSelection() {
 		BaseSeverityFilterListPage<T> currentPage = (BaseSeverityFilterListPage<T>) mSeverityListPagerAdapter
 				.instantiateItem(mSeverityListPager,

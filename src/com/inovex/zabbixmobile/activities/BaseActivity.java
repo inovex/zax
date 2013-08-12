@@ -26,6 +26,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		ServiceConnection, OnLoginProgressListener {
 
 	private static final int REQUEST_CODE_PREFERENCES = 12345;
+	public static final int RESULT_PREFERENCES_CHANGED = 1;
 
 	protected ZabbixDataService mZabbixDataService;
 
@@ -33,6 +34,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	private LoginProgressDialogFragment mLoginProgress;
 
 	private boolean mPreferencesClosed = false;
+	private boolean mPreferencesChanged = false;
 
 	private static final String TAG = BaseActivity.class.getSimpleName();
 
@@ -69,6 +71,11 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		// if the preferences activity has been closed (and possibly preferences
 		// have been changed), we start a relogin.
 		if (mPreferencesClosed && mZabbixDataService != null) {
+			if (mPreferencesChanged == true) {
+				mZabbixDataService.setLoggedIn(false);
+				mZabbixDataService.clearAllData();
+				mPreferencesChanged = false;
+			}
 			mZabbixDataService.performZabbixLogin(this);
 			mPreferencesClosed = false;
 		}
@@ -130,7 +137,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch(item.getItemId()) {
+		switch (item.getItemId()) {
 		case R.id.menuitem_preferences:
 			Intent intent = new Intent(getApplicationContext(),
 					ZaxPreferenceActivity.class);
@@ -186,8 +193,14 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "onActivityResult");
 
-		if (requestCode == REQUEST_CODE_PREFERENCES)
+		if (requestCode == REQUEST_CODE_PREFERENCES) {
 			mPreferencesClosed = true;
+			Log.d(TAG, "onActivityResult: " + requestCode + " - " + resultCode);
+			if (resultCode == RESULT_PREFERENCES_CHANGED)
+				mPreferencesChanged = true;
+			else
+				mPreferencesChanged = false;
+		}
 	}
 
 	/**

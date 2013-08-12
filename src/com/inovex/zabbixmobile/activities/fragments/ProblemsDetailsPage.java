@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
@@ -32,7 +31,6 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 
 	private static final String ARG_TRIGGER_ID = "arg_trigger_id";
 	Trigger mTrigger;
-	private String mTitle = "";
 	private long mTriggerId;
 
 	@Override
@@ -115,14 +113,6 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 		if (!mHistoryDetailsImported && getView() != null)
 			mZabbixDataService.loadHistoryDetailsByItem(mTrigger.getItem(),
 					false, this);
-	}
-
-	public void setTitle(String title) {
-		this.mTitle = title;
-	}
-
-	public String getTitle() {
-		return mTitle;
 	}
 
 	@Override

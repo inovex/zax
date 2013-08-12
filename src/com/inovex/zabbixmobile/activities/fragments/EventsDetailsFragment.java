@@ -98,13 +98,16 @@ public class EventsDetailsFragment extends
 		else
 			this.setAcknowledgeButtonEnabled(true);
 	}
+	
+	
 
 	@Override
-	public void selectItem(int position) {
-		super.selectItem(position);
+	public void refreshItemSelection() {
+		super.refreshItemSelection();
 		updateMenu();
 	}
 
+	// TODO: orientation change when acknowledge dialog is open
 	/**
 	 * The dialog displayed when an event shall be acknowledged.
 	 * 

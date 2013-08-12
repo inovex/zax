@@ -55,8 +55,8 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 
 	@Override
 	public void onEventAcknowledged() {
-		// select refreshes the action bar menu
-//		mDetailsFragment.selectItem(mCurrentItemPosition);
+		// this refreshes the action bar menu
+		mDetailsFragment.refreshItemSelection();
 	}
 
 	@Override

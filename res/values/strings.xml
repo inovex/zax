@@ -18,6 +18,7 @@
     <string name="exc_connection_timeout">Connection to Zabbix server timed out. Please verify internet access.</string>
     <string name="exc_not_found">The Zabbix server could not be contacted. Please verify that the server address is correct.</string>
     <string name="exc_internal_error">Internal error.</string>
+    <string name="exc_account_blocked">Your account is blocked because of too many failed login attempts. Please unblock your account by using the web login on your Zabbix server.</string>
     
     <string name="show_more">Show more</string>
     <string name="no_graph">You have to select an item from the Checks-list.</string>

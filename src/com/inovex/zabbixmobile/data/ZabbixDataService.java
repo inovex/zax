@@ -140,6 +140,8 @@ public class ZabbixDataService extends Service {
 	 * Clears all data in the database and in the adapters.
 	 */
 	public void clearAllData() {
+		
+		Log.d(TAG, "clearing all data");
 
 		try {
 			mDatabaseHelper.clearAllData();
@@ -466,7 +468,7 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
-				if (groupsAdapter != null) {
+				if (groupsAdapter != null && hostGroups != null) {
 					// adapter.clear();
 					groupsAdapter.addAll(hostGroups);
 					groupsAdapter.notifyDataSetChanged();
@@ -1225,6 +1227,10 @@ public class ZabbixDataService extends Service {
 			}
 
 		}.execute();
+	}
+
+	public void setLoggedIn(boolean loggedIn) {
+		mLoggedIn = loggedIn;
 	}
 
 }

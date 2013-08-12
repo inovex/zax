@@ -25,7 +25,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 	private static final String ARG_SEVERITY = "arg_severity";
 	private static final String ARG_SPINNER_VISIBLE = "arg_spinner_visible";
-	
+
 	protected ViewPager mDetailsPager;
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
 	protected TitlePageIndicator mDetailsPageIndicator;
@@ -51,9 +51,14 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 			position = 0;
 		setPosition(position);
 	}
-	
 
+	/**
+	 * Updates the currently selected page using the position saved in the pager
+	 * adapter.
+	 */
 	public void refreshItemSelection() {
+		if (mDetailsPagerAdapter == null)
+			return;
 		setPosition(mDetailsPagerAdapter.getCurrentPosition());
 	}
 
@@ -63,7 +68,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	 * 
 	 * @param position
 	 */
-	public void setPosition(int position) {
+	private void setPosition(int position) {
 		if (mDetailsPageIndicator != null) {
 			mDetailsPageIndicator.setCurrentItem(position);
 			mDetailsPager.setCurrentItem(position);
@@ -79,8 +84,6 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	 */
 	public void setSeverity(TriggerSeverity severity) {
 		// exchange adapter if it's necessary
-		// if(severity == this.mSeverity)
-		// return;
 		this.mSeverity = severity;
 		if (mZabbixDataService != null) {
 			retrievePagerAdapter();
@@ -129,8 +132,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putInt(ARG_SEVERITY, mSeverity.getNumber());
-		outState.putBoolean(ARG_SPINNER_VISIBLE,
-				mLoadingSpinnerVisible);
+		outState.putBoolean(ARG_SPINNER_VISIBLE, mLoadingSpinnerVisible);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -185,12 +187,15 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 				R.id.severity_page_indicator);
 		mDetailsPageIndicator.setViewPager(mDetailsPager);
 
-		Log.d(TAG, "current position: " + mDetailsPagerAdapter.getCurrentPosition());
-//		mDetailsPagerAdapter.setCurrentPosition(mPosition);
-//		mDetailsPageIndicator.setCurrentItem(mPosition);
-		
-		mDetailsPageIndicator.setCurrentItem(mDetailsPagerAdapter.getCurrentPosition());
-		
+		Log.d(TAG,
+				"current position: "
+						+ mDetailsPagerAdapter.getCurrentPosition());
+		// mDetailsPagerAdapter.setCurrentPosition(mPosition);
+		// mDetailsPageIndicator.setCurrentItem(mPosition);
+
+		mDetailsPageIndicator.setCurrentItem(mDetailsPagerAdapter
+				.getCurrentPosition());
+
 		mDetailsPageIndicator
 				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
@@ -212,7 +217,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 						// propagate page change only if there actually was a
 						// change -> prevent infinite propagation
-						int oldPosition = mDetailsPagerAdapter.getCurrentPosition();
+						int oldPosition = mDetailsPagerAdapter
+								.getCurrentPosition();
 						mDetailsPagerAdapter.setCurrentPosition(position);
 						if (position != oldPosition)
 							mCallbackMain.onListItemSelected(position,
@@ -222,10 +228,10 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	}
 
 	public void redrawPageIndicator() {
-		if(mDetailsPageIndicator != null)
+		if (mDetailsPageIndicator != null)
 			mDetailsPageIndicator.invalidate();
 	}
-	
+
 	/**
 	 * Shows a loading spinner instead of this page's list view.
 	 */
