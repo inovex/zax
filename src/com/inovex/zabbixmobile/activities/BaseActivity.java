@@ -1,15 +1,27 @@
 package com.inovex.zabbixmobile.activities;
 
 import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -29,7 +41,12 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	public static final int RESULT_PREFERENCES_CHANGED = 1;
 
 	protected ZabbixDataService mZabbixDataService;
+	
+	protected String mTitle;
 
+	private DrawerLayout mDrawerLayout;
+	private ListView mDrawerList;
+	protected ActionBarDrawerToggle mDrawerToggle;
 	protected ActionBar mActionBar;
 	private LoginProgressDialogFragment mLoginProgress;
 
@@ -37,6 +54,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	private boolean mPreferencesChanged = false;
 
 	private static final String TAG = BaseActivity.class.getSimpleName();
+	private static final int ACTIVITY_PROBLEMS = 0;
+	private static final int ACTIVITY_EVENTS = 1;
+	private static final int ACTIVITY_CHECKS = 2;
+	private static final int ACTIVITY_SCREENS = 3;
 
 	/** Defines callbacks for service binding, passed to bindService() */
 	@Override
@@ -97,7 +118,9 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		bindService();
+
 		mActionBar = getSupportActionBar();
 
 		if (mActionBar != null) {
@@ -111,6 +134,106 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 				.findFragmentByTag(LoginProgressDialogFragment.TAG);
 		if (mLoginProgress == null)
 			mLoginProgress = LoginProgressDialogFragment.getInstance();
+	}
+
+	@Override
+	public void setContentView(final int layoutResID) {
+		mDrawerLayout = (DrawerLayout) getLayoutInflater().inflate(
+				R.layout.activity_base, null);
+		FrameLayout content = (FrameLayout) mDrawerLayout
+				.findViewById(R.id.content_frame);
+		getLayoutInflater().inflate(layoutResID, content, true);
+		mDrawerList = (ListView) mDrawerLayout.findViewById(R.id.left_drawer);
+
+		// set a custom shadow that overlays the main content when the drawer
+		// opens
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
+				GravityCompat.START);
+		// // set up the drawer's list view with items and click listener
+		mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+				R.layout.list_item_main_menu, getResources().getStringArray(
+						R.array.activities)));
+		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+		// ActionBarDrawerToggle ties together the the proper interactions
+		// between the sliding drawer and the action bar app icon
+		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
+		mDrawerLayout, /* DrawerLayout object */
+		R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
+		R.string.drawer_open, /*
+							 * "open drawer" description for accessibility
+							 */
+		R.string.drawer_close /*
+							 * "close drawer" description for accessibility
+							 */
+		) {
+			public void onDrawerClosed(View view) {
+				onNavigationDrawerClosed();
+			}
+
+			public void onDrawerOpened(View drawerView) {
+				onNavigationDrawerOpened();
+			}
+		};
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		mDrawerToggle.setDrawerIndicatorEnabled(true);
+		setContentView(mDrawerLayout);
+	}
+
+	/* The click listener for ListView in the navigation drawer */
+	private class DrawerItemClickListener implements
+			ListView.OnItemClickListener {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			selectItem(position);
+		}
+	}
+
+	private void selectItem(int position) {
+		Intent intent = null;
+		switch (position) {
+		case ACTIVITY_PROBLEMS:
+			intent = new Intent(this, ProblemsActivity.class);
+			break;
+		case ACTIVITY_EVENTS:
+			intent = new Intent(this, EventsActivity.class);
+			break;
+		case ACTIVITY_CHECKS:
+			intent = new Intent(this, ChecksActivity.class);
+			break;
+		case ACTIVITY_SCREENS:
+			intent = new Intent(this, ScreensActivity.class);
+			break;
+		default:
+			return;
+		}
+		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		startActivity(intent);
+
+		// update selected item and title, then close the drawer
+		mDrawerList.setItemChecked(position, true);
+		// setTitle(mPlanetTitles[position]);
+		mDrawerLayout.closeDrawer(mDrawerList);
+	}
+
+	/**
+	 * When using the ActionBarDrawerToggle, you must call it during
+	 * onPostCreate() and onConfigurationChanged()...
+	 */
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		mDrawerToggle.syncState();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		// Pass any configuration change to the drawer toggls
+		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
 	@Override
@@ -137,7 +260,16 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		// The action bar home/up action should open or close the drawer.
+		// ActionBarDrawerToggle will take care of this.
 		switch (item.getItemId()) {
+		case android.R.id.home:
+			if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
+				mDrawerLayout.closeDrawer(mDrawerList);
+			} else {
+				mDrawerLayout.openDrawer(mDrawerList);
+			}
+			return true;
 		case R.id.menuitem_preferences:
 			Intent intent = new Intent(getApplicationContext(),
 					ZaxPreferenceActivity.class);
@@ -201,6 +333,16 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			else
 				mPreferencesChanged = false;
 		}
+	}
+
+	protected void onNavigationDrawerClosed() {
+		getSupportActionBar().setTitle(mTitle);
+		supportInvalidateOptionsMenu();
+	}
+	
+	protected void onNavigationDrawerOpened() {
+		getSupportActionBar().setTitle(R.string.app_name);
+		supportInvalidateOptionsMenu();
 	}
 
 	/**

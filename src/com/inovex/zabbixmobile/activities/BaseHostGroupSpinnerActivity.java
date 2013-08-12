@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter.OnHostGroupSelectedListener;
 
@@ -15,11 +16,11 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	protected static final String TAG = BaseHostGroupSpinnerActivity.class
 			.getSimpleName();
 
-	protected String mSpinnerTitle;
-
 	protected HostGroupsSpinnerAdapter mSpinnerAdapter;
 
 	private boolean mFirstCall = true;
+
+	private ActionBar.OnNavigationListener mOnNavigationListener;
 
 	protected class SpinnerNavigationListener implements
 			ActionBar.OnNavigationListener {
@@ -64,12 +65,12 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		mSpinnerAdapter = mZabbixDataService.getHostGroupSpinnerAdapter();
 		mSpinnerAdapter.setCallback(this);
 
-		ActionBar.OnNavigationListener mOnNavigationListener = new SpinnerNavigationListener();
+		mOnNavigationListener = new SpinnerNavigationListener();
 
 		mActionBar.setListNavigationCallbacks(mSpinnerAdapter,
 				mOnNavigationListener);
 
-		mSpinnerAdapter.setTitle(mSpinnerTitle);
+		mSpinnerAdapter.setTitle(mTitle);
 		mSpinnerAdapter.notifyDataSetChanged();
 		// selectHostGroupInSpinner(mHostGroupPosition, mHostGroupId);
 
@@ -114,6 +115,21 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		// refilled.
 		if (mSpinnerAdapter.getCurrentPosition() != 0)
 			mFirstCall = true;
+	}
+
+	@Override
+	protected void onNavigationDrawerClosed() {
+//		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		super.onNavigationDrawerClosed();
+	}
+
+	@Override
+	protected void onNavigationDrawerOpened() {
+//		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		super.onNavigationDrawerOpened();
+//		mSpinnerAdapter.setTitle(getResources().getString(R.string.app_name));
+//		mSpinnerAdapter.notifyDataSetChanged();
+//		supportInvalidateOptionsMenu();
 	}
 
 }

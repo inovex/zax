@@ -1,9 +1,13 @@
 package com.inovex.zabbixmobile.activities;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import com.actionbarsherlock.view.Menu;
 import com.inovex.zabbixmobile.R;
@@ -23,17 +27,18 @@ public class MainActivity extends BaseActivity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		mActionBar.setDisplayHomeAsUpEnabled(false);
-		mActionBar.setHomeButtonEnabled(false);
+		
+//		mActionBar.setDisplayHomeAsUpEnabled(false);
+//		mActionBar.setHomeButtonEnabled(false);
 
 		mMenuFragment = (MainMenuFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.main_menu);
 		mProblemsFragment = (MainProblemsFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.main_problems);
-		
+
 	}
 
 	@Override

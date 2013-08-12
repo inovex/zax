@@ -21,7 +21,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_events);
 
-		mSpinnerTitle = getResources().getString(R.string.events);
+		mTitle = getResources().getString(R.string.events);
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
@@ -37,6 +37,8 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		if (mFlipper != null)
 			mDetailsFragment.setHasOptionsMenu(false);
 		// ((EventsDetailsFragment)mDetailsFragment).setAcknowledgeButtonEnabled(false);
+		
+		mDrawerToggle.setDrawerIndicatorEnabled(true);
 
 	}
 
@@ -78,8 +80,9 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	protected void showListFragment() {
 		super.showListFragment();
 		// details fragment becomes invisible -> disable menu
-		if (mFlipper != null) // portrait
+		if (mFlipper != null) {// portrait
 			mDetailsFragment.setHasOptionsMenu(false);
+		}
 	}
 
 	@Override

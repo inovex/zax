@@ -32,12 +32,8 @@ public class ScreensActivity extends BaseActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_screens);
-
-		ActionBar actionBar = getSupportActionBar();
-
-		actionBar.setHomeButtonEnabled(true);
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setDisplayShowTitleEnabled(true);
+		
+		mTitle = getResources().getString(R.string.screens);
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.screens_flipper);
@@ -46,6 +42,7 @@ public class ScreensActivity extends BaseActivity implements
 		mDetailsFragment = (ScreensDetailsFragment) mFragmentManager
 				.findFragmentById(R.id.screens_details);
 		showListFragment();
+		mDrawerToggle.setDrawerIndicatorEnabled(true);
 
 	}
 
@@ -54,7 +51,7 @@ public class ScreensActivity extends BaseActivity implements
 		super.onServiceConnected(className, binder);
 		loadData();
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -76,11 +73,6 @@ public class ScreensActivity extends BaseActivity implements
 				showListFragment();
 				return true;
 			}
-			try {
-				finish();
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -100,6 +92,7 @@ public class ScreensActivity extends BaseActivity implements
 			if (!mListFragment.isVisible()) {
 				mFlipper.setDisplayedChild(FLIPPER_LIST_FRAGMENT);
 			}
+			mDrawerToggle.setDrawerIndicatorEnabled(true);
 		}
 	}
 
@@ -107,6 +100,7 @@ public class ScreensActivity extends BaseActivity implements
 		if (mFlipper != null) {
 			if (!mDetailsFragment.isVisible())
 				mFlipper.setDisplayedChild(FLIPPER_DETAILS_FRAGMENT);
+			mDrawerToggle.setDrawerIndicatorEnabled(false);
 		}
 	}
 

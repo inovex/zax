@@ -35,7 +35,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_problems);
 
-		mSpinnerTitle = getResources().getString(R.string.problems);
+		mTitle = getResources().getString(R.string.problems);
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.problems_flipper);
@@ -54,6 +54,8 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 				showDetailsFragment();
 			}
 		}
+		
+		mDrawerToggle.setDrawerIndicatorEnabled(true);
 	}
 
 	@Override

@@ -47,17 +47,11 @@ public abstract class BaseSeverityFilterActivity<T> extends
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (super.onOptionsItemSelected(item))
-			return true;
 
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			if (mDetailsFragment.isVisible() && mFlipper != null) {
-				showListFragment();
-			} else {
-				super.onBackPressed();
-			}
-			break;
+		if (item.getItemId() == android.R.id.home
+				&& mDetailsFragment.isVisible() && mFlipper != null) {
+			showListFragment();
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -103,8 +97,12 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	 * Displays the details fragment.
 	 */
 	protected void showDetailsFragment() {
-		if (!mDetailsFragment.isVisible() && mFlipper != null) {
-			mFlipper.setDisplayedChild(FLIPPER_DETAILS_FRAGMENT);
+		if (mFlipper != null) {
+			if (!mDetailsFragment.isVisible()) {
+				mFlipper.setDisplayedChild(FLIPPER_DETAILS_FRAGMENT);
+			}
+			// disable drawer toggle
+			mDrawerToggle.setDrawerIndicatorEnabled(false);
 		}
 	}
 
@@ -112,8 +110,11 @@ public abstract class BaseSeverityFilterActivity<T> extends
 	 * Displays the list fragment.
 	 */
 	protected void showListFragment() {
-		if (!mListFragment.isVisible() && mFlipper != null) {
-			mFlipper.setDisplayedChild(FLIPPER_LIST_FRAGMENT);
+		if (mFlipper != null) {
+			if (!mListFragment.isVisible()) {
+				mFlipper.setDisplayedChild(FLIPPER_LIST_FRAGMENT);
+			}
+			mDrawerToggle.setDrawerIndicatorEnabled(true);
 		}
 	}
 
@@ -147,7 +148,7 @@ public abstract class BaseSeverityFilterActivity<T> extends
 			mListFragment.refreshItemSelection();
 		}
 	}
-	
+
 	protected void selectItem(int position) {
 		mDetailsFragment.selectItem(position);
 		mListFragment.selectItem(position);
