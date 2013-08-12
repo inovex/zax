@@ -106,6 +106,14 @@ public class EventsDetailsFragment extends
 		super.refreshItemSelection();
 		updateMenu();
 	}
+	
+	@Override
+	public void refreshCurrentItem() {
+		EventsDetailsPage currentPage = (EventsDetailsPage) mDetailsPagerAdapter
+				.instantiateItem(mDetailsPager,
+						mDetailsPagerAdapter.getCurrentPosition());
+		currentPage.refresh();
+	}
 
 	// TODO: orientation change when acknowledge dialog is open
 	/**

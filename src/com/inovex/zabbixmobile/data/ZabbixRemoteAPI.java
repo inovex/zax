@@ -850,6 +850,10 @@ public class ZabbixRemoteAPI {
 					.put(isVersion2 ? "selectTriggers" : "select_triggers",
 							"extend")
 					.put("source", 0)
+					// sorting by clock is not possible, hence we sort by event
+					// ID to get the newest events
+					.put("sortfield", "eventid")
+					.put("sortorder", "DESC")
 					.put("time_from",
 							(new Date().getTime() / 1000)
 									- ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT);

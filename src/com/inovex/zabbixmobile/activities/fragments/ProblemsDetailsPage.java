@@ -120,4 +120,9 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 		showGraph(mTrigger.getItem());
 	}
 
+	public void refresh() {
+		this.mTrigger = mZabbixDataService.getTriggerById(mTriggerId);
+		fillDetailsText();
+	}
+
 }

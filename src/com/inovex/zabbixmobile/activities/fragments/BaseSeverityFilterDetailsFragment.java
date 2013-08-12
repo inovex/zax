@@ -263,4 +263,6 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 	}
 
+	public abstract void refreshCurrentItem();
+
 }

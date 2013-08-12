@@ -20,4 +20,12 @@ public class ProblemsDetailsFragment extends
 				.getProblemsDetailsPagerAdapter(mSeverity);
 	}
 
+	@Override
+	public void refreshCurrentItem() {
+		ProblemsDetailsPage currentPage = (ProblemsDetailsPage) mDetailsPagerAdapter
+				.instantiateItem(mDetailsPager,
+						mDetailsPagerAdapter.getCurrentPosition());
+		currentPage.refresh();
+	}
+
 }

@@ -115,8 +115,6 @@ public class EventsDetailsPage extends BaseDetailsPage {
 				}
 			}
 
-			// TODO: update view on acknowledge
-
 		}
 	}
 
@@ -157,5 +155,10 @@ public class EventsDetailsPage extends BaseDetailsPage {
 	@Override
 	protected void showGraph() {
 		showGraph(mEvent.getTrigger().getItem());
+	}
+
+	public void refresh() {
+		this.mEvent = mZabbixDataService.getEventById(mEventId);
+		fillDetailsText();
 	}
 }
