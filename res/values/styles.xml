@@ -24,6 +24,7 @@
 
     <style name="MyTabPageIndicator" parent="Widget.TabPageIndicator">
         <item name="android:textColor">@color/text</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="SeverityDetailsTitlePageIndicator">

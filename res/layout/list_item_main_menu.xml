@@ -22,5 +22,5 @@
     android:gravity="center_vertical"
     android:paddingLeft="6dip"
     android:minHeight="?android:attr/listPreferredItemHeight"
-    android:textColor="#FFFFFFFF"
+    android:textColor="@color/menu"
 />

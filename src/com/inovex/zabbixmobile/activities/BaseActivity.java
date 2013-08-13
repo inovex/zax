@@ -208,8 +208,9 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		default:
 			return;
 		}
-		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 		startActivity(intent);
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
 		// update selected item and title, then close the drawer
 		mDrawerList.setItemChecked(position, true);
@@ -250,6 +251,12 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			Log.d(TAG, "unbindService");
 			getApplicationContext().unbindService(this);
 		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		finish();
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
 
 	@Override

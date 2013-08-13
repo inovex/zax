@@ -1,6 +1,7 @@
 package com.inovex.zabbixmobile.adapters;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -32,7 +33,7 @@ public abstract class BaseSeverityListPagerAdapter extends BaseServicePagerAdapt
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		return TriggerSeverity.getSeverityByPosition(position).getName();
+		return TriggerSeverity.getSeverityByPosition(position).getName().toUpperCase(Locale.getDefault());
 	}
 	
 	protected abstract BaseSeverityFilterListPage<TriggerSeverity> instantiatePage();

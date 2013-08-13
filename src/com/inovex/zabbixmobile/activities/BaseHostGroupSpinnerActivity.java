@@ -54,6 +54,11 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		mActionBar.setDisplayShowTitleEnabled(false);
+		// refresh spinner title (necessary when we navigate here using the back
+		// button)
 		if (mSpinnerAdapter != null) {
 			mSpinnerAdapter.setTitle(mTitle);
 			mSpinnerAdapter.notifyDataSetChanged();
