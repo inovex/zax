@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TabPageIndicator;
 
 public abstract class BaseSeverityFilterListFragment<T> extends
@@ -109,14 +110,6 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 					public void onPageSelected(int position) {
 						Log.d(TAG, "EventCategoryFragment:onPageSelected("
 								+ position + ")");
-						// EventsListPage p = (EventsListPage)
-						// mEventsListPagerAdapter
-						// .instantiateItem(mEventsListPager,
-						// mEventsListPager.getCurrentItem());
-						// mCallbackMain.onCategorySelected(position,
-						// p.getSelectedEventNumber());
-						// categoryNumber = position;
-
 						mSeverityListPagerAdapter.setCurrentPosition(position);
 
 						mCallbackMain.onSeveritySelected(mSeverityListPagerAdapter.getCurrentObject());
@@ -136,6 +129,10 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 
 	protected abstract BaseSeverityListPagerAdapter retrievePagerAdapter();
 
+	public void setSeverity(TriggerSeverity severity) {
+		mSeverityListPagerAdapter.setCurrentPosition(severity.getPosition());
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void selectItem(int position) {
 		if (mSeverityListPagerAdapter == null

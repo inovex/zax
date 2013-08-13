@@ -83,7 +83,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 				mOnNavigationListener);
 
 		mSpinnerAdapter.setTitle(mTitle);
-		mSpinnerAdapter.notifyDataSetChanged();
+//		mSpinnerAdapter.notifyDataSetChanged();
 		// selectHostGroupInSpinner(mHostGroupPosition, mHostGroupId);
 
 		loadAdapterContent(false);

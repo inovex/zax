@@ -145,8 +145,8 @@ public class PushService extends Service {
 					// NotificationBroadcastReceiver which resets the
 					// notification status and starts MainActivity.
 					Intent notificationIntent = new Intent();
-					notificationIntent.putExtra("pushNotificationTriggerid",
-							triggerid);
+//					notificationIntent.putExtra("pushNotificationTriggerid",
+//							triggerid);
 					notificationIntent.setAction(ACTION_ZABBIX_NOTIFICATION);
 					PendingIntent pendingIntent = PendingIntent.getBroadcast(
 							PushService.this, uniqueRequestCode(),
@@ -244,8 +244,8 @@ public class PushService extends Service {
 			numNotifications = 0;
 			previousMessages.clear();
 			Intent notificationIntent = new Intent(context, ProblemsActivity.class);
-			notificationIntent.putExtras(intent.getExtras());
-			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			notificationIntent.putExtra(ProblemsActivity.ARG_START_FROM_NOTIFICATION, true);
+			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 			context.startActivity(notificationIntent);
 		}
 

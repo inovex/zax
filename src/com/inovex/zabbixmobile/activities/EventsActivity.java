@@ -36,7 +36,6 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 
 		if (mFlipper != null)
 			mDetailsFragment.setHasOptionsMenu(false);
-		// ((EventsDetailsFragment)mDetailsFragment).setAcknowledgeButtonEnabled(false);
 		
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 

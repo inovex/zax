@@ -1,25 +1,26 @@
 package com.inovex.zabbixmobile.activities;
 
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.widget.ViewFlipper;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
+import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
+import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
 	private static final String TAG = EventsActivity.class.getSimpleName();
-	public static final String ARG_ITEM_ID = "item_id";
-	public static final String ARG_ITEM_POSITION = "item_position";
+	public static final String ARG_START_FROM_NOTIFICATION = "arg_start_from_notification";
 
 	// This flag is necessary to select the correct element when coming from
-	// another activity (e.g. Problems list in MainActivity)
-	private boolean mFirstCallFromIntent = true;
-	private int mItemPosition;
-	private long mItemId;
+	// the push notification
+	private boolean mStartFromNotification = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +28,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		setContentView(R.layout.activity_problems);
 
 		mTitle = getResources().getString(R.string.problems);
-		
+
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.problems_flipper);
 		mDetailsFragment = (BaseSeverityFilterDetailsFragment<Trigger>) mFragmentManager
@@ -36,20 +37,32 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 				.findFragmentById(R.id.problems_list);
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			mItemPosition = extras.getInt(ARG_ITEM_POSITION, -1);
-			mItemId = extras.getLong(ARG_ITEM_ID, -1);
-			if (mItemPosition != -1 && mItemId != -1) {
-				mFirstCallFromIntent = true;
+			if (extras.getBoolean(ARG_START_FROM_NOTIFICATION, false)) {
+				mStartFromNotification = true;
 			}
 		}
-		
+
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		mDrawerList.setItemChecked(BaseActivity.ACTIVITY_PROBLEMS, true);
+	}
+
+	@Override
+	public void onServiceConnected(ComponentName className, IBinder binder) {
+		super.onServiceConnected(className, binder);
+		// If the activity was started with intent extras, we have to select the
+		// correct item.
+		if (mStartFromNotification) {
+			mDetailsFragment.setSeverity(TriggerSeverity.ALL);
+			BaseSeverityListPagerAdapter severityAdapter = mZabbixDataService.getProblemsListPagerAdapter();
+			severityAdapter.setCurrentPosition(0);
+			selectHostGroupInSpinner(0, HostGroup.GROUP_ID_ALL);
+			mStartFromNotification = false;
+		}
 	}
 
 	@Override
@@ -93,18 +106,9 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			boolean hostGroupChanged) {
 		super.onSeverityListAdapterLoaded(severity, hostGroupChanged);
 
-		// If the activity was started with intent extras, we have to select the
-		// correct item.
-		if (mFirstCallFromIntent && mItemId != -1
-				&& mItemPosition != -1) {
-			mListFragment.selectItem(mItemPosition);
-			mDetailsFragment.selectItem(mItemPosition);
-			mFirstCallFromIntent = false;
-		} else {
-			if (severity == mZabbixDataService.getProblemsListPagerAdapter()
-					.getCurrentObject()) {
-				selectInitialItem(hostGroupChanged);
-			}
+		if (severity == mZabbixDataService.getProblemsListPagerAdapter()
+				.getCurrentObject()) {
+			selectInitialItem(hostGroupChanged);
 		}
 	}
 
