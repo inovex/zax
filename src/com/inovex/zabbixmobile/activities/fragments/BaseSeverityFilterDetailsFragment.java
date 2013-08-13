@@ -160,7 +160,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		// and here: https://code.google.com/p/android/issues/detail?id=42601
 		// If the fragment manager is not set to null, there will be issues when
 		// the activity is destroyed and there are pending transactions
-		mDetailsPagerAdapter.setFragmentManager(null);
+		if (mDetailsPagerAdapter != null)
+			mDetailsPagerAdapter.setFragmentManager(null);
 	}
 
 	/**
