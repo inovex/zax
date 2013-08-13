@@ -6,7 +6,6 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter.OnHostGroupSelectedListener;
 
@@ -50,6 +49,15 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (mSpinnerAdapter != null) {
+			mSpinnerAdapter.setTitle(mTitle);
+			mSpinnerAdapter.notifyDataSetChanged();
+		}
 	}
 
 	@Override
@@ -117,20 +125,19 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 			mFirstCall = true;
 	}
 
-	// TODO: display title properly
 	@Override
 	protected void onNavigationDrawerClosed() {
-//		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		mActionBar.setDisplayShowTitleEnabled(false);
 		super.onNavigationDrawerClosed();
 	}
 
 	@Override
 	protected void onNavigationDrawerOpened() {
-//		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		mActionBar.setDisplayShowTitleEnabled(true);
+		// set title
 		super.onNavigationDrawerOpened();
-//		mSpinnerAdapter.setTitle(getResources().getString(R.string.app_name));
-//		mSpinnerAdapter.notifyDataSetChanged();
-//		supportInvalidateOptionsMenu();
 	}
 
 }

@@ -63,7 +63,7 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 	public void setTitle(String title) {
 		mTitle = title;
 	}
-
+	
 	@Override
 	public long getItemId(int position) {
 		return getItem(position).getGroupId();
