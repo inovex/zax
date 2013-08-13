@@ -72,19 +72,20 @@ public class EventsDetailsPage extends BaseDetailsPage {
 					Locale.getDefault());
 			((TextView) getView().findViewById(R.id.event_details_time))
 					.setText(dateFormatter.format(cal.getTime()));
-			((ImageView) getView().findViewById(R.id.event_details_status_img))
-					.setImageResource(mEvent.getValue() == Event.VALUE_OK ? R.drawable.ok
-							: R.drawable.problem);
-			((TextView) getView().findViewById(R.id.event_details_status))
-					.setText((mEvent.getValue() == Event.VALUE_OK) ? R.string.ok
-							: R.string.problem);
-			((ImageView) getView().findViewById(
-					R.id.event_details_acknowledged_img))
-					.setImageResource(mEvent.isAcknowledged() ? R.drawable.ok
-							: R.drawable.problem);
-			((TextView) getView().findViewById(R.id.event_details_acknowledged))
-					.setText((mEvent.isAcknowledged()) ? R.string.yes
-							: R.string.no);
+			TextView status = ((TextView) getView().findViewById(
+					R.id.event_details_status));
+			status.setText((mEvent.getValue() == Event.VALUE_OK) ? R.string.ok
+					: R.string.problem);
+			status.setCompoundDrawablesWithIntrinsicBounds(
+					mEvent.getValue() == Event.VALUE_OK ? R.drawable.ok
+							: R.drawable.problem, 0, 0, 0);
+			TextView acknowledged = ((TextView) getView().findViewById(
+					R.id.event_details_acknowledged));
+			acknowledged.setText((mEvent.isAcknowledged()) ? R.string.yes
+					: R.string.no);
+			acknowledged.setCompoundDrawablesWithIntrinsicBounds(mEvent
+					.isAcknowledged() ? R.drawable.ok : R.drawable.problem, 0,
+					0, 0);
 
 			Trigger t = mEvent.getTrigger();
 			if (t != null) {
@@ -96,7 +97,7 @@ public class EventsDetailsPage extends BaseDetailsPage {
 						.getDescription());
 				((TextView) getView().findViewById(
 						R.id.trigger_details_severity)).setText(t.getPriority()
-						.getName());
+						.getNameResourceId());
 				((TextView) getView().findViewById(
 						R.id.trigger_details_expression)).setText(t
 						.getExpression());

@@ -3,6 +3,7 @@ package com.inovex.zabbixmobile.adapters;
 import java.util.Arrays;
 import java.util.Locale;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
@@ -13,8 +14,11 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
 public abstract class BaseSeverityListPagerAdapter extends
 		BaseServicePagerAdapter<TriggerSeverity> {
 
-	public BaseSeverityListPagerAdapter() {
+	protected Context mContext;
+
+	public BaseSeverityListPagerAdapter(Context context) {
 		super();
+		mContext = context;
 		addAll(Arrays.asList(TriggerSeverity.values()));
 		notifyDataSetChanged();
 	}
@@ -34,8 +38,11 @@ public abstract class BaseSeverityListPagerAdapter extends
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		return TriggerSeverity.getSeverityByPosition(position).getName()
-				.toUpperCase(Locale.getDefault());
+		return mContext
+				.getResources()
+				.getString(
+						TriggerSeverity.getSeverityByPosition(position)
+								.getNameResourceId()).toUpperCase(Locale.getDefault());
 	}
 
 	protected abstract BaseSeverityFilterListPage<TriggerSeverity> instantiatePage();

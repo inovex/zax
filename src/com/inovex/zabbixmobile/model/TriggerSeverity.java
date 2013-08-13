@@ -1,13 +1,18 @@
 package com.inovex.zabbixmobile.model;
 
+import com.inovex.zabbixmobile.R;
+
 import android.util.SparseArray;
 
 public enum TriggerSeverity {
-	ALL("all", -1, 0), DISASTER("disaster", 5, 1), HIGH("high", 4, 2), AVERAGE(
-			"average", 3, 3), WARNING("warning", 2, 4), INFORMATION(
-			"information", 1, 5), NOT_CLASSIFIED("not classified", 0, 6);
+	ALL(R.string.severity_all, -1, 0), DISASTER(R.string.severity_disaster, 5,
+			1), HIGH(R.string.severity_high, 4, 2), AVERAGE(
+			R.string.severity_average, 3, 3), WARNING(
+			R.string.severity_warning, 2, 4), INFORMATION(
+			R.string.severity_information, 1, 5), NOT_CLASSIFIED(
+			R.string.severity_not_classified, 0, 6);
 
-	private final String name;
+	private final int nameResourceId;
 	private final int number;
 	private final int position;
 	private static final SparseArray<TriggerSeverity> valuesByNumber;
@@ -26,8 +31,8 @@ public enum TriggerSeverity {
 		}
 	}
 
-	TriggerSeverity(String name, int n, int position) {
-		this.name = name;
+	TriggerSeverity(int nameResourceId, int n, int position) {
+		this.nameResourceId = nameResourceId;
 		number = n;
 		this.position = position;
 	}
@@ -36,8 +41,8 @@ public enum TriggerSeverity {
 		return position;
 	}
 
-	public String getName() {
-		return name;
+	public int getNameResourceId() {
+		return nameResourceId;
 	}
 
 	public int getNumber() {
@@ -54,7 +59,7 @@ public enum TriggerSeverity {
 
 	@Override
 	public String toString() {
-		return "{" + name + ", " + number + ", " + position + "}";
+		return "{" + nameResourceId + ", " + number + ", " + position + "}";
 	}
 
 }

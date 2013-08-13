@@ -45,23 +45,13 @@
                     android:text="@string/status" >
                 </TextView>
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/event_details_status"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <ImageView
-                        android:id="@+id/event_details_status_img"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingRight="10dip"
-                        android:src="@drawable/problem" />
-
-                    <TextView
-                        android:id="@+id/event_details_status"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" >
-                    </TextView>
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/problem"
+                    android:drawablePadding="10dip" >
+                </TextView>
             </TableRow>
 
             <TableRow
@@ -74,23 +64,13 @@
                     android:text="@string/acknowledged" >
                 </TextView>
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/event_details_acknowledged"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <ImageView
-                        android:id="@+id/event_details_acknowledged_img"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingRight="10dip"
-                        android:src="@drawable/problem" />
-
-                    <TextView
-                        android:id="@+id/event_details_acknowledged"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" >
-                    </TextView>
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/problem"
+                    android:drawablePadding="10dip" >
+                </TextView>
             </TableRow>
         </TableLayout>
 

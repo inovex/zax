@@ -57,7 +57,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 			((TextView) getView().findViewById(R.id.trigger_details_trigger))
 					.setText(mTrigger.getDescription());
 			((TextView) getView().findViewById(R.id.trigger_details_severity))
-					.setText(mTrigger.getPriority().getName());
+					.setText(mTrigger.getPriority().getNameResourceId());
 			((TextView) getView().findViewById(R.id.trigger_details_expression))
 					.setText(mTrigger.getExpression());
 			((TextView) getView().findViewById(R.id.trigger_details_disabled))

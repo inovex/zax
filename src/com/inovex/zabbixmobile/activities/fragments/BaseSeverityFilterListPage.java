@@ -130,7 +130,7 @@ public abstract class BaseSeverityFilterListPage<T> extends
 	public void setSeverity(TriggerSeverity severity) {
 		this.mSeverity = severity;
 		Log.d(TAG,
-				"setSeverity: " + severity.getName() + " - " + this.toString());
+				"setSeverity: " + severity.getNameResourceId() + " - " + this.toString());
 	}
 
 	public TriggerSeverity getSeverity() {

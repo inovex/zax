@@ -435,7 +435,8 @@ public class ZabbixDataService extends Service {
 	 * 
 	 */
 	public void performZabbixLogin(final OnLoginProgressListener listener) {
-		listener.onLoginStarted();
+		if(listener != null)
+			listener.onLoginStarted();
 
 		// authenticate
 		RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI) {
@@ -473,7 +474,8 @@ public class ZabbixDataService extends Service {
 					groupsAdapter.addAll(hostGroups);
 					groupsAdapter.notifyDataSetChanged();
 				}
-				listener.onLoginFinished(success);
+				if(listener != null)
+					listener.onLoginFinished(success);
 			}
 
 		};
@@ -486,7 +488,7 @@ public class ZabbixDataService extends Service {
 		Log.d(TAG, "onCreate");
 
 		// set up adapters
-		mEventsListPagerAdapter = new EventsListPagerAdapter();
+		mEventsListPagerAdapter = new EventsListPagerAdapter(this);
 		mEventsListAdapters = new HashMap<TriggerSeverity, EventsListAdapter>(
 				TriggerSeverity.values().length);
 		mEventsDetailsPagerAdapters = new HashMap<TriggerSeverity, EventsDetailsPagerAdapter>(
@@ -498,7 +500,7 @@ public class ZabbixDataService extends Service {
 					.put(s, new EventsDetailsPagerAdapter(s));
 		}
 
-		mProblemsListPagerAdapter = new ProblemsListPagerAdapter();
+		mProblemsListPagerAdapter = new ProblemsListPagerAdapter(this);
 		mProblemsListAdapters = new HashMap<TriggerSeverity, ProblemsListAdapter>(
 				TriggerSeverity.values().length);
 		mProblemsMainListAdapter = new ProblemsListAdapter(this);
