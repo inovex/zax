@@ -63,7 +63,7 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 	public void setTitle(String title) {
 		mTitle = title;
 	}
-	
+
 	@Override
 	public long getItemId(int position) {
 		return getItem(position).getGroupId();
@@ -83,14 +83,16 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 				.getResources().getString(R.string.all)));
 	}
 
+	@Override
 	public void setCurrentPosition(int position) {
 		this.mHostGroupPosition = position;
 	}
-	
+
+	@Override
 	public int getCurrentPosition() {
 		return mHostGroupPosition;
 	}
-	
+
 	public long getCurrentItemId() {
 		return getItemId(mHostGroupPosition);
 	}
@@ -100,7 +102,7 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 		super.notifyDataSetChanged();
 		// update the current selection (we might have saved this position
 		// before)
-		if(mCallback != null && mObjects.size() > mHostGroupPosition)
+		if (mCallback != null && mObjects.size() > mHostGroupPosition)
 			mCallback.onHostGroupSelected(mHostGroupPosition);
 	}
 

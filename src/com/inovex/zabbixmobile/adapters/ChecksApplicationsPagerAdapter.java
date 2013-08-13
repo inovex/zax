@@ -8,8 +8,9 @@ import com.inovex.zabbixmobile.model.Application;
 public class ChecksApplicationsPagerAdapter extends
 		BaseServicePagerAdapter<Application> {
 
-	private static final String TAG = ChecksApplicationsPagerAdapter.class.getSimpleName();
-	
+	private static final String TAG = ChecksApplicationsPagerAdapter.class
+			.getSimpleName();
+
 	@Override
 	public CharSequence getPageTitle(int position) {
 		return getObject(position).getName();
@@ -26,7 +27,7 @@ public class ChecksApplicationsPagerAdapter extends
 		p.setApplication(getObject(position));
 		return p;
 	}
-	
+
 	@Override
 	public int getItemPosition(Object object) {
 		// This prevents caching of fragments. We need to disable caching
@@ -34,5 +35,5 @@ public class ChecksApplicationsPagerAdapter extends
 		// selected.
 		return POSITION_NONE;
 	}
-	
+
 }

@@ -30,7 +30,7 @@ public class Item implements Comparable<Item> {
 	public static final String COLUMN_UNITS = "units";
 	@DatabaseField(columnName = COLUMN_UNITS)
 	String units;
-	
+
 	// only local
 	Collection<HistoryDetail> historyDetails;
 
@@ -76,7 +76,7 @@ public class Item implements Comparable<Item> {
 	public String getUnits() {
 		return units;
 	}
-	
+
 	public Collection<HistoryDetail> getHistoryDetails() {
 		return historyDetails;
 	}

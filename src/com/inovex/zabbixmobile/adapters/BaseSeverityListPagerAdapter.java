@@ -10,7 +10,8 @@ import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragme
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListPage;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
-public abstract class BaseSeverityListPagerAdapter extends BaseServicePagerAdapter<TriggerSeverity> {
+public abstract class BaseSeverityListPagerAdapter extends
+		BaseServicePagerAdapter<TriggerSeverity> {
 
 	public BaseSeverityListPagerAdapter() {
 		super();
@@ -33,9 +34,10 @@ public abstract class BaseSeverityListPagerAdapter extends BaseServicePagerAdapt
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		return TriggerSeverity.getSeverityByPosition(position).getName().toUpperCase(Locale.getDefault());
+		return TriggerSeverity.getSeverityByPosition(position).getName()
+				.toUpperCase(Locale.getDefault());
 	}
-	
+
 	protected abstract BaseSeverityFilterListPage<TriggerSeverity> instantiatePage();
 
 }

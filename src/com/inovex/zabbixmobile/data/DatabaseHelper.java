@@ -57,8 +57,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final String TAG = DatabaseHelper.class.getSimpleName();
 	private DatabaseConnection mThreadConnection;
 
-	private final Class<?>[] mTables = { Event.class, Trigger.class, Item.class,
-			Host.class, HostGroup.class, Application.class,
+	private final Class<?>[] mTables = { Event.class, Trigger.class,
+			Item.class, Host.class, HostGroup.class, Application.class,
 			TriggerHostGroupRelation.class, HostHostGroupRelation.class,
 			ApplicationItemRelation.class, HistoryDetail.class, Screen.class,
 			ScreenItem.class, Graph.class, GraphItem.class, Cache.class };
@@ -375,7 +375,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		query.orderBy(HistoryDetail.COLUMN_CLOCK, true);
 		return query.query();
 	}
-	
+
 	/**
 	 * Queries all history details for a specified item from the database.
 	 * 
@@ -391,7 +391,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		query.where().eq(HistoryDetail.COLUMN_ITEMID, itemId);
 		query.orderBy(HistoryDetail.COLUMN_CLOCK, false);
 		HistoryDetail newest = query.queryForFirst();
-		if(newest != null)
+		if (newest != null)
 			return newest.getClock();
 		else
 			return 0;

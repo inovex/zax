@@ -11,7 +11,6 @@ import android.widget.ListView;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.ScreensListAdapter;
-import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.listeners.OnScreensItemSelectedListener;
 
 public class ScreensListFragment extends BaseServiceConnectedListFragment {

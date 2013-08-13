@@ -71,7 +71,7 @@ public abstract class BaseServiceAdapter<T> extends BaseAdapter {
 	public int getCurrentPosition() {
 		return mPosition;
 	}
-	
+
 	public void setCurrentPosition(int position) {
 		mPosition = position;
 		Log.d("ListAdapter", "selected item: " + position);

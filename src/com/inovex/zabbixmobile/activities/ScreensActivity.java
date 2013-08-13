@@ -31,9 +31,9 @@ public class ScreensActivity extends BaseActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_screens);
-		
+
 		mTitle = getResources().getString(R.string.screens);
-		
+
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.screens_flipper);
 		mListFragment = (ScreensListFragment) mFragmentManager

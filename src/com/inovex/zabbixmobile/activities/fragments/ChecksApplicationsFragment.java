@@ -308,7 +308,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mDetailsPagerAdapter
 				.instantiateItem(mDetailsPager, mDetailsPager.getCurrentItem());
 		Log.d(TAG, "selectItem(" + position + ")");
-		if(currentPage != null)
+		if (currentPage != null)
 			currentPage.selectItem(position);
 	}
 

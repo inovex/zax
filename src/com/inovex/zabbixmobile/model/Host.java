@@ -64,5 +64,5 @@ public class Host implements Comparable<Host> {
 	public String toString() {
 		return getId() + ": " + getName();
 	}
-	
+
 }

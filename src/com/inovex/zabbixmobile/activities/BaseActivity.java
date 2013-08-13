@@ -1,8 +1,6 @@
 package com.inovex.zabbixmobile.activities;
 
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,7 +13,6 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -41,7 +38,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	public static final int RESULT_PREFERENCES_CHANGED = 1;
 
 	protected ZabbixDataService mZabbixDataService;
-	
+
 	protected String mTitle;
 
 	private DrawerLayout mDrawerLayout;
@@ -154,7 +151,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 				R.layout.list_item_main_menu, getResources().getStringArray(
 						R.array.activities)));
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-		
+
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the sliding drawer and the action bar app icon
 		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
@@ -167,10 +164,12 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 							 * "close drawer" description for accessibility
 							 */
 		) {
+			@Override
 			public void onDrawerClosed(View view) {
 				onNavigationDrawerClosed();
 			}
 
+			@Override
 			public void onDrawerOpened(View drawerView) {
 				onNavigationDrawerOpened();
 			}
@@ -210,7 +209,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		}
 		intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		startActivity(intent);
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		overridePendingTransition(android.R.anim.fade_in,
+				android.R.anim.fade_out);
 
 		// update selected item and title, then close the drawer
 		mDrawerList.setItemChecked(position, true);
@@ -256,7 +256,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onBackPressed() {
 		finish();
-		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+		overridePendingTransition(android.R.anim.fade_in,
+				android.R.anim.fade_out);
 	}
 
 	@Override
@@ -346,7 +347,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		getSupportActionBar().setTitle(mTitle);
 		supportInvalidateOptionsMenu();
 	}
-	
+
 	protected void onNavigationDrawerOpened() {
 		getSupportActionBar().setTitle(R.string.app_name);
 		supportInvalidateOptionsMenu();

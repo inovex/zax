@@ -31,11 +31,12 @@ import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.util.GraphUtil;
 import com.jjoe64.graphview.LineGraphView;
 
-public class GraphFullscreenActivity extends SherlockFragmentActivity implements ServiceConnection {
+public class GraphFullscreenActivity extends SherlockFragmentActivity implements
+		ServiceConnection {
 	private LinearLayout mLayout;
 	private long mItemId;
 	private long mGraphId;
-	
+
 	protected ZabbixDataService mZabbixDataService;
 
 	@Override
@@ -46,9 +47,9 @@ public class GraphFullscreenActivity extends SherlockFragmentActivity implements
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
 			return;
-		
+
 		bindService();
 
 		mItemId = getIntent().getLongExtra("itemid", -1);
@@ -62,7 +63,7 @@ public class GraphFullscreenActivity extends SherlockFragmentActivity implements
 
 		setContentView(mLayout);
 	}
-	
+
 	/**
 	 * Binds the Zabbix service.
 	 */
@@ -174,7 +175,7 @@ public class GraphFullscreenActivity extends SherlockFragmentActivity implements
 	@Override
 	public void onServiceDisconnected(ComponentName name) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

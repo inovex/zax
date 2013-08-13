@@ -81,7 +81,7 @@ public class EventsDetailsFragment extends
 	@Override
 	public void setHasOptionsMenu(boolean hasMenu) {
 		super.setHasOptionsMenu(hasMenu);
-		if(hasMenu == false)
+		if (hasMenu == false)
 			return;
 		updateMenu();
 	}
@@ -98,15 +98,13 @@ public class EventsDetailsFragment extends
 		else
 			this.setAcknowledgeButtonEnabled(true);
 	}
-	
-	
 
 	@Override
 	public void refreshItemSelection() {
 		super.refreshItemSelection();
 		updateMenu();
 	}
-	
+
 	@Override
 	public void refreshCurrentItem() {
 		EventsDetailsPage currentPage = (EventsDetailsPage) mDetailsPagerAdapter

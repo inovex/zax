@@ -16,9 +16,9 @@ public class Screen implements Comparable<Screen> {
 	public static final String COLUMN_NAME = "name";
 	@DatabaseField(columnName = COLUMN_NAME)
 	String name;
-	
+
 	Collection<Graph> graphs;
-	
+
 	public Screen() {
 	}
 
@@ -48,13 +48,11 @@ public class Screen implements Comparable<Screen> {
 
 	@Override
 	public int compareTo(Screen another) {
-		if(another.getId() < id)
+		if (another.getId() < id)
 			return 1;
-		if(another.getId() > id)
+		if (another.getId() > id)
 			return -1;
 		return 0;
 	}
-	
-	
 
 }

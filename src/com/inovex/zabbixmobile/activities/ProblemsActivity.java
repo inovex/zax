@@ -58,7 +58,8 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		// correct item.
 		if (mStartFromNotification) {
 			mDetailsFragment.setSeverity(TriggerSeverity.ALL);
-			BaseSeverityListPagerAdapter severityAdapter = mZabbixDataService.getProblemsListPagerAdapter();
+			BaseSeverityListPagerAdapter severityAdapter = mZabbixDataService
+					.getProblemsListPagerAdapter();
 			severityAdapter.setCurrentPosition(0);
 			selectHostGroupInSpinner(0, HostGroup.GROUP_ID_ALL);
 			mStartFromNotification = false;
@@ -93,6 +94,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
 	}
 
+	@Override
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		if (mZabbixDataService != null) {
 			super.loadAdapterContent(hostGroupChanged);

@@ -75,8 +75,9 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 	private boolean showGraph(Graph graph) {
 		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
 		if (graph != null) {
-			LineGraphView graphView = GraphUtil.createScreenGraphPreview(getActivity(), graph);
-			if(graphView == null)
+			LineGraphView graphView = GraphUtil.createScreenGraphPreview(
+					getActivity(), graph);
+			if (graphView == null)
 				return false;
 			LinearLayout graphLayout = new LinearLayout(getSherlockActivity());
 			graphLayout.addView(graphView);

@@ -56,7 +56,7 @@ public class ChecksItemsListAdapter extends BaseServiceAdapter<Item> {
 				Locale.getDefault());
 		clock.setText(dateFormatter.format(cal.getTime()));
 		name.setText(i.getDescription());
-		value.setText(i.getLastValue() + " " +  i.getUnits());
+		value.setText(i.getLastValue() + " " + i.getUnits());
 
 		return row;
 	}

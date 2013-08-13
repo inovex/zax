@@ -38,8 +38,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putBoolean(ARG_GRAPH_SPINNER_VISIBLE,
-				mGraphProgressBarVisible);
+		outState.putBoolean(ARG_GRAPH_SPINNER_VISIBLE, mGraphProgressBarVisible);
 		super.onSaveInstanceState(outState);
 		Log.d(TAG, "onSaveInstanceState");
 	}

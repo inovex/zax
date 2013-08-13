@@ -140,7 +140,7 @@ public class ZabbixDataService extends Service {
 	 * Clears all data in the database and in the adapters.
 	 */
 	public void clearAllData() {
-		
+
 		Log.d(TAG, "clearing all data");
 
 		try {
@@ -603,7 +603,7 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onProgressUpdate(Integer... values) {
 				super.onProgressUpdate(values);
-				if(callback != null)
+				if (callback != null)
 					callback.onSeverityListAdapterProgressUpdate(values[0]);
 			}
 
@@ -697,7 +697,7 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onProgressUpdate(Integer... values) {
 				super.onProgressUpdate(values);
-				if(callback != null)
+				if (callback != null)
 					callback.onSeverityListAdapterProgressUpdate(values[0]);
 			}
 
@@ -825,7 +825,7 @@ public class ZabbixDataService extends Service {
 			protected void onProgressUpdate(Integer... values) {
 				super.onProgressUpdate(values);
 				Log.d(TAG, "progress: " + values[0]);
-				if(callback != null)
+				if (callback != null)
 					callback.onApplicationsProgressUpdate(values[0]);
 			}
 
@@ -946,7 +946,7 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onProgressUpdate(Integer... values) {
 				super.onProgressUpdate(values);
-				if(callback != null)
+				if (callback != null)
 					callback.onGraphDataProgressUpdate(values[0]);
 			}
 
@@ -1045,7 +1045,7 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onProgressUpdate(Integer... values) {
 				super.onProgressUpdate(values);
-				if(callback != null)
+				if (callback != null)
 					callback.onGraphsProgressUpdate(values[0]);
 			}
 

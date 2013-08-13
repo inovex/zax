@@ -5,5 +5,5 @@ public interface OnGraphsLoadedListener {
 	public void onGraphsLoaded();
 
 	public void onGraphsProgressUpdate(int progress);
-	
+
 }

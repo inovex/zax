@@ -88,9 +88,9 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 	 */
 	protected abstract void executeTask() throws ZabbixLoginRequiredException,
 			FatalException;
-	
+
 	public void updateProgress(Integer... values) {
 		publishProgress(values);
 	}
-	
+
 }

@@ -71,8 +71,9 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 
 				((TextView) getView().findViewById(R.id.latest_data))
 						.setText("");
-				
-				ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
+
+				ViewGroup layout = (LinearLayout) getView().findViewById(
+						R.id.graphs);
 				layout.removeAllViews();
 			}
 		}
@@ -114,6 +115,7 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 
 	}
 
+	@Override
 	protected void showGraph() {
 		showGraph(mItem);
 	}

@@ -11,7 +11,8 @@ public class ProblemsListPage extends BaseSeverityFilterListPage<Trigger> {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		setCustomEmptyText(getResources().getString(R.string.empty_list_problems));
+		setCustomEmptyText(getResources().getString(
+				R.string.empty_list_problems));
 	}
 
 	@Override

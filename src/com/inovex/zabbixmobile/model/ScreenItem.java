@@ -18,26 +18,31 @@ public class ScreenItem {
 	public static final String COLUMN_RESOURCEID = "resourceid";
 	@DatabaseField(columnName = COLUMN_RESOURCEID)
 	long resourceId;
-	
+
 	public ScreenItem() {
-		
+
 	}
-	
+
 	public long getId() {
 		return id;
 	}
+
 	public long getScreenId() {
 		return screenId;
 	}
+
 	public long getResourceId() {
 		return resourceId;
 	}
+
 	public void setId(long id) {
 		this.id = id;
 	}
+
 	public void setScreenId(long screenId) {
 		this.screenId = screenId;
 	}
+
 	public void setResourceId(long resourceId) {
 		this.resourceId = resourceId;
 	}

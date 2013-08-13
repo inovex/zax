@@ -54,7 +54,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		mActionBar.setDisplayShowTitleEnabled(false);
 		// refresh spinner title (necessary when we navigate here using the back
@@ -83,7 +83,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 				mOnNavigationListener);
 
 		mSpinnerAdapter.setTitle(mTitle);
-//		mSpinnerAdapter.notifyDataSetChanged();
+		// mSpinnerAdapter.notifyDataSetChanged();
 		// selectHostGroupInSpinner(mHostGroupPosition, mHostGroupId);
 
 		loadAdapterContent(false);

@@ -18,13 +18,13 @@ public class Graph {
 	public static final String COLUMN_NAME = "name";
 	@DatabaseField(columnName = COLUMN_NAME)
 	String name;
-	
+
 	public static final String COLUMN_GRAPH_ITEMS = "graphitems";
 	@ForeignCollectionField(eager = true, columnName = COLUMN_GRAPH_ITEMS)
 	ForeignCollection<GraphItem> graphItems;
 
 	public Graph() {
-		
+
 	}
 
 	public long getId() {
@@ -46,5 +46,5 @@ public class Graph {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 }

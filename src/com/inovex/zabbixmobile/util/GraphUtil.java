@@ -28,11 +28,12 @@ import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.animation.ValueAnimator.AnimatorUpdateListener;
 
 public class GraphUtil {
-	private static LineGraphView createGraph(final Context context, String title, boolean isFullscreen, final AnimatorListenerAdapter onClickListener) {
+	private static LineGraphView createGraph(final Context context,
+			String title, boolean isFullscreen,
+			final AnimatorListenerAdapter onClickListener) {
 		final java.text.DateFormat dateTimeFormatter = DateFormat
 				.getTimeFormat(context);
-		final LineGraphView graphView = new LineGraphView(context,
-				title) {
+		final LineGraphView graphView = new LineGraphView(context, title) {
 			@Override
 			protected String formatLabel(double value, boolean isValueX) {
 				if (isValueX) {
@@ -43,14 +44,14 @@ public class GraphUtil {
 					return super.formatLabel(value, isValueX);
 			}
 		};
-		
+
 		GraphViewStyle style = new GraphViewStyle();
-		style.setHorizontalLabelsColor(context.getResources()
-				.getColor(android.R.color.black));
-		style.setVerticalLabelsColor(context.getResources()
-				.getColor(android.R.color.black));
+		style.setHorizontalLabelsColor(context.getResources().getColor(
+				android.R.color.black));
+		style.setVerticalLabelsColor(context.getResources().getColor(
+				android.R.color.black));
 		graphView.setGraphViewStyle(style);
-		
+
 		/*
 		 * click to open graph in fullscreen
 		 */
@@ -58,16 +59,22 @@ public class GraphUtil {
 			graphView.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
-					int colorFrom = context.getResources().getColor(android.R.color.holo_blue_light);
+					int colorFrom = context.getResources().getColor(
+							android.R.color.holo_blue_light);
 					int colorTo = Color.WHITE;
-					ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+					ValueAnimator colorAnimation = ValueAnimator.ofObject(
+							new ArgbEvaluator(), colorFrom, colorTo);
 					colorAnimation.setDuration(100);
-					colorAnimation.addUpdateListener(new AnimatorUpdateListener() {
-						@Override
-						public void onAnimationUpdate(ValueAnimator animator) {
-							graphView.setBackgroundColor((Integer)animator.getAnimatedValue());
-						}
-					});
+					colorAnimation
+							.addUpdateListener(new AnimatorUpdateListener() {
+								@Override
+								public void onAnimationUpdate(
+										ValueAnimator animator) {
+									graphView
+											.setBackgroundColor((Integer) animator
+													.getAnimatedValue());
+								}
+							});
 					colorAnimation.addListener(onClickListener);
 					colorAnimation.start();
 				}
@@ -76,16 +83,19 @@ public class GraphUtil {
 
 		return graphView;
 	}
-	
-	public static LineGraphView createScreenGraphPreview(final Context context, final Graph graph) {
-		LineGraphView graphView = createGraph(context, graph.getName(), false, new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				Intent intent = new Intent(context, GraphFullscreenActivity.class);
-				intent.putExtra("graphid", graph.getId());
-				context.startActivity(intent);
-			}
-		});
+
+	public static LineGraphView createScreenGraphPreview(final Context context,
+			final Graph graph) {
+		LineGraphView graphView = createGraph(context, graph.getName(), false,
+				new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationEnd(Animator animation) {
+						Intent intent = new Intent(context,
+								GraphFullscreenActivity.class);
+						intent.putExtra("graphid", graph.getId());
+						context.startActivity(intent);
+					}
+				});
 		graphView.setShowLegend(true);
 		graphView.setLegendAlign(LegendAlign.TOP);
 		graphView.setLegendWidth(250);
@@ -113,27 +123,29 @@ public class GraphUtil {
 				graphView.addSeries(series);
 			}
 		}
-		if(emptyGraph)
+		if (emptyGraph)
 			return null;
-		
+
 		return graphView;
 	}
-	
+
 	public static LineGraphView createItemGraphPreview(final Context context,
 			Collection<HistoryDetail> historyDetails, final Item item) {
-		LineGraphView graph = createGraph(context, item.getDescription(), false, new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				Intent intent = new Intent(context, GraphFullscreenActivity.class);
-				intent.putExtra("itemid", item.getId());
-				context.startActivity(intent);
-			}
-		});
+		LineGraphView graph = createGraph(context, item.getDescription(),
+				false, new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationEnd(Animator animation) {
+						Intent intent = new Intent(context,
+								GraphFullscreenActivity.class);
+						intent.putExtra("itemid", item.getId());
+						context.startActivity(intent);
+					}
+				});
 
 		int numEntries = historyDetails.size();
 		GraphViewData[] values = new GraphViewData[numEntries];
 		int i = 0;
-		if(historyDetails == null || historyDetails.size() == 0)
+		if (historyDetails == null || historyDetails.size() == 0)
 			return null;
 		for (HistoryDetail detail : historyDetails) {
 			long clock = detail.getClock() / 1000;
@@ -145,12 +157,12 @@ public class GraphUtil {
 
 		return graph;
 	}
-	
+
 	public static LineGraphView createItemGraphFullscreen(Context context,
 			Collection<HistoryDetail> historyDetails, String title) {
 		LineGraphView graph = createGraph(context, title, true, null);
-		//graph.setDrawBackground(true);
-		
+		// graph.setDrawBackground(true);
+
 		int numEntries = historyDetails.size();
 		long lowestclock = 0;
 		long highestclock = 0;
@@ -175,12 +187,14 @@ public class GraphUtil {
 		long size = (highestclock - lowestclock) * 2 / 3; // we show 2/3
 		graph.setViewPort(highestclock - size, size);
 		graph.setScalable(true);
-		
+
 		return graph;
 	}
-	
-	public static LineGraphView createScreenGraphFullscreen(final Context context, final Graph graph) {
-		LineGraphView graphView = createGraph(context, graph.getName(), true, null);
+
+	public static LineGraphView createScreenGraphFullscreen(
+			final Context context, final Graph graph) {
+		LineGraphView graphView = createGraph(context, graph.getName(), true,
+				null);
 		graphView.setShowLegend(true);
 		graphView.setLegendAlign(LegendAlign.TOP);
 		graphView.setLegendWidth(250);
@@ -209,13 +223,14 @@ public class GraphUtil {
 					i++;
 				}
 
-				GraphViewSeries series = new GraphViewSeries(item.getDescription(),
-						new GraphViewSeriesStyle(gi.getColor(), 3), values);
+				GraphViewSeries series = new GraphViewSeries(
+						item.getDescription(), new GraphViewSeriesStyle(
+								gi.getColor(), 3), values);
 				// series = new GraphViewSeries(values);
 				graphView.addSeries(series);
 			}
 		}
-		
+
 		// set viewport
 		long size = (highestclock - lowestclock) * 2 / 3; // we show 2/3
 		graphView.setViewPort(highestclock - size, size);

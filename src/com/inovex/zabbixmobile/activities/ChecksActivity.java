@@ -49,7 +49,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		mActionBar.setDisplayShowTitleEnabled(false);
 
 		mTitle = getResources().getString(R.string.checks);
-		
+
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.checks_flipper);
 		mHostListFragment = (ChecksListFragment) mFragmentManager
@@ -61,7 +61,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		showHostListFragment();
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -197,6 +197,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	}
 
+	@Override
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		if (mZabbixDataService != null)
 			mZabbixDataService.loadHostsByHostGroup(

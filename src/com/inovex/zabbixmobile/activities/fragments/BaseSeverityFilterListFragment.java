@@ -102,7 +102,7 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 
 		mSeverityListTabIndicator.setCurrentItem(mSeverityListPagerAdapter
 				.getCurrentPosition());
-//		mCallbackMain.onSeveritySelected(mSeverityListPagerAdapter.getCurrentObject());
+		// mCallbackMain.onSeveritySelected(mSeverityListPagerAdapter.getCurrentObject());
 
 		mSeverityListTabIndicator
 				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -112,7 +112,9 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 								+ position + ")");
 						mSeverityListPagerAdapter.setCurrentPosition(position);
 
-						mCallbackMain.onSeveritySelected(mSeverityListPagerAdapter.getCurrentObject());
+						mCallbackMain
+								.onSeveritySelected(mSeverityListPagerAdapter
+										.getCurrentObject());
 
 					}
 
@@ -132,7 +134,7 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 	public void setSeverity(TriggerSeverity severity) {
 		mSeverityListPagerAdapter.setCurrentPosition(severity.getPosition());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void selectItem(int position) {
 		if (mSeverityListPagerAdapter == null
@@ -144,13 +146,13 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 		Log.d(TAG, "selectItem(" + position + ")");
 		currentPage.selectItem(position);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void refreshItemSelection() {
 		BaseSeverityFilterListPage<T> currentPage = (BaseSeverityFilterListPage<T>) mSeverityListPagerAdapter
 				.instantiateItem(mSeverityListPager,
 						mSeverityListPager.getCurrentItem());
-		currentPage.refreshItemSelection();		
+		currentPage.refreshItemSelection();
 	}
 
 	public void showProgressBar() {

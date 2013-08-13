@@ -145,8 +145,6 @@ public class PushService extends Service {
 					// NotificationBroadcastReceiver which resets the
 					// notification status and starts MainActivity.
 					Intent notificationIntent = new Intent();
-//					notificationIntent.putExtra("pushNotificationTriggerid",
-//							triggerid);
 					notificationIntent.setAction(ACTION_ZABBIX_NOTIFICATION);
 					PendingIntent pendingIntent = PendingIntent.getBroadcast(
 							PushService.this, uniqueRequestCode(),
@@ -197,8 +195,6 @@ public class PushService extends Service {
 					Notification notification = notificationBuilder.build();
 
 					NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-					// mNotificationManager.notify(triggerid == null ? 0
-					// : (int) (long) triggerid, notification);
 					// We use the same ID because we want to stack the
 					// notifications and we don't really care about the trigger
 					// ID anyway (clicking the notification just starts the main
@@ -243,9 +239,12 @@ public class PushService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			numNotifications = 0;
 			previousMessages.clear();
-			Intent notificationIntent = new Intent(context, ProblemsActivity.class);
-			notificationIntent.putExtra(ProblemsActivity.ARG_START_FROM_NOTIFICATION, true);
-			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+			Intent notificationIntent = new Intent(context,
+					ProblemsActivity.class);
+			notificationIntent.putExtra(
+					ProblemsActivity.ARG_START_FROM_NOTIFICATION, true);
+			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
+					| Intent.FLAG_ACTIVITY_NEW_TASK);
 			context.startActivity(notificationIntent);
 		}
 

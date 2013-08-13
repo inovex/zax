@@ -22,7 +22,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		setContentView(R.layout.activity_events);
 
 		mTitle = getResources().getString(R.string.events);
-		
+
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
 		mDetailsFragment = (BaseSeverityFilterDetailsFragment<Event>) mFragmentManager
@@ -36,11 +36,11 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 
 		if (mFlipper != null)
 			mDetailsFragment.setHasOptionsMenu(false);
-		
+
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -94,8 +94,8 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		Log.d(TAG, "loadAdapterContent");
 		super.loadAdapterContent(hostGroupChanged);
-		mZabbixDataService.loadEventsByHostGroup(mSpinnerAdapter.getCurrentItemId(),
-				hostGroupChanged, this);
+		mZabbixDataService.loadEventsByHostGroup(
+				mSpinnerAdapter.getCurrentItemId(), hostGroupChanged, this);
 	}
 
 	@Override
@@ -103,7 +103,8 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 			boolean hostGroupChanged) {
 		super.onSeverityListAdapterLoaded(severity, hostGroupChanged);
 
-		if(severity == mZabbixDataService.getEventsListPagerAdapter().getCurrentObject()) {
+		if (severity == mZabbixDataService.getEventsListPagerAdapter()
+				.getCurrentObject()) {
 			selectInitialItem(hostGroupChanged);
 		}
 	}

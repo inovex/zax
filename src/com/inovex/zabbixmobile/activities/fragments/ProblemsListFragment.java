@@ -8,7 +8,8 @@ import com.inovex.zabbixmobile.model.Trigger;
  * view pager.
  * 
  */
-public class ProblemsListFragment extends BaseSeverityFilterListFragment<Trigger> {
+public class ProblemsListFragment extends
+		BaseSeverityFilterListFragment<Trigger> {
 
 	public static final String TAG = ProblemsListFragment.class.getSimpleName();
 
