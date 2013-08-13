@@ -14,15 +14,6 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 	private static final String TAG = EventsActivity.class.getSimpleName();
 	public static final String ARG_ITEM_ID = "item_id";
 	public static final String ARG_ITEM_POSITION = "item_position";
-	/**
-	 * Whether the details fragment shall be displayed on startup.
-	 */
-	private boolean mShowDetailsFragment = false;
-	/**
-	 * Whether the app shall nevigate back to the {@link MainActivity} when the
-	 * back button is pressed.
-	 */
-	private boolean mBackToMain = false;
 
 	// This flag is necessary to select the correct element when coming from
 	// another activity (e.g. Problems list in MainActivity)
@@ -49,9 +40,6 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			mItemId = extras.getLong(ARG_ITEM_ID, -1);
 			if (mItemPosition != -1 && mItemId != -1) {
 				mFirstCallFromIntent = true;
-				mShowDetailsFragment = true;
-				mBackToMain = true;
-				showDetailsFragment();
 			}
 		}
 		
@@ -76,31 +64,8 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		super.selectHostGroupInSpinner(position, itemId);
 		// if the activity was started using the intent to display a particular
 		// problem, we do not want to show the list fragment on startup
-		if (!mListFragment.isVisible() && !mShowDetailsFragment)
+		if (!mListFragment.isVisible())
 			showListFragment();
-		if (mShowDetailsFragment)
-			mShowDetailsFragment = false;
-	}
-
-	@Override
-	protected void showListFragment() {
-		super.showListFragment();
-		// When the list fragment is shown (due to selecting a different host
-		// group or pressing the "up" button), the app shall not skip the list
-		// fragment when the back button is pressed (this shall only be done
-		// when selecting a problem via the intent and then pressing back from
-		// the details view).
-		mBackToMain = false;
-	}
-
-	@Override
-	public void onBackPressed() {
-		Bundle extras = getIntent().getExtras();
-		// check if the activity was started from the main activity using intent
-		// extras -> if so, we want to go back to the main activity
-		if (mBackToMain)
-			finish();
-		super.onBackPressed();
 	}
 
 	@Override
