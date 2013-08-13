@@ -34,7 +34,7 @@ public class ScreensActivity extends BaseActivity implements
 		setContentView(R.layout.activity_screens);
 		
 		mTitle = getResources().getString(R.string.screens);
-
+		
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.screens_flipper);
 		mListFragment = (ScreensListFragment) mFragmentManager
@@ -44,6 +44,12 @@ public class ScreensActivity extends BaseActivity implements
 		showListFragment();
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mDrawerList.setItemChecked(BaseActivity.ACTIVITY_SCREENS, true);
 	}
 
 	@Override

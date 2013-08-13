@@ -22,7 +22,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		setContentView(R.layout.activity_events);
 
 		mTitle = getResources().getString(R.string.events);
-
+		
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
 		mDetailsFragment = (BaseSeverityFilterDetailsFragment<Event>) mFragmentManager
@@ -40,6 +40,12 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mDrawerList.setItemChecked(BaseActivity.ACTIVITY_EVENTS, true);
 	}
 
 	@Override

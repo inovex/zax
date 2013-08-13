@@ -603,7 +603,8 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onProgressUpdate(Integer... values) {
 				super.onProgressUpdate(values);
-				callback.onSeverityListAdapterProgressUpdate(values[0]);
+				if(callback != null)
+					callback.onSeverityListAdapterProgressUpdate(values[0]);
 			}
 
 		};
@@ -696,7 +697,8 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onProgressUpdate(Integer... values) {
 				super.onProgressUpdate(values);
-				callback.onSeverityListAdapterProgressUpdate(values[0]);
+				if(callback != null)
+					callback.onSeverityListAdapterProgressUpdate(values[0]);
 			}
 
 		};
@@ -823,7 +825,8 @@ public class ZabbixDataService extends Service {
 			protected void onProgressUpdate(Integer... values) {
 				super.onProgressUpdate(values);
 				Log.d(TAG, "progress: " + values[0]);
-				callback.onApplicationsProgressUpdate(values[0]);
+				if(callback != null)
+					callback.onApplicationsProgressUpdate(values[0]);
 			}
 
 		};
@@ -943,8 +946,8 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onProgressUpdate(Integer... values) {
 				super.onProgressUpdate(values);
-				callback.onGraphDataProgressUpdate(values[0]);
-				Log.d("PROGRESS", "" + values[0]);
+				if(callback != null)
+					callback.onGraphDataProgressUpdate(values[0]);
 			}
 
 		};
@@ -1042,7 +1045,8 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onProgressUpdate(Integer... values) {
 				super.onProgressUpdate(values);
-				callback.onGraphsProgressUpdate(values[0]);
+				if(callback != null)
+					callback.onGraphsProgressUpdate(values[0]);
 			}
 
 			@Override

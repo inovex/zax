@@ -61,7 +61,6 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		// button)
 		if (mSpinnerAdapter != null) {
 			mSpinnerAdapter.setTitle(mTitle);
-			mSpinnerAdapter.notifyDataSetChanged();
 		}
 	}
 

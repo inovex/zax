@@ -45,7 +45,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	protected String mTitle;
 
 	private DrawerLayout mDrawerLayout;
-	private ListView mDrawerList;
+	protected ListView mDrawerList;
 	protected ActionBarDrawerToggle mDrawerToggle;
 	protected ActionBar mActionBar;
 	private LoginProgressDialogFragment mLoginProgress;
@@ -54,10 +54,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	private boolean mPreferencesChanged = false;
 
 	private static final String TAG = BaseActivity.class.getSimpleName();
-	private static final int ACTIVITY_PROBLEMS = 0;
-	private static final int ACTIVITY_EVENTS = 1;
-	private static final int ACTIVITY_CHECKS = 2;
-	private static final int ACTIVITY_SCREENS = 3;
+	protected static final int ACTIVITY_PROBLEMS = 0;
+	protected static final int ACTIVITY_EVENTS = 1;
+	protected static final int ACTIVITY_CHECKS = 2;
+	protected static final int ACTIVITY_SCREENS = 3;
 
 	/** Defines callbacks for service binding, passed to bindService() */
 	@Override
@@ -154,7 +154,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 				R.layout.list_item_main_menu, getResources().getStringArray(
 						R.array.activities)));
 		mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
+		
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the sliding drawer and the action bar app icon
 		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
@@ -208,7 +208,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		default:
 			return;
 		}
-//		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		startActivity(intent);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 

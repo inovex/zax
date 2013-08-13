@@ -101,7 +101,7 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 
 		mSeverityListTabIndicator.setCurrentItem(mSeverityListPagerAdapter
 				.getCurrentPosition());
-		mCallbackMain.onSeveritySelected(mSeverityListPagerAdapter.getCurrentObject());
+//		mCallbackMain.onSeveritySelected(mSeverityListPagerAdapter.getCurrentObject());
 
 		mSeverityListTabIndicator
 				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
