@@ -51,7 +51,9 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 			mCurTransaction = mFragmentManager.beginTransaction();
 		}
 
-		final long itemId = getItemId(position);
+		final Long itemId = getItemId(position);
+		if(itemId == null)
+			return null;
 
 		// Do we already have this fragment?
 		String name = makeFragmentName(container.getId(), itemId);
@@ -139,7 +141,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 	 *            Position within this adapter
 	 * @return Unique identifier for the item at position
 	 */
-	public abstract long getItemId(int position);
+	public abstract Long getItemId(int position);
 
 	protected static String makeFragmentName(int viewId, long id) {
 		return "android:switcher:" + viewId + ":" + id;
@@ -177,6 +179,8 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 	 */
 	@SuppressWarnings("unchecked")
 	public T getObject(int position) {
+		if(position >= mObjects.size())
+			return null;
 		return (T) mObjects.toArray()[position];
 	}
 

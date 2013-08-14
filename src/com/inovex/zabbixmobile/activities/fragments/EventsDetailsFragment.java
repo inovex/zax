@@ -110,7 +110,8 @@ public class EventsDetailsFragment extends
 		EventsDetailsPage currentPage = (EventsDetailsPage) mDetailsPagerAdapter
 				.instantiateItem(mDetailsPager,
 						mDetailsPagerAdapter.getCurrentPosition());
-		currentPage.refresh();
+		if(currentPage != null)
+			currentPage.refresh();
 	}
 
 	// TODO: orientation change when acknowledge dialog is open

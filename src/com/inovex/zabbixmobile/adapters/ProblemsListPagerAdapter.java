@@ -17,8 +17,10 @@ public class ProblemsListPagerAdapter extends BaseSeverityListPagerAdapter {
 	}
 
 	@Override
-	public long getItemId(int position) {
-		return getObject(position).getNumber();
+	public Long getItemId(int position) {
+		if(getObject(position) == null)
+			return null;
+		return (long) getObject(position).getNumber();
 	}
 
 }

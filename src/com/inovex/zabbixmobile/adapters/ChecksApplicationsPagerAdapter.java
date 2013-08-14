@@ -17,7 +17,9 @@ public class ChecksApplicationsPagerAdapter extends
 	}
 
 	@Override
-	public long getItemId(int position) {
+	public Long getItemId(int position) {
+		if(getObject(position) == null)
+			return null;
 		return getObject(position).getId();
 	}
 

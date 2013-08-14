@@ -50,8 +50,10 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mZabbixDataService.cancelLoadEventsTask();
-		mZabbixDataService.cancelLoadHistoryDetailsTasks();
+		if (mZabbixDataService != null) {
+			mZabbixDataService.cancelLoadEventsTask();
+			mZabbixDataService.cancelLoadHistoryDetailsTasks();
+		}
 	}
 
 	@Override

@@ -25,7 +25,8 @@ public class ProblemsDetailsFragment extends
 		ProblemsDetailsPage currentPage = (ProblemsDetailsPage) mDetailsPagerAdapter
 				.instantiateItem(mDetailsPager,
 						mDetailsPagerAdapter.getCurrentPosition());
-		currentPage.refresh();
+		if (currentPage != null)
+			currentPage.refresh();
 	}
 
 }

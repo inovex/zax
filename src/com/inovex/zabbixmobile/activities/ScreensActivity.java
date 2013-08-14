@@ -60,7 +60,8 @@ public class ScreensActivity extends BaseActivity implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mZabbixDataService.cancelLoadGraphsTask();
+		if(mZabbixDataService != null)
+			mZabbixDataService.cancelLoadGraphsTask();
 	}
 
 	@Override

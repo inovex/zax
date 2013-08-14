@@ -71,8 +71,10 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mZabbixDataService.cancelLoadApplicationsTask();
-		mZabbixDataService.cancelLoadItemsTask();
+		if (mZabbixDataService != null) {
+			mZabbixDataService.cancelLoadApplicationsTask();
+			mZabbixDataService.cancelLoadItemsTask();
+		}
 	}
 
 	@Override

@@ -69,8 +69,10 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mZabbixDataService.cancelLoadProblemsTask();
-		mZabbixDataService.cancelLoadHistoryDetailsTasks();
+		if (mZabbixDataService != null) {
+			mZabbixDataService.cancelLoadProblemsTask();
+			mZabbixDataService.cancelLoadHistoryDetailsTasks();
+		}
 	}
 
 	@Override
