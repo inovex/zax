@@ -1,17 +1,17 @@
 package com.inovex.zabbixmobile.push;
 
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class PushAlarm extends BroadcastReceiver {
-	NotificationManager nm;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		Log.d("PushServiceAlarm", "received alarm.");
 		// start the push receiver, if it is enabled
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);

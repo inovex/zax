@@ -19,6 +19,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -281,6 +282,7 @@ public class PushService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
+		Log.d("PushService", "starting");
 		if (mPushListener.getStatus() != AsyncTask.Status.RUNNING) {
 			mPushListener.execute(PUSHCHANNEL);
 			Log.i("PushService", "start ");
@@ -320,34 +322,34 @@ public class PushService extends Service {
 		boolean push = preferences.isPushEnabled();
 		if (am == null)
 			am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		PendingIntent pendingIntent = PendingIntent.getService(context, 0,
+				new Intent(context, PushService.class), 0);
 		if (push) {
-			Intent messageService = new Intent(context, PushService.class);
-			context.startService(messageService);
-			setRepeatingAlarm(context);
+			setRepeatingAlarm(pendingIntent);
 		} else {
-			Intent messageService = new Intent(context, PushService.class);
-			context.stopService(messageService);
-			stopRepeatingAlarm(context);
+			stopRepeatingAlarm(pendingIntent);
 		}
 
 	}
 
-	private static void setRepeatingAlarm(Context context) {
+	private static void setRepeatingAlarm(PendingIntent pendingIntent) {
 
-		Intent intent = new Intent(context, PushAlarm.class);
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
-				intent, PendingIntent.FLAG_CANCEL_CURRENT);
-		am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
-				(1 * 60 * 1000), pendingIntent); // wake up every 5 minutes to
-													// ensure service stays
-													// alive
+		Log.d("PushServiceAlarm", "setRepeatingAlarm");
+
+		am.cancel(pendingIntent);
+		// wake up every 10 minutes to ensure service stays alive
+		int alarmFrequency = 10 * 60 * 1000;
+		// start service after one minute to avoid wasting precious CPU time
+		// after device boot
+		am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+				SystemClock.elapsedRealtime() + 1 * 60 * 1000, alarmFrequency,
+				pendingIntent);
 	}
 
-	private static void stopRepeatingAlarm(Context context) {
+	private static void stopRepeatingAlarm(PendingIntent pendingIntent) {
 
-		Intent intent = new Intent(context, PushAlarm.class);
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0,
-				intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		Log.d("PushServiceAlarm", "stopRepeatingAlarm");
+
 		am.cancel(pendingIntent);
 	}
 }

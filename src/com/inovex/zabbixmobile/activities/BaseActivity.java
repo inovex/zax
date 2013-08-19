@@ -49,6 +49,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 	private boolean mPreferencesClosed = false;
 	private boolean mPreferencesChanged = false;
+	private boolean mOnSaveInstanceStateCalled = false;
 
 	private static final String TAG = BaseActivity.class.getSimpleName();
 	protected static final int ACTIVITY_PROBLEMS = 0;
@@ -85,7 +86,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	protected void onResume() {
 		super.onResume();
 		Log.d(TAG, "onResume");
-		PushService.startOrStopPushService(this);
+		PushService.startOrStopPushService(getApplicationContext());
 		// if the preferences activity has been closed (and possibly preferences
 		// have been changed), we start a relogin.
 		if (mPreferencesClosed && mZabbixDataService != null) {
@@ -299,9 +300,15 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	protected abstract void loadData();
 
 	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		mOnSaveInstanceStateCalled = true;
+	}
+
+	@Override
 	public void onLoginStarted() {
 		disableUI();
-		if (!this.isFinishing())
+		if (!this.isFinishing() && !mOnSaveInstanceStateCalled)
 			mLoginProgress.show(getSupportFragmentManager(),
 					LoginProgressDialogFragment.TAG);
 	}
