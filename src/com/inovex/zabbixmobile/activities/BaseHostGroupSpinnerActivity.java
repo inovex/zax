@@ -86,7 +86,8 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		// mSpinnerAdapter.notifyDataSetChanged();
 		// selectHostGroupInSpinner(mHostGroupPosition, mHostGroupId);
 
-		loadAdapterContent(false);
+		if(mZabbixDataService.isLoggedIn())
+			loadAdapterContent(false);
 	}
 
 	@Override

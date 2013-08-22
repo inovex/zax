@@ -54,13 +54,14 @@ public class ScreensActivity extends BaseActivity implements
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder binder) {
 		super.onServiceConnected(className, binder);
-		loadData();
+		if (mZabbixDataService.isLoggedIn())
+			loadData();
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if(mZabbixDataService != null)
+		if (mZabbixDataService != null)
 			mZabbixDataService.cancelLoadGraphsTask();
 	}
 
