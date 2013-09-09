@@ -7,4 +7,5 @@
     <color name="border_list">#ffb2b2b2</color>
     <color name="text">@color/vpi__light_theme</color>
     <color name="menu">#ffffffff</color>
+    <color name="action_bar_background">#FF222222</color>
 </resources>

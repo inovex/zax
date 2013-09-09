@@ -41,6 +41,11 @@ public class HostGroup implements Comparable<HostGroup> {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	@Override
+	public String toString() {
+		return groupId + " " + name;
+	}
 
 	@Override
 	public int compareTo(HostGroup another) {

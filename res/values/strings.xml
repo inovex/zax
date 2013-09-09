@@ -80,5 +80,9 @@
      <string name="empty_list_problems">No problems found for this severity.</string>
      
      <string name="notification_title">Zabbix triggers</string>
+     
+     <string name="widget_no_problems">There are no problems at the moment</string>
+     <string name="widget_more_problem">and %1$d more problem</string>
+     <string name="widget_more_problems">and %1$d more problems</string>
 
 </resources>

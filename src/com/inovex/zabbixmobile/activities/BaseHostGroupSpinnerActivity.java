@@ -86,13 +86,17 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		// mSpinnerAdapter.notifyDataSetChanged();
 		// selectHostGroupInSpinner(mHostGroupPosition, mHostGroupId);
 
-		if(mZabbixDataService.isLoggedIn())
+		if (mZabbixDataService.isLoggedIn())
 			loadAdapterContent(false);
 	}
 
 	@Override
 	public void onHostGroupSelected(int position) {
-		mActionBar.setSelectedNavigationItem(position);
+		try {
+			mActionBar.setSelectedNavigationItem(position);
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

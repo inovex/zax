@@ -16,7 +16,6 @@
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" >
     </uses-permission>
-    <!-- <uses-permission android:name="com.android.vending.BILLING" /> -->
     <uses-permission android:name="android.permission.INTERNET" >
     </uses-permission>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -71,7 +70,18 @@
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 			</intent-filter>
 		</receiver>
+		
+        <!-- Homescreen Widget -->
+		<receiver android:name=".widget.ZaxWidgetProvider">
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+			</intent-filter>
+			<meta-data
+				android:name="android.appwidget.provider"
+				android:resource="@xml/widget_info" />
+		</receiver>
         
+		<service android:name=".data.HomescreenWidgetService" android:process=":widgetservice"></service>
         <service android:name=".push.PushService" android:process=":pushservice"></service>
     </application>
 

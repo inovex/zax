@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import android.app.Service;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
