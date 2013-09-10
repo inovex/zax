@@ -21,13 +21,14 @@ import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProvider;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 public class HomescreenWidgetService extends Service {
 	private enum DisplayStatus {
-		ZAX_ERROR(R.drawable.widget_error), OK(R.drawable.widget_ok), AVG(
-				R.drawable.widget_avg), HIGH(R.drawable.widget_high), LOADING(
+		ZAX_ERROR(R.drawable.severity_average), OK(R.drawable.severity_average), AVG(
+				R.drawable.severity_average), HIGH(R.drawable.severity_high), LOADING(
 				R.drawable.icon);
 
 		private int drawable;
@@ -59,9 +60,6 @@ public class HomescreenWidgetService extends Service {
 			// set up SQLite connection using OrmLite
 			mDatabaseHelper = OpenHelperManager.getHelper(this,
 					DatabaseHelper.class);
-			// recreate database
-			mDatabaseHelper.onUpgrade(mDatabaseHelper.getWritableDatabase(), 0,
-					1);
 
 			Log.d(TAG, "onCreate");
 		}
@@ -110,31 +108,6 @@ public class HomescreenWidgetService extends Service {
 	}
 
 	@Override
-	public void onCreate() {
-		super.onCreate();
-		Log.d(TAG, "onCreate");
-
-		// contentProviderReceiver = new BroadcastReceiver() {
-		// @Override
-		// public void onReceive(Context context, Intent intent) {
-		// switch (intent.getIntExtra("flag", 0)) {
-		// case ZabbixContentProvider.INTENT_FLAG_CONNECTION_FAILED:
-		// case ZabbixContentProvider.INTENT_FLAG_AUTH_FAILED:
-		// case ZabbixContentProvider.INTENT_FLAG_SHOW_EXCEPTION:
-		// case ZabbixContentProvider.INTENT_FLAG_SSL_NOT_TRUSTED:
-		// updateView(DisplayStatus.ZAX_ERROR, "ZAX error");
-		// isError = true;
-		// break;
-		// }
-		// }
-		// };
-		// registerReceiver(
-		// contentProviderReceiver, new
-		// IntentFilter(ZabbixContentProvider.CONTENT_PROVIDER_INTENT_ACTION)
-		// );
-	}
-
-	@Override
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy");
 		if (contentProviderReceiver != null) {
@@ -154,6 +127,10 @@ public class HomescreenWidgetService extends Service {
 
 			RemoteViews remoteViews = new RemoteViews(getApplicationContext()
 					.getPackageName(), R.layout.homescreen_widget);
+
+			ZaxPreferences preferences = new ZaxPreferences(this);
+			remoteViews.setTextViewText(R.id.widget_headline,
+					preferences.getZabbixUrl());
 
 			String content;
 			int icon = R.drawable.widget_ok;
@@ -175,16 +152,18 @@ public class HomescreenWidgetService extends Service {
 			remoteViews.setImageViewResource(R.id.widget_severity, icon);
 			remoteViews.setTextViewText(R.id.widget_content, content);
 
-			if (problems.size() == 1)
-				remoteViews.setTextViewText(
-						R.id.widget_more,
-						getResources().getString(R.string.widget_more_problem,
-								problems.size()));
+			int moreProblems = problems.size() - 1;
+
+			if (moreProblems == 1)
+				remoteViews.setTextViewText(R.id.widget_more, getResources()
+						.getString(R.string.widget_more_problem, moreProblems));
 			else
-				remoteViews.setTextViewText(
-						R.id.widget_more,
-						getResources().getString(R.string.widget_more_problems,
-								problems.size()));
+				remoteViews
+						.setTextViewText(
+								R.id.widget_more,
+								getResources().getString(
+										R.string.widget_more_problems,
+										moreProblems));
 
 			// status button click
 			Intent statusButtonClickIntent = new Intent(

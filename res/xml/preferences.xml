@@ -64,12 +64,12 @@
             android:title="@string/ringtone" >
         </RingtonePreference>
     </PreferenceCategory>
-    <!-- <PreferenceCategory android:title="@string/homescreen_widget" >
+    <PreferenceCategory android:title="@string/homescreen_widget" >
         <EditTextPreference
             android:defaultValue="15"
             android:inputType="number"
             android:key="widget_refresh_interval_mins"
             android:title="Refresh interval (min)" />
-    </PreferenceCategory> -->
+    </PreferenceCategory>
 
 </PreferenceScreen>

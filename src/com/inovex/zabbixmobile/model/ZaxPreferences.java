@@ -58,4 +58,8 @@ public class ZaxPreferences {
 	public String getPushSubscribeKey() {
 		return mPref.getString("zabbix_push_subscribe_key", "").trim();
 	}
+
+	public int getWidgetRefreshInterval() {
+		return Integer.parseInt(mPref.getString("widget_refresh_interval_mins", "15"));
+	}
 }

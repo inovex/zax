@@ -408,8 +408,8 @@ public class ZabbixDataService extends Service {
 				mDatabaseHelper = OpenHelperManager.getHelper(this,
 						DatabaseHelper.class);
 				// recreate database
-				mDatabaseHelper.onUpgrade(
-						mDatabaseHelper.getWritableDatabase(), 0, 1);
+//				mDatabaseHelper.onUpgrade(
+//						mDatabaseHelper.getWritableDatabase(), 0, 1);
 			}
 
 			Log.d(TAG, "onCreate");
