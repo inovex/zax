@@ -60,8 +60,6 @@ public class HomescreenWidgetService extends Service {
 			// set up SQLite connection using OrmLite
 			mDatabaseHelper = OpenHelperManager.getHelper(this,
 					DatabaseHelper.class);
-
-			Log.d(TAG, "onCreate");
 		}
 		if (mRemoteAPI == null) {
 			mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),

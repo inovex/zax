@@ -65,7 +65,7 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 				.getSystemService(Context.ALARM_SERVICE);
 		if (updateRate >= 0) {
 			alarms.setRepeating(AlarmManager.ELAPSED_REALTIME,
-					SystemClock.elapsedRealtime(), updateRate, newPending);
+					SystemClock.elapsedRealtime() + updateRate, updateRate, newPending);
 		} else {
 			// on a negative updateRate stop the refreshing
 			alarms.cancel(newPending);

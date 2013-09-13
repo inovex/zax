@@ -85,18 +85,6 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 	}
 
 	@Override
-	protected void disableUI() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected void enableUI() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		if (mZabbixDataService != null) {
 			super.loadAdapterContent(hostGroupChanged);

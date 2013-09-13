@@ -117,18 +117,6 @@ public class ScreensActivity extends BaseActivity implements
 	}
 
 	@Override
-	protected void disableUI() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected void enableUI() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	protected void loadData() {
 		mListFragment.showLoadingSpinner();
 		mZabbixDataService.loadScreens(this);

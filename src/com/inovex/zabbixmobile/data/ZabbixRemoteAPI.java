@@ -30,6 +30,7 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
@@ -337,6 +338,8 @@ public class ZabbixRemoteAPI {
 			return result;
 		} catch (SocketException e) {
 			throw new FatalException(Type.NO_CONNECTION, e);
+		} catch (NoHttpResponseException e) {
+			throw new FatalException(Type.NO_HTTP_RESPONSE, e);
 		} catch (ConnectTimeoutException e) {
 			throw new FatalException(Type.CONNECTION_TIMEOUT, e);
 		} catch (UnknownHostException e) {

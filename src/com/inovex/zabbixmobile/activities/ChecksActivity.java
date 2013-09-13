@@ -188,18 +188,6 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	}
 
 	@Override
-	protected void disableUI() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected void enableUI() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		if (mZabbixDataService != null)
 			mZabbixDataService.loadHostsByHostGroup(

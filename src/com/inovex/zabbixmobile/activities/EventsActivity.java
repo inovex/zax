@@ -111,16 +111,4 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		}
 	}
 
-	@Override
-	protected void disableUI() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected void enableUI() {
-		// TODO Auto-generated method stub
-
-	}
-
 }

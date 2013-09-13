@@ -1,9 +1,11 @@
 package com.inovex.zabbixmobile.activities;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
@@ -14,11 +16,14 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -29,6 +34,7 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.PushService;
 
 public abstract class BaseActivity extends SherlockFragmentActivity implements
@@ -57,7 +63,6 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	protected static final int ACTIVITY_CHECKS = 2;
 	protected static final int ACTIVITY_SCREENS = 3;
 
-	/** Defines callbacks for service binding, passed to bindService() */
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder binder) {
 		Log.d(TAG, "onServiceConnected: " + this.getLocalClassName() + " "
@@ -65,6 +70,42 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		ZabbixDataBinder zabbixBinder = (ZabbixDataBinder) binder;
 		mZabbixDataService = zabbixBinder.getService();
 		mZabbixDataService.setActivityContext(BaseActivity.this);
+		
+		ZaxPreferences preferences = new ZaxPreferences(this);
+		if (preferences.isDefault()) {
+			new DialogFragment() {
+
+				@Override
+				public Dialog onCreateDialog(Bundle savedInstanceState) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(
+							getActivity());
+					LayoutInflater inflater = getActivity().getLayoutInflater();
+
+					View view = inflater.inflate(R.layout.dialog_default_settings, null);
+					builder.setView(view);
+
+					builder.setTitle(R.string.server_data_not_set);
+
+					// Add action buttons
+					builder.setPositiveButton(R.string.ok,
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int id) {
+									Intent intent = new Intent(
+											getApplicationContext(),
+											ZaxPreferenceActivity.class);
+									startActivityForResult(intent,
+											REQUEST_CODE_PREFERENCES);
+								}
+							});
+					return builder.create();
+				}
+
+			}.show(getSupportFragmentManager(), "DefaultSettingsDialogFragment");
+			// return to avoid a login with incorrect credentials
+			return;
+		}
 		if (!mZabbixDataService.isLoggedIn())
 			mZabbixDataService.performZabbixLogin(this);
 
@@ -307,7 +348,6 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public void onLoginStarted() {
-		disableUI();
 		if (!this.isFinishing() && !mOnSaveInstanceStateCalled)
 			mLoginProgress.show(getSupportFragmentManager(),
 					LoginProgressDialogFragment.TAG);
@@ -328,13 +368,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			Toast.makeText(this, R.string.zabbix_login_successful,
 					Toast.LENGTH_LONG).show();
 			loadData();
-			enableUI();
 		}
 	}
-
-	protected abstract void disableUI();
-
-	protected abstract void enableUI();
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

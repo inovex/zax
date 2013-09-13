@@ -18,9 +18,10 @@
     <string name="exc_login_incorrect">Zabbix login incorrect.</string>
     <string name="exc_no_connection">Could not connect to Zabbix server. Please verify internet access.</string>
     <string name="exc_connection_timeout">Connection to Zabbix server timed out. Please verify internet access.</string>
-    <string name="exc_not_found">The Zabbix server could not be contacted. Please verify that the server address is correct.</string>
-    <string name="exc_internal_error">Internal error.</string>
+	<string name="exc_not_found">The Zabbix server could not be contacted. Please verify that the server address is correct.</string>
+	<string name="exc_no_response">The Zabbix server did not respond. Please verify that the server address is correct.</string>    
     <string name="exc_account_blocked">Your account is blocked because of too many failed login attempts. Please unblock your account by using the web login on your Zabbix server.</string>
+    <string name="exc_internal_error">Internal error.</string>
     
     <string name="no_items_to_display">No items to display.</string>
     <string name="trigger_details">Trigger Details</string>
@@ -43,7 +44,8 @@
     <string name="severity_high">high</string>
     <string name="severity_disaster">disaster</string>
     <string name="zabbix_login_successful">Zabbix login was successful.</string>
-    <string name="set_preferences">You have to set the preferences.</string>
+    <string name="server_data_not_set">Zabbix server data not set</string>
+    <string name="fill_in_server_data">Please fill in your Zabbix server data before using the app.</string>
     <string name="ok">OK</string>
     <string name="all">all</string>
     <string name="events">Events</string>

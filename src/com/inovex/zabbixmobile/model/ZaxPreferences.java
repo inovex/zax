@@ -62,4 +62,9 @@ public class ZaxPreferences {
 	public int getWidgetRefreshInterval() {
 		return Integer.parseInt(mPref.getString("widget_refresh_interval_mins", "15"));
 	}
+	
+	public boolean isDefault() {
+		String url = mPref.getString("zabbix_url", "");
+		return (url.equals("http://zabbix.company.net/zabbix")) || (url == null) || url.equals("");
+	}
 }
