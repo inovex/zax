@@ -6,7 +6,7 @@ import com.inovex.zabbixmobile.model.Item;
 public interface OnChecksItemSelectedListener {
 
 	/**
-	 * Callback method for the selection of an item.
+	 * Callback method for the selection of a host.
 	 * 
 	 * @param position
 	 *            list position
@@ -15,6 +15,12 @@ public interface OnChecksItemSelectedListener {
 	 */
 	public void onHostSelected(int position, long id);
 
+	/**
+	 * Callback method for the selection of an application.
+	 * 
+	 * @param position
+	 *            list position
+	 */
 	public void onApplicationSelected(int position);
 
 	/**

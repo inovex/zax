@@ -10,6 +10,7 @@ import android.text.format.DateFormat;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.GraphFullscreenActivity;
 import com.inovex.zabbixmobile.model.Graph;
 import com.inovex.zabbixmobile.model.GraphItem;
@@ -27,6 +28,10 @@ import com.nineoldandroids.animation.ArgbEvaluator;
 import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.animation.ValueAnimator.AnimatorUpdateListener;
 
+/**
+ * Utility class to support creating Zabbix graphs more easily (using the
+ * GraphView library).
+ */
 public class GraphUtil {
 	private static LineGraphView createGraph(final Context context,
 			String title, boolean isFullscreen,
@@ -60,7 +65,7 @@ public class GraphUtil {
 				@Override
 				public void onClick(View arg0) {
 					int colorFrom = context.getResources().getColor(
-							android.R.color.holo_blue_light);
+							R.color.holo_blue_light);
 					int colorTo = Color.WHITE;
 					ValueAnimator colorAnimation = ValueAnimator.ofObject(
 							new ArgbEvaluator(), colorFrom, colorTo);
@@ -84,6 +89,15 @@ public class GraphUtil {
 		return graphView;
 	}
 
+	/**
+	 * Creates a preview graph (with disabled gestures).
+	 * 
+	 * @param context
+	 *            the context
+	 * @param graph
+	 *            the graph to be rendered
+	 * @return the generated graph view
+	 */
 	public static LineGraphView createScreenGraphPreview(final Context context,
 			final Graph graph) {
 		LineGraphView graphView = createGraph(context, graph.getName(), false,
@@ -129,8 +143,18 @@ public class GraphUtil {
 		return graphView;
 	}
 
+	/**
+	 * Creates a preview graph (with disabled gestures).
+	 * 
+	 * @param context
+	 *            the context
+	 * @param item
+	 *            the item to be visualized
+	 * @return the generated graph view
+	 */
 	public static LineGraphView createItemGraphPreview(final Context context,
-			Collection<HistoryDetail> historyDetails, final Item item) {
+			final Item item) {
+		Collection<HistoryDetail> historyDetails = item.getHistoryDetails();
 		LineGraphView graph = createGraph(context, item.getDescription(),
 				false, new AnimatorListenerAdapter() {
 					@Override
@@ -158,8 +182,19 @@ public class GraphUtil {
 		return graph;
 	}
 
+	/**
+	 * Creates a fullscreen graph.
+	 * 
+	 * @param context
+	 *            the context
+	 * @param item
+	 *            the item to be visualized
+	 * @return the generated graph view
+	 */
 	public static LineGraphView createItemGraphFullscreen(Context context,
-			Collection<HistoryDetail> historyDetails, String title) {
+			Item item) {
+		Collection<HistoryDetail> historyDetails = item.getHistoryDetails();
+		String title = item.getDescription();
 		LineGraphView graph = createGraph(context, title, true, null);
 		// graph.setDrawBackground(true);
 
@@ -191,6 +226,15 @@ public class GraphUtil {
 		return graph;
 	}
 
+	/**
+	 * Creates a fullscreen graph.
+	 * 
+	 * @param context
+	 *            the context
+	 * @param graph
+	 *            the graph to be rendered
+	 * @return the generated graph view
+	 */
 	public static LineGraphView createScreenGraphFullscreen(
 			final Context context, final Graph graph) {
 		LineGraphView graphView = createGraph(context, graph.getName(), true,

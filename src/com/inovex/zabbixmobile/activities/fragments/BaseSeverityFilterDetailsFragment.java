@@ -17,6 +17,12 @@ import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TitlePageIndicator;
 
+/**
+ * Base class for a details fragment of a data type to be filtered by severity.
+ * 
+ * @param <T>
+ *            the data type
+ */
 public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		BaseServiceConnectedFragment {
 
@@ -35,7 +41,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	private boolean mLoadingSpinnerVisible;
 
 	/**
-	 * Selects an event which shall be displayed in the view pager.
+	 * Selects an item which shall be displayed in the view pager.
 	 * 
 	 * @param position
 	 *            list position
@@ -228,6 +234,10 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 				});
 	}
 
+	/**
+	 * Redraws the page indicator. This might be necessary when the adapter data
+	 * is changed.
+	 */
 	public void redrawPageIndicator() {
 		if (mDetailsPageIndicator != null)
 			mDetailsPageIndicator.invalidate();
@@ -264,6 +274,9 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 	}
 
+	/**
+	 * Refreshes the data of the item currently displayed in the view pager.
+	 */
 	public abstract void refreshCurrentItem();
 
 }

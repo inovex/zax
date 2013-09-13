@@ -13,7 +13,7 @@ public class EventsListFragment extends BaseSeverityFilterListFragment<Event> {
 	public static final String TAG = EventsListFragment.class.getSimpleName();
 
 	@Override
-	protected BaseSeverityListPagerAdapter retrievePagerAdapter() {
+	protected BaseSeverityListPagerAdapter<Event> retrievePagerAdapter() {
 		return mZabbixDataService.getEventsListPagerAdapter();
 	}
 

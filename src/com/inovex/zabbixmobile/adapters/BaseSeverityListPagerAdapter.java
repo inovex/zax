@@ -11,7 +11,11 @@ import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragme
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListPage;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
-public abstract class BaseSeverityListPagerAdapter extends
+/**
+ * Base class for a pager adapter containing one list page for each severity.
+ * 
+ */
+public abstract class BaseSeverityListPagerAdapter<T> extends
 		BaseServicePagerAdapter<TriggerSeverity> {
 
 	protected Context mContext;
@@ -25,7 +29,7 @@ public abstract class BaseSeverityListPagerAdapter extends
 
 	@Override
 	public Fragment getItem(int i) {
-		BaseSeverityFilterListPage<TriggerSeverity> f = instantiatePage();
+		BaseSeverityFilterListPage<T> f = instantiatePage();
 		f.setSeverity(TriggerSeverity.getSeverityByPosition(i));
 		Log.d(BaseSeverityFilterListFragment.TAG, "getItem: " + f.toString());
 		return f;
@@ -42,9 +46,10 @@ public abstract class BaseSeverityListPagerAdapter extends
 				.getResources()
 				.getString(
 						TriggerSeverity.getSeverityByPosition(position)
-								.getNameResourceId()).toUpperCase(Locale.getDefault());
+								.getNameResourceId())
+				.toUpperCase(Locale.getDefault());
 	}
 
-	protected abstract BaseSeverityFilterListPage<TriggerSeverity> instantiatePage();
+	protected abstract BaseSeverityFilterListPage<T> instantiatePage();
 
 }

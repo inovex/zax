@@ -13,6 +13,10 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.ScreensListAdapter;
 import com.inovex.zabbixmobile.listeners.OnScreensItemSelectedListener;
 
+/**
+ * Fragment showing a list of all screens specified in Zabbix.
+ *
+ */
 public class ScreensListFragment extends BaseServiceConnectedListFragment {
 
 	public static String TAG = ScreensListFragment.class.getSimpleName();
@@ -56,22 +60,6 @@ public class ScreensListFragment extends BaseServiceConnectedListFragment {
 		setCurrentPosition(position);
 		setCurrentItemId(id);
 		mCallbackMain.onScreenSelected(mListAdapter.getItem(position));
-	}
-
-	public long selectItem(int position) {
-		if (mListAdapter == null || mListAdapter.getCount() == 0)
-			return -1;
-		if (position > mListAdapter.getCount() - 1)
-			position = 0;
-		mCurrentPosition = position;
-		// check if the view has already been created -> if not, calls will be
-		// made in onViewCreated().
-		if (getView() != null) {
-			getListView().setItemChecked(position, true);
-			getListView().setSelection(position);
-		}
-		setCurrentItemId(getListAdapter().getItemId(position));
-		return mCurrentItemId;
 	}
 
 	@Override

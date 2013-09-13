@@ -120,6 +120,9 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 		showGraph(mTrigger.getItem());
 	}
 
+	/**
+	 * Refreshes this page's view by reloading the trigger from the database.
+	 */
 	public void refresh() {
 		this.mTrigger = mZabbixDataService.getTriggerById(mTriggerId);
 		fillDetailsText();

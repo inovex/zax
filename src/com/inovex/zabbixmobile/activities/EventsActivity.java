@@ -11,6 +11,10 @@ import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
+/**
+ * Activity to visualize events.
+ *
+ */
 public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		OnAcknowledgeEventListener {
 

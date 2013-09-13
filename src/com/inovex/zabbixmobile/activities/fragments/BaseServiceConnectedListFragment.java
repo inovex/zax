@@ -11,6 +11,11 @@ import com.actionbarsherlock.app.SherlockListFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 
+/**
+ * Same as {@link BaseServiceConnectedFragment}, just based on a list fragment
+ * instead of a regular one.
+ * 
+ */
 public abstract class BaseServiceConnectedListFragment extends
 		SherlockListFragment implements ServiceConnection {
 
@@ -49,6 +54,9 @@ public abstract class BaseServiceConnectedListFragment extends
 		mZabbixDataService = null;
 	}
 
+	/**
+	 * Retrieves the list adapter from the data service.
+	 */
 	protected abstract void setupListAdapter();
 
 }

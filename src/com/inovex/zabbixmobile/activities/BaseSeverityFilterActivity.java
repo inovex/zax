@@ -16,6 +16,16 @@ import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
+/**
+ * Base class for all activities contining data which can be filtered by its
+ * severity.
+ * 
+ * This type of activity follows the master-detail flow with a list fragment on
+ * the left, and details on the right.
+ * 
+ * @param <T>
+ *            The type of data to be visualized
+ */
 public abstract class BaseSeverityFilterActivity<T> extends
 		BaseHostGroupSpinnerActivity implements OnListItemSelectedListener,
 		OnSeveritySelectedListener, OnSeverityListAdapterLoadedListener {

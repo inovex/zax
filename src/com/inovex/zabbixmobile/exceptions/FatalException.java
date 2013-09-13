@@ -2,6 +2,11 @@ package com.inovex.zabbixmobile.exceptions;
 
 import com.inovex.zabbixmobile.R;
 
+/**
+ * An exception which cannot be handled by the program. Instead, it triggers a
+ * broadcast which is currently used to show a toast.
+ * 
+ */
 public class FatalException extends Exception {
 
 	private static final long serialVersionUID = 80056965825197156L;
@@ -15,7 +20,8 @@ public class FatalException extends Exception {
 				R.string.exc_connection_timeout), SERVER_NOT_FOUND(
 				R.string.exc_not_found), INTERNAL_ERROR(
 				R.string.exc_internal_error), ACCOUNT_BLOCKED(
-				R.string.exc_account_blocked), NO_HTTP_RESPONSE(R.string.exc_no_response);
+				R.string.exc_account_blocked), NO_HTTP_RESPONSE(
+				R.string.exc_no_response);
 
 		private int messageResourceId;
 

@@ -25,6 +25,11 @@ import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProvider;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
+/**
+ * Started service providing the homescreen widget with functionality to
+ * retrieve data from Zabbix (at the moment the active triggers).
+ * 
+ */
 public class HomescreenWidgetService extends Service {
 	private enum DisplayStatus {
 		ZAX_ERROR(R.drawable.severity_average), OK(R.drawable.severity_average), AVG(
@@ -47,7 +52,6 @@ public class HomescreenWidgetService extends Service {
 			.getSimpleName();
 
 	private BroadcastReceiver contentProviderReceiver;
-	private boolean isError;
 
 	private ZabbixRemoteAPI mRemoteAPI;
 	private DatabaseHelper mDatabaseHelper;
@@ -126,7 +130,7 @@ public class HomescreenWidgetService extends Service {
 			RemoteViews remoteViews = new RemoteViews(getApplicationContext()
 					.getPackageName(), R.layout.homescreen_widget);
 
-			ZaxPreferences preferences = new ZaxPreferences(this);
+			ZaxPreferences preferences = ZaxPreferences.getInstance(this);
 			remoteViews.setTextViewText(R.id.widget_headline,
 					preferences.getZabbixUrl());
 

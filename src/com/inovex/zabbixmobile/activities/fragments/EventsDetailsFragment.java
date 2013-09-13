@@ -86,6 +86,10 @@ public class EventsDetailsFragment extends
 		updateMenu();
 	}
 
+	/**
+	 * Updates the app's menu. If necessary (event is not acknowledged yet), the
+	 * acknowledge button is displayed in the action bar.
+	 */
 	protected void updateMenu() {
 		if (mDetailsPagerAdapter == null
 				|| mDetailsPagerAdapter.getCount() == 0) {
@@ -110,7 +114,7 @@ public class EventsDetailsFragment extends
 		EventsDetailsPage currentPage = (EventsDetailsPage) mDetailsPagerAdapter
 				.instantiateItem(mDetailsPager,
 						mDetailsPagerAdapter.getCurrentPosition());
-		if(currentPage != null)
+		if (currentPage != null)
 			currentPage.refresh();
 	}
 

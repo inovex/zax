@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
@@ -158,6 +157,9 @@ public class EventsDetailsPage extends BaseDetailsPage {
 		showGraph(mEvent.getTrigger().getItem());
 	}
 
+	/**
+	 * Refreshes the current view by loading the event from the database.
+	 */
 	public void refresh() {
 		this.mEvent = mZabbixDataService.getEventById(mEventId);
 		fillDetailsText();

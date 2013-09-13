@@ -20,6 +20,11 @@ import com.inovex.zabbixmobile.listeners.OnHostsLoadedListener;
 import com.inovex.zabbixmobile.model.Host;
 import com.inovex.zabbixmobile.model.Item;
 
+/**
+ * Activity showing hosts, applications corresponding to the hosts and,
+ * ultimately, the items within the applications.
+ * 
+ */
 public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		OnChecksItemSelectedListener, OnHostsLoadedListener,
 		OnApplicationsLoadedListener {

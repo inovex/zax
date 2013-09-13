@@ -20,6 +20,13 @@ import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.model.Host;
 import com.viewpagerindicator.TitlePageIndicator;
 
+/**
+ * Fragment showing the applications of a particular host.
+ * 
+ * In particular, this includes a view pager with one page for each application.
+ * Each page contains a list of items.
+ * 
+ */
 public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		implements OnItemsLoadedListener {
 
@@ -118,6 +125,12 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 
 	}
 
+	/**
+	 * Sets the host whose applications shall be shown.
+	 * 
+	 * @param h
+	 *            the host
+	 */
 	public void setHost(Host h) {
 		this.mHost = h;
 		if (mHost != null && getView() != null)
@@ -291,6 +304,11 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		Log.d(TAG, "onResume");
 	}
 
+	/**
+	 * Selects an application in the view pager.
+	 * 
+	 * @param position
+	 */
 	protected void selectApplication(int position) {
 		this.mApplicationPosition = position;
 		if (mDetailsPagerAdapter != null) {
@@ -300,6 +318,12 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		}
 	}
 
+	/**
+	 * Selects an item in the currently displayed list.
+	 * 
+	 * @param position
+	 *            item position
+	 */
 	public void selectItem(int position) {
 		if (mDetailsPagerAdapter == null
 				|| mDetailsPagerAdapter.getCount() == 0)
@@ -312,12 +336,19 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 			currentPage.selectItem(position);
 	}
 
+	/**
+	 * Restores the application selection using the position saved in the
+	 * adapter.
+	 */
 	public void restoreApplicationSelection() {
 		if (mDetailsPageIndicator != null
 				&& mDetailsPagerAdapter.getCount() > mApplicationPosition)
 			mDetailsPageIndicator.onPageSelected(mApplicationPosition);
 	}
 
+	/**
+	 * Restores the item selection on the current page.
+	 */
 	public void restoreItemSelection() {
 		selectApplication(mApplicationPosition);
 		if (mDetailsPagerAdapter != null) {
@@ -331,6 +362,12 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		}
 	}
 
+	/**
+	 * Updates the progress bar.
+	 * 
+	 * @param progress
+	 *            current progress
+	 */
 	public void updateProgress(int progress) {
 		if (getView() != null) {
 			ProgressBar listProgress = (ProgressBar) getView().findViewById(

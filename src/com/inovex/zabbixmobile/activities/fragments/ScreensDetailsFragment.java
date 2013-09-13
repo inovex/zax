@@ -16,6 +16,10 @@ import com.inovex.zabbixmobile.model.Screen;
 import com.inovex.zabbixmobile.util.GraphUtil;
 import com.jjoe64.graphview.LineGraphView;
 
+/**
+ * Fragment showing one particular screen.
+ *
+ */
 public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 		implements OnGraphsLoadedListener {
 
@@ -152,6 +156,9 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 
 	}
 
+	/**
+	 * Loads all graphs for this fragment's screen.
+	 */
 	public void loadGraphs() {
 		if (mZabbixDataService != null && mScreen != null) {
 			mZabbixDataService.loadGraphsByScreen(mScreen, this);

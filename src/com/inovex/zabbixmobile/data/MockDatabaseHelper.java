@@ -23,6 +23,10 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 
+/**
+ * Mock database helper which creates a database containing static data.
+ *
+ */
 public class MockDatabaseHelper extends DatabaseHelper {
 
 	// name of the database file for your application -- change to something

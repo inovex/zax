@@ -10,12 +10,16 @@ import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ScreensDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ScreensListFragment;
-import com.inovex.zabbixmobile.listeners.OnListItemsLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnScreensLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnScreensItemSelectedListener;
 import com.inovex.zabbixmobile.model.Screen;
 
+/**
+ * Activity to visualize screens.
+ *
+ */
 public class ScreensActivity extends BaseActivity implements
-		OnListItemsLoadedListener, OnScreensItemSelectedListener {
+		OnScreensLoadedListener, OnScreensItemSelectedListener {
 
 	private static final String TAG = ScreensActivity.class.getSimpleName();
 
@@ -112,7 +116,7 @@ public class ScreensActivity extends BaseActivity implements
 	}
 
 	@Override
-	public void onListItemsLoaded() {
+	public void onScreensLoaded() {
 		mListFragment.dismissLoadingSpinner();
 	}
 

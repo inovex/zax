@@ -6,6 +6,10 @@ import android.view.View;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.Event;
 
+/**
+ * Fragment displaying a list of events for a particular severity.
+ *
+ */
 public class EventsListPage extends BaseSeverityFilterListPage<Event> {
 
 	@Override

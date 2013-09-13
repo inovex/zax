@@ -4,11 +4,23 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+/**
+ * Singleton providing an interface to the application's shared preferences.
+ * 
+ */
 public class ZaxPreferences {
 
 	private final SharedPreferences mPref;
 
-	public ZaxPreferences(Context context) {
+	private static ZaxPreferences instance;
+
+	public static ZaxPreferences getInstance(Context context) {
+		if (instance != null)
+			return instance;
+		return (new ZaxPreferences(context));
+	}
+
+	private ZaxPreferences(Context context) {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		mPref = pref;
@@ -60,11 +72,18 @@ public class ZaxPreferences {
 	}
 
 	public int getWidgetRefreshInterval() {
-		return Integer.parseInt(mPref.getString("widget_refresh_interval_mins", "15"));
+		return Integer.parseInt(mPref.getString("widget_refresh_interval_mins",
+				"15"));
 	}
-	
+
+	/**
+	 * Checks whether the server settings have been altered by the user
+	 * 
+	 * @return true: the server settings are still default
+	 */
 	public boolean isDefault() {
 		String url = mPref.getString("zabbix_url", "");
-		return (url.equals("http://zabbix.company.net/zabbix")) || (url == null) || url.equals("");
+		return (url.equals("http://zabbix.company.net/zabbix"))
+				|| (url == null) || url.equals("");
 	}
 }

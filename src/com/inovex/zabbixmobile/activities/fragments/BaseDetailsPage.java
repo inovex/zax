@@ -1,7 +1,5 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
-import java.util.Collection;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,11 +11,17 @@ import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.listeners.OnGraphDataLoadedListener;
-import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.util.GraphUtil;
 import com.jjoe64.graphview.LineGraphView;
 
+/**
+ * Base page for details of an item, an event or a trigger.
+ * 
+ * This class provides functionality to show a graph corresponding to the data
+ * object.
+ * 
+ */
 public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 		implements OnGraphDataLoadedListener {
 
@@ -71,10 +75,9 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
 		dismissGraphProgressBar();
 		if (item != null) {
-			Collection<HistoryDetail> historyDetails = item.getHistoryDetails();
 			// create graph and add it to the layout
 			final LineGraphView graph = GraphUtil.createItemGraphPreview(
-					getSherlockActivity(), historyDetails, item);
+					getSherlockActivity(), item);
 			if (graph != null) {
 				layout.removeAllViews();
 				layout.addView(graph);
@@ -104,7 +107,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 	}
 
 	/**
-	 * Shows a loading spinner instead of the graph view.
+	 * Shows a progress bar instead of the graph view.
 	 */
 	public void showGraphProgressBar() {
 		mGraphProgressBarVisible = true;
@@ -117,7 +120,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 	}
 
 	/**
-	 * Dismisses the graph loading spinner view.
+	 * Dismisses the graph progress bar view.
 	 * 
 	 * If the view has not yet been created, the status is saved and when the
 	 * view is created, the spinner will not be shown at all.

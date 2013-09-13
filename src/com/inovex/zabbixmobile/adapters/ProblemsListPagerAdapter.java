@@ -4,15 +4,20 @@ import android.content.Context;
 
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListPage;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsListPage;
+import com.inovex.zabbixmobile.model.Trigger;
 
-public class ProblemsListPagerAdapter extends BaseSeverityListPagerAdapter {
+/**
+ * Adapter for pages containing lists of problems.
+ *
+ */
+public class ProblemsListPagerAdapter extends BaseSeverityListPagerAdapter<Trigger> {
 
 	public ProblemsListPagerAdapter(Context context) {
 		super(context);
 	}
 
 	@Override
-	protected BaseSeverityFilterListPage instantiatePage() {
+	protected BaseSeverityFilterListPage<Trigger> instantiatePage() {
 		return new ProblemsListPage();
 	}
 

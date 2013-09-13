@@ -5,6 +5,10 @@ import android.support.v4.app.Fragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksApplicationsPage;
 import com.inovex.zabbixmobile.model.Application;
 
+/**
+ * Pager adapter containing application pages.
+ *
+ */
 public class ChecksApplicationsPagerAdapter extends
 		BaseServicePagerAdapter<Application> {
 

@@ -21,6 +21,7 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
  * (events/problems) for a specific severity.
  * 
  * @param <T>
+ *            the data type
  */
 public abstract class BaseSeverityFilterListPage<T> extends
 		BaseServiceConnectedListFragment {
@@ -127,17 +128,25 @@ public abstract class BaseSeverityFilterListPage<T> extends
 
 	}
 
+	/**
+	 * Sets the severity of this page.
+	 * @param severity
+	 */
 	public void setSeverity(TriggerSeverity severity) {
 		this.mSeverity = severity;
-		Log.d(TAG,
-				"setSeverity: " + severity.getNameResourceId() + " - " + this.toString());
+		Log.d(TAG, "setSeverity: " + severity.getNameResourceId() + " - "
+				+ this.toString());
 	}
 
+	/**
+	 * Retrieves this page's severity.
+	 * @return 
+	 */
 	public TriggerSeverity getSeverity() {
 		return mSeverity;
 	}
 
-	public void setCustomEmptyText(CharSequence text) {
+	protected void setCustomEmptyText(CharSequence text) {
 		TextView emptyView = (TextView) getView().findViewById(
 				android.R.id.empty);
 		if (emptyView != null)

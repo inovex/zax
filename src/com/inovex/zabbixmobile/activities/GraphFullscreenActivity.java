@@ -1,7 +1,5 @@
 package com.inovex.zabbixmobile.activities;
 
-import java.util.Collection;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -26,11 +24,13 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.listeners.OnGraphDataLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
 import com.inovex.zabbixmobile.model.Graph;
-import com.inovex.zabbixmobile.model.HistoryDetail;
 import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.util.GraphUtil;
 import com.jjoe64.graphview.LineGraphView;
 
+/**
+ * Activity showing a graph in fullscreen landscape mode.
+ */
 public class GraphFullscreenActivity extends SherlockFragmentActivity implements
 		ServiceConnection {
 	private LinearLayout mLayout;
@@ -105,13 +105,10 @@ public class GraphFullscreenActivity extends SherlockFragmentActivity implements
 					new OnGraphDataLoadedListener() {
 						@Override
 						public void onGraphDataLoaded() {
-							Collection<HistoryDetail> historyDetails = item
-									.getHistoryDetails();
 							LineGraphView graph = GraphUtil
 									.createItemGraphFullscreen(
 											GraphFullscreenActivity.this,
-											historyDetails,
-											item.getDescription());
+											item);
 							if (mLayout != null) {
 								mLayout.addView(graph);
 							}

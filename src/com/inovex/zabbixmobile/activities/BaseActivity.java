@@ -11,6 +11,7 @@ import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceActivity;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
@@ -21,9 +22,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -37,6 +36,17 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.PushService;
 
+/**
+ * Base class for all activities. Tasks performed in this class:
+ * 
+ * * Show the navigation drawer
+ * 
+ * * initiate the connection to the data service and perform the Zabbix login
+ * 
+ * * open the settings dialog
+ * 
+ * 
+ */
 public abstract class BaseActivity extends SherlockFragmentActivity implements
 		ServiceConnection, OnLoginProgressListener {
 
@@ -63,6 +73,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	protected static final int ACTIVITY_CHECKS = 2;
 	protected static final int ACTIVITY_SCREENS = 3;
 
+	/**
+	 * If the server settings have not been set yet by the user, a dialog is
+	 * displayed. Otherwise, the Zabbix login is performed.
+	 */
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder binder) {
 		Log.d(TAG, "onServiceConnected: " + this.getLocalClassName() + " "
@@ -70,8 +84,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		ZabbixDataBinder zabbixBinder = (ZabbixDataBinder) binder;
 		mZabbixDataService = zabbixBinder.getService();
 		mZabbixDataService.setActivityContext(BaseActivity.this);
-		
-		ZaxPreferences preferences = new ZaxPreferences(this);
+
+		ZaxPreferences preferences = ZaxPreferences.getInstance(this);
 		if (preferences.isDefault()) {
 			new DialogFragment() {
 
@@ -81,7 +95,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 							getActivity());
 					LayoutInflater inflater = getActivity().getLayoutInflater();
 
-					View view = inflater.inflate(R.layout.dialog_default_settings, null);
+					View view = inflater.inflate(
+							R.layout.dialog_default_settings, null);
 					builder.setView(view);
 
 					builder.setTitle(R.string.server_data_not_set);
@@ -95,8 +110,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 									Intent intent = new Intent(
 											getApplicationContext(),
 											ZaxPreferenceActivity.class);
-									startActivityForResult(intent,
-											REQUEST_CODE_PREFERENCES);
+									getActivity().startActivityForResult(
+											intent, REQUEST_CODE_PREFERENCES);
 								}
 							});
 					return builder.create();
@@ -123,6 +138,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		Log.d(TAG, "onPause");
 	}
 
+	/**
+	 * If settings have been changed, this method clears all cached data and
+	 * initiates a fresh login.
+	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -154,6 +173,9 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 				Context.BIND_AUTO_CREATE);
 	}
 
+	/**
+	 * Binds the data service and sets up the action bar.
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -175,6 +197,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			mLoginProgress = LoginProgressDialogFragment.getInstance();
 	}
 
+	/**
+	 * Inflates a base layout containing the navigation drawer and incorporates
+	 * the given layout resource into this base layout.
+	 */
 	@Override
 	public void setContentView(final int layoutResID) {
 		mDrawerLayout = (DrawerLayout) getLayoutInflater().inflate(
@@ -221,7 +247,9 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		setContentView(mDrawerLayout);
 	}
 
-	/* The click listener for ListView in the navigation drawer */
+	/**
+	 * The click listener for ListView in the navigation drawer
+	 */
 	private class DrawerItemClickListener implements
 			ListView.OnItemClickListener {
 		@Override
@@ -264,7 +292,6 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	 * When using the ActionBarDrawerToggle, you must call it during
 	 * onPostCreate() and onConfigurationChanged()...
 	 */
-
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -284,6 +311,9 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		super.onStop();
 	}
 
+	/**
+	 * This unbinds the service if the application is exiting.
+	 */
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -332,12 +362,18 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		return super.onOptionsItemSelected(item);
 	}
 
+	/**
+	 * Clears all cached data and performs a fresh login.
+	 */
 	protected void refreshData() {
 		mZabbixDataService.clearAllData();
 		// re-login and load host groups
 		mZabbixDataService.performZabbixLogin(this);
 	}
 
+	/**
+	 * Loads all data necessary for a view from Zabbix.
+	 */
 	protected abstract void loadData();
 
 	@Override
@@ -371,6 +407,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		}
 	}
 
+	/**
+	 * If the finished activity is the {@link PreferenceActivity}, save the
+	 * status (preferences changed or not) to be used in onResume().
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "onActivityResult");

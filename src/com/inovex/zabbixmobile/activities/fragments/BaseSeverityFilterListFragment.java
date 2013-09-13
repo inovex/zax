@@ -18,6 +18,12 @@ import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TabPageIndicator;
 
+/**
+ * Base class for a list fragment of a data type to be filtered by severity.
+ * 
+ * @param <T>
+ *            the data type
+ */
 public abstract class BaseSeverityFilterListFragment<T> extends
 		BaseServiceConnectedFragment {
 
@@ -27,7 +33,7 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 	private static final String ARG_SPINNER_VISIBLE = "arg_spinner_visible";
 
 	ViewPager mSeverityListPager;
-	BaseSeverityListPagerAdapter mSeverityListPagerAdapter;
+	BaseSeverityListPagerAdapter<T> mSeverityListPagerAdapter;
 	TabPageIndicator mSeverityListTabIndicator;
 
 	private OnSeveritySelectedListener mCallbackMain;
@@ -129,12 +135,24 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 
 	}
 
-	protected abstract BaseSeverityListPagerAdapter retrievePagerAdapter();
+	protected abstract BaseSeverityListPagerAdapter<T> retrievePagerAdapter();
 
+	/**
+	 * Updates the severity currently selected in the view pager.
+	 * 
+	 * @param severity
+	 *            the current severity
+	 */
 	public void setSeverity(TriggerSeverity severity) {
 		mSeverityListPagerAdapter.setCurrentPosition(severity.getPosition());
 	}
 
+	/**
+	 * Selects an item in the currently displayed list.
+	 * 
+	 * @param position
+	 *            position of the item
+	 */
 	@SuppressWarnings("unchecked")
 	public void selectItem(int position) {
 		if (mSeverityListPagerAdapter == null
@@ -148,6 +166,9 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 			currentPage.selectItem(position);
 	}
 
+	/**
+	 * Refreshes the item selection in the currently displayed list.
+	 */
 	@SuppressWarnings("unchecked")
 	public void refreshItemSelection() {
 		BaseSeverityFilterListPage<T> currentPage = (BaseSeverityFilterListPage<T>) mSeverityListPagerAdapter
@@ -157,6 +178,10 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 			currentPage.refreshItemSelection();
 	}
 
+	/**
+	 * Shows the progress bar indicating that the content is currently being
+	 * loaded.
+	 */
 	public void showProgressBar() {
 		mProgressBarVisible = true;
 		if (getView() != null) {
@@ -167,6 +192,9 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 		}
 	}
 
+	/**
+	 * Dismisses the progress bar.
+	 */
 	public void dismissProgressBar() {
 		mProgressBarVisible = false;
 		if (getView() != null) {
@@ -181,6 +209,12 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 		}
 	}
 
+	/**
+	 * Updates the progress of the progress bar.
+	 * 
+	 * @param progress
+	 *            current progress
+	 */
 	public void updateProgress(int progress) {
 		if (getView() != null) {
 			ProgressBar listProgress = (ProgressBar) getView().findViewById(

@@ -9,6 +9,10 @@ import com.actionbarsherlock.app.ActionBar;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter.OnHostGroupSelectedListener;
 
+/**
+ * Base class for all activities having a host group spinner in the action bar.
+ * 
+ */
 public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		implements OnHostGroupSelectedListener {
 
@@ -69,6 +73,9 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		super.onSaveInstanceState(outState);
 	}
 
+	/**
+	 * Sets up the host group spinner and loads required data from Zabbix.
+	 */
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder binder) {
 		super.onServiceConnected(className, binder);

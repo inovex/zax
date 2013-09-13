@@ -27,6 +27,11 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.ProblemsActivity;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 
+/**
+ * Push service maintaining the connection to Pubnub and showing notifications
+ * when Pubnub sends data.
+ * 
+ */
 public class PushService extends Service {
 	// Callback Interface when a channel is connected
 	class ConnectCallback implements Callback {
@@ -184,8 +189,8 @@ public class PushService extends Service {
 						notificationBuilder.setStyle(inboxStyle);
 					}
 
-					ZaxPreferences preferences = new ZaxPreferences(
-							PushService.this);
+					ZaxPreferences preferences = ZaxPreferences
+							.getInstance(PushService.this);
 					String strRingtonePreference = preferences
 							.getPushRingtone();
 					if (strRingtonePreference != null) {
@@ -267,7 +272,7 @@ public class PushService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
-		ZaxPreferences preferences = new ZaxPreferences(this);
+		ZaxPreferences preferences = ZaxPreferences.getInstance(this);
 		String subscribe_key = preferences.getPushSubscribeKey();
 
 		pubnub = new Pubnub("", // PUBLISH_KEY
@@ -318,7 +323,7 @@ public class PushService extends Service {
 	 */
 	public static void startOrStopPushService(Context context) {
 		// start the push receiver, if it is enabled
-		ZaxPreferences preferences = new ZaxPreferences(context);
+		ZaxPreferences preferences = ZaxPreferences.getInstance(context);
 		boolean push = preferences.isPushEnabled();
 		if (am == null)
 			am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

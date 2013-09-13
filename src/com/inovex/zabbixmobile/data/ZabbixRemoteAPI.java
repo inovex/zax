@@ -87,6 +87,10 @@ import com.inovex.zabbixmobile.util.HttpClientWrapper;
 import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
 
+/**
+ * This class encapsulates all calls to the Zabbix API.
+ *
+ */
 public class ZabbixRemoteAPI {
 	private static final String ZABBIX_ERROR_NO_API_ACCESS = "No API access";
 	private static final String ZABBIX_ERROR_NOT_AUTHORIZED = "Not authorized";
@@ -169,11 +173,7 @@ public class ZabbixRemoteAPI {
 	private String url;
 	private String token;
 	private final Context mContext;
-	private int _transactionStack;
 	private JsonParser lastStream;
-	private int transformProgressStart;
-	private int transformProgressEnd;
-	private boolean _notAuthorizedRetry;
 	private boolean isVersion2 = true;
 	/**
 	 * The API version. From 1.8.3 (maybe earlier) to 2.0 (excluded), this was
@@ -197,7 +197,7 @@ public class ZabbixRemoteAPI {
 		if (prefsMock != null) {
 			mPreferences = prefsMock;
 		} else {
-			mPreferences = new ZaxPreferences(context);
+			mPreferences = ZaxPreferences.getInstance(context);
 		}
 
 		try {
@@ -553,9 +553,13 @@ public class ZabbixRemoteAPI {
 			JSONObject result;
 			try {
 				result = _queryBuffer("apiinfo.version", new JSONObject());
-				apiVersion = result.getString("result");
-				isVersion2 = (apiVersion.equals("1.4") || apiVersion
-						.startsWith("2"));
+				if(result == null)
+					isVersion2 = false;
+				else {
+					apiVersion = result.getString("result");
+					isVersion2 = (apiVersion.equals("1.4") || apiVersion
+							.startsWith("2"));
+				}
 				Log.i(TAG, "Zabbix API Version: " + apiVersion);
 			} catch (ClientProtocolException e) {
 				throw new FatalException(Type.INTERNAL_ERROR, e);
@@ -568,19 +572,6 @@ public class ZabbixRemoteAPI {
 			throw new ZabbixLoginRequiredException();
 		}
 		return true;
-	}
-
-	/**
-	 * close the last http stream
-	 */
-	private void closeLastStream() {
-		if (lastStream != null && !lastStream.isClosed()) {
-			try {
-				lastStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	/**
@@ -768,47 +759,6 @@ public class ZabbixRemoteAPI {
 		}
 		return applications;
 	}
-
-	//
-	// /**
-	// * import the newest event of a trigger
-	// * @param triggerid
-	// * @throws JSONException
-	// * @throws IOException
-	// * @throws HttpAuthorizationRequiredException
-	// * @throws NoAPIAccessException
-	// */
-	// public void importEventByTriggerId(String triggerid) throws
-	// JSONException, IOException, HttpAuthorizationRequiredException,
-	// NoAPIAccessException, PreconditionFailedException {
-	// if (!isCached(EventData.TABLE_NAME, "triggerid="+triggerid)) {
-	// _startTransaction();
-	// zabbixLocalDB.delete(EventData.TABLE_NAME,
-	// EventData.COLUMN_OBJECTID+"="+triggerid, null);
-	//
-	// JSONObject params = new JSONObject()
-	// .put("output", "extend")
-	// .put(isVersion2?"selectHosts":"select_hosts", "extend")
-	// .put("triggerids", new JSONArray().put(triggerid))
-	// .put("limit", 1)
-	// .put("source", 0);
-	// if (!isVersion2) {
-	// params.put("sortfield", "clock")
-	// .put("sortorder", "DESC");
-	// }
-	//
-	// JsonArrayOrObjectReader events = _queryStream(
-	// "event.get"
-	// , params
-	// );
-	// importEvents(events, null);
-	// events.close();
-	//
-	// setCached(EventData.TABLE_NAME, "triggerid="+triggerid,
-	// ZabbixConfig.CACHE_LIFETIME_EVENTS);
-	// _endTransaction();
-	// }
-	// }
 
 	/**
 	 * Import the newest events if they are not cached in the local database
@@ -1065,7 +1015,6 @@ public class ZabbixRemoteAPI {
 				// count of the entries cannot be detected (zabbix bug),
 				// so we use a fiction
 				int numDetails = 400;
-				int curI = 0;
 				JsonArrayOrObjectReader historydetails = _queryStream(
 						"history.get",
 						new JSONObject().put("output", "extend")
@@ -1207,7 +1156,6 @@ public class ZabbixRemoteAPI {
 
 		List<Host> hostCollection = new ArrayList<Host>();
 		List<HostHostGroupRelation> hostHostGroupCollection = new ArrayList<HostHostGroupRelation>();
-		long firstHostId = -1;
 		JsonObjectReader hostReader;
 		while ((hostReader = jsonReader.next()) != null) {
 			Host h = new Host();
@@ -1316,7 +1264,6 @@ public class ZabbixRemoteAPI {
 			JsonArrayOrObjectReader jsonReader, RemoteAPITask task,
 			int numItems, boolean checkBeforeInsert) throws JsonParseException,
 			IOException, SQLException {
-		long firstItemId = -1;
 		JsonObjectReader itemReader;
 		List<Item> itemsComplete = new ArrayList<Item>();
 		List<Item> itemsPerBatch = new ArrayList<Item>(RECORDS_PER_INSERT_BATCH);
@@ -1378,17 +1325,6 @@ public class ZabbixRemoteAPI {
 			}
 			item.setDescription(description);
 
-			// now the "-1" IDs of applicationsrelation will be replaced with
-			// the
-			// correct itemID
-			// ContentValues values = new ContentValues(2);
-			// values.put(ApplicationItemRelationData.COLUMN_ITEMID,
-			// (Long) i.get(ItemData.COLUMN_ITEMID));
-			// values.put(ApplicationItemRelationData.COLUMN_HOSTID,
-			// (Long) i.get(ItemData.COLUMN_HOSTID));
-			// zabbixLocalDB.update(ApplicationItemRelationData.TABLE_NAME,
-			// values, ApplicationItemRelationData.COLUMN_ITEMID + "=-1",
-			// null);
 			itemsPerBatch.add(item);
 			itemsComplete.add(item);
 			if (itemsPerBatch.size() >= RECORDS_PER_INSERT_BATCH) {
@@ -1730,76 +1666,6 @@ public class ZabbixRemoteAPI {
 
 	}
 
-	// public void importTrigger(String triggerid) throws JSONException,
-	// IOException, HttpAuthorizationRequiredException, NoAPIAccessException,
-	// PreconditionFailedException {
-	// if (!isCached(TriggerData.TABLE_NAME, "triggerid="+triggerid)) {
-	// _startTransaction();
-	//
-	// JsonArrayOrObjectReader trigger = _queryStream(
-	// "trigger.get"
-	// , new JSONObject()
-	// .put("output", "extend")
-	// .put(isVersion2?"selectHosts":"select_hosts", "extend")
-	// .put("triggerids", new JSONArray().put(triggerid))
-	// );
-	// importTriggers(trigger);
-	// trigger.close();
-	//
-	// setCached(TriggerData.TABLE_NAME, "triggerid="+triggerid,
-	// ZabbixConfig.CACHE_LIFETIME_TRIGGERS);
-	// _endTransaction();
-	// }
-	// }
-	//
-	// /**
-	// * importiert ein trigger mit dem attribute itemid. ggf. wird der trigger
-	// zuerst gelöscht und neu angelegt.
-	// * imports a trigger with the attribute itemid. if trigger already exists,
-	// it will be removed first.
-	// * @param triggerid
-	// * @throws JSONException
-	// * @throws IOException
-	// * @throws HttpAuthorizationRequiredException
-	// * @throws NoAPIAccessException
-	// */
-	// public void importTriggerColumnItemId(String triggerid) throws
-	// JSONException, IOException, HttpAuthorizationRequiredException,
-	// NoAPIAccessException, PreconditionFailedException {
-	// // check if the trigger exists and if the itemid was set
-	// boolean mustImport = true;
-	// Cursor cur = zabbixLocalDB.query(TriggerData.TABLE_NAME, null,
-	// TriggerData.COLUMN_TRIGGERID+"="+triggerid, null, null, null, null);
-	// if (cur.moveToFirst()) {
-	// long itemid = 0;
-	// try {
-	// itemid = cur.getLong(cur.getColumnIndex(TriggerData.COLUMN_ITEMID));
-	// } catch (Exception e) {
-	// // no itemid
-	// }
-	// if (itemid > 0) {
-	// mustImport = false;
-	// }
-	// }
-	// if (mustImport) {
-	// _startTransaction();
-	// zabbixLocalDB.delete(TriggerData.TABLE_NAME,
-	// TriggerData.COLUMN_TRIGGERID+"="+triggerid, null);
-	// JsonArrayOrObjectReader triggers = _queryStream(
-	// "trigger.get"
-	// , new JSONObject()
-	// .put("output", "extend")
-	// .put(isVersion2?"selectHosts":"select_hosts", "extend")
-	// .put(isVersion2?"selectGroups":"select_groups", "extend")
-	// .put(isVersion2?"selectItems":"select_items", "extend")
-	// .put("triggerids", new JSONArray().put(triggerid))
-	// .put("limit", 1)
-	// );
-	// importTriggers(triggers);
-	// _endTransaction();
-	// }
-	// }
-
 	/**
 	 * Imports active triggers.
 	 * 
@@ -2006,98 +1872,6 @@ public class ZabbixRemoteAPI {
 		return triggerCollection;
 
 	}
-
-	//
-	// public void importTriggersByItemId(String itemid) throws JSONException,
-	// IOException, HttpAuthorizationRequiredException, NoAPIAccessException,
-	// PreconditionFailedException {
-	// if (!isCached(TriggerData.TABLE_NAME, "itemid="+itemid)) {
-	// _startTransaction();
-	// zabbixLocalDB.delete(TriggerData.TABLE_NAME,
-	// TriggerData.COLUMN_ITEMID+"="+itemid, null);
-	// JsonArrayOrObjectReader triggers = _queryStream(
-	// "trigger.get"
-	// , new JSONObject()
-	// .put("output", "extend")
-	// .put(isVersion2?"selectHosts":"select_hosts", "extend")
-	// .put(isVersion2?"selectGroups":"select_groups", "extend")
-	// .put(isVersion2?"selectItems":"select_items", "extend")
-	// .put("itemids", new JSONArray().put(itemid))
-	// .put("limit", 1)
-	// .put("sortfield", "lastchange")
-	// .put("sortorder", "DESC")
-	// );
-	// importTriggers(triggers);
-	// setCached(TriggerData.TABLE_NAME, "itemid="+itemid,
-	// ZabbixConfig.CACHE_LIFETIME_TRIGGERS);
-	// _endTransaction();
-	// }
-	// }
-
-	// public boolean isCached(String kind, String filter) {
-	// SQLiteQueryBuilder sqlBuilder = new SQLiteQueryBuilder();
-	// sqlBuilder.setTables(CacheData.TABLE_NAME);
-	// sqlBuilder.appendWhere(CacheData.COLUMN_KIND+"='"+kind+"' AND ");
-	// sqlBuilder.appendWhere(CacheData.COLUMN_FILTER+
-	// (filter==null?" IS NULL":"='"+filter+"'")
-	// );
-	// sqlBuilder.appendWhere(" AND "+CacheData.COLUMN_EXPIRE_DATE+">"+new
-	// Date().getTime()/1000);
-	// Cursor cur = sqlBuilder.query(
-	// zabbixLocalDB,
-	// null,
-	// null,
-	// null,
-	// null,
-	// null,
-	// null
-	// );
-	// Log.i("ZabbixContentProvider",
-	// "isCached "+kind+"//"+filter+"//"+cur.moveToFirst());
-	// return cur.moveToFirst();
-	// }
-	//
-	// /**
-	// * public, for the unit test
-	// */
-	// public void setCached(String kind, String filter, int lifetime) {
-	// CacheData cache = new CacheData();
-	// cache.set(CacheData.COLUMN_EXPIRE_DATE, new Date().getTime()/1000 +
-	// lifetime);
-	// cache.set(CacheData.COLUMN_KIND, kind);
-	// if (filter != null) {
-	// cache.set(CacheData.COLUMN_FILTER, filter);
-	// }
-	// cache.insert(zabbixLocalDB);
-	// }
-
-	// /**
-	// * updates the progressbar in the gui
-	// * @param i 0..100
-	// */
-	// public void showProgress(int i) {
-	// // if applicable, transform the progress
-	// if (transformProgressStart != 0 && transformProgressEnd != 0) {
-	// i = (int) (transformProgressStart +
-	// (transformProgressEnd-transformProgressStart)*(double)i/100);
-	// }
-	//
-	// Intent intent = new
-	// Intent(ZabbixContentProvider.CONTENT_PROVIDER_INTENT_ACTION);
-	// intent.putExtra("flag", ZabbixContentProvider.INTENT_FLAG_SHOW_PROGRESS);
-	// intent.putExtra("value", i);
-	// context.sendBroadcast(intent);
-	// }
-	//
-	// /**
-	// * transforms the progress
-	// * @param start 0% => start%
-	// * @param end 100% => end%
-	// */
-	// public void transformProgress(int start, int end) {
-	// transformProgressStart = start;
-	// transformProgressEnd = end;
-	// }
 
 	/**
 	 * Creates a comma-separated string containing the names of all hosts in the

@@ -13,9 +13,13 @@ import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
+/**
+ * Activity to visualize problems (triggers).
+ *
+ */
 public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
-	private static final String TAG = EventsActivity.class.getSimpleName();
+	private static final String TAG = ProblemsActivity.class.getSimpleName();
 	public static final String ARG_START_FROM_NOTIFICATION = "arg_start_from_notification";
 
 	// This flag is necessary to select the correct element when coming from

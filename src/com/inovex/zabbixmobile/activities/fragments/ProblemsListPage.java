@@ -6,6 +6,10 @@ import android.view.View;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.Trigger;
 
+/**
+ * Fragment displaying a list of problems for a particular severity.
+ *
+ */
 public class ProblemsListPage extends BaseSeverityFilterListPage<Trigger> {
 
 	@Override

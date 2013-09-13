@@ -14,6 +14,11 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.inovex.zabbixmobile.model.Application;
 
+/**
+ * A page representing one particular application and thus containing a list of
+ * all items in this application.
+ * 
+ */
 public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 
 	private Application mApplication;
@@ -21,6 +26,7 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 
 	public static String TAG = ChecksApplicationsPage.class.getSimpleName();
 
+	// TODO: move selection state to adapter
 	private int mCurrentPosition = 0;
 	private long mCurrentItemId = 0;
 
@@ -74,6 +80,12 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 		this.mCurrentItemId = currentItemId;
 	}
 
+	/**
+	 * Selects an item in this page's list.
+	 * 
+	 * @param position
+	 *            the item's position
+	 */
 	public void selectItem(int position) {
 		setCurrentPosition(position);
 		if (getView() != null) {
@@ -87,6 +99,9 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 		}
 	}
 
+	/**
+	 * Restores the item selection using the list adapter's state.
+	 */
 	public void restoreItemSelection() {
 		if (mZabbixDataService == null
 				|| mZabbixDataService.getChecksItemsListAdapter().getCount() <= 0)

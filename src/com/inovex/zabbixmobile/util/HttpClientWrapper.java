@@ -10,6 +10,10 @@ import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
 
+/**
+ * Convenience class for dealing with an HTTP client.
+ * 
+ */
 public class HttpClientWrapper {
 	private final AbstractHttpClient mHttpClient;
 

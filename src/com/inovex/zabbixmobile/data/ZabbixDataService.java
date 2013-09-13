@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import android.app.Service;
-import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -50,7 +49,7 @@ import com.inovex.zabbixmobile.listeners.OnGraphDataLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnHostsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
-import com.inovex.zabbixmobile.listeners.OnListItemsLoadedListener;
+import com.inovex.zabbixmobile.listeners.OnScreensLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.model.Application;
 import com.inovex.zabbixmobile.model.Event;
@@ -65,6 +64,15 @@ import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
+/**
+ * Bound service maintaining the connection with the Zabbix API as well as the
+ * local SQLite database. It provides an interface to the data no matter where
+ * it is stored,
+ * 
+ * This class also contains all adapters used for the various views throughout
+ * the app. These are initialized when the service is created.
+ * 
+ */
 public class ZabbixDataService extends Service {
 
 	public interface OnLoginProgressListener {
@@ -184,7 +192,7 @@ public class ZabbixDataService extends Service {
 	 * 
 	 * @return list pager adapter
 	 */
-	public BaseSeverityListPagerAdapter getEventsListPagerAdapter() {
+	public BaseSeverityListPagerAdapter<Event> getEventsListPagerAdapter() {
 		return mEventsListPagerAdapter;
 	}
 
@@ -232,7 +240,7 @@ public class ZabbixDataService extends Service {
 	 * 
 	 * @return list pager adapter
 	 */
-	public BaseSeverityListPagerAdapter getProblemsListPagerAdapter() {
+	public BaseSeverityListPagerAdapter<Trigger> getProblemsListPagerAdapter() {
 		return mProblemsListPagerAdapter;
 	}
 
@@ -408,8 +416,8 @@ public class ZabbixDataService extends Service {
 				mDatabaseHelper = OpenHelperManager.getHelper(this,
 						DatabaseHelper.class);
 				// recreate database
-//				mDatabaseHelper.onUpgrade(
-//						mDatabaseHelper.getWritableDatabase(), 0, 1);
+				// mDatabaseHelper.onUpgrade(
+				// mDatabaseHelper.getWritableDatabase(), 0, 1);
 			}
 
 			Log.d(TAG, "onCreate");
@@ -436,7 +444,7 @@ public class ZabbixDataService extends Service {
 	 * 
 	 */
 	public void performZabbixLogin(final OnLoginProgressListener listener) {
-		if(listener != null)
+		if (listener != null)
 			listener.onLoginStarted();
 
 		// authenticate
@@ -475,7 +483,7 @@ public class ZabbixDataService extends Service {
 					groupsAdapter.addAll(hostGroups);
 					groupsAdapter.notifyDataSetChanged();
 				}
-				if(listener != null)
+				if (listener != null)
 					listener.onLoginFinished(success);
 			}
 
@@ -965,7 +973,7 @@ public class ZabbixDataService extends Service {
 	 * triggered.
 	 * 
 	 */
-	public void loadScreens(final OnListItemsLoadedListener callback) {
+	public void loadScreens(final OnScreensLoadedListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
 
 			List<Screen> screens;
@@ -997,7 +1005,7 @@ public class ZabbixDataService extends Service {
 				}
 
 				if (callback != null)
-					callback.onListItemsLoaded();
+					callback.onScreensLoaded();
 			}
 
 		}.execute();
@@ -1062,6 +1070,49 @@ public class ZabbixDataService extends Service {
 
 		};
 		mCurrentLoadGraphsTask.execute();
+	}
+	
+	/**
+	 * Loads a graph's data from the database and triggers an import from Zabbix
+	 * if necessary (i.e. the graph is not cached).
+	 * 
+	 * All graph items in the given graph are filled with the corresponding
+	 * history details from the local database / the Zabbix server.
+	 * 
+	 * @param graph
+	 *            the graph to be filled with data
+	 * @param callback
+	 */
+	public void loadGraph(final Graph graph,
+			final OnGraphsLoadedListener callback) {
+		new RemoteAPITask(mRemoteAPI) {
+
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				try {
+					for (GraphItem gi : graph.getGraphItems()) {
+						Item item = gi.getItem();
+						mRemoteAPI.importHistoryDetails(item.getId(), this);
+						item.setHistoryDetails(mDatabaseHelper
+								.getHistoryDetailsByItemId(item.getId()));
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} finally {
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+
+				if (callback != null)
+					callback.onGraphsLoaded();
+			}
+
+		}.execute();
 	}
 
 	private void cancelTask(RemoteAPITask task) {
@@ -1202,38 +1253,6 @@ public class ZabbixDataService extends Service {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	public void loadGraph(final Graph graph,
-			final OnGraphsLoadedListener callback) {
-		new RemoteAPITask(mRemoteAPI) {
-
-			@Override
-			protected void executeTask() throws ZabbixLoginRequiredException,
-					FatalException {
-				try {
-					for (GraphItem gi : graph.getGraphItems()) {
-						Item item = gi.getItem();
-						mRemoteAPI.importHistoryDetails(item.getId(), this);
-						item.setHistoryDetails(mDatabaseHelper
-								.getHistoryDetailsByItemId(item.getId()));
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} finally {
-				}
-			}
-
-			@Override
-			protected void onPostExecute(Void result) {
-				super.onPostExecute(result);
-
-				if (callback != null)
-					callback.onGraphsLoaded();
-			}
-
-		}.execute();
 	}
 
 	public void setLoggedIn(boolean loggedIn) {

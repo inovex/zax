@@ -14,6 +14,10 @@ import com.inovex.zabbixmobile.adapters.HostsListAdapter;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.inovex.zabbixmobile.model.HostGroup;
 
+/**
+ * Fragment that shows a list of hosts.
+ *
+ */
 public class ChecksListFragment extends BaseServiceConnectedListFragment {
 
 	public static String TAG = ChecksListFragment.class.getSimpleName();
@@ -22,6 +26,7 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 	private static final String ARG_ITEM_ID = "arg_item_id";
 	private static final String ARG_SPINNER_VISIBLE = "arg_spinner_visible";
 
+	// TODO: move state to adapter
 	private int mCurrentPosition = 0;
 	private long mCurrentItemId = 0;
 	private long mHostGroupId = HostGroup.GROUP_ID_ALL;
@@ -64,6 +69,11 @@ public class ChecksListFragment extends BaseServiceConnectedListFragment {
 		mCallbackMain.onHostSelected(position, id);
 	}
 
+	/**
+	 * Selects a particular host.
+	 * @param position the host's position
+	 * @return the host's ID
+	 */
 	public long selectItem(int position) {
 		if (mListAdapter == null || mListAdapter.getCount() == 0)
 			return -1;
