@@ -1042,7 +1042,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// TODO: test
 
 	}
 

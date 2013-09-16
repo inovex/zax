@@ -16,8 +16,6 @@ public class Host implements Comparable<Host> {
 
 	HostGroup group;
 
-	// TODO: add group ID if necessary
-
 	public Host() {
 
 	}

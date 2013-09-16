@@ -2,3 +2,5 @@
 /gen
 /build.gradle
 /assets
+/doc
+/javadoc.xml

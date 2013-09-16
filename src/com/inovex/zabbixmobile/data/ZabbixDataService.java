@@ -847,7 +847,7 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Loads all items in a given application from the database asynchronously.
-	 * After loading the events, the corresponding adapters are updated. An
+	 * After loading the items, the corresponding adapters are updated. An
 	 * import from Zabbix is not necessary, because the items have already been
 	 * loaded together with the applications. TODO: handle this case with cache
 	 * functionality
