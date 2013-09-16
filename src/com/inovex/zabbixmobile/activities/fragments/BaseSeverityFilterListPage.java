@@ -107,7 +107,7 @@ public abstract class BaseSeverityFilterListPage<T> extends
 			mListAdapter.setCurrentPosition(position);
 		// check if the view has already been created -> if not, calls will be
 		// made in onServiceConnected().
-		if (getView() != null) {
+		if (getListView() != null) {
 			getListView().setItemChecked(position, true);
 			getListView().setSelection(position);
 		}
@@ -121,7 +121,7 @@ public abstract class BaseSeverityFilterListPage<T> extends
 		if (mListAdapter == null)
 			return;
 		int position = mListAdapter.getCurrentPosition();
-		if (getView() != null) {
+		if (getListView() != null) {
 			getListView().setItemChecked(position, true);
 			getListView().setSelection(position);
 		}

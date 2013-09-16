@@ -34,7 +34,8 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 			.getSimpleName();
 	
 	// TODO: load content of adjacent pages
-
+	// TODO: move state to adapter
+	
 	private int mHostPosition = 0;
 	private long mHostId;
 	private Host mHost;

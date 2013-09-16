@@ -41,9 +41,6 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	protected ChecksApplicationsFragment mApplicationsFragment;
 	protected ChecksItemsFragment mItemDetailsFragment;
 
-	protected int mCurrentHostPosition;
-	private long mCurrentHostId;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -110,12 +107,10 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	@Override
 	public void onHostSelected(int position, long id) {
 		Log.d(TAG, "item selected: " + id + " position: " + position + ")");
-		this.mCurrentHostPosition = position;
-		this.mCurrentHostId = id;
 
 		mHostListFragment.selectItem(position);
 
-		Host h = mZabbixDataService.getHostById(mCurrentHostId);
+		Host h = mZabbixDataService.getHostById(id);
 		// update view pager
 		Log.d(TAG,
 				"Retrieved host from database: "
@@ -187,7 +182,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		// this loads the adapter content, hence we need to show the loading
 		// spinner first
 		super.selectHostGroupInSpinner(position, itemId);
-		mHostListFragment.setHostGroup(itemId);
+		selectInitialItem(true);
 		if (!mHostListFragment.isVisible())
 			showHostListFragment();
 	}
@@ -244,13 +239,19 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	@Override
 	public void onHostsLoaded() {
-		mCurrentHostId = mHostListFragment.selectItem(mCurrentHostPosition);
-		if (mCurrentHostId > 0) {
-			Host h = mZabbixDataService.getHostById(mCurrentHostId);
-			mApplicationsFragment.setHost(h);
-			mZabbixDataService.loadApplicationsByHostId(h.getId(), this);
-		}
+		Host h = selectInitialItem(false);
+		mZabbixDataService.loadApplicationsByHostId(h.getId(), this);
 		mHostListFragment.dismissLoadingSpinner();
+	}
+
+	private Host selectInitialItem(boolean reset) {
+		Host h;
+		if(reset)
+			h = mHostListFragment.selectItem(0);
+		else 
+			h = mHostListFragment.refreshItemSelection();
+		mApplicationsFragment.setHost(h);
+		return h;
 	}
 
 	@Override
