@@ -4,8 +4,12 @@ public interface OnApplicationsLoadedListener {
 
 	/**
 	 * Called when all applications have been loaded.
+	 * 
+	 * @param resetSelection
+	 *            flag indication whether the application selection shall be
+	 *            reverted
 	 */
-	public void onApplicationsLoaded();
+	public void onApplicationsLoaded(boolean resetSelection);
 
 	/**
 	 * Called upon loading progress update.

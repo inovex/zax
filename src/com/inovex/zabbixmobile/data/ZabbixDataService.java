@@ -788,9 +788,13 @@ public class ZabbixDataService extends Service {
 	 *            host id
 	 * @param callback
 	 *            Callback needed to trigger a redraw the view pager indicator
+	 * @param resetSelection
+	 *            flag indicating if the application selection shall be reset
+	 *            when the data is loaded
 	 */
 	public void loadApplicationsByHostId(final long hostId,
-			final OnApplicationsLoadedListener callback) {
+			final OnApplicationsLoadedListener callback,
+			final boolean resetSelection) {
 
 		cancelTask(mCurrentLoadApplicationsTask);
 		mCurrentLoadApplicationsTask = new RemoteAPITask(mRemoteAPI) {
@@ -827,7 +831,7 @@ public class ZabbixDataService extends Service {
 					mChecksApplicationsPagerAdapter.notifyDataSetChanged();
 
 					if (callback != null)
-						callback.onApplicationsLoaded();
+						callback.onApplicationsLoaded(resetSelection);
 				}
 
 			}
@@ -1071,7 +1075,7 @@ public class ZabbixDataService extends Service {
 		};
 		mCurrentLoadGraphsTask.execute();
 	}
-	
+
 	/**
 	 * Loads a graph's data from the database and triggers an import from Zabbix
 	 * if necessary (i.e. the graph is not cached).

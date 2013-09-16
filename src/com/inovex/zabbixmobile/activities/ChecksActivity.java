@@ -119,7 +119,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		mApplicationsFragment.setHost(h);
 		mApplicationsFragment.showApplicationsProgressBar();
 		showApplicationsFragment();
-		mZabbixDataService.loadApplicationsByHostId(id, this);
+		mZabbixDataService.loadApplicationsByHostId(id, this, true);
 
 	}
 
@@ -182,7 +182,8 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		// this loads the adapter content, hence we need to show the loading
 		// spinner first
 		super.selectHostGroupInSpinner(position, itemId);
-		selectInitialItem(true);
+		selectInitialHost(true);
+		selectInitialApplication(true);
 		if (!mHostListFragment.isVisible())
 			showHostListFragment();
 	}
@@ -239,26 +240,37 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	@Override
 	public void onHostsLoaded() {
-		Host h = selectInitialItem(false);
-		mZabbixDataService.loadApplicationsByHostId(h.getId(), this);
+		Host h = selectInitialHost(false);
+		mZabbixDataService.loadApplicationsByHostId(h.getId(), this, false);
 		mHostListFragment.dismissLoadingSpinner();
 	}
 
-	private Host selectInitialItem(boolean reset) {
+	private Host selectInitialHost(boolean reset) {
 		Host h;
-		if(reset)
+		if (reset)
 			h = mHostListFragment.selectItem(0);
-		else 
+		else
 			h = mHostListFragment.refreshItemSelection();
 		mApplicationsFragment.setHost(h);
 		return h;
 	}
+	
+	/**
+	 * Causes a redraw of the page indicator. This needs to be called when the
+	 * adapter's contents are updated.
+	 */
+	private void selectInitialApplication(boolean reset) {
+		if(reset)
+			mApplicationsFragment.resetSelection();
+//			mApplicationsFragment.selectApplication(0);
+		else
+			mApplicationsFragment.refreshSelection();
+	}
 
 	@Override
-	public void onApplicationsLoaded() {
+	public void onApplicationsLoaded(boolean resetSelection) {
 		// This is ugly, but we need it to redraw the page indicator
-		mApplicationsFragment.redrawPageIndicator();
-		mApplicationsFragment.restoreApplicationSelection();
+		selectInitialApplication(resetSelection);
 		mApplicationsFragment.dismissApplicationsProgressBar();
 		mItemDetailsFragment.dismissLoadingSpinner();
 	}

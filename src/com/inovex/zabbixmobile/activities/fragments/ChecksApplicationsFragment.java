@@ -32,30 +32,28 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 
 	public static final String TAG = ChecksApplicationsFragment.class
 			.getSimpleName();
-	
+
 	// TODO: load content of adjacent pages
 	// TODO: move state to adapter
-	
+
 	private int mHostPosition = 0;
 	private long mHostId;
 	private Host mHost;
 	private boolean mApplicationsProgressBarVisible = true;
 	private boolean mItemsLoadingSpinnerVisible = true;
-	private int mApplicationPosition = 0;
 	private int mItemPosition = 0;
 
 	private static final String ARG_HOST_POSITION = "arg_host_position";
 	private static final String ARG_HOST_ID = "arg_host_id";
-	private static final String ARG_APPLICATION_POSITION = "arg_application_position";
 	private static final String ARG_ITEM_POSITION = "arg_item_position";
 	private static final String ARG_APPLICATIONS_SPINNER_VISIBLE = "arg_applications_spinner_visible";
 	private static final String ARG_ITEMS_SPINNER_VISIBLE = "arg_items_spinner_visible";
 
 	private TextView mTitleView;
 
-	protected ViewPager mDetailsPager;
-	protected TitlePageIndicator mDetailsPageIndicator;
-	protected ChecksApplicationsPagerAdapter mDetailsPagerAdapter;
+	protected ViewPager mApplicationsPager;
+	protected TitlePageIndicator mApplicationsPageIndicator;
+	protected ChecksApplicationsPagerAdapter mApplicationsPagerAdapter;
 
 	private OnChecksItemSelectedListener mCallbackMain;
 
@@ -77,8 +75,6 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		if (savedInstanceState != null) {
 			mHostPosition = savedInstanceState.getInt(ARG_HOST_POSITION, 0);
 			mHostId = savedInstanceState.getLong(ARG_HOST_ID, 0);
-			mApplicationPosition = savedInstanceState.getInt(
-					ARG_APPLICATION_POSITION, 0);
 			mItemPosition = savedInstanceState.getInt(ARG_ITEM_POSITION, 0);
 			mApplicationsProgressBarVisible = savedInstanceState.getBoolean(
 					ARG_APPLICATIONS_SPINNER_VISIBLE, false);
@@ -108,7 +104,6 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putInt(ARG_HOST_POSITION, mHostPosition);
 		outState.putLong(ARG_HOST_ID, mHostId);
-		outState.putInt(ARG_APPLICATION_POSITION, mApplicationPosition);
 		outState.putInt(ARG_ITEM_POSITION, mItemPosition);
 		outState.putBoolean(ARG_APPLICATIONS_SPINNER_VISIBLE,
 				mApplicationsProgressBarVisible);
@@ -141,38 +136,27 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	}
 
 	/**
-	 * Causes a redraw of the page indicator. This needs to be called when the
-	 * adapter's contents are updated.
-	 */
-	public void redrawPageIndicator() {
-		if (mDetailsPageIndicator != null) {
-			// mDetailsPageIndicator.invalidate();
-			if (mDetailsPagerAdapter.getCount() > 0)
-				mDetailsPageIndicator.onPageSelected(0);
-		}
-	}
-
-	/**
 	 * Performs the setup of the view pager used to swipe between details pages.
 	 */
 	protected void setupDetailsViewPager() {
 		Log.d(TAG, "setupViewPager");
 
 		retrievePagerAdapter();
-		if (mDetailsPagerAdapter != null) {
-			mDetailsPagerAdapter.setFragmentManager(getChildFragmentManager());
+		if (mApplicationsPagerAdapter != null) {
+			mApplicationsPagerAdapter
+					.setFragmentManager(getChildFragmentManager());
 
 			// initialize the view pager
-			mDetailsPager = (ViewPager) getView().findViewById(
+			mApplicationsPager = (ViewPager) getView().findViewById(
 					R.id.checks_view_pager);
-			mDetailsPager.setAdapter(mDetailsPagerAdapter);
+			mApplicationsPager.setAdapter(mApplicationsPagerAdapter);
 
 			// Initialize the page indicator
-			mDetailsPageIndicator = (TitlePageIndicator) getView()
+			mApplicationsPageIndicator = (TitlePageIndicator) getView()
 					.findViewById(R.id.checks_page_indicator);
-			mDetailsPageIndicator.setViewPager(mDetailsPager);
-			mDetailsPageIndicator.setCurrentItem(mHostPosition);
-			mDetailsPageIndicator
+			mApplicationsPageIndicator.setViewPager(mApplicationsPager);
+			mApplicationsPageIndicator.setCurrentItem(0);
+			mApplicationsPageIndicator
 					.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
 						@Override
@@ -197,8 +181,8 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 
 							showItemsLoadingSpinner();
 							mZabbixDataService.loadItemsByApplicationId(
-									mDetailsPagerAdapter.getCurrentObject()
-											.getId(),
+									mApplicationsPagerAdapter
+											.getCurrentObject().getId(),
 									ChecksApplicationsFragment.this);
 
 						}
@@ -208,7 +192,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	}
 
 	protected void retrievePagerAdapter() {
-		mDetailsPagerAdapter = mZabbixDataService
+		mApplicationsPagerAdapter = mZabbixDataService
 				.getChecksApplicationsPagerAdapter();
 	}
 
@@ -240,9 +224,6 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 				progressLayout.setVisibility(View.GONE);
 			}
 		}
-		// for (ChecksDetailsPage p : mDetailsPagerAdapter.getPages()) {
-		// p.dismissLoadingSpinner();
-		// }
 	}
 
 	@Override
@@ -254,7 +235,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		// and here: https://code.google.com/p/android/issues/detail?id=42601
 		// If the fragment manager is not set to null, there will be issues when
 		// the activity is destroyed and there are pending transactions
-		mDetailsPagerAdapter.setFragmentManager(null);
+		mApplicationsPagerAdapter.setFragmentManager(null);
 	}
 
 	/**
@@ -297,26 +278,32 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		dismissItemsLoadingSpinner();
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		restoreApplicationSelection();
-		restoreItemSelection();
-		Log.d(TAG, "onResume");
-	}
-
 	/**
 	 * Selects an application in the view pager.
 	 * 
 	 * @param position
 	 */
-	protected void selectApplication(int position) {
-		this.mApplicationPosition = position;
-		if (mDetailsPagerAdapter != null) {
-			mDetailsPagerAdapter.setCurrentPosition(position);
-			mDetailsPager.setCurrentItem(position);
-			mDetailsPageIndicator.setCurrentItem(position);
+	public void selectApplication(int position) {
+		if (mApplicationsPagerAdapter != null) {
+			mApplicationsPagerAdapter.setCurrentPosition(position);
+			mApplicationsPager.setCurrentItem(position);
+			mApplicationsPageIndicator.setCurrentItem(position);
 		}
+	}
+	
+	public void resetSelection() {
+		mApplicationsPageIndicator.onPageSelected(0);
+	}
+
+	public void refreshSelection() {
+		if (mApplicationsPagerAdapter == null
+				|| mApplicationsPageIndicator == null)
+			return;
+		// mDetailsPageIndicator.invalidate();
+		int position = mApplicationsPagerAdapter.getCurrentPosition();
+		if (mApplicationsPageIndicator != null
+				&& mApplicationsPagerAdapter.getCount() > position)
+			mApplicationsPageIndicator.onPageSelected(position);
 	}
 
 	/**
@@ -326,36 +313,27 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	 *            item position
 	 */
 	public void selectItem(int position) {
-		if (mDetailsPagerAdapter == null
-				|| mDetailsPagerAdapter.getCount() == 0)
+		if (mApplicationsPagerAdapter == null
+				|| mApplicationsPagerAdapter.getCount() == 0)
 			return;
 		mItemPosition = position;
-		ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mDetailsPagerAdapter
-				.instantiateItem(mDetailsPager, mDetailsPager.getCurrentItem());
+		ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mApplicationsPagerAdapter
+				.instantiateItem(mApplicationsPager,
+						mApplicationsPager.getCurrentItem());
 		Log.d(TAG, "selectItem(" + position + ")");
 		if (currentPage != null)
 			currentPage.selectItem(position);
 	}
 
 	/**
-	 * Restores the application selection using the position saved in the
-	 * adapter.
-	 */
-	public void restoreApplicationSelection() {
-		if (mDetailsPageIndicator != null
-				&& mDetailsPagerAdapter.getCount() > mApplicationPosition)
-			mDetailsPageIndicator.onPageSelected(mApplicationPosition);
-	}
-
-	/**
 	 * Restores the item selection on the current page.
 	 */
 	public void restoreItemSelection() {
-		selectApplication(mApplicationPosition);
-		if (mDetailsPagerAdapter != null) {
-			ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mDetailsPagerAdapter
-					.instantiateItem(mDetailsPager,
-							mDetailsPager.getCurrentItem());
+		// selectApplication(mApplicationPosition);
+		if (mApplicationsPagerAdapter != null) {
+			ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mApplicationsPagerAdapter
+					.instantiateItem(mApplicationsPager,
+							mApplicationsPager.getCurrentItem());
 			if (currentPage != null) {
 				currentPage.selectItem(mItemPosition);
 				currentPage.restoreItemSelection();
