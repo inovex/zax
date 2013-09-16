@@ -31,7 +31,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
 		mDetailsFragment = (BaseSeverityFilterDetailsFragment<Event>) mFragmentManager
 				.findFragmentById(R.id.events_details);
-		mListFragment = (BaseSeverityFilterListFragment) mFragmentManager
+		mListFragment = (BaseSeverityFilterListFragment<Event>) mFragmentManager
 				.findFragmentById(R.id.events_list);
 		if (mFlipper != null)
 			Log.d(TAG, mFlipper.toString());

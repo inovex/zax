@@ -14,7 +14,7 @@ public class ProblemsListFragment extends
 	public static final String TAG = ProblemsListFragment.class.getSimpleName();
 
 	@Override
-	protected BaseSeverityListPagerAdapter retrievePagerAdapter() {
+	protected BaseSeverityListPagerAdapter<Trigger> retrievePagerAdapter() {
 		return mZabbixDataService.getProblemsListPagerAdapter();
 	}
 

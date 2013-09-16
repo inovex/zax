@@ -133,6 +133,7 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 							SimpleDateFormat.SHORT, Locale.getDefault());
 			((TextView) getView().findViewById(R.id.latest_data)).setText(mItem
 					.getLastValue()
+					+ " "
 					+ mItem.getUnits()
 					+ " "
 					+ getResources().getString(R.string.at)

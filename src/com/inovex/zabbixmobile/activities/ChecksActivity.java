@@ -139,9 +139,9 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		// Selecting an application never makes the item details visible. If
 		// item details are already visible, we select the first item of the
 		// chosen application.
-		if (mFlipper != null && mItemDetailsFragment.isVisible()) {
-			// mApplicationsFragment.selectItem(0);
-			// mItemDetailsFragment.setItem(null);
+		if (mItemDetailsFragment.isVisible()) {
+			mItemDetailsFragment.setItem(null);
+			mApplicationsFragment.selectItem(0);
 		}
 	}
 
@@ -254,15 +254,15 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		mApplicationsFragment.setHost(h);
 		return h;
 	}
-	
+
 	/**
 	 * Causes a redraw of the page indicator. This needs to be called when the
 	 * adapter's contents are updated.
 	 */
 	private void selectInitialApplication(boolean reset) {
-		if(reset)
+		if (reset)
 			mApplicationsFragment.resetSelection();
-//			mApplicationsFragment.selectApplication(0);
+		// mApplicationsFragment.selectApplication(0);
 		else
 			mApplicationsFragment.refreshSelection();
 	}

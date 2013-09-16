@@ -173,7 +173,6 @@ public class ZabbixRemoteAPI {
 	private String url;
 	private String token;
 	private final Context mContext;
-	private JsonParser lastStream;
 	private boolean isVersion2 = true;
 	/**
 	 * The API version. From 1.8.3 (maybe earlier) to 2.0 (excluded), this was
@@ -385,7 +384,6 @@ public class ZabbixRemoteAPI {
 			JsonFactory jsonFac = new JsonFactory();
 			JsonParser jp = jsonFac.createParser(resp.getEntity().getContent());
 			// store the last stream to close it if an exception will be thrown
-			lastStream = jp;
 			if (jp.nextToken() != JsonToken.START_OBJECT) {
 				throw new IOException("Expected data to start with an Object");
 			}

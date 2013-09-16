@@ -15,7 +15,7 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 /**
  * Activity to visualize problems (triggers).
- *
+ * 
  */
 public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
@@ -37,7 +37,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		mFlipper = (ViewFlipper) findViewById(R.id.problems_flipper);
 		mDetailsFragment = (BaseSeverityFilterDetailsFragment<Trigger>) mFragmentManager
 				.findFragmentById(R.id.problems_details);
-		mListFragment = (BaseSeverityFilterListFragment) mFragmentManager
+		mListFragment = (BaseSeverityFilterListFragment<Trigger>) mFragmentManager
 				.findFragmentById(R.id.problems_list);
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
@@ -62,7 +62,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		// correct item.
 		if (mStartFromNotification) {
 			mDetailsFragment.setSeverity(TriggerSeverity.ALL);
-			BaseSeverityListPagerAdapter severityAdapter = mZabbixDataService
+			BaseSeverityListPagerAdapter<Trigger> severityAdapter = mZabbixDataService
 					.getProblemsListPagerAdapter();
 			severityAdapter.setCurrentPosition(0);
 			selectHostGroupInSpinner(0, HostGroup.GROUP_ID_ALL);

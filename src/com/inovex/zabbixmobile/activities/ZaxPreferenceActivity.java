@@ -9,7 +9,7 @@ import com.inovex.zabbixmobile.model.ZaxPreferences;
 
 /**
  * The preference activity.
- *
+ * 
  */
 public class ZaxPreferenceActivity extends PreferenceActivity {
 
@@ -17,6 +17,9 @@ public class ZaxPreferenceActivity extends PreferenceActivity {
 	private String userName;
 	private String password;
 
+	// We use the deprecated method because it is compatible to old Android
+	// versions.
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

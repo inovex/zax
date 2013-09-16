@@ -6,13 +6,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.adapters.ChecksItemsListAdapter;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
-import com.inovex.zabbixmobile.model.Application;
 
 /**
  * A page representing one particular application and thus containing a list of
@@ -21,16 +20,12 @@ import com.inovex.zabbixmobile.model.Application;
  */
 public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 
-	private Application mApplication;
 	private String mTitle = "";
 
 	public static String TAG = ChecksApplicationsPage.class.getSimpleName();
 
-	// TODO: move selection state to adapter
-	private int mCurrentPosition = 0;
-	private long mCurrentItemId = 0;
-
 	private OnChecksItemSelectedListener mCallbackMain;
+	private ChecksItemsListAdapter mListAdapter;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -62,22 +57,12 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 		super.onViewCreated(view, savedInstanceState);
 		// setEmptyText(getResources().getString(R.string.empty_list_checks));
 		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		getListView().setItemChecked(mCurrentPosition, true);
-		getListView().setSelection(mCurrentPosition);
 
 		TextView emptyView = (TextView) getView().findViewById(
 				android.R.id.empty);
 		if (emptyView != null)
 			emptyView.setText(R.string.empty_list_checks);
 
-	}
-
-	public void setCurrentPosition(int currentPosition) {
-		this.mCurrentPosition = currentPosition;
-	}
-
-	public void setCurrentItemId(long currentItemId) {
-		this.mCurrentItemId = currentItemId;
 	}
 
 	/**
@@ -87,15 +72,12 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 	 *            the item's position
 	 */
 	public void selectItem(int position) {
-		setCurrentPosition(position);
-		if (getView() != null) {
+		if (getListView() != null) {
 			getListView().setItemChecked(position, true);
 			getListView().setSelection(position);
 		}
-		ListAdapter adapter = getListAdapter();
-		if (adapter != null && adapter.getCount() > position) {
-			long id = adapter.getItemId(position);
-			setCurrentItemId(id);
+		if (mListAdapter != null && mListAdapter.getCount() > position) {
+			mListAdapter.setCurrentPosition(position);
 		}
 	}
 
@@ -103,30 +85,26 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 	 * Restores the item selection using the list adapter's state.
 	 */
 	public void restoreItemSelection() {
-		if (mZabbixDataService == null
-				|| mZabbixDataService.getChecksItemsListAdapter().getCount() <= 0)
+		if (mListAdapter == null || mListAdapter.getCount() <= 0)
 			return;
-		if (mCurrentPosition >= mZabbixDataService.getChecksItemsListAdapter()
-				.getCount())
-			mCurrentPosition = 0;
+		int position = mListAdapter.getCurrentPosition();
+		if (position >= mListAdapter.getCount())
+			position = 0;
 		// selectItem(mCurrentPosition);
-		mCallbackMain.onItemSelected(mCurrentPosition, mZabbixDataService
-				.getChecksItemsListAdapter().getItem(mCurrentPosition), false);
+		mCallbackMain.onItemSelected(position, mListAdapter.getItem(position),
+				false);
 	}
 
 	@Override
 	protected void setupListAdapter() {
-		setListAdapter(mZabbixDataService.getChecksItemsListAdapter());
+		this.mListAdapter = mZabbixDataService.getChecksItemsListAdapter();
+		setListAdapter(mListAdapter);
 	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		mCallbackMain.onItemSelected(position, mZabbixDataService
-				.getChecksItemsListAdapter().getItem(position), true);
-	}
-
-	public void setApplication(Application app) {
-		this.mApplication = app;
+		mCallbackMain.onItemSelected(position, mListAdapter.getItem(position),
+				true);
 	}
 
 	public void setTitle(String title) {

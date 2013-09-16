@@ -30,7 +30,6 @@ public class ChecksApplicationsPagerAdapter extends
 	@Override
 	protected Fragment getItem(int position) {
 		ChecksApplicationsPage p = new ChecksApplicationsPage();
-		p.setApplication(getObject(position));
 		return p;
 	}
 

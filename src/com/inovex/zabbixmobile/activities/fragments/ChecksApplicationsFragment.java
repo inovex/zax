@@ -36,16 +36,10 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	// TODO: load content of adjacent pages
 	// TODO: move state to adapter
 
-	private int mHostPosition = 0;
-	private long mHostId;
 	private Host mHost;
 	private boolean mApplicationsProgressBarVisible = true;
 	private boolean mItemsLoadingSpinnerVisible = true;
-	private int mItemPosition = 0;
 
-	private static final String ARG_HOST_POSITION = "arg_host_position";
-	private static final String ARG_HOST_ID = "arg_host_id";
-	private static final String ARG_ITEM_POSITION = "arg_item_position";
 	private static final String ARG_APPLICATIONS_SPINNER_VISIBLE = "arg_applications_spinner_visible";
 	private static final String ARG_ITEMS_SPINNER_VISIBLE = "arg_items_spinner_visible";
 
@@ -73,15 +67,11 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null) {
-			mHostPosition = savedInstanceState.getInt(ARG_HOST_POSITION, 0);
-			mHostId = savedInstanceState.getLong(ARG_HOST_ID, 0);
-			mItemPosition = savedInstanceState.getInt(ARG_ITEM_POSITION, 0);
 			mApplicationsProgressBarVisible = savedInstanceState.getBoolean(
 					ARG_APPLICATIONS_SPINNER_VISIBLE, false);
 			mItemsLoadingSpinnerVisible = savedInstanceState.getBoolean(
 					ARG_ITEMS_SPINNER_VISIBLE, false);
 		}
-		Log.d(TAG, "Host position: " + mHostPosition + "; id: " + mHostId);
 	}
 
 	@Override
@@ -102,9 +92,6 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putInt(ARG_HOST_POSITION, mHostPosition);
-		outState.putLong(ARG_HOST_ID, mHostId);
-		outState.putInt(ARG_ITEM_POSITION, mItemPosition);
 		outState.putBoolean(ARG_APPLICATIONS_SPINNER_VISIBLE,
 				mApplicationsProgressBarVisible);
 		outState.putBoolean(ARG_ITEMS_SPINNER_VISIBLE,
@@ -316,7 +303,6 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		if (mApplicationsPagerAdapter == null
 				|| mApplicationsPagerAdapter.getCount() == 0)
 			return;
-		mItemPosition = position;
 		ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mApplicationsPagerAdapter
 				.instantiateItem(mApplicationsPager,
 						mApplicationsPager.getCurrentItem());
@@ -335,7 +321,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 					.instantiateItem(mApplicationsPager,
 							mApplicationsPager.getCurrentItem());
 			if (currentPage != null) {
-				currentPage.selectItem(mItemPosition);
+//				currentPage.selectItem(mItemPosition);
 				currentPage.restoreItemSelection();
 			}
 		}

@@ -171,6 +171,8 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 	 */
 	@SuppressWarnings("unchecked")
 	public void refreshItemSelection() {
+		if(mSeverityListPager == null)
+			return;
 		BaseSeverityFilterListPage<T> currentPage = (BaseSeverityFilterListPage<T>) mSeverityListPagerAdapter
 				.instantiateItem(mSeverityListPager,
 						mSeverityListPager.getCurrentItem());
