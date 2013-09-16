@@ -17,7 +17,7 @@ import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 /**
- * Base class for all activities contining data which can be filtered by its
+ * Base class for all activities containing data which can be filtered by its
  * severity.
  * 
  * This type of activity follows the master-detail flow with a list fragment on

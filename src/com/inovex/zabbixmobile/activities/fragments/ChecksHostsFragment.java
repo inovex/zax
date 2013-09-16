@@ -18,9 +18,9 @@ import com.inovex.zabbixmobile.model.HostGroup;
  * Fragment that shows a list of hosts.
  *
  */
-public class ChecksListFragment extends BaseServiceConnectedListFragment {
+public class ChecksHostsFragment extends BaseServiceConnectedListFragment {
 
-	public static String TAG = ChecksListFragment.class.getSimpleName();
+	public static String TAG = ChecksHostsFragment.class.getSimpleName();
 
 	private static final String ARG_POSITION = "arg_position";
 	private static final String ARG_ITEM_ID = "arg_item_id";

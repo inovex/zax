@@ -12,7 +12,7 @@
         android:id="@+id/checks_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="com.inovex.zabbixmobile.activities.fragments.ChecksListFragment" />
+        class="com.inovex.zabbixmobile.activities.fragments.ChecksHostsFragment" />
 
     <fragment
         android:id="@+id/checks_details"

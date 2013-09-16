@@ -5,12 +5,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
+import com.inovex.zabbixmobile.activities.fragments.ChecksHostsFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.Screen;
 
 /**
- * Adapter for the list of hosts used by {@link ChecksListFragment}.
+ * Adapter for the list of hosts used by {@link ChecksHostsFragment}.
  * 
  */
 public class ScreensListAdapter extends BaseServiceAdapter<Screen> {

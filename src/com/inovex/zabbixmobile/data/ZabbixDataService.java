@@ -20,7 +20,7 @@ import android.view.LayoutInflater;
 
 import com.inovex.zabbixmobile.activities.BaseSeverityFilterActivity;
 import com.inovex.zabbixmobile.activities.ChecksActivity;
-import com.inovex.zabbixmobile.activities.fragments.ChecksListFragment;
+import com.inovex.zabbixmobile.activities.fragments.ChecksHostsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListPage;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment;
@@ -285,7 +285,7 @@ public class ZabbixDataService extends Service {
 	/**
 	 * Returns a host list adapter.
 	 * 
-	 * See {@link ChecksListFragment}.
+	 * See {@link ChecksHostsFragment}.
 	 * 
 	 * @return host list adapter
 	 */

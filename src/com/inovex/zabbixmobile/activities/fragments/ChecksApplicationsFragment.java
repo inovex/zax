@@ -32,6 +32,8 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 
 	public static final String TAG = ChecksApplicationsFragment.class
 			.getSimpleName();
+	
+	// TODO: load content of adjacent pages
 
 	private int mHostPosition = 0;
 	private long mHostId;
