@@ -33,9 +33,6 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	public static final String TAG = ChecksApplicationsFragment.class
 			.getSimpleName();
 
-	// TODO: load content of adjacent pages
-	// TODO: move state to adapter
-
 	private Host mHost;
 	private boolean mApplicationsProgressBarVisible = true;
 	private boolean mItemsLoadingSpinnerVisible = true;

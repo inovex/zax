@@ -7,6 +7,7 @@ import android.widget.ViewFlipper;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
+import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
@@ -108,6 +109,12 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	public void onSeverityListAdapterLoaded(TriggerSeverity severity,
 			boolean hostGroupChanged) {
 		super.onSeverityListAdapterLoaded(severity, hostGroupChanged);
+		
+		BaseSeverityListPagerAdapter<Event> pagerAdapter = mZabbixDataService
+				.getEventsListPagerAdapter();
+		pagerAdapter.updateTitle(severity.getPosition(), mZabbixDataService
+				.getEventsListAdapter(severity).getCount());
+		mListFragment.refreshTabTitles();
 
 		if (severity == mZabbixDataService.getEventsListPagerAdapter()
 				.getCurrentObject()) {

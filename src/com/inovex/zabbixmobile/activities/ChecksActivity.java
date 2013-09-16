@@ -12,8 +12,8 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ChecksApplicationsFragment;
-import com.inovex.zabbixmobile.activities.fragments.ChecksItemsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksHostsFragment;
+import com.inovex.zabbixmobile.activities.fragments.ChecksItemsFragment;
 import com.inovex.zabbixmobile.listeners.OnApplicationsLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.inovex.zabbixmobile.listeners.OnHostsLoadedListener;
@@ -31,9 +31,9 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	private static final String TAG = ChecksActivity.class.getSimpleName();
 
-	private static final int FLIPPER_HOST_LIST_FRAGMENT = 0;
-	private static final int FLIPPER_APPLICATIONS_FRAGMENT = 1;
-	private static final int FLIPPER_ITEM_DETAILS_FRAGMENT = 2;
+	private static final int FLIPPER_HOST_LIST_FRAGMENT = 0,
+			FLIPPER_APPLICATIONS_FRAGMENT = 1,
+			FLIPPER_ITEM_DETAILS_FRAGMENT = 2;
 
 	protected FragmentManager mFragmentManager;
 	protected ViewFlipper mFlipper;
@@ -61,7 +61,6 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		mItemDetailsFragment = (ChecksItemsFragment) mFragmentManager
 				.findFragmentById(R.id.checks_items_details);
 		showHostListFragment();
-		mDrawerToggle.setDrawerIndicatorEnabled(true);
 	}
 
 	@Override
@@ -115,7 +114,6 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		Log.d(TAG,
 				"Retrieved host from database: "
 						+ ((h == null) ? "null" : h.toString()));
-		// mApplicationsFragment.selectHost(position, id);
 		mApplicationsFragment.setHost(h);
 		mApplicationsFragment.showApplicationsProgressBar();
 		showApplicationsFragment();
@@ -171,9 +169,6 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		super.onServiceConnected(className, service);
-
-		// mZabbixService.loadApplications();
-
 	}
 
 	@Override
@@ -262,7 +257,6 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	private void selectInitialApplication(boolean reset) {
 		if (reset)
 			mApplicationsFragment.resetSelection();
-		// mApplicationsFragment.selectApplication(0);
 		else
 			mApplicationsFragment.refreshSelection();
 	}

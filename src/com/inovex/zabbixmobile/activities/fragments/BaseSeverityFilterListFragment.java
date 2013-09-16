@@ -34,7 +34,7 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 
 	ViewPager mSeverityListPager;
 	BaseSeverityListPagerAdapter<T> mSeverityListPagerAdapter;
-	TabPageIndicator mSeverityListTabIndicator;
+	TabPageIndicator mSeverityListPageIndicator;
 
 	private OnSeveritySelectedListener mCallbackMain;
 
@@ -94,7 +94,7 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 		// user swipes between sections.
 		mSeverityListPager = (ViewPager) getView().findViewById(
 				R.id.severity_list_viewpager);
-		mSeverityListTabIndicator = (TabPageIndicator) getView().findViewById(
+		mSeverityListPageIndicator = (TabPageIndicator) getView().findViewById(
 				R.id.severity_list_tabindicator);
 		// Bind the tab indicator to the adapter
 		mSeverityListPagerAdapter = retrievePagerAdapter();
@@ -104,13 +104,13 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 		mSeverityListPagerAdapter.setFragmentManager(getChildFragmentManager());
 		mSeverityListPager.setAdapter(mSeverityListPagerAdapter);
 		mSeverityListPager.setOffscreenPageLimit(1);
-		mSeverityListTabIndicator.setViewPager(mSeverityListPager);
+		mSeverityListPageIndicator.setViewPager(mSeverityListPager);
 
-		mSeverityListTabIndicator.setCurrentItem(mSeverityListPagerAdapter
+		mSeverityListPageIndicator.setCurrentItem(mSeverityListPagerAdapter
 				.getCurrentPosition());
 		// mCallbackMain.onSeveritySelected(mSeverityListPagerAdapter.getCurrentObject());
 
-		mSeverityListTabIndicator
+		mSeverityListPageIndicator
 				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
@@ -223,6 +223,10 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 					R.id.severity_list_progress);
 			listProgress.setProgress(progress);
 		}
+	}
+
+	public void refreshTabTitles() {
+		mSeverityListPageIndicator.notifyDataSetChanged();
 	}
 
 }

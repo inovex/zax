@@ -195,7 +195,7 @@ public class ZabbixDataService extends Service {
 	public BaseSeverityListPagerAdapter<Event> getEventsListPagerAdapter() {
 		return mEventsListPagerAdapter;
 	}
-
+	
 	/**
 	 * Returns an event list adapter.
 	 * 

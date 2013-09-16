@@ -102,6 +102,12 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			boolean hostGroupChanged) {
 		super.onSeverityListAdapterLoaded(severity, hostGroupChanged);
 
+		BaseSeverityListPagerAdapter<Trigger> pagerAdapter = mZabbixDataService
+				.getProblemsListPagerAdapter();
+		pagerAdapter.updateTitle(severity.getPosition(), mZabbixDataService
+				.getProblemsListAdapter(severity).getCount());
+		mListFragment.refreshTabTitles();
+
 		if (severity == mZabbixDataService.getProblemsListPagerAdapter()
 				.getCurrentObject()) {
 			selectInitialItem(hostGroupChanged);
