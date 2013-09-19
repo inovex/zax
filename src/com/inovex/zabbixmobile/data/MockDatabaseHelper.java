@@ -25,7 +25,7 @@ import com.j256.ormlite.support.ConnectionSource;
 
 /**
  * Mock database helper which creates a database containing static data.
- *
+ * 
  */
 public class MockDatabaseHelper extends DatabaseHelper {
 
@@ -129,68 +129,62 @@ public class MockDatabaseHelper extends DatabaseHelper {
 	}
 
 	@Override
-	public void insertEvents(Collection<Event> events) throws SQLException {
+	public void insertEvents(Collection<Event> events) {
 	}
 
 	@Override
-	public void insertTriggers(Collection<Trigger> triggers)
-			throws SQLException {
+	public void insertTriggers(Collection<Trigger> triggers) {
 	}
 
 	@Override
-	public void insertHosts(List<Host> hosts) throws SQLException {
+	public void insertHosts(List<Host> hosts) {
 	}
 
 	@Override
-	public void insertHostGroups(ArrayList<HostGroup> hostGroups)
-			throws SQLException {
+	public void insertHostGroups(ArrayList<HostGroup> hostGroups) {
 	}
 
 	@Override
-	public void insertApplications(Collection<Application> applications)
-			throws SQLException {
+	public void insertApplications(Collection<Application> applications) {
 	}
 
 	@Override
 	public void insertTriggerHostgroupRelations(
-			List<TriggerHostGroupRelation> triggerHostGroupCollection)
-			throws SQLException {
+			List<TriggerHostGroupRelation> triggerHostGroupCollection) {
 	}
 
 	@Override
 	public void insertHostHostgroupRelations(
-			List<HostHostGroupRelation> hostHostGroupCollection)
-			throws SQLException {
+			List<HostHostGroupRelation> hostHostGroupCollection) {
 	}
 
 	@Override
 	public void insertApplicationItemRelations(
-			List<ApplicationItemRelation> applicationItemRelations)
-			throws SQLException {
+			List<ApplicationItemRelation> applicationItemRelations) {
 	}
 
 	@Override
-	public void insertItems(List<Item> itemCollection) throws SQLException {
+	public void insertItems(List<Item> itemCollection) {
 	}
 
 	@Override
-	public void clearEvents() throws SQLException {
+	public void clearEvents() {
 	}
 
 	@Override
-	public void clearTriggers() throws SQLException {
+	public void clearTriggers() {
 	}
 
 	@Override
-	public void clearHosts() throws SQLException {
+	public void clearHosts() {
 	}
 
 	@Override
-	public void clearHostGroups() throws SQLException {
+	public void clearHostGroups() {
 	}
 
 	@Override
-	public void clearItems() throws SQLException {
+	public void clearItems() {
 	}
 
 }

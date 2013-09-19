@@ -101,14 +101,15 @@ public class GraphFullscreenActivity extends SherlockFragmentActivity implements
 		// load data by item
 		if (mItemId != -1) {
 			final Item item = mZabbixDataService.getItemById(mItemId);
+			if (item == null)
+				return;
 			mZabbixDataService.loadHistoryDetailsByItem(item, false,
 					new OnGraphDataLoadedListener() {
 						@Override
 						public void onGraphDataLoaded() {
 							LineGraphView graph = GraphUtil
 									.createItemGraphFullscreen(
-											GraphFullscreenActivity.this,
-											item);
+											GraphFullscreenActivity.this, item);
 							if (mLayout != null) {
 								mLayout.addView(graph);
 							}
@@ -128,6 +129,8 @@ public class GraphFullscreenActivity extends SherlockFragmentActivity implements
 		// load data by graph
 		else if (mGraphId != -1) {
 			final Graph graph = mZabbixDataService.getGraphById(mGraphId);
+			if (graph == null)
+				return;
 			mZabbixDataService.loadGraph(graph, new OnGraphsLoadedListener() {
 				@Override
 				public void onGraphsLoaded() {

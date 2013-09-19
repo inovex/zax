@@ -35,10 +35,10 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 			try {
 				retry();
 			} catch (FatalException e1) {
-				sendBroadcast(e1);
+				handleException(e1);
 			}
 		} catch (FatalException e) {
-			sendBroadcast(e);
+			handleException(e);
 		}
 		return null;
 	}
@@ -49,7 +49,8 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 	 * @param exception
 	 *            the exception
 	 */
-	private void sendBroadcast(FatalException exception) {
+	private void handleException(FatalException exception) {
+		exception.printStackTrace();
 		// send broadcast with message depending on the type of exception
 		Context context = api.getContext();
 		Intent intent = new Intent();

@@ -89,7 +89,7 @@ import com.inovex.zabbixmobile.util.JsonObjectReader;
 
 /**
  * This class encapsulates all calls to the Zabbix API.
- *
+ * 
  */
 public class ZabbixRemoteAPI {
 	private static final String ZABBIX_ERROR_NO_API_ACCESS = "No API access";
@@ -551,7 +551,7 @@ public class ZabbixRemoteAPI {
 			JSONObject result;
 			try {
 				result = _queryBuffer("apiinfo.version", new JSONObject());
-				if(result == null)
+				if (result == null)
 					isVersion2 = false;
 				else {
 					apiVersion = result.getString("result");
@@ -957,22 +957,14 @@ public class ZabbixRemoteAPI {
 		// database and fetch only newer objects (history doesn't change...)
 		long timeTill = new Date().getTime() / 1000;
 		long timeFrom = timeTill - ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT;
-		try {
-			databaseHelper
-					.deleteOldHistoryDetailsByItemId(
-							itemId,
-							System.currentTimeMillis()
-									- (ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT * 1000));
-			long timeNewest = databaseHelper
-					.getNewestHistoryDetailsClockByItemId(itemId) / 1000;
-			if (timeNewest > timeFrom) {
-				Log.d(TAG, "timeNewest: " + timeNewest + " - timeFrom: "
-						+ timeFrom);
-				timeFrom = timeNewest;
-			}
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		databaseHelper.deleteOldHistoryDetailsByItemId(itemId,
+				System.currentTimeMillis()
+						- (ZabbixConfig.HISTORY_GET_TIME_FROM_SHIFT * 1000));
+		long timeNewest = databaseHelper
+				.getNewestHistoryDetailsClockByItemId(itemId) / 1000;
+		if (timeNewest > timeFrom) {
+			Log.d(TAG, "timeNewest: " + timeNewest + " - timeFrom: " + timeFrom);
+			timeFrom = timeNewest;
 		}
 
 		try {
@@ -1078,8 +1070,6 @@ public class ZabbixRemoteAPI {
 				databaseHelper.insertHistoryDetails(historyDetailsCollection);
 				historydetails.close();
 			}
-		} catch (SQLException e) {
-			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (JSONException e) {

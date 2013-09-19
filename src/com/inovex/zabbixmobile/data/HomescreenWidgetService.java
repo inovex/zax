@@ -83,15 +83,10 @@ public class HomescreenWidgetService extends Service {
 				try {
 					mRemoteAPI.importActiveTriggers(null);
 				} finally {
-					try {
-						problems = mDatabaseHelper
-								.getProblemsBySeverityAndHostGroupId(
-										TriggerSeverity.ALL,
-										HostGroup.GROUP_ID_ALL);
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					problems = mDatabaseHelper
+							.getProblemsBySeverityAndHostGroupId(
+									TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL);
+					// TODO: display text if list is empty
 				}
 			}
 

@@ -128,7 +128,6 @@ public class Event implements Comparable<Event> {
 		return String.valueOf(id);
 	}
 
-	// TODO: Duplicated events???
 	@Override
 	public int compareTo(Event another) {
 		if (id == another.getId())

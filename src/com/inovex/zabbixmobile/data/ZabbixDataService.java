@@ -1,6 +1,5 @@
 package com.inovex.zabbixmobile.data;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -152,12 +151,7 @@ public class ZabbixDataService extends Service {
 
 		Log.d(TAG, "clearing all data");
 
-		try {
-			mDatabaseHelper.clearAllData();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		mDatabaseHelper.clearAllData();
 
 		// clear adapters
 
@@ -195,7 +189,7 @@ public class ZabbixDataService extends Service {
 	public BaseSeverityListPagerAdapter<Event> getEventsListPagerAdapter() {
 		return mEventsListPagerAdapter;
 	}
-	
+
 	/**
 	 * Returns an event list adapter.
 	 * 
@@ -329,13 +323,7 @@ public class ZabbixDataService extends Service {
 	 * @return
 	 */
 	public Host getHostById(long hostId) {
-		try {
-			return mDatabaseHelper.getHostById(hostId);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return mDatabaseHelper.getHostById(hostId);
 	}
 
 	/**
@@ -346,13 +334,7 @@ public class ZabbixDataService extends Service {
 	 * @return
 	 */
 	public Item getItemById(long itemId) {
-		try {
-			return mDatabaseHelper.getItemById(itemId);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return mDatabaseHelper.getItemById(itemId);
 	}
 
 	/**
@@ -362,13 +344,7 @@ public class ZabbixDataService extends Service {
 	 * @return
 	 */
 	public Event getEventById(long eventId) {
-		try {
-			return mDatabaseHelper.getEventById(eventId);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return mDatabaseHelper.getEventById(eventId);
 	}
 
 	/**
@@ -378,13 +354,7 @@ public class ZabbixDataService extends Service {
 	 * @return
 	 */
 	public Trigger getTriggerById(long triggerId) {
-		try {
-			return mDatabaseHelper.getTriggerById(triggerId);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return mDatabaseHelper.getTriggerById(triggerId);
 	}
 
 	@Override
@@ -466,12 +436,7 @@ public class ZabbixDataService extends Service {
 					// even if the api call is not successful, we can still use
 					// the cached events
 				} finally {
-					try {
-						hostGroups = mDatabaseHelper.getHostGroups();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					hostGroups = mDatabaseHelper.getHostGroups();
 				}
 			}
 
@@ -569,16 +534,10 @@ public class ZabbixDataService extends Service {
 				} finally {
 					// even if the api call is not successful, we can still use
 					// the cached events
-					try {
-						for (TriggerSeverity severity : TriggerSeverity
-								.values()) {
-							events.put(severity, mDatabaseHelper
-									.getEventsBySeverityAndHostGroupId(
-											severity, hostGroupId));
-						}
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					for (TriggerSeverity severity : TriggerSeverity.values()) {
+						events.put(severity, mDatabaseHelper
+								.getEventsBySeverityAndHostGroupId(severity,
+										hostGroupId));
 					}
 				}
 			}
@@ -656,16 +615,10 @@ public class ZabbixDataService extends Service {
 					// even if the api call is not successful, we can still use
 					// the cached events
 				} finally {
-					try {
-						for (TriggerSeverity severity : TriggerSeverity
-								.values()) {
-							triggers.put(severity, mDatabaseHelper
-									.getProblemsBySeverityAndHostGroupId(
-											severity, hostGroupId));
-						}
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					for (TriggerSeverity severity : TriggerSeverity.values()) {
+						triggers.put(severity, mDatabaseHelper
+								.getProblemsBySeverityAndHostGroupId(severity,
+										hostGroupId));
 					}
 				}
 			}
@@ -751,13 +704,7 @@ public class ZabbixDataService extends Service {
 					// even if the api call is not successful, we can still use
 					// the cached events
 				} finally {
-					try {
-						hosts = mDatabaseHelper
-								.getHostsByHostGroup(hostGroupId);
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					hosts = mDatabaseHelper.getHostsByHostGroup(hostGroupId);
 				}
 			}
 
@@ -810,14 +757,9 @@ public class ZabbixDataService extends Service {
 					mRemoteAPI.importApplicationsByHostId(hostId, this);
 					mRemoteAPI.importItemsByHostId(hostId, this);
 				} finally {
-					try {
-						applications = mDatabaseHelper
-								.getApplicationsByHostId(hostId);
+					applications = mDatabaseHelper
+							.getApplicationsByHostId(hostId);
 
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 				}
 			}
 
@@ -884,14 +826,8 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
-				try {
-					items = mDatabaseHelper
-							.getItemsByApplicationId(applicationId);
+				items = mDatabaseHelper.getItemsByApplicationId(applicationId);
 
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 
 			@Override
@@ -937,14 +873,9 @@ public class ZabbixDataService extends Service {
 				try {
 					mRemoteAPI.importHistoryDetails(item.getId(), this);
 				} finally {
-					try {
-						historyDetails = mDatabaseHelper
-								.getHistoryDetailsByItemId(item.getId());
+					historyDetails = mDatabaseHelper
+							.getHistoryDetailsByItemId(item.getId());
 
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 				}
 			}
 
@@ -988,13 +919,7 @@ public class ZabbixDataService extends Service {
 				try {
 					mRemoteAPI.importScreens();
 				} finally {
-					try {
-						screens = mDatabaseHelper.getScreens();
-
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					screens = mDatabaseHelper.getScreens();
 				}
 			}
 
@@ -1030,30 +955,24 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
-				try {
-					mRemoteAPI.importGraphsByScreen(screen);
-					screen.setGraphs(mDatabaseHelper.getGraphsByScreen(screen));
-					int numGraphs = screen.getGraphs().size();
-					int j = 0;
-					for (Graph g : screen.getGraphs()) {
-						int numItems = g.getGraphItems().size();
-						int k = 0;
-						for (GraphItem gi : g.getGraphItems()) {
-							Item item = gi.getItem();
-							mRemoteAPI.importHistoryDetails(item.getId(), null);
-							item.setHistoryDetails(mDatabaseHelper
-									.getHistoryDetailsByItemId(item.getId()));
-							k++;
-							updateProgress((100 * j + ((100 * k) / numItems))
-									/ numGraphs);
-						}
-						j++;
-						// updateProgress((100 * j) / numGraphs);
+				mRemoteAPI.importGraphsByScreen(screen);
+				screen.setGraphs(mDatabaseHelper.getGraphsByScreen(screen));
+				int numGraphs = screen.getGraphs().size();
+				int j = 0;
+				for (Graph g : screen.getGraphs()) {
+					int numItems = g.getGraphItems().size();
+					int k = 0;
+					for (GraphItem gi : g.getGraphItems()) {
+						Item item = gi.getItem();
+						mRemoteAPI.importHistoryDetails(item.getId(), null);
+						item.setHistoryDetails(mDatabaseHelper
+								.getHistoryDetailsByItemId(item.getId()));
+						k++;
+						updateProgress((100 * j + ((100 * k) / numItems))
+								/ numGraphs);
 					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} finally {
+					j++;
+					// updateProgress((100 * j) / numGraphs);
 				}
 			}
 
@@ -1094,17 +1013,11 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
-				try {
-					for (GraphItem gi : graph.getGraphItems()) {
-						Item item = gi.getItem();
-						mRemoteAPI.importHistoryDetails(item.getId(), this);
-						item.setHistoryDetails(mDatabaseHelper
-								.getHistoryDetailsByItemId(item.getId()));
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} finally {
+				for (GraphItem gi : graph.getGraphItems()) {
+					Item item = gi.getItem();
+					mRemoteAPI.importHistoryDetails(item.getId(), this);
+					item.setHistoryDetails(mDatabaseHelper
+							.getHistoryDetailsByItemId(item.getId()));
 				}
 			}
 
@@ -1193,13 +1106,7 @@ public class ZabbixDataService extends Service {
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
 				mRemoteAPI.acknowledgeEvent(event.getId(), comment);
-				try {
-					mDatabaseHelper.acknowledgeEvent(event);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				mSuccess = true;
+				mSuccess = mDatabaseHelper.acknowledgeEvent(event);
 			}
 
 			@Override
@@ -1250,13 +1157,7 @@ public class ZabbixDataService extends Service {
 	}
 
 	public Graph getGraphById(long graphId) {
-		try {
-			return mDatabaseHelper.getGraphById(graphId);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		return mDatabaseHelper.getGraphById(graphId);
 	}
 
 	public void setLoggedIn(boolean loggedIn) {
