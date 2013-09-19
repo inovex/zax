@@ -80,7 +80,7 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 	 */
 	private void addBaseGroups() {
 		mObjects.add(new HostGroup(HostGroup.GROUP_ID_ALL, mZabbixDataService
-				.getResources().getString(R.string.all)));
+				.getResources().getString(R.string.hostgroup_all)));
 	}
 
 	@Override

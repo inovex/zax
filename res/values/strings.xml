@@ -47,7 +47,7 @@
     <string name="server_data_not_set">Zabbix server data not set</string>
     <string name="fill_in_server_data">Please fill in your Zabbix server data before using the app.</string>
     <string name="ok">OK</string>
-    <string name="all">all</string>
+    <string name="hostgroup_all">all hostgroups</string>
     <string name="events">Events</string>
     <string name="checks">Checks</string>
     <string name="item_details">Item Details</string>
