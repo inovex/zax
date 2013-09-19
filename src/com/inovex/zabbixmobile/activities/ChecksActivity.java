@@ -1,12 +1,12 @@
 package com.inovex.zabbixmobile.activities;
 
 import android.content.ComponentName;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.widget.ViewFlipper;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
@@ -31,12 +31,8 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	private static final String TAG = ChecksActivity.class.getSimpleName();
 
-	private static final int FLIPPER_HOST_LIST_FRAGMENT = 0,
-			FLIPPER_APPLICATIONS_FRAGMENT = 1,
-			FLIPPER_ITEM_DETAILS_FRAGMENT = 2;
-
 	protected FragmentManager mFragmentManager;
-	protected ViewFlipper mFlipper;
+	// protected ViewFlipper mFlipper;
 	protected ChecksHostsFragment mHostListFragment;
 	protected ChecksApplicationsFragment mApplicationsFragment;
 	protected ChecksItemsFragment mItemDetailsFragment;
@@ -53,7 +49,6 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		mTitle = getResources().getString(R.string.checks);
 
 		mFragmentManager = getSupportFragmentManager();
-		mFlipper = (ViewFlipper) findViewById(R.id.checks_flipper);
 		mHostListFragment = (ChecksHostsFragment) mFragmentManager
 				.findFragmentById(R.id.checks_list);
 		mApplicationsFragment = (ChecksApplicationsFragment) mFragmentManager
@@ -82,22 +77,17 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			if (mFlipper != null) {
-				if (mApplicationsFragment.isVisible()) {
-					showHostListFragment();
-					return true;
-				}
-				if (mItemDetailsFragment.isVisible()) {
-					showApplicationsFragment();
-					return true;
-				}
-			} else {
-				if (mApplicationsFragment.isVisible()
-						&& mItemDetailsFragment.isVisible()) {
-					showHostListFragment();
-					return true;
-				}
+			if (mItemDetailsFragment.isVisible()
+					&& !mApplicationsFragment.isVisible()) {
+				showApplicationsFragment();
+				return true;
 			}
+			if (mApplicationsFragment.isVisible()
+					&& !mHostListFragment.isVisible()) {
+				showHostListFragment();
+				return true;
+			}
+
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -105,7 +95,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	@Override
 	public void onHostSelected(int position, long id) {
-		Log.d(TAG, "item selected: " + id + " position: " + position + ")");
+		Log.d(TAG, "host selected: " + id + " position: " + position + ")");
 
 		mHostListFragment.selectItem(position);
 
@@ -145,23 +135,14 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	@Override
 	public void onBackPressed() {
-		if (mFlipper != null) {
-			if (mItemDetailsFragment.isVisible()) {
-				showApplicationsFragment();
-				return;
-			}
-			if (mApplicationsFragment.isVisible()) {
-				showHostListFragment();
-				return;
-			}
-
-		} else {
-			if (mApplicationsFragment.isVisible()
-					&& mItemDetailsFragment.isVisible()) {
-				showHostListFragment();
-				return;
-			}
-
+		if (mItemDetailsFragment.isVisible()
+				&& !mApplicationsFragment.isVisible()) {
+			showApplicationsFragment();
+			return;
+		}
+		if (mApplicationsFragment.isVisible() && !mHostListFragment.isVisible()) {
+			showHostListFragment();
+			return;
 		}
 		super.onBackPressed();
 	}
@@ -191,11 +172,11 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	}
 
 	protected void showHostListFragment() {
-		if (mFlipper != null) {
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			// portrait
-			if (!mHostListFragment.isVisible()) {
-				mFlipper.setDisplayedChild(FLIPPER_HOST_LIST_FRAGMENT);
-			}
+			FragmentTransaction ft = mFragmentManager.beginTransaction();
+			ft.show(mHostListFragment);
+			ft.commit();
 		} else {
 			// landscape
 			FragmentTransaction ft = mFragmentManager.beginTransaction();
@@ -203,25 +184,32 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 			ft.hide(mItemDetailsFragment);
 			ft.commit();
 		}
+		// Uncheck the currently selected list item because the item fragment is
+		// no longer visible.
+		mApplicationsFragment.uncheckCurrentListItem();
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 	}
 
 	protected void showApplicationsFragment() {
-		if (mFlipper != null) {
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			// portrait
-			if (!mApplicationsFragment.isVisible())
-				mFlipper.setDisplayedChild(FLIPPER_APPLICATIONS_FRAGMENT);
+			FragmentTransaction ft = mFragmentManager.beginTransaction();
+			ft.hide(mHostListFragment);
+			ft.show(mApplicationsFragment);
+			ft.commit();
 			mDrawerToggle.setDrawerIndicatorEnabled(false);
 		}
 		// nothing to do for landscape: applications are always visible
 	}
 
 	protected void showItemDetailsFragment() {
-		if (mFlipper != null) {
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			// portrait
-			if (!mItemDetailsFragment.isVisible()) {
-				mFlipper.setDisplayedChild(FLIPPER_ITEM_DETAILS_FRAGMENT);
-			}
+			FragmentTransaction ft = mFragmentManager.beginTransaction();
+			ft.hide(mHostListFragment);
+			ft.hide(mApplicationsFragment);
+			ft.show(mItemDetailsFragment);
+			ft.commit();
 			mDrawerToggle.setDrawerIndicatorEnabled(false);
 		} else {
 			// landscape

@@ -122,7 +122,7 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 
 	@Override
 	protected void fillDetailsText() {
-		if (mItem != null) {
+		if (mItem != null && getView() != null) {
 			((TextView) getView().findViewById(R.id.item_details_name))
 					.setText(mItem.getDescription());
 

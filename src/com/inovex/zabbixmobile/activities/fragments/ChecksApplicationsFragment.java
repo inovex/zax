@@ -274,7 +274,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 			mApplicationsPageIndicator.setCurrentItem(position);
 		}
 	}
-	
+
 	public void resetSelection() {
 		mApplicationsPageIndicator.onPageSelected(0);
 	}
@@ -318,7 +318,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 					.instantiateItem(mApplicationsPager,
 							mApplicationsPager.getCurrentItem());
 			if (currentPage != null) {
-//				currentPage.selectItem(mItemPosition);
+				// currentPage.selectItem(mItemPosition);
 				currentPage.restoreItemSelection();
 			}
 		}
@@ -335,6 +335,20 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 			ProgressBar listProgress = (ProgressBar) getView().findViewById(
 					R.id.applications_progress);
 			listProgress.setProgress(progress);
+		}
+	}
+
+	/**
+	 * Unchecks the currently selected list item.
+	 */
+	public void uncheckCurrentListItem() {
+		if (mApplicationsPagerAdapter != null) {
+			ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mApplicationsPagerAdapter
+					.instantiateItem(mApplicationsPager,
+							mApplicationsPager.getCurrentItem());
+			if (currentPage != null) {
+				currentPage.uncheckCurrentItem();
+			}
 		}
 	}
 

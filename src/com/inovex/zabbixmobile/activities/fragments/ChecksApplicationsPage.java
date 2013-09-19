@@ -115,4 +115,8 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 		return mTitle;
 	}
 
+	public void uncheckCurrentItem() {
+		getListView().setItemChecked(mListAdapter.getCurrentPosition(), false);
+	}
+
 }
