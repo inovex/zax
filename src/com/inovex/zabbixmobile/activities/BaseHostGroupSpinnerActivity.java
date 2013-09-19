@@ -65,6 +65,8 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		// button)
 		if (mSpinnerAdapter != null) {
 			mSpinnerAdapter.setTitle(mTitle);
+			mSpinnerAdapter.setCallback(this);
+			mSpinnerAdapter.refreshSelection();
 		}
 	}
 
@@ -90,8 +92,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 				mOnNavigationListener);
 
 		mSpinnerAdapter.setTitle(mTitle);
-		// mSpinnerAdapter.notifyDataSetChanged();
-		// selectHostGroupInSpinner(mHostGroupPosition, mHostGroupId);
+		mSpinnerAdapter.refreshSelection();
 
 		if (mZabbixDataService.isLoggedIn())
 			loadAdapterContent(false);
@@ -118,6 +119,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	 */
 	public void selectHostGroupInSpinner(int position, long itemId) {
 		mSpinnerAdapter.setCurrentPosition(position);
+		mSpinnerAdapter.notifyDataSetChanged();
 		loadAdapterContent(true);
 	}
 

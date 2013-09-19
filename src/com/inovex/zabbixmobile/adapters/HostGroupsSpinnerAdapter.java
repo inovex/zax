@@ -102,6 +102,10 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 		super.notifyDataSetChanged();
 		// update the current selection (we might have saved this position
 		// before)
+		refreshSelection();
+	}
+
+	public void refreshSelection() {
 		if (mCallback != null && mObjects.size() > mHostGroupPosition)
 			mCallback.onHostGroupSelected(mHostGroupPosition);
 	}

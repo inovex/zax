@@ -276,7 +276,8 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	}
 
 	public void resetSelection() {
-		mApplicationsPageIndicator.onPageSelected(0);
+		if(mApplicationsPagerAdapter.getCount() > 0)
+			mApplicationsPageIndicator.onPageSelected(0);
 	}
 
 	public void refreshSelection() {
