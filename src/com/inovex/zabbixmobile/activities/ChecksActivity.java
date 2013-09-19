@@ -77,17 +77,14 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			if (mItemDetailsFragment.isVisible()
-					&& !mApplicationsFragment.isVisible()) {
+			if(!mHostListFragment.isVisible()) {
+				if(mApplicationsFragment.isVisible()) {
+					showHostListFragment();
+					return true;
+				}
 				showApplicationsFragment();
 				return true;
 			}
-			if (mApplicationsFragment.isVisible()
-					&& !mHostListFragment.isVisible()) {
-				showHostListFragment();
-				return true;
-			}
-
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -135,13 +132,12 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	@Override
 	public void onBackPressed() {
-		if (mItemDetailsFragment.isVisible()
-				&& !mApplicationsFragment.isVisible()) {
+		if(!mHostListFragment.isVisible()) {
+			if(mApplicationsFragment.isVisible()) {
+				showHostListFragment();
+				return;
+			}
 			showApplicationsFragment();
-			return;
-		}
-		if (mApplicationsFragment.isVisible() && !mHostListFragment.isVisible()) {
-			showHostListFragment();
 			return;
 		}
 		super.onBackPressed();
@@ -176,6 +172,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 			// portrait
 			FragmentTransaction ft = mFragmentManager.beginTransaction();
 			ft.show(mHostListFragment);
+			ft.show(mApplicationsFragment);
 			ft.commit();
 		} else {
 			// landscape
