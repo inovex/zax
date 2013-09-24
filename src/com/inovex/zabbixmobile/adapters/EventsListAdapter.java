@@ -84,6 +84,18 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 	}
 
 	@Override
+	public int getItemViewType(int position) {
+		if(getItem(position).getValue() == Event.VALUE_OK)
+			return 0;
+		return 1;
+	}
+
+	@Override
+	public int getViewTypeCount() {
+		return 2;
+	}
+
+	@Override
 	public long getItemId(int position) {
 		return getItem(position).getId();
 	}
