@@ -8,6 +8,7 @@ import java.util.Locale;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
@@ -43,6 +44,9 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 
 		}
 
+		ImageView statusImage = (ImageView) row
+				.findViewById(R.id.severity_list_item_status);
+
 		TextView title = (TextView) row
 				.findViewById(R.id.severity_list_item_host);
 		TextView description = (TextView) row
@@ -66,7 +70,38 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 				Locale.getDefault());
 		clock.setText(String.valueOf(dateFormatter.format(cal.getTime())));
 
+		switch (t.getPriority()) {
+		case DISASTER:
+		case HIGH:
+			statusImage.setImageResource(R.drawable.severity_high);
+			break;
+		case INFORMATION:
+			statusImage.setImageResource(R.drawable.ok);
+			break;
+		default:
+			statusImage.setImageResource(R.drawable.severity_average);
+		}
+
 		return row;
+	}
+
+	@Override
+	public int getItemViewType(int position) {
+		Trigger t = getItem(position);
+		switch (t.getPriority()) {
+		case DISASTER:
+		case HIGH:
+			return 0;
+		case INFORMATION:
+			return 1;
+		default:
+			return 2;
+		}
+	}
+
+	@Override
+	public int getViewTypeCount() {
+		return 3;
 	}
 
 	@Override
