@@ -52,7 +52,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 		}
 
 		final Long itemId = getItemId(position);
-		if(itemId == null)
+		if (itemId == null)
 			return null;
 
 		// Do we already have this fragment?
@@ -179,7 +179,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 	 */
 	@SuppressWarnings("unchecked")
 	public T getObject(int position) {
-		if(position >= mObjects.size())
+		if (position >= mObjects.size())
 			return null;
 		return (T) mObjects.toArray()[position];
 	}

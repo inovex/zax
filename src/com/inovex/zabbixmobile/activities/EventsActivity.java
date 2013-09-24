@@ -14,7 +14,7 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 /**
  * Activity to visualize events.
- *
+ * 
  */
 public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		OnAcknowledgeEventListener {
@@ -26,7 +26,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_events);
 
-		mTitle = getResources().getString(R.string.events);
+		mTitle = getResources().getString(R.string.activity_events);
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
@@ -109,7 +109,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	public void onSeverityListAdapterLoaded(TriggerSeverity severity,
 			boolean hostGroupChanged) {
 		super.onSeverityListAdapterLoaded(severity, hostGroupChanged);
-		
+
 		BaseSeverityListPagerAdapter<Event> pagerAdapter = mZabbixDataService
 				.getEventsListPagerAdapter();
 		pagerAdapter.updateTitle(severity.getPosition(), mZabbixDataService

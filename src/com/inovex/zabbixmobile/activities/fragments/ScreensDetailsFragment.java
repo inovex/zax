@@ -18,7 +18,7 @@ import com.jjoe64.graphview.LineGraphView;
 
 /**
  * Fragment showing one particular screen.
- *
+ * 
  */
 public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 		implements OnGraphsLoadedListener {

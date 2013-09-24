@@ -8,7 +8,7 @@ import com.inovex.zabbixmobile.model.Event;
 
 /**
  * Fragment displaying a list of events for a particular severity.
- *
+ * 
  */
 public class EventsListPage extends BaseSeverityFilterListPage<Event> {
 

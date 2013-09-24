@@ -8,7 +8,7 @@ import com.inovex.zabbixmobile.model.Event;
 
 /**
  * Adapter for pages containing lists of events.
- *
+ * 
  */
 public class EventsListPagerAdapter extends BaseSeverityListPagerAdapter<Event> {
 
@@ -23,7 +23,7 @@ public class EventsListPagerAdapter extends BaseSeverityListPagerAdapter<Event> 
 
 	@Override
 	public Long getItemId(int position) {
-		if(getObject(position) == null)
+		if (getObject(position) == null)
 			return null;
 		return (long) getObject(position).getNumber();
 	}

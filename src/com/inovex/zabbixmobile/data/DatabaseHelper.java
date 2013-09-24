@@ -121,7 +121,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param severity
 	 * @param hostGroupId
 	 * @return list of events with a matching severity and host group
-
 	 */
 	public List<Event> getEventsBySeverityAndHostGroupId(
 			TriggerSeverity severity, long hostGroupId) {
@@ -164,7 +163,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param severity
 	 * @param hostGroupId
 	 * @return list of events with a matching severity and host group
-
 	 */
 	public List<Trigger> getProblemsBySeverityAndHostGroupId(
 			TriggerSeverity severity, long hostGroupId) {
@@ -209,7 +207,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * Queries all host groups from the database.
 	 * 
 	 * @return list of all host groups
-
 	 */
 	public List<HostGroup> getHostGroups() {
 		try {
@@ -225,7 +222,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * Queries all hosts from the database.
 	 * 
 	 * @return list of all hosts
-
 	 */
 	public List<Host> getHosts() {
 		try {
@@ -243,7 +239,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param hostGroupId
 	 *            ID of the host group
 	 * @return list of hosts in the specified group
-
 	 */
 	public List<Host> getHostsByHostGroup(long hostGroupId) {
 		try {
@@ -275,7 +270,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param hostId
 	 *            ID of the host group
 	 * @return hosts with the given ID
-
 	 */
 	public Host getHostById(long hostId) {
 		try {
@@ -295,7 +289,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param id
 	 *            ID of the queried event
 	 * @return the corresponding event
-
 	 */
 	public Event getEventById(long id) {
 		try {
@@ -313,7 +306,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param id
 	 *            ID of the queried trigger
 	 * @return the corresponding trigger
-
 	 */
 	public Trigger getTriggerById(long id) {
 		try {
@@ -329,7 +321,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * Queries all applications from the database.
 	 * 
 	 * @return list of all applications
-
 	 */
 	public List<Application> getApplications() {
 		try {
@@ -347,7 +338,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param host
 	 * 
 	 * @return list of applications
-
 	 */
 	public List<Application> getApplicationsByHost(Host host) {
 		try {
@@ -365,7 +355,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param hostId
 	 * 
 	 * @return list of applications
-
 	 */
 	public List<Application> getApplicationsByHostId(long hostId) {
 		try {
@@ -383,7 +372,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param id
 	 * 
 	 * @return application, or null if there is no application with this ID
-
 	 */
 	public Application getApplicationById(long id) {
 		try {
@@ -401,7 +389,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param applicationId
 	 * 
 	 * @return list of items
-
 	 */
 	public List<Item> getItemsByApplicationId(long applicationId) {
 		try {
@@ -433,7 +420,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param itemId
 	 * 
 	 * @return list of history details
-
 	 */
 	public List<HistoryDetail> getHistoryDetailsByItemId(long itemId) {
 		try {
@@ -454,7 +440,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param itemId
 	 * 
 	 * @return list of history details
-
 	 */
 	public long getNewestHistoryDetailsClockByItemId(long itemId) {
 		try {
@@ -478,7 +463,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * 
 	 * @return list of screens
-
 	 */
 	public List<Screen> getScreens() {
 		try {
@@ -495,7 +479,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param screen
 	 * @return list of graph IDs
-
 	 */
 	public Set<Long> getGraphIdsByScreen(Screen screen) {
 		try {
@@ -519,7 +502,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param screen
 	 * @return graphs
-
 	 */
 	public Collection<Graph> getGraphsByScreen(Screen screen) {
 		try {
@@ -540,7 +522,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param graph
 	 * @return graph items
-
 	 */
 	public Collection<GraphItem> getGraphItemsByGraph(Graph graph) {
 		try {
@@ -559,7 +540,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param events
 	 *            collection of events to be inserted
-
 	 */
 	public void insertEvents(Collection<Event> events) {
 		try {
@@ -596,7 +576,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param triggers
 	 *            collection of triggers to be inserted
-
 	 */
 	public void insertTriggers(Collection<Trigger> triggers) {
 		try {
@@ -625,7 +604,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param hosts
 	 *            collection of hosts to be inserted
-
 	 */
 	public void insertHosts(List<Host> hosts) {
 		try {
@@ -654,7 +632,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param hostGroups
 	 *            collection of host groups to be inserted
-
 	 */
 	public void insertHostGroups(ArrayList<HostGroup> hostGroups) {
 		try {
@@ -683,7 +660,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param applications
 	 *            collection of applications to be inserted
-
 	 */
 	public void insertApplications(Collection<Application> applications) {
 		try {
@@ -720,7 +696,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param triggerHostGroupCollection
 	 *            collection of relations to be inserted
-
 	 */
 	public void insertTriggerHostgroupRelations(
 			List<TriggerHostGroupRelation> triggerHostGroupCollection) {
@@ -756,7 +731,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param hostHostGroupCollection
 	 *            collection of relations to be inserted
-
 	 */
 	public void insertHostHostgroupRelations(
 			List<HostHostGroupRelation> hostHostGroupCollection) {
@@ -792,7 +766,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param applicationItemRelations
 	 *            collection of relations to be inserted
-
 	 */
 	public void insertApplicationItemRelations(
 			List<ApplicationItemRelation> applicationItemRelations) {
@@ -828,7 +801,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param itemCollection
 	 *            collection of items to be inserted
-
 	 */
 	public void insertItems(List<Item> itemCollection) {
 		try {
@@ -857,7 +829,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param historyDetailsCollection
 	 *            collection of history details to be inserted
-
 	 */
 	public void insertHistoryDetails(
 			List<HistoryDetail> historyDetailsCollection) {
@@ -887,7 +858,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param screenCollection
 	 *            collection of screens to be inserted
-
 	 */
 	public void insertScreens(List<Screen> screenCollection) {
 		try {
@@ -916,7 +886,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param screenItemsCollection
 	 *            collection of screens to be inserted
-
 	 */
 	public void insertScreenItems(List<ScreenItem> screenItemsCollection) {
 		try {
@@ -945,7 +914,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param graphCollection
 	 *            collection of graphs to be inserted
-
 	 */
 	public void insertGraphs(List<Graph> graphCollection) {
 		try {
@@ -974,7 +942,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param graphItemsCollection
 	 *            collection of graph items to be inserted
-
 	 */
 	public void insertGraphItems(List<GraphItem> graphItemsCollection) {
 		try {
@@ -1003,7 +970,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param event
 	 *            the event
-
 	 */
 	public boolean acknowledgeEvent(Event event) {
 		try {
@@ -1022,7 +988,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * 
 	 * @param c
 	 *            class of the type
-
 	 */
 	private <T> void clearTable(Class<T> c) throws SQLException {
 		Dao<T, Long> dao = getDao(c);
@@ -1032,7 +997,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Clears the entire database.
 	 * 
-
 	 */
 	public void clearAllData() {
 		try {
@@ -1047,7 +1011,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Removes all events from the database.
 	 * 
-
 	 */
 	public void clearEvents() {
 		try {
@@ -1060,7 +1023,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Removes all triggers from the database.
 	 * 
-
 	 */
 	public void clearTriggers() {
 		try {
@@ -1073,7 +1035,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Removes all hosts from the database.
 	 * 
-
 	 */
 	public void clearHosts() {
 		try {
@@ -1086,7 +1047,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Removes all host groups from the database.
 	 * 
-
 	 */
 	public void clearHostGroups() {
 		try {
@@ -1099,7 +1059,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Removes all items from the database.
 	 * 
-
 	 */
 	public void clearItems() {
 		try {
@@ -1112,7 +1071,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Removes all screens and screen items from the database.
 	 * 
-
 	 */
 	public void clearScreens() {
 		try {
@@ -1179,7 +1137,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param threshold
 	 *            all items with a clock smaller than this threshold will be
 	 *            deleted
-
 	 */
 	public void deleteOldHistoryDetailsByItemId(long itemId, long threshold) {
 		try {
@@ -1201,7 +1158,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param threshold
 	 *            all items with a clock smaller than this threshold will be
 	 *            deleted
-
 	 */
 	public void deleteGraphsByIds(Set<Long> graphIds) {
 
@@ -1233,7 +1189,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 * @param itemId
 	 *            ID of the item which has been cached or null if an entire
 	 *            table has been cached
-
 	 */
 	public void setCached(CacheDataType type, Long itemId) {
 		if (itemId == null)
@@ -1256,7 +1211,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 *            be checked
 	 * @return true, if a cache entry for this data type exists and is still
 	 *         up-to-date; false, otherwise
-
 	 */
 	public boolean isCached(CacheDataType type, Long itemId) {
 		Dao<Cache, CacheDataType> cacheDao;

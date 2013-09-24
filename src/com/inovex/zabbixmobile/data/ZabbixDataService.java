@@ -728,8 +728,14 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Loads all applications with a given host group from the database
-	 * asynchronously. After loading the events, the corresponding adapters are
-	 * updated. If necessary, an import from the Zabbix API is triggered.
+	 * asynchronously. After loading the applications, the corresponding
+	 * adapters are updated. If necessary, an import from the Zabbix API is
+	 * triggered.
+	 * 
+	 * Attention: This call needs to take care of loading all items inside the
+	 * applications as well. Otherwise they will not be available when
+	 * {@link ZabbixDataService#loadItemsByApplicationId(long, OnItemsLoadedListener)}
+	 * is called.
 	 * 
 	 * @param hostId
 	 *            host id
@@ -795,8 +801,7 @@ public class ZabbixDataService extends Service {
 	 * Loads all items in a given application from the database asynchronously.
 	 * After loading the items, the corresponding adapters are updated. An
 	 * import from Zabbix is not necessary, because the items have already been
-	 * loaded together with the applications. TODO: handle this case with cache
-	 * functionality
+	 * loaded together with the applications.
 	 * 
 	 * @param hostGroupId
 	 *            host group id by which the events will be filtered

@@ -46,7 +46,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		mActionBar.setDisplayShowTitleEnabled(false);
 
-		mTitle = getResources().getString(R.string.checks);
+		mTitle = getResources().getString(R.string.activity_checks);
 
 		mFragmentManager = getSupportFragmentManager();
 		mHostListFragment = (ChecksHostsFragment) mFragmentManager
@@ -77,8 +77,8 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			if(!mHostListFragment.isVisible()) {
-				if(mApplicationsFragment.isVisible()) {
+			if (!mHostListFragment.isVisible()) {
+				if (mApplicationsFragment.isVisible()) {
 					showHostListFragment();
 					return true;
 				}
@@ -132,8 +132,8 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 
 	@Override
 	public void onBackPressed() {
-		if(!mHostListFragment.isVisible()) {
-			if(mApplicationsFragment.isVisible()) {
+		if (!mHostListFragment.isVisible()) {
+			if (mApplicationsFragment.isVisible()) {
 				showHostListFragment();
 				return;
 			}

@@ -1,8 +1,8 @@
 package com.inovex.zabbixmobile.model;
 
-import com.inovex.zabbixmobile.R;
-
 import android.util.SparseArray;
+
+import com.inovex.zabbixmobile.R;
 
 public enum TriggerSeverity {
 	ALL(R.string.severity_all, -1, 0), DISASTER(R.string.severity_disaster, 5,

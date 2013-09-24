@@ -7,7 +7,7 @@ import com.inovex.zabbixmobile.model.Application;
 
 /**
  * Pager adapter containing application pages.
- *
+ * 
  */
 public class ChecksApplicationsPagerAdapter extends
 		BaseServicePagerAdapter<Application> {
@@ -22,7 +22,7 @@ public class ChecksApplicationsPagerAdapter extends
 
 	@Override
 	public Long getItemId(int position) {
-		if(getObject(position) == null)
+		if (getObject(position) == null)
 			return null;
 		return getObject(position).getId();
 	}

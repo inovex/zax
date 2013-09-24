@@ -9,7 +9,7 @@ import android.util.Log;
 
 /**
  * Alarm to wake up the push service.
- *
+ * 
  */
 public class PushAlarm extends BroadcastReceiver {
 

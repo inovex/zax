@@ -276,7 +276,6 @@ public class ZabbixRemoteAPI {
 	 * @param method
 	 * @param params
 	 * @return
-	 * @throws ClientProtocolException
 	 * @throws IOException
 	 * @throws JSONException
 	 * @throws FatalException
@@ -621,8 +620,6 @@ public class ZabbixRemoteAPI {
 					"application.get", params);
 			importApplicationsFromStream(applications, task, numApplications);
 			// events.close();
-		} catch (SQLException e) {
-			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (JSONException e) {
@@ -644,12 +641,11 @@ public class ZabbixRemoteAPI {
 	 * @throws JsonParseException
 	 * @throws NumberFormatException
 	 * @throws IOException
-	 * @throws SQLException
 	 */
 	private Collection<Application> importApplicationsFromStream(
 			JsonArrayOrObjectReader jsonReader, RemoteAPITask task,
 			int numApplications) throws JsonParseException,
-			NumberFormatException, IOException, SQLException {
+			NumberFormatException, IOException {
 		List<Application> applicationsComplete = new ArrayList<Application>();
 		List<Application> applicationsPerBatch = new ArrayList<Application>(
 				RECORDS_PER_INSERT_BATCH);
@@ -729,11 +725,10 @@ public class ZabbixRemoteAPI {
 	 * @throws JsonParseException
 	 * @throws NumberFormatException
 	 * @throws IOException
-	 * @throws SQLException
 	 */
 	private Collection<Application> importApplicationsFromIdStream(
 			JsonArrayOrObjectReader jsonReader) throws JsonParseException,
-			NumberFormatException, IOException, SQLException {
+			NumberFormatException, IOException {
 		List<Application> applications = new ArrayList<Application>();
 		JsonObjectReader application;
 		HashSet<Long> appIds = new HashSet<Long>();
@@ -817,8 +812,6 @@ public class ZabbixRemoteAPI {
 			importEventsFromStream(events, task, numEvents);
 			// events.close();
 			databaseHelper.setCached(CacheDataType.EVENT, null);
-		} catch (SQLException e) {
-			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (JSONException e) {
@@ -865,15 +858,14 @@ public class ZabbixRemoteAPI {
 	 *            total number of events that will be imported
 	 * @throws JsonParseException
 	 * @throws IOException
-	 * @throws SQLException
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 * @throws JSONException
 	 */
 	private void importEventsFromStream(JsonArrayOrObjectReader jsonReader,
 			RemoteAPITask task, int numEvents) throws JsonParseException,
-			IOException, SQLException, JSONException,
-			ZabbixLoginRequiredException, FatalException {
+			IOException, JSONException, ZabbixLoginRequiredException,
+			FatalException {
 		JsonObjectReader eventReader;
 		List<Event> eventsCollection = new ArrayList<Event>(
 				RECORDS_PER_INSERT_BATCH);
@@ -894,7 +886,7 @@ public class ZabbixRemoteAPI {
 				} else if (propName.equals("triggers")) {
 					// import triggers
 					List<Trigger> triggers = importTriggersFromStream(
-							eventReader.getJsonArrayOrObjectReader(), null, 0);
+							eventReader.getJsonArrayOrObjectReader(), 0, null);
 					if (triggers.size() > 0) {
 						Trigger t = triggers.get(0);
 						e.setTrigger(t);
@@ -933,7 +925,6 @@ public class ZabbixRemoteAPI {
 		databaseHelper.insertEvents(eventsCollection);
 		// we need to close here to be able to start another import (triggers)
 		jsonReader.close();
-		// TODO: progress update on triggers?
 		importTriggersByIds(triggerIds, false, null);
 	}
 
@@ -1086,11 +1077,10 @@ public class ZabbixRemoteAPI {
 	 * @return list of host groups parsed from jsonReader
 	 * @throws JsonParseException
 	 * @throws IOException
-	 * @throws SQLException
 	 */
 	private List<HostGroup> importHostGroupsFromStream(
 			JsonArrayOrObjectReader jsonReader) throws JsonParseException,
-			IOException, SQLException {
+			IOException {
 		long firstHostGroupId = -1;
 		ArrayList<HostGroup> hostGroupCollection = new ArrayList<HostGroup>();
 		JsonObjectReader hostReader;
@@ -1137,10 +1127,9 @@ public class ZabbixRemoteAPI {
 	 * @return list of hosts retrieved from the stream
 	 * @throws JsonParseException
 	 * @throws IOException
-	 * @throws SQLException
 	 */
 	private List<Host> importHostsFromStream(JsonArrayOrObjectReader jsonReader)
-			throws JsonParseException, IOException, SQLException {
+			throws JsonParseException, IOException {
 
 		List<Host> hostCollection = new ArrayList<Host>();
 		List<HostHostGroupRelation> hostHostGroupCollection = new ArrayList<HostHostGroupRelation>();
@@ -1219,11 +1208,11 @@ public class ZabbixRemoteAPI {
 				hosts.close();
 			}
 
-		} catch (SQLException e) {
-			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (JSONException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (SQLException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
 
@@ -1246,12 +1235,11 @@ public class ZabbixRemoteAPI {
 	 * @return the first item id
 	 * @throws JsonParseException
 	 * @throws IOException
-	 * @throws SQLException
 	 */
 	private List<Item> importItemsFromStream(
 			JsonArrayOrObjectReader jsonReader, RemoteAPITask task,
 			int numItems, boolean checkBeforeInsert) throws JsonParseException,
-			IOException, SQLException {
+			IOException {
 		JsonObjectReader itemReader;
 		List<Item> itemsComplete = new ArrayList<Item>();
 		List<Item> itemsPerBatch = new ArrayList<Item>(RECORDS_PER_INSERT_BATCH);
@@ -1402,8 +1390,6 @@ public class ZabbixRemoteAPI {
 
 			// Log.d(TAG, _queryBuffer("item.get", params).toString());
 
-		} catch (SQLException e) {
-			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (JSONException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
@@ -1415,8 +1401,7 @@ public class ZabbixRemoteAPI {
 	}
 
 	private void importScreenItemsFromStream(JsonArrayOrObjectReader jsonReader)
-			throws JsonParseException, NumberFormatException, IOException,
-			SQLException {
+			throws JsonParseException, NumberFormatException, IOException {
 		JsonObjectReader screenItemReader;
 
 		ArrayList<ScreenItem> screenItemsCollection = new ArrayList<ScreenItem>(
@@ -1505,14 +1490,9 @@ public class ZabbixRemoteAPI {
 			jsonReader.close();
 
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
 
 		databaseHelper.setCached(CacheDataType.SCREEN, null);
@@ -1640,14 +1620,9 @@ public class ZabbixRemoteAPI {
 			graphs.close();
 
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
 
 		databaseHelper.setCached(CacheDataType.GRAPH, screen.getId());
@@ -1694,9 +1669,6 @@ public class ZabbixRemoteAPI {
 	 *            true: import only active triggers; false: import all
 	 * @param task
 	 *            task to be notified of progress update
-	 * @throws JSONException
-	 * @throws IOException
-	 * @throws SQLException
 	 * @throws ZabbixLoginRequiredException
 	 * @throws FatalException
 	 */
@@ -1749,10 +1721,8 @@ public class ZabbixRemoteAPI {
 				params.put("only_true", "1");
 			JsonArrayOrObjectReader triggers = _queryStream("trigger.get",
 					params);
-			importTriggersFromStream(triggers, task, numTriggers);
+			importTriggersFromStream(triggers, numTriggers, task);
 			triggers.close();
-		} catch (SQLException e) {
-			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (JSONException e) {
@@ -1769,19 +1739,17 @@ public class ZabbixRemoteAPI {
 	 * 
 	 * @param jsonReader
 	 *            JSON stream reader
-	 * @param task
-	 *            task to be notified of progress
 	 * @param numTriggers
 	 *            total number of triggers that will be imported
+	 * @param task
+	 *            task to be notified of progress
 	 * @return list of imported triggers
 	 * @throws JsonParseException
 	 * @throws IOException
-	 * @throws SQLException
 	 */
 	private List<Trigger> importTriggersFromStream(
-			JsonArrayOrObjectReader jsonReader, RemoteAPITask task,
-			int numTriggers) throws JsonParseException, IOException,
-			SQLException {
+			JsonArrayOrObjectReader jsonReader, int numTriggers,
+			RemoteAPITask task) throws JsonParseException, IOException {
 		List<Trigger> triggerCollection = new ArrayList<Trigger>(
 				RECORDS_PER_INSERT_BATCH);
 		List<TriggerHostGroupRelation> triggerHostGroupCollection = new ArrayList<TriggerHostGroupRelation>(

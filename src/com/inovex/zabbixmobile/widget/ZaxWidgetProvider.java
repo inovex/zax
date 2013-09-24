@@ -15,7 +15,7 @@ import com.inovex.zabbixmobile.model.ZaxPreferences;
 
 /**
  * This class provides the Zax homescreen widget.
- *
+ * 
  */
 public class ZaxWidgetProvider extends AppWidgetProvider {
 	private static final String TAG = ZaxWidgetProvider.class.getSimpleName();
@@ -26,7 +26,8 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 		// service
 		Log.d(TAG, "onUpdate: setting alarm");
 		// Alarm Manager for refresh
-		int minutes = (ZaxPreferences.getInstance(context)).getWidgetRefreshInterval();
+		int minutes = (ZaxPreferences.getInstance(context))
+				.getWidgetRefreshInterval();
 
 		long interval = minutes * 60 * 1000;
 		for (int appWidgetId : appWidgetIds) {
@@ -69,7 +70,7 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 				.getSystemService(Context.ALARM_SERVICE);
 		if (updateRate >= 0) {
 			alarms.setRepeating(AlarmManager.ELAPSED_REALTIME,
-					SystemClock.elapsedRealtime() + updateRate, updateRate, newPending);
+					SystemClock.elapsedRealtime(), updateRate, newPending);
 		} else {
 			// on a negative updateRate stop the refreshing
 			alarms.cancel(newPending);

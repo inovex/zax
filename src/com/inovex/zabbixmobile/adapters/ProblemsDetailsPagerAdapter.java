@@ -37,7 +37,7 @@ public class ProblemsDetailsPagerAdapter extends
 
 	@Override
 	public Long getItemId(int position) {
-		if(getObject(position) == null)
+		if (getObject(position) == null)
 			return null;
 		return getObject(position).getId();
 	}

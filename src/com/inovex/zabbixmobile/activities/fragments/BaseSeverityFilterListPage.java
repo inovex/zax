@@ -130,6 +130,7 @@ public abstract class BaseSeverityFilterListPage<T> extends
 
 	/**
 	 * Sets the severity of this page.
+	 * 
 	 * @param severity
 	 */
 	public void setSeverity(TriggerSeverity severity) {
@@ -140,7 +141,8 @@ public abstract class BaseSeverityFilterListPage<T> extends
 
 	/**
 	 * Retrieves this page's severity.
-	 * @return 
+	 * 
+	 * @return
 	 */
 	public TriggerSeverity getSeverity() {
 		return mSeverity;

@@ -1,6 +1,5 @@
 package com.inovex.zabbixmobile.data;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,7 +85,6 @@ public class HomescreenWidgetService extends Service {
 					problems = mDatabaseHelper
 							.getProblemsBySeverityAndHostGroupId(
 									TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL);
-					// TODO: display text if list is empty
 				}
 			}
 
@@ -130,7 +128,7 @@ public class HomescreenWidgetService extends Service {
 					preferences.getZabbixUrl());
 
 			String content;
-			int icon = R.drawable.widget_ok;
+			int icon = R.drawable.ok;
 			if (problems.size() > 0) {
 				Trigger trigger = problems.get(0);
 				switch (trigger.getPriority()) {

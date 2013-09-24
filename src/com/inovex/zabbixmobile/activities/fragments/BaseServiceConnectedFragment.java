@@ -15,7 +15,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
  * Base class for fragments connected to the data service.
  * 
  * This class takes care of binding the service.
- *
+ * 
  */
 public abstract class BaseServiceConnectedFragment extends SherlockFragment
 		implements ServiceConnection {

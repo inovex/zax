@@ -15,7 +15,7 @@ import com.inovex.zabbixmobile.listeners.OnScreensItemSelectedListener;
 
 /**
  * Fragment showing a list of all screens specified in Zabbix.
- *
+ * 
  */
 public class ScreensListFragment extends BaseServiceConnectedListFragment {
 

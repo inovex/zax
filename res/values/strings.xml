@@ -32,7 +32,6 @@
     <string name="disabled">Disabled</string>
     <string name="time">Time</string>
     <string name="status">Status</string>
-    <string name="problems">Problems</string>
     <string name="acknowledged">Acknowledged</string>
     <string name="preferences">Preferences</string>
     <string name="refresh_all_data">Refresh all data</string>
@@ -48,8 +47,6 @@
     <string name="fill_in_server_data">Please fill in your Zabbix server data before using the app.</string>
     <string name="ok">OK</string>
     <string name="hostgroup_all">all hostgroups</string>
-    <string name="events">Events</string>
-    <string name="checks">Checks</string>
     <string name="item_details">Item Details</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
@@ -74,7 +71,6 @@
     <string name="acknowledge_event">Acknowledge Event</string>
     <string name="comment">Comment</string>
     <string name="cancel">Cancel</string>
-    <string name="screens">Screens</string>
      <string name="trust_all_ssl_certificates">Trust all SSL Certificates</string>
      <string name="homescreen_widget">Homescreen Widget</string>
      <string name="empty_list_checks">No items found for this application.</string>
@@ -83,6 +79,8 @@
      
      <string name="notification_title">Zabbix triggers</string>
      
+     
+     <string name="widget_refresh">refresh widget</string>
      <string name="widget_no_problems">There are no problems at the moment</string>
      <string name="widget_more_problem">and %1$d more problem</string>
      <string name="widget_more_problems">and %1$d more problems</string>

@@ -1,5 +1,6 @@
 package com.inovex.zabbixmobile.activities;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -77,6 +78,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	 * If the server settings have not been set yet by the user, a dialog is
 	 * displayed. Otherwise, the Zabbix login is performed.
 	 */
+	@SuppressLint("ValidFragment")
 	@Override
 	public void onServiceConnected(ComponentName className, IBinder binder) {
 		Log.d(TAG, "onServiceConnected: " + this.getLocalClassName() + " "

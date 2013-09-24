@@ -5,9 +5,8 @@
         android:id="@+id/severity_list_item_status"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
         android:layout_marginRight="6dip"
-        android:layout_marginTop="9dip"
         android:contentDescription="@string/status" />
 
     <TextView

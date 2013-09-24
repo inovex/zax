@@ -10,13 +10,13 @@ import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ScreensDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ScreensListFragment;
-import com.inovex.zabbixmobile.listeners.OnScreensLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnScreensItemSelectedListener;
+import com.inovex.zabbixmobile.listeners.OnScreensLoadedListener;
 import com.inovex.zabbixmobile.model.Screen;
 
 /**
  * Activity to visualize screens.
- *
+ * 
  */
 public class ScreensActivity extends BaseActivity implements
 		OnScreensLoadedListener, OnScreensItemSelectedListener {
@@ -36,7 +36,7 @@ public class ScreensActivity extends BaseActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_screens);
 
-		mTitle = getResources().getString(R.string.screens);
+		mTitle = getResources().getString(R.string.activity_screens);
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.screens_flipper);

@@ -8,9 +8,10 @@ import com.inovex.zabbixmobile.model.Trigger;
 
 /**
  * Adapter for pages containing lists of problems.
- *
+ * 
  */
-public class ProblemsListPagerAdapter extends BaseSeverityListPagerAdapter<Trigger> {
+public class ProblemsListPagerAdapter extends
+		BaseSeverityListPagerAdapter<Trigger> {
 
 	public ProblemsListPagerAdapter(Context context) {
 		super(context);
@@ -23,7 +24,7 @@ public class ProblemsListPagerAdapter extends BaseSeverityListPagerAdapter<Trigg
 
 	@Override
 	public Long getItemId(int position) {
-		if(getObject(position) == null)
+		if (getObject(position) == null)
 			return null;
 		return (long) getObject(position).getNumber();
 	}

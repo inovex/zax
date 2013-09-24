@@ -27,7 +27,7 @@ public abstract class BaseSeverityListPagerAdapter<T> extends
 		addAll(Arrays.asList(TriggerSeverity.values()));
 		notifyDataSetChanged();
 		numElements = new String[TriggerSeverity.values().length];
-		for(int i = 0; i < TriggerSeverity.values().length; i++) {
+		for (int i = 0; i < TriggerSeverity.values().length; i++) {
 			numElements[i] = "...";
 		}
 	}
@@ -52,13 +52,14 @@ public abstract class BaseSeverityListPagerAdapter<T> extends
 				.getString(
 						TriggerSeverity.getSeverityByPosition(position)
 								.getNameResourceId())
-				.toUpperCase(Locale.getDefault()) + " (" + numElements[position] + ")";
+				.toUpperCase(Locale.getDefault())
+				+ " (" + numElements[position] + ")";
 	}
 
 	protected abstract BaseSeverityFilterListPage<T> instantiatePage();
 
 	public void updateTitle(int position, int count) {
-		if(numElements.length > position)
+		if (numElements.length > position)
 			numElements[position] = String.valueOf(count);
 	}
 
