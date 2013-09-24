@@ -31,7 +31,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
  */
 public class HomescreenWidgetService extends Service {
 	private enum DisplayStatus {
-		ZAX_ERROR(R.drawable.severity_average), OK(R.drawable.severity_average), AVG(
+		ZAX_ERROR(R.drawable.severity_average), OK(R.drawable.ok), AVG(
 				R.drawable.severity_average), HIGH(R.drawable.severity_high), LOADING(
 				R.drawable.icon);
 
@@ -136,13 +136,18 @@ public class HomescreenWidgetService extends Service {
 				case HIGH:
 					icon = DisplayStatus.HIGH.getDrawable();
 					break;
+				case INFORMATION:
+					icon = DisplayStatus.OK.getDrawable();
+					break;
 				default:
 					icon = DisplayStatus.AVG.getDrawable();
 				}
 				content = problems.get(0).getDescription();
 
-			} else
+			} else {
+				icon = DisplayStatus.OK.getDrawable();
 				content = getResources().getString(R.string.widget_no_problems);
+			}
 
 			remoteViews.setImageViewResource(R.id.widget_severity, icon);
 			remoteViews.setTextViewText(R.id.widget_content, content);
