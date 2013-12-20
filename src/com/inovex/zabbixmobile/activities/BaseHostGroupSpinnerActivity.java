@@ -11,7 +11,7 @@ import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter.OnHostGroupSele
 
 /**
  * Base class for all activities having a host group spinner in the action bar.
- * 
+ *
  */
 public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		implements OnHostGroupSelectedListener {
@@ -68,6 +68,10 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 			mSpinnerAdapter.setCallback(this);
 			mSpinnerAdapter.refreshSelection();
 		}
+
+		// reload adapter
+		if (mZabbixDataService != null && mZabbixDataService.isLoggedIn())
+			loadAdapterContent(false);
 	}
 
 	@Override
@@ -111,7 +115,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	 * This method is called when a host group in the spinner is selected. If
 	 * additional actions (like updating fragments) have to be performed, this
 	 * method needs to be overwritten.
-	 * 
+	 *
 	 * @param position
 	 *            position of the selected host group
 	 * @param itemId
