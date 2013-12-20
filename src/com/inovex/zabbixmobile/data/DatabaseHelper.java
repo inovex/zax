@@ -53,13 +53,13 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	// name of the database file for your application -- change to something
 	// appropriate for your app
-	private static final String DATABASE_NAME = "zabbixmobile.db";
+	private static final String DATABASE_NAME = "zabbixmobile2.db";
 	// any time you make changes to your database objects, you may have to
 	// increase the database version
 	private static final int DATABASE_VERSION = 1;
 	private static final String TAG = DatabaseHelper.class.getSimpleName();
 	private DatabaseConnection mThreadConnection;
-	private Context mContext;
+	private final Context mContext;
 
 	private final Class<?>[] mTables = { Event.class, Trigger.class,
 			Item.class, Host.class, HostGroup.class, Application.class,
@@ -70,7 +70,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Pass-through constructor to be used by subclasses (specifically
 	 * {@link MockDatabaseHelper}).
-	 * 
+	 *
 	 * @param context
 	 * @param databaseName
 	 * @param factory
@@ -117,7 +117,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Queries all events with the given severity and host group from the
 	 * database.
-	 * 
+	 *
 	 * @param severity
 	 * @param hostGroupId
 	 * @return list of events with a matching severity and host group
@@ -159,7 +159,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Queries all problems with a given severity and host group from the
 	 * database.
-	 * 
+	 *
 	 * @param severity
 	 * @param hostGroupId
 	 * @return list of events with a matching severity and host group
@@ -205,7 +205,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all host groups from the database.
-	 * 
+	 *
 	 * @return list of all host groups
 	 */
 	public List<HostGroup> getHostGroups() {
@@ -220,7 +220,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all hosts from the database.
-	 * 
+	 *
 	 * @return list of all hosts
 	 */
 	public List<Host> getHosts() {
@@ -235,7 +235,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all hosts in a specified group from the database.
-	 * 
+	 *
 	 * @param hostGroupId
 	 *            ID of the host group
 	 * @return list of hosts in the specified group
@@ -262,11 +262,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries a hosts by its ID.
-	 * 
+	 *
 	 * This method is synchronized on the {@link Dao} for {@link Host} to ensure
 	 * that hosts are actually present in the database (see
 	 * {@link ZabbixRemoteAPI#importHostsAndGroups()}).
-	 * 
+	 *
 	 * @param hostId
 	 *            ID of the host group
 	 * @return hosts with the given ID
@@ -285,7 +285,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Returns an event given its ID.
-	 * 
+	 *
 	 * @param id
 	 *            ID of the queried event
 	 * @return the corresponding event
@@ -302,7 +302,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Returns a trigger given its ID.
-	 * 
+	 *
 	 * @param id
 	 *            ID of the queried trigger
 	 * @return the corresponding trigger
@@ -319,7 +319,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all applications from the database.
-	 * 
+	 *
 	 * @return list of all applications
 	 */
 	public List<Application> getApplications() {
@@ -334,9 +334,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all applications for a specified host from the database.
-	 * 
+	 *
 	 * @param host
-	 * 
+	 *
 	 * @return list of applications
 	 */
 	public List<Application> getApplicationsByHost(Host host) {
@@ -351,9 +351,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all applications for a specified host ID from the database.
-	 * 
+	 *
 	 * @param hostId
-	 * 
+	 *
 	 * @return list of applications
 	 */
 	public List<Application> getApplicationsByHostId(long hostId) {
@@ -368,9 +368,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries the application with a given ID from the database.
-	 * 
+	 *
 	 * @param id
-	 * 
+	 *
 	 * @return application, or null if there is no application with this ID
 	 */
 	public Application getApplicationById(long id) {
@@ -385,9 +385,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all items for a specified application from the database.
-	 * 
+	 *
 	 * @param applicationId
-	 * 
+	 *
 	 * @return list of items
 	 */
 	public List<Item> getItemsByApplicationId(long applicationId) {
@@ -416,9 +416,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all history details for a specified item from the database.
-	 * 
+	 *
 	 * @param itemId
-	 * 
+	 *
 	 * @return list of history details
 	 */
 	public List<HistoryDetail> getHistoryDetailsByItemId(long itemId) {
@@ -436,9 +436,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all history details for a specified item from the database.
-	 * 
+	 *
 	 * @param itemId
-	 * 
+	 *
 	 * @return list of history details
 	 */
 	public long getNewestHistoryDetailsClockByItemId(long itemId) {
@@ -460,8 +460,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all screens from the database.
-	 * 
-	 * 
+	 *
+	 *
 	 * @return list of screens
 	 */
 	public List<Screen> getScreens() {
@@ -476,7 +476,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all graph IDs for a particular screen from the database.
-	 * 
+	 *
 	 * @param screen
 	 * @return list of graph IDs
 	 */
@@ -499,7 +499,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all graphs for a particular screen from the database.
-	 * 
+	 *
 	 * @param screen
 	 * @return graphs
 	 */
@@ -519,7 +519,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries all graph items for a particular graph from the database.
-	 * 
+	 *
 	 * @param graph
 	 * @return graph items
 	 */
@@ -537,7 +537,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts events into the database.
-	 * 
+	 *
 	 * @param events
 	 *            collection of events to be inserted
 	 */
@@ -573,7 +573,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts triggers into the database.
-	 * 
+	 *
 	 * @param triggers
 	 *            collection of triggers to be inserted
 	 */
@@ -601,7 +601,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts hosts into the database.
-	 * 
+	 *
 	 * @param hosts
 	 *            collection of hosts to be inserted
 	 */
@@ -629,7 +629,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts host groups into the database.
-	 * 
+	 *
 	 * @param hostGroups
 	 *            collection of host groups to be inserted
 	 */
@@ -657,7 +657,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts applications into the database.
-	 * 
+	 *
 	 * @param applications
 	 *            collection of applications to be inserted
 	 */
@@ -693,7 +693,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts trigger to host group relations into the database.
-	 * 
+	 *
 	 * @param triggerHostGroupCollection
 	 *            collection of relations to be inserted
 	 */
@@ -728,7 +728,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts host to host group relations into the database.
-	 * 
+	 *
 	 * @param hostHostGroupCollection
 	 *            collection of relations to be inserted
 	 */
@@ -763,7 +763,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts application to item relations into the database.
-	 * 
+	 *
 	 * @param applicationItemRelations
 	 *            collection of relations to be inserted
 	 */
@@ -798,7 +798,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts items into the database.
-	 * 
+	 *
 	 * @param itemCollection
 	 *            collection of items to be inserted
 	 */
@@ -826,7 +826,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts history details into the database.
-	 * 
+	 *
 	 * @param historyDetailsCollection
 	 *            collection of history details to be inserted
 	 */
@@ -855,7 +855,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts screens into the database.
-	 * 
+	 *
 	 * @param screenCollection
 	 *            collection of screens to be inserted
 	 */
@@ -883,7 +883,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts screen items into the database.
-	 * 
+	 *
 	 * @param screenItemsCollection
 	 *            collection of screens to be inserted
 	 */
@@ -911,7 +911,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts graphs into the database.
-	 * 
+	 *
 	 * @param graphCollection
 	 *            collection of graphs to be inserted
 	 */
@@ -939,7 +939,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Inserts graph items into the database.
-	 * 
+	 *
 	 * @param graphItemsCollection
 	 *            collection of graph items to be inserted
 	 */
@@ -967,7 +967,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Sets an event to acknowledged.
-	 * 
+	 *
 	 * @param event
 	 *            the event
 	 */
@@ -985,7 +985,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Clears all data of a certain type from the database.
-	 * 
+	 *
 	 * @param c
 	 *            class of the type
 	 */
@@ -996,7 +996,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Clears the entire database.
-	 * 
+	 *
 	 */
 	public void clearAllData() {
 		try {
@@ -1010,7 +1010,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Removes all events from the database.
-	 * 
+	 *
 	 */
 	public void clearEvents() {
 		try {
@@ -1022,7 +1022,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Removes all triggers from the database.
-	 * 
+	 *
 	 */
 	public void clearTriggers() {
 		try {
@@ -1034,7 +1034,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Removes all hosts from the database.
-	 * 
+	 *
 	 */
 	public void clearHosts() {
 		try {
@@ -1046,7 +1046,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Removes all host groups from the database.
-	 * 
+	 *
 	 */
 	public void clearHostGroups() {
 		try {
@@ -1058,7 +1058,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Removes all items from the database.
-	 * 
+	 *
 	 */
 	public void clearItems() {
 		try {
@@ -1070,7 +1070,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Removes all screens and screen items from the database.
-	 * 
+	 *
 	 */
 	public void clearScreens() {
 		try {
@@ -1083,7 +1083,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Removes all applications for a given host.
-	 * 
+	 *
 	 * @param hostId
 	 *            the host ID
 	 */
@@ -1112,7 +1112,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Removes all applications for a given host.
-	 * 
+	 *
 	 * @param hostId
 	 *            the host ID
 	 */
@@ -1133,7 +1133,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Deletes history details which are older than the specified time.
-	 * 
+	 *
 	 * @param threshold
 	 *            all items with a clock smaller than this threshold will be
 	 *            deleted
@@ -1154,7 +1154,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Deletes history details which are older than the specified time.
-	 * 
+	 *
 	 * @param threshold
 	 *            all items with a clock smaller than this threshold will be
 	 *            deleted
@@ -1183,7 +1183,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Marks a data type cached for a certain amount of time.
-	 * 
+	 *
 	 * @param type
 	 *            the data type
 	 * @param itemId
@@ -1203,7 +1203,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Checks whether a data type is cached in the local SQLite database.
-	 * 
+	 *
 	 * @param type
 	 *            the data type
 	 * @param itemId
@@ -1242,11 +1242,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries a item by its ID.
-	 * 
+	 *
 	 * This method is synchronized on the {@link Dao} for {@link Item} to ensure
 	 * that the item is actually present in the database (see
 	 * {@link ZabbixRemoteAPI#importItemsByHostId(Long)}).
-	 * 
+	 *
 	 * @param itemId
 	 *            ID of the item
 	 * @return item with the given ID
@@ -1265,11 +1265,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Queries a graph by its ID.
-	 * 
+	 *
 	 * This method is synchronized on the {@link Dao} for {@link Graph} to
 	 * ensure that the graph is actually present in the database (see
 	 * {@link ZabbixRemoteAPI#importItemsByHostId(Long)}).
-	 * 
+	 *
 	 * @param graphId
 	 *            ID of the graph
 	 * @return graph with the given ID
@@ -1288,7 +1288,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	/**
 	 * Sends a broadcast containing an exception's message resource ID.
-	 * 
+	 *
 	 * @param exception
 	 *            the exception
 	 */
