@@ -55,6 +55,8 @@ public class GraphUtil {
 				android.R.color.black));
 		style.setVerticalLabelsColor(context.getResources().getColor(
 				android.R.color.black));
+		style.setTextSize(context.getResources().getDimension(
+				R.dimen.graph_text_size));
 		graphView.setGraphViewStyle(style);
 
 		/*
