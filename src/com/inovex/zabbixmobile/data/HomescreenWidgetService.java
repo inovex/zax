@@ -197,13 +197,8 @@ public class HomescreenWidgetService extends Service {
 			statusButtonClickIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 			PendingIntent pendingIntent = PendingIntent.getActivity(
 					getApplicationContext(), 0, statusButtonClickIntent, 0);
-			remoteViews.setOnClickPendingIntent(R.id.status_button,
+			remoteViews.setOnClickPendingIntent(R.id.widget,
 					pendingIntent);
-			remoteViews
-					.setOnClickPendingIntent(R.id.widget_icon, pendingIntent);
-			remoteViews
-					.setOnClickPendingIntent(R.id.status_text, pendingIntent);
-			remoteViews.setOnClickPendingIntent(R.id.zax_icon, pendingIntent);
 
 			// refresh click
 			Intent refreshClickIntent = new Intent(

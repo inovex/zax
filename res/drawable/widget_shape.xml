@@ -1,13 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle" >
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <corners
-        android:bottomLeftRadius="7dp"
-        android:bottomRightRadius="7dp"
-        android:topLeftRadius="7dp"
-        android:topRightRadius="7dp" />
+    <item android:drawable="@drawable/widget_shape_pressed" android:state_focused="true" android:state_pressed="true"/>
+    <item android:drawable="@drawable/widget_shape_pressed" android:state_focused="false" android:state_pressed="true"/>
+    <item android:drawable="@drawable/widget_shape_normal" android:state_focused="true"/>
+    <item android:drawable="@drawable/widget_shape_normal" android:state_focused="false" android:state_pressed="false"/>
 
-    <solid android:color="#111" />
-
-</shape>
+</selector>
