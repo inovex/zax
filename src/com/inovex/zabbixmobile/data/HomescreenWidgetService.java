@@ -11,6 +11,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.inovex.zabbixmobile.R;
@@ -20,7 +21,6 @@ import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProvider;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
@@ -58,6 +58,8 @@ public class HomescreenWidgetService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
+		updateView(null, getResources().getString(R.string.widget_loading),
+				true);
 		Log.d(TAG, "onStart");
 		if (mDatabaseHelper == null) {
 			// set up SQLite connection using OrmLite
@@ -94,7 +96,36 @@ public class HomescreenWidgetService extends Service {
 				if (problems != null) {
 					for (Trigger t : problems)
 						Log.d(TAG, t.toString());
-					updateView(problems);
+					String status;
+					int icon = R.drawable.ok;
+					if (problems.size() > 0) {
+						int countHigh = 0;
+						int countAverage = 0;
+						for (Trigger trigger : problems) {
+							if (trigger.getStatus() != Trigger.STATUS_ENABLED)
+								continue;
+							if (trigger.getPriority() == TriggerSeverity.DISASTER
+									|| trigger.getPriority() == TriggerSeverity.HIGH)
+								countHigh++;
+							else
+								countAverage++;
+						}
+						if (countHigh > 0)
+							icon = DisplayStatus.HIGH.getDrawable();
+						else if (countAverage > 0)
+							icon = DisplayStatus.AVG.getDrawable();
+						else
+							icon = DisplayStatus.OK.getDrawable();
+						status = problems.get(0).getDescription();
+						status = getResources().getString(
+								R.string.widget_problems, countHigh,
+								countAverage);
+					} else {
+						icon = DisplayStatus.OK.getDrawable();
+						status = getResources().getString(R.string.ok);
+
+					}
+					updateView(icon, status, false);
 				}
 			}
 
@@ -111,7 +142,8 @@ public class HomescreenWidgetService extends Service {
 		super.onDestroy();
 	}
 
-	private void updateView(List<Trigger> problems) {
+	private void updateView(Integer statusIcon, String statusText,
+			boolean startProgressSpinner) {
 		AppWidgetManager appWidgetManager = AppWidgetManager
 				.getInstance(getApplicationContext());
 		ComponentName thisWidget = new ComponentName(getApplicationContext(),
@@ -121,49 +153,42 @@ public class HomescreenWidgetService extends Service {
 		for (int widgetId : allWidgetIds) {
 
 			RemoteViews remoteViews = new RemoteViews(getApplicationContext()
-					.getPackageName(), R.layout.homescreen_widget);
+					.getPackageName(), R.layout.homescreen_widget_small);
 
-			ZaxPreferences preferences = ZaxPreferences.getInstance(this);
-			remoteViews.setTextViewText(R.id.widget_headline,
-					preferences.getZabbixUrl());
+			// ZaxPreferences preferences = ZaxPreferences.getInstance(this);
+			// remoteViews.setTextViewText(R.id.widget_headline,
+			// preferences.getZabbixUrl());
 
-			String content;
-			int icon = R.drawable.ok;
-			if (problems.size() > 0) {
-				Trigger trigger = problems.get(0);
-				switch (trigger.getPriority()) {
-				case DISASTER:
-				case HIGH:
-					icon = DisplayStatus.HIGH.getDrawable();
-					break;
-				case INFORMATION:
-					icon = DisplayStatus.OK.getDrawable();
-					break;
-				default:
-					icon = DisplayStatus.AVG.getDrawable();
-				}
-				content = problems.get(0).getDescription();
-
+			if (startProgressSpinner) {
+				remoteViews.setViewVisibility(R.id.refresh_button, View.GONE);
+				remoteViews.setViewVisibility(R.id.refresh_progress,
+						View.VISIBLE);
 			} else {
-				icon = DisplayStatus.OK.getDrawable();
-				content = getResources().getString(R.string.widget_no_problems);
+				remoteViews
+						.setViewVisibility(R.id.refresh_button, View.VISIBLE);
+				remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE);
 			}
 
-			remoteViews.setImageViewResource(R.id.widget_severity, icon);
-			remoteViews.setTextViewText(R.id.widget_content, content);
+			// Set the text
+			remoteViews.setTextViewText(R.id.content, statusText);
 
-			int moreProblems = problems.size() - 1;
-
-			if (moreProblems == 1)
-				remoteViews.setTextViewText(R.id.widget_more, getResources()
-						.getString(R.string.widget_more_problem, moreProblems));
-			else
+			// set icon
+			if (statusIcon != null)
 				remoteViews
-						.setTextViewText(
-								R.id.widget_more,
-								getResources().getString(
-										R.string.widget_more_problems,
-										moreProblems));
+						.setImageViewResource(R.id.status_button, statusIcon);
+
+			// int moreProblems = problems.size() - 1;
+			//
+			// if (moreProblems == 1)
+			// remoteViews.setTextViewText(R.id.widget_more, getResources()
+			// .getString(R.string.widget_more_problem, moreProblems));
+			// else
+			// remoteViews
+			// .setTextViewText(
+			// R.id.widget_more,
+			// getResources().getString(
+			// R.string.widget_more_problems,
+			// moreProblems));
 
 			// status button click
 			Intent statusButtonClickIntent = new Intent(
@@ -172,10 +197,13 @@ public class HomescreenWidgetService extends Service {
 			statusButtonClickIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 			PendingIntent pendingIntent = PendingIntent.getActivity(
 					getApplicationContext(), 0, statusButtonClickIntent, 0);
-			remoteViews.setOnClickPendingIntent(R.id.widget_content_layout,
+			remoteViews.setOnClickPendingIntent(R.id.status_button,
 					pendingIntent);
 			remoteViews
 					.setOnClickPendingIntent(R.id.widget_icon, pendingIntent);
+			remoteViews
+					.setOnClickPendingIntent(R.id.status_text, pendingIntent);
+			remoteViews.setOnClickPendingIntent(R.id.zax_icon, pendingIntent);
 
 			// refresh click
 			Intent refreshClickIntent = new Intent(
@@ -188,7 +216,7 @@ public class HomescreenWidgetService extends Service {
 			PendingIntent pendingIntent2 = PendingIntent.getBroadcast(
 					getApplicationContext(), 1, refreshClickIntent,
 					PendingIntent.FLAG_UPDATE_CURRENT);
-			remoteViews.setOnClickPendingIntent(R.id.widget_refresh,
+			remoteViews.setOnClickPendingIntent(R.id.refresh_button,
 					pendingIntent2);
 			appWidgetManager.updateAppWidget(widgetId, remoteViews);
 		}

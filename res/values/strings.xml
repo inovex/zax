@@ -84,5 +84,7 @@
      <string name="widget_no_problems">There are no problems at the moment</string>
      <string name="widget_more_problem">and %1$d more problem</string>
      <string name="widget_more_problems">and %1$d more problems</string>
+     <string name="widget_problems">%1$d &gt;=high\n%2$d &lt;=avg"</string>
+     <string name="widget_loading">loading...</string>
 
 </resources>
