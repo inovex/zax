@@ -85,8 +85,11 @@ public abstract class BaseSeverityFilterListPage<T> extends
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		super.onServiceConnected(name, service);
-		getListView().setItemChecked(mListAdapter.getCurrentPosition(), true);
-		getListView().setSelection(mListAdapter.getCurrentPosition());
+		if (getListAdapter() != null && getListView() != null) {
+			getListView().setItemChecked(mListAdapter.getCurrentPosition(),
+					true);
+			getListView().setSelection(mListAdapter.getCurrentPosition());
+		}
 	}
 
 	@Override

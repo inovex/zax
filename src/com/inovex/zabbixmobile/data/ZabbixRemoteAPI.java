@@ -284,6 +284,9 @@ public class ZabbixRemoteAPI {
 	private JSONObject _queryBuffer(String method, JSONObject params)
 			throws IOException, JSONException, ZabbixLoginRequiredException,
 			FatalException {
+		if(url == null) {
+			throw new FatalException(Type.SERVER_NOT_FOUND);
+		}
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
 
@@ -988,11 +991,13 @@ public class ZabbixRemoteAPI {
 									.put("history", historytype)
 									.put("itemids", new JSONArray().put(itemId))
 									.put("time_from", timeFrom));
+					if (result == null)
+						continue;
 					testHistorydetails = result.getJSONArray("result");
 				}
 			}
 			// correct historytype found and there is data
-			if (testHistorydetails.length() > 0) {
+			if (testHistorydetails != null && testHistorydetails.length() > 0) {
 				// count of the entries cannot be detected (zabbix bug),
 				// so we use a fiction
 				int numDetails = 400;

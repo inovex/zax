@@ -72,7 +72,7 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 	 *            the item's position
 	 */
 	public void selectItem(int position) {
-		if (getListView() != null) {
+		if (getListAdapter() != null && getListView() != null) {
 			getListView().setItemChecked(position, true);
 			getListView().setSelection(position);
 		}
