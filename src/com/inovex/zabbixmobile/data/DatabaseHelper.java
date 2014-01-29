@@ -1196,10 +1196,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 			Dao<Cache, CacheDataType> cacheDao = getDao(Cache.class);
 			synchronized (cacheDao) {
-				cacheDao.createOrUpdate(new Cache(type, itemId));
+				if (isCached(type, itemId)) {
+					cacheDao.update(new Cache(type, itemId));
+				} else {
+					cacheDao.create(new Cache(type, itemId));
+				}
 			}
 		} catch (SQLException e) {
-			 handleException(new FatalException(Type.INTERNAL_ERROR, e));
+			// no user message; after all, it's just caching
+			// handleException(new FatalException(Type.INTERNAL_ERROR, e));
 		}
 	}
 
