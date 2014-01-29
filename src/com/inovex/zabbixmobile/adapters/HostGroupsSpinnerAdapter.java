@@ -66,7 +66,10 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 
 	@Override
 	public long getItemId(int position) {
-		return getItem(position).getGroupId();
+		HostGroup item = getItem(position);
+		if(item != null)
+			return item.getGroupId();
+		return 0;
 	}
 
 	@Override

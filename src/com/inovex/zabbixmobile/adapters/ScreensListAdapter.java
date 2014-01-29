@@ -48,7 +48,10 @@ public class ScreensListAdapter extends BaseServiceAdapter<Screen> {
 
 	@Override
 	public long getItemId(int position) {
-		return getItem(position).getId();
+		Screen item = getItem(position); 
+		if (item != null)
+			return item.getId();
+		return 0;
 	}
 
 }

@@ -63,7 +63,10 @@ public class ChecksItemsListAdapter extends BaseServiceAdapter<Item> {
 
 	@Override
 	public long getItemId(int position) {
-		return getItem(position).getId();
+		Item item = getItem(position);
+		if(item != null)
+			return item.getId();
+		return 0;
 	}
 
 }

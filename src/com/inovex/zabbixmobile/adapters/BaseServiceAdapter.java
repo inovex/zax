@@ -56,7 +56,11 @@ public abstract class BaseServiceAdapter<T> extends BaseAdapter {
 	@SuppressWarnings("unchecked")
 	@Override
 	public T getItem(int position) {
-		return (T) mObjects.toArray()[position];
+		if(mObjects.size() > position)
+			return (T) mObjects.toArray()[position];
+		if(mObjects.size() > 0)
+			return mObjects.first();
+		return null;
 	}
 
 	/**

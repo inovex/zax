@@ -48,7 +48,10 @@ public class HostsListAdapter extends BaseServiceAdapter<Host> {
 
 	@Override
 	public long getItemId(int position) {
-		return getItem(position).getId();
+		Host item = getItem(position);
+		if (item != null)
+			return item.getId();
+		return 0;
 	}
 
 }

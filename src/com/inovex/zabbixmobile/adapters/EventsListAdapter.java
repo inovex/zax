@@ -97,7 +97,10 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 
 	@Override
 	public long getItemId(int position) {
-		return getItem(position).getId();
+		Event item = getItem(position);
+		if(item != null)
+			return item.getId();
+		return 0;
 	}
 
 }
