@@ -81,7 +81,7 @@
 				android:resource="@xml/widget_info" />
 		</receiver>
         
-		<service android:name=".data.HomescreenWidgetService" android:process=":widgetservice"></service>
+		<service android:name=".data.HomescreenWidgetService"></service>
         <service android:name=".push.PushService" android:process=":pushservice"></service>
     </application>
 
