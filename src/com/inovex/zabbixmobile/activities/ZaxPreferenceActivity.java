@@ -37,7 +37,6 @@ public class ZaxPreferenceActivity extends PreferenceActivity {
 	@Override
 	protected void onStop() {
 		ZaxPreferences prefs = ZaxPreferences.getInstance(this);
-		prefs.apply();
 		Intent returnIntent = new Intent();
 		if (!prefs.getZabbixUrl().equals(zabbixUrl)
 				|| !prefs.getUsername().equals(userName)
