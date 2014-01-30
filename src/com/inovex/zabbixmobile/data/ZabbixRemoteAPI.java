@@ -294,10 +294,11 @@ public class ZabbixRemoteAPI {
 		if (token != null && method != "user.authenticate")
 			auth = "\"" + token + "\"";
 
+		Log.d(TAG, "queryBuffer: " + url);
 		String json = "{" + "	\"jsonrpc\" : \"2.0\"," + "	\"method\" : \""
 				+ method + "\"," + "	\"params\" : " + params.toString() + ","
 				+ "	\"auth\" : " + auth + "," + "	\"id\" : 0" + "}";
-		Log.d(TAG, "queryBuffer=" + json);
+		Log.d(TAG, "queryBuffer: " + json);
 
 		post.setEntity(new StringEntity(json, "UTF-8"));
 		try {
