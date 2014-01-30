@@ -31,7 +31,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
  */
 public class HomescreenWidgetService extends Service {
 	private enum DisplayStatus {
-		ZAX_ERROR(R.drawable.severity_average), OK(R.drawable.ok), AVG(
+		ZAX_ERROR(R.drawable.severity_high), OK(R.drawable.ok), AVG(
 				R.drawable.severity_average), HIGH(R.drawable.severity_high), LOADING(
 				R.drawable.icon);
 
