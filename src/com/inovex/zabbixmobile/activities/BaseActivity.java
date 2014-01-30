@@ -393,7 +393,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public void onLoginFinished(boolean success) {
-		if (mLoginProgress != null && mLoginProgress.isVisible()) {
+		if (mLoginProgress != null && mLoginProgress.isAdded()) {
 			try {
 				mLoginProgress.dismiss();
 			} catch (NullPointerException e) {
