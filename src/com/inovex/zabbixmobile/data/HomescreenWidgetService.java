@@ -59,7 +59,7 @@ public class HomescreenWidgetService extends Service {
 		super.onStart(intent, startId);
 		Log.d(TAG, "onStart");
 		updateView(null, getResources().getString(R.string.widget_loading),
-				true);
+				false);
 		if (mDatabaseHelper == null) {
 			// set up SQLite connection using OrmLite
 			mDatabaseHelper = OpenHelperManager.getHelper(this,
