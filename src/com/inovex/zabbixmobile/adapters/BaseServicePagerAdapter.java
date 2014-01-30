@@ -30,6 +30,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 	protected FragmentManager mFragmentManager;
 	protected FragmentTransaction mCurTransaction = null;
 	private Fragment mCurrentPrimaryItem = null;
+	private boolean mRefresh;
 
 	public BaseServicePagerAdapter() {
 		mObjects = new TreeSet<T>();
@@ -58,7 +59,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 		// Do we already have this fragment?
 		String name = makeFragmentName(container.getId(), itemId);
 		Fragment fragment = mFragmentManager.findFragmentByTag(name);
-		if (fragment != null) {
+		if (fragment != null && !mRefresh) {
 			if (DEBUG)
 				Log.v(TAG, "Attaching item #" + itemId + ": f=" + fragment);
 			mCurTransaction.attach(fragment);
@@ -199,6 +200,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 	 */
 	public void clear() {
 		mObjects.clear();
+		mRefresh = true;
 	}
 
 	public int getCurrentPosition() {
