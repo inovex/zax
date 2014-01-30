@@ -16,6 +16,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity {
 	private String zabbixUrl;
 	private String userName;
 	private String password;
+	private int interval;
 
 	// We use the deprecated method because it is compatible to old Android
 	// versions.
@@ -31,6 +32,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity {
 		zabbixUrl = prefs.getZabbixUrl();
 		userName = prefs.getUsername();
 		password = prefs.getPassword();
+		interval = prefs.getWidgetRefreshInterval();
 		addPreferencesFromResource(R.xml.preferences);
 	}
 
@@ -40,7 +42,8 @@ public class ZaxPreferenceActivity extends PreferenceActivity {
 		Intent returnIntent = new Intent();
 		if (!prefs.getZabbixUrl().equals(zabbixUrl)
 				|| !prefs.getUsername().equals(userName)
-				|| !prefs.getPassword().equals(password))
+				|| !prefs.getPassword().equals(password)
+				|| prefs.getWidgetRefreshInterval() != interval)
 			setResult(BaseActivity.RESULT_PREFERENCES_CHANGED, returnIntent);
 		super.onStop();
 	}
@@ -51,7 +54,8 @@ public class ZaxPreferenceActivity extends PreferenceActivity {
 		Intent returnIntent = new Intent();
 		if (!prefs.getZabbixUrl().equals(zabbixUrl)
 				|| !prefs.getUsername().equals(userName)
-				|| !prefs.getPassword().equals(password))
+				|| !prefs.getPassword().equals(password)
+				|| prefs.getWidgetRefreshInterval() != interval)
 			setResult(BaseActivity.RESULT_PREFERENCES_CHANGED, returnIntent);
 		finish();
 	}

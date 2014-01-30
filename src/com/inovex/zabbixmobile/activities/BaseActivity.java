@@ -36,6 +36,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.PushService;
+import com.inovex.zabbixmobile.widget.ZaxWidgetProvider;
 
 /**
  * Base class for all activities. Tasks performed in this class:
@@ -420,10 +421,16 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		if (requestCode == REQUEST_CODE_PREFERENCES) {
 			mPreferencesClosed = true;
 			Log.d(TAG, "onActivityResult: " + requestCode + " - " + resultCode);
-			if (resultCode == RESULT_PREFERENCES_CHANGED)
+			if (resultCode == RESULT_PREFERENCES_CHANGED) {
 				mPreferencesChanged = true;
-			else
+				Intent intent = new Intent();
+				intent.setAction("com.inovex.zabbixmobile.WIDGET_UPDATE");
+				intent.putExtra(ZaxWidgetProvider.INTERVAL_CHANGED, true);
+				this.sendBroadcast(intent);
+				
+			} else {
 				mPreferencesChanged = false;
+			}
 		}
 	}
 

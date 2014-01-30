@@ -50,7 +50,6 @@ public class HomescreenWidgetService extends Service {
 	private static final String TAG = HomescreenWidgetService.class
 			.getSimpleName();
 
-
 	private ZabbixRemoteAPI mRemoteAPI;
 	private DatabaseHelper mDatabaseHelper;
 
