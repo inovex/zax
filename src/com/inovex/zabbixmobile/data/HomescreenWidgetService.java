@@ -50,7 +50,6 @@ public class HomescreenWidgetService extends Service {
 	private static final String TAG = HomescreenWidgetService.class
 			.getSimpleName();
 
-	private BroadcastReceiver contentProviderReceiver;
 
 	private ZabbixRemoteAPI mRemoteAPI;
 	private DatabaseHelper mDatabaseHelper;
@@ -58,9 +57,9 @@ public class HomescreenWidgetService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
+		Log.d(TAG, "onStart");
 		updateView(null, getResources().getString(R.string.widget_loading),
 				true);
-		Log.d(TAG, "onStart");
 		if (mDatabaseHelper == null) {
 			// set up SQLite connection using OrmLite
 			mDatabaseHelper = OpenHelperManager.getHelper(this,
@@ -75,14 +74,18 @@ public class HomescreenWidgetService extends Service {
 		RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI) {
 
 			private List<Trigger> problems;
+			private boolean error;
 
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
-				mRemoteAPI.authenticate();
 				problems = new ArrayList<Trigger>();
 				try {
+					mRemoteAPI.authenticate();
 					mRemoteAPI.importActiveTriggers(null);
+				} catch (FatalException e) {
+					error = true;
+					return;
 				} finally {
 					problems = mDatabaseHelper
 							.getProblemsBySeverityAndHostGroupId(
@@ -93,9 +96,17 @@ public class HomescreenWidgetService extends Service {
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
+				if (error) {
+					updateView(
+							DisplayStatus.ZAX_ERROR.getDrawable(),
+							getResources().getString(
+									R.string.widget_connection_error), false);
+					stopSelf();
+					return;
+				}
 				if (problems != null) {
-					for (Trigger t : problems)
-						Log.d(TAG, t.toString());
+//					for (Trigger t : problems)
+//						Log.d(TAG, t.toString());
 					String status;
 					int icon = R.drawable.ok;
 					if (problems.size() > 0) {
@@ -126,6 +137,7 @@ public class HomescreenWidgetService extends Service {
 
 					}
 					updateView(icon, status, false);
+					stopSelf();
 				}
 			}
 
@@ -136,9 +148,6 @@ public class HomescreenWidgetService extends Service {
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy");
-		if (contentProviderReceiver != null) {
-			unregisterReceiver(contentProviderReceiver);
-		}
 		super.onDestroy();
 	}
 

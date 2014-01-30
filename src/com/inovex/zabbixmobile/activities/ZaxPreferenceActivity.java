@@ -35,6 +35,18 @@ public class ZaxPreferenceActivity extends PreferenceActivity {
 	}
 
 	@Override
+	protected void onStop() {
+		ZaxPreferences prefs = ZaxPreferences.getInstance(this);
+		prefs.apply();
+		Intent returnIntent = new Intent();
+		if (!prefs.getZabbixUrl().equals(zabbixUrl)
+				|| !prefs.getUsername().equals(userName)
+				|| !prefs.getPassword().equals(password))
+			setResult(BaseActivity.RESULT_PREFERENCES_CHANGED, returnIntent);
+		super.onStop();
+	}
+
+	@Override
 	public void onBackPressed() {
 		ZaxPreferences prefs = ZaxPreferences.getInstance(this);
 		Intent returnIntent = new Intent();

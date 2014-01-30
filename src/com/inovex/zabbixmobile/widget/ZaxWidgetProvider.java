@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -23,49 +22,45 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
-		// service
-		Log.d(TAG, "onUpdate: setting alarm");
+		Log.d(TAG, "onUpdate");
+		// start service
+		Intent serviceIntent = new Intent(context, HomescreenWidgetService.class);
+		context.startService(serviceIntent);
+		super.onUpdate(context, appWidgetManager, appWidgetIds);
+	}
+
+	@Override
+	public void onDisabled(Context context) {
+		super.onDisabled(context);
+		Log.d(TAG, "onDisabled: deleting alarm");
+		setAlarm(context, -1);
+	}
+
+	@Override
+	public void onEnabled(Context context) {
+		super.onEnabled(context);
+		Log.d(TAG, "onEnabled");
 		// Alarm Manager for refresh
 		int minutes = (ZaxPreferences.getInstance(context))
 				.getWidgetRefreshInterval();
 
 		long interval = minutes * 60 * 1000;
-		for (int appWidgetId : appWidgetIds) {
-			setAlarm(context, appWidgetId, interval);
-		}
-		super.onUpdate(context, appWidgetManager, appWidgetIds);
-	}
-
-	@Override
-	public void onDeleted(Context context, int[] appWidgetIds) {
-		Log.d(TAG, "onDeleted: deleting alarm");
-		for (int appWidgetId : appWidgetIds) {
-			setAlarm(context, appWidgetId, -1);
-		}
-		super.onDeleted(context, appWidgetIds);
+		setAlarm(context, interval);
+		Log.d(TAG, "alarm set, interval: " + interval + " ms");
+		
 	}
 
 	private static PendingIntent makeControlPendingIntent(Context context,
-			String command, int appWidgetId) {
+			String command) {
 		Intent active = new Intent(context, HomescreenWidgetService.class);
 		active.setAction(command);
-		active.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-		// this Uri data is to make the PendingIntent unique, so it wont be
-		// updated by FLAG_UPDATE_CURRENT
-		// so if there are multiple widget instances they wont override each
-		// other
-		Uri data = Uri.withAppendedPath(
-				Uri.parse("homescreenwidget://widget/id/#" + command
-						+ appWidgetId), String.valueOf(appWidgetId));
-		active.setData(data);
 		return (PendingIntent.getService(context, 0, active,
 				PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 
-	private static void setAlarm(Context context, int appWidgetId,
-			long updateRate) {
+	private static void setAlarm(Context context, long updateRate) {
 		PendingIntent newPending = makeControlPendingIntent(context,
-				HomescreenWidgetService.UPDATE, appWidgetId);
+				HomescreenWidgetService.UPDATE);
 		AlarmManager alarms = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
 		if (updateRate >= 0) {
