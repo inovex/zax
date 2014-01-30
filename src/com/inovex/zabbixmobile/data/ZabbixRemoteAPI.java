@@ -1814,6 +1814,8 @@ public class ZabbixRemoteAPI {
 					triggerReader.nextProperty();
 				}
 			}
+			if(t.getStatus() != Trigger.STATUS_ENABLED)
+				continue;
 			triggerCollection.add(t);
 			if (triggerCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper.insertTriggers(triggerCollection);
