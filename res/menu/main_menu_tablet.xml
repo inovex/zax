@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu
-	xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:title="@string/preferences" android:id="@+id/menuitem_preferences" android:icon="@android:drawable/ic_menu_preferences" />
-	<item android:id="@+id/menuitem_buy_bonus" android:title="@string/buy_bonus" android:enabled="false"/>
-	<item android:id="@+id/menuitem_acknowledge" android:title="@string/acknowledge_event" android:icon="@android:drawable/ic_menu_edit" android:showAsAction="always|withText" android:enabled="true"/>
-	<item android:id="@+id/menuitem_clear" android:title="@string/refresh_all_data" android:icon="@android:drawable/ic_menu_rotate" android:showAsAction="always|withText"/>
-</menu>
