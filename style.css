@@ -1,0 +1,204 @@
+body {
+	background-image: url(img/background-stripes.gif);
+	padding: 0;
+	margin: 0;
+	font-family: sans-serif;
+}
+
+html {
+	padding: 0;
+}
+
+/* head */
+#headbar {
+	width: 100%;
+	height: 80px;
+	position: absolute;
+	background-image: url(img/background-head.png);
+	top: 0;
+	left: 0;
+	z-index: 50;
+}
+
+#logo {
+	background-image: url(img/logo.png);
+	width: 78px;
+	height: 78px;
+	position: absolute;
+	top: 20px;
+	left: 20px;
+}
+
+#head {
+	position: relative;
+	width: 800px;
+}
+
+#head h1 {
+	text-align: center;
+	color: #fcfcfc;
+	font-family: monospace;
+	padding-top: 5px;
+	margin: 0;
+}
+
+/* menu */
+.menu {
+	position: absolute;
+	top: 55px;
+	margin: 0;
+	padding: 0;
+}
+
+.menu a {
+	color: #eee;
+	font-weight: bold;
+	font-size: 10pt;
+	text-decoration: none;
+}
+
+.menu a:hover {
+	color: #fff;
+}
+
+.menu a.selected {
+	color: #fff;
+	text-decoration: underline;
+}
+
+.menu#main_menu {
+	left: 200px;
+}
+
+.menu#other_menu {
+	left: 600px;
+}
+
+.menu li {
+	display: inline;
+	list-style: none;
+	margin: 0.8em;
+}
+
+/* content */
+#page, #head, #foot {
+	margin: auto;
+}
+
+#page, #foot {
+	background-color: #fff;
+	border: 1px solid #aaa;
+	padding: 25px;
+	width: 750px;
+}
+
+#page {
+	position: relative;
+	border-top: 0;
+	margin-top: 79px !important;
+	font-size: 11pt;
+	z-index: 10;
+}
+
+#page h1 {
+	border-bottom: 1px solid #aaa;
+	font-size: 15pt;
+}
+
+#page .hsplit {
+	height: 1px;
+	background-image: url(img/hsplit.png);
+	background-repeat: no-repeat;
+	background-position: 50% 0;
+	margin: 15px 0;
+}
+
+#page .github {
+	margin-top: 0;
+	border: 3px dotted #cecece;
+	padding: 5px;
+	background-color: #eef;
+	font-family: monospace;
+	text-align: center;
+}
+
+.howto_image_container {
+  margin:0 auto 10px auto;
+  padding:0 30px;
+}
+
+.howto_image_left {
+  float:left;
+  text-align:center;
+  margin-right:40px;
+}
+
+.howto_image_right {
+  float:right;
+  text-align:center;
+}
+
+/* footer */
+#foot {
+	margin-top: 8px;
+	margin-bottom: 18px;
+	padding-top: 3px;
+	padding-bottom: 1px;
+	text-align: center;
+	font-size: 9pt;
+	color: #333;
+}
+
+/*
+ * pages
+ */
+
+/* showcase */
+#p_showcase {
+	min-height: 500px;
+}
+
+#p_showcase #col_thumbs {
+	width: 185px;
+	background-image: url(img/split.png);
+	background-repeat: no-repeat;
+	background-position: 100% 50%;
+	padding: 55px 25px 55px 0;
+	float: left;
+}
+
+#p_showcase #col_thumbs img {
+	width: 70px;
+	opacity: 0.5;
+	margin-right: 5px;
+	border: 2px solid transparent;
+}
+
+#p_showcase #col_thumbs img.selected {
+	border: 2px solid #f88;
+	opacity: 1;
+}
+
+#p_showcase #col_thumbs p {
+	margin: 0;
+	font-size: 9pt;
+	color: #333;
+}
+
+#p_showcase #col_big {
+	margin-left: 240px;
+}
+
+#p_showcase #col_big img {
+	margin: 20px 0;
+	width: 510px;
+	cursor: pointer;
+}
+
+/* howto */
+#p_howto_push img {
+	width: 300px;
+	border: 1px solid #aaa;
+	cursor: pointer;
+}
+

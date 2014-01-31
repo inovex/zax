@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+	<head>
+		<title>ZAX - Systems Monitoring</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" href="style.css" />
+		<script src="jquery.min.js" type="text/javascript"></script>
+		<script src="jquery.ba-hashchange.min.js" type="text/javascript"></script>
+		<script src="script.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<div id="headbar">
+			<div id="head">
+				<div id="logo"></div>
+				<h1>ZAX - Systems Monitoring</h1>
+				<ul class="menu" id="main_menu">
+					<li><a href="#about">About</a></li>
+					<li><a href="#showcase">Showcase</a></li>
+					<li><a href="#howto_push">Push Notifications</a></li>
+				</ul>
+				<ul class="menu" id="other_menu">
+					<li><a href="#feedback_impress">Feedback & Imprint</a></li>
+				</ul>
+			</div>
+		</div>
+		<div style="position: relative; height:1px"></div>
+		<div id="page">
+			<div id="p_about">
+				<p class="github">ZAX is hosted on <a href="https://github.com/inovex/zax">GitHub</a></p>
+				<h1>Welcome to ZAX</h1>
+				<p>
+					<strong>ZAX is a mobile frontend for the Zabbix enterprise monitoring system. It is free and has no limits.</strong>
+				</p>
+				<p>
+					This app shows you not only active triggers, events and latest item data, but has a few more features:
+				</p>
+				<h1>Features</h1>
+				<ul>
+					<li>view current problems</li>
+					<li>view events</li>
+					<li>view latest Items</li>
+					<li>view screens</li>
+					<li>mark events as acknowledged</li>
+					<li>history for items (graphs)</li>
+					<li>push notifications - trigger updates in realtime</li>
+					<li>HTTP auth for proxy</li>
+					<li>optional: accept all SSL certificates</li>
+					<li>Homescreen Widget</li>
+					<li>Zabbix 2.x support</li>
+				</ul>
+			</div>
+			<div id="p_showcase">
+				<h1>In Action</h1>
+				<!-- 2 spalten layout -->
+				<div id="col_thumbs">
+					<p>tablet version</p>
+					<a href="#showcase/tablet1"><img src="img/thumbs/tablet1.png" /></a>
+					<a href="#showcase/tablet2"><img src="img/thumbs/tablet2.png" /></a>
+					<a href="#showcase/tablet3"><img src="img/thumbs/tablet3.png" /></a>
+					<a href="#showcase/tablet4"><img src="img/thumbs/tablet4.png" /></a>
+
+					<div class="hsplit"></div>
+					<p>smartphone version</p>
+					<a href="#showcase/smartphone1"><img src="img/thumbs/smartphone1.png" /></a>
+					<a href="#showcase/smartphone2"><img src="img/thumbs/smartphone2.png" /></a>
+					<a href="#showcase/smartphone3"><img src="img/thumbs/smartphone3.png" /></a>
+					<a href="#showcase/smartphone4"><img src="img/thumbs/smartphone4.png" /></a>
+				</div>
+				<div id="col_big">
+					<img src="img/big/tablet1.png" />
+				</div>
+			</div>
+			<div id="p_howto_push">
+				<h1>Setup Push Notifications</h1>
+        <center>
+				  <img src="img/push_not.png" />
+        </center>
+				<p>
+					First, you need an account for PubNub, a realtime push service.
+					Sign up for free at <a href="http://www.pubnub.com/" target="_blank">http://www.pubnub.com/</a> if you don’t have an existing account.
+				</p>
+				<div class="hsplit"></div>
+
+				<p>
+					Download <a href="pubnub.pl" target="_blank">pubnub.pl</a> and open it with an editor. Replace the <strong>$pubkey</strong> and <strong>$subkey</strong> variables with your keys from <a href="http://www.pubnub.com/account#api-keys" target="_blank">http://www.pubnub.com/account#api-keys</a>. Please use your full keys containing the "sub-c-" and "pub-c-" prefixes, respectively.<br />
+          On your Zabbix server, install the Perl package <strong>LWP:Simple</strong> using (for example):
+          <pre>perl -MCPAN -e'install "LWP::Simple"'</pre>
+				</p>
+				<div class="hsplit"></div>
+
+				<p>
+					Copy the <strong>pubnub.pl</strong> file into the Zabbix <strong>AlertScriptPath</strong>. By default, the AlertScriptsPath is set to be <strong>/usr/local/share/zabbix/alertscripts</strong>,for Zabbix 2.x, and <strong>/home/zabbix/bin</strong>, for Zabbix 1.8.x; however, it can be changed using the <strong>zabbix_server.conf</strong> file. If you don’t know your path, check your <strong>zabbix_server.conf</strong> file.
+				</p>
+				<div class="hsplit"></div>
+
+				<p>
+					Open the Zabbix web frontend.<br/>
+					Go to <strong>Administration -> Media types</strong>. Create a new Media type for the script pubnub.pl.
+				</p>
+        <div class="howto_image_container">
+				  <div class="howto_image_left"><img src="img/howto/media_type_18.png" /><br /> Zabbix 1.8</div>
+          <div class="howto_image_right"><img src="img/howto/media_type_20.png" /><br /> Zabbix 2.0</div>
+          <br style="clear:both;">
+        </div>
+    
+				<div class="hsplit"></div>
+
+				<p>
+					Go to <strong>Administration -> Users</strong>.  Add for your user the Media type you created before.
+				</p>
+				<div class="howto_image_container">
+				  <div class="howto_image_left"><img src="img/howto/user_18.png" /><br /> Zabbix 1.8</div>
+          <div class="howto_image_right"><img src="img/howto/user_20.png" /><br /> Zabbix 2.0</div>
+          <br style="clear:both;">
+        </div>
+				<div class="hsplit"></div>
+
+				<p>
+					Go to <strong>Configuration -> Actions</strong>. Create an action for a trigger that sends a message to your user.<br/>
+					Important: subject and message must be set to:
+				</p>
+				<strong>Default subject:</strong>
+				<pre>	{TRIGGER.ID}</pre>
+				<strong>Default message:</strong>
+				<pre>	status={STATUS}<br/>	message={HOSTNAME}: {TRIGGER.NAME}: {STATUS}</pre>
+				<div class="howto_image_container">
+				  <div class="howto_image_left"><img src="img/howto/action_18.png" /><br /> Zabbix 1.8</div>
+          <div class="howto_image_right"><img src="img/howto/action_20_1.png" /><br /><img src="img/howto/action_20_2.png" /><br /> Zabbix 2.0</div>
+          <br style="clear:both;">
+        </div>
+        <strong>Attention:</strong>
+        <p>Apart from the Zabbix parameters (<i>{STATUS}</i> etc.), please do not use square brackets ('[',']') or curly brackets ('{','}') as they may lead to nesting issues. (see <a href="https://github.com/inovex/zax/issues/8" title="See bracket nesting issue on GitHub">https://github.com/inovex/zax/issues/8</a>)</p> 
+			</div>
+			<div id="p_feedback_impress">
+				<h1>Feedback</h1>
+				For support, feature requests or any other feedback, please create a ticket at the <a href="https://github.com/inovex/zax/issues">GitHub project issue page</a>.
+				Alternatively, you can send us a mail to <strong>list-apps@inovex.de</strong>.
+
+				<h1>Imprint</h1>
+				<p>
+					inovex GmbH<br/>
+					Karlsruher Straße 71<br/>
+					D-75179 Pforzheim
+				</p>
+				<p>
+					Tel +49.(0)7231.3191-0<br/>
+					Fax +49.(0)7231.3191-91<br/>
+					info@inovex.de
+				</p>
+				<p>
+					Business Manager: Stephan Müller<br/>
+					Registered Office: Pforzheim<br/>
+					AG Mannheim, HRB 502126<br/>
+					USt-ID according to § 27 a Umsatzsteuergesetz: DE 144 196 117
+				</p>
+			</div>
+		</div>
+		<div id="foot">
+			&copy; 2013 inovex GmbH
+		</div>
+	</body>
+</html>
+
