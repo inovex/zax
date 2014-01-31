@@ -156,6 +156,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			if (mPreferencesChanged == true) {
 				mZabbixDataService.setLoggedIn(false);
 				mZabbixDataService.clearAllData();
+				// update widget because server data has changed
+				Intent intent = new Intent();
+				intent.setAction("com.inovex.zabbixmobile.WIDGET_UPDATE");
+				this.sendBroadcast(intent);
 				mPreferencesChanged = false;
 			}
 			mZabbixDataService.performZabbixLogin(this);
