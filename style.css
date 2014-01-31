@@ -159,17 +159,17 @@ html {
 }
 
 #p_showcase #col_thumbs {
-	width: 185px;
+	width: 220px;
 	background-image: url(img/split.png);
 	background-repeat: no-repeat;
 	background-position: 100% 50%;
-	padding: 55px 25px 55px 0;
+	padding: 55px 10px 55px 0;
 	float: left;
 }
 
 #p_showcase #col_thumbs img {
-	width: 70px;
-	opacity: 0.5;
+	width: 95px;
+	opacity: 0.7;
 	margin-right: 5px;
 	border: 2px solid transparent;
 }

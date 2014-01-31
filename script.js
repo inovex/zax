@@ -40,7 +40,7 @@ $(function() {
  */
 function _cur_image() {
 	var cur = window.location.hash
-	if (cur.indexOf('/') == -1) cur = '#showcase/tablet1'
+	if (cur.indexOf('/') == -1) cur = '#showcase/tablet_problems'
 	// nur den pfad
 	return cur.replace(/.*\//, '')
 }
