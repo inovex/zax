@@ -63,7 +63,8 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 				.getSystemService(Context.ALARM_SERVICE);
 		if (updateRate >= 0) {
 			alarms.setRepeating(AlarmManager.ELAPSED_REALTIME,
-					SystemClock.elapsedRealtime(), updateRate, newPending);
+					SystemClock.elapsedRealtime() + updateRate, updateRate,
+					newPending);
 		} else {
 			// on a negative updateRate stop the refreshing
 			alarms.cancel(newPending);
@@ -75,9 +76,9 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 		super.onReceive(context, intent);
 		// check whether the refresh time is still the same
 		ZaxPreferences prefs = ZaxPreferences.getInstance(context);
-		
+
 		int widgetRefreshInterval = prefs.getWidgetRefreshInterval();
-		if(widgetRefreshInterval != prefs.getWidgetRefreshIntervalCache()) {
+		if (widgetRefreshInterval != prefs.getWidgetRefreshIntervalCache()) {
 			setAlarm(context, -1);
 			setAlarm(context, widgetRefreshInterval * 60 * 1000);
 			prefs.setWidgetRefreshIntervalCache(widgetRefreshInterval);
