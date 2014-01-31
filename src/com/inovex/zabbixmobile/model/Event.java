@@ -134,6 +134,11 @@ public class Event implements Comparable<Event> {
 			return 0;
 		if (clock < another.getClock())
 			return 1;
-		return -1;
+		if(clock > another.getClock())
+			return -1;
+		if(trigger.getId() < another.getTrigger().getId())
+			return 1;
+		else
+			return -1;
 	}
 }
