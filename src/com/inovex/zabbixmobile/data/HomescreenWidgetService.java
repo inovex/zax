@@ -6,7 +6,6 @@ import java.util.List;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.IBinder;
@@ -112,6 +111,7 @@ public class HomescreenWidgetService extends Service {
 						int countHigh = 0;
 						int countAverage = 0;
 						for (Trigger trigger : problems) {
+							// make sure disabled triggers are not ignored
 							if (trigger.getStatus() != Trigger.STATUS_ENABLED)
 								continue;
 							if (trigger.getPriority() == TriggerSeverity.DISASTER
