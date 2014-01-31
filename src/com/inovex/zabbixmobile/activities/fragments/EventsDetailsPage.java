@@ -100,10 +100,6 @@ public class EventsDetailsPage extends BaseDetailsPage {
 				((TextView) getView().findViewById(
 						R.id.trigger_details_expression)).setText(t
 						.getExpression());
-				((TextView) getView().findViewById(
-						R.id.trigger_details_disabled))
-						.setText(t.getStatus() == Trigger.STATUS_ENABLED ? R.string.no
-								: R.string.yes);
 
 				Item i = t.getItem();
 				if (i != null) {

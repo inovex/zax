@@ -60,9 +60,6 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 					.setText(mTrigger.getPriority().getNameResourceId());
 			((TextView) getView().findViewById(R.id.trigger_details_expression))
 					.setText(mTrigger.getExpression());
-			((TextView) getView().findViewById(R.id.trigger_details_disabled))
-					.setText(mTrigger.getStatus() == Trigger.STATUS_ENABLED ? R.string.no
-							: R.string.yes);
 
 			Item i = mTrigger.getItem();
 			if (i != null) {
