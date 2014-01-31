@@ -77,8 +77,12 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 			statusImage.setImageResource(R.drawable.problem);
 		if (t == null) {
 			Log.w(TAG, "No trigger defined for Event with ID " + e.getId());
-		} else
-			description.setText(String.valueOf(t.getDescription()));
+		} else {
+			String desc = String.valueOf(t.getDescription());
+			if(!hostNames.isEmpty())
+				desc = desc.replaceAll("\\{HOSTNAME\\}", hostNames);
+			description.setText(desc);
+		}
 
 		return row;
 	}

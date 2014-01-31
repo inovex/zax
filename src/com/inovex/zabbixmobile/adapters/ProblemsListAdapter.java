@@ -55,13 +55,16 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 				.findViewById(R.id.severity_list_item_clock);
 
 		Trigger t = getItem(position);
-		description.setText(String.valueOf(t.getDescription()));
 
 		String hostNames = t.getHostNames();
 		if (hostNames == null) {
 			hostNames = "";
-			Log.w(TAG, "No host defined for Event with ID " + t.getId());
+			Log.w(TAG, "No host defined for trigger with ID " + t.getId());
 		}
+		String desc = String.valueOf(t.getDescription());
+		if(!hostNames.isEmpty())
+			desc = desc.replaceAll("\\{HOSTNAME\\}", hostNames);
+		description.setText(desc);
 		title.setText(hostNames);
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(t.getLastChange());
