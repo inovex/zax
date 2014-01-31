@@ -3,6 +3,7 @@ package com.inovex.zabbixmobile.model;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 
 /**
@@ -96,5 +97,15 @@ public class ZaxPreferences {
 		String url = mPref.getString("zabbix_url", "");
 		return (url.equals("http://zabbix.company.net/zabbix"))
 				|| (url == null) || url.equals("");
+	}
+
+	public void registerOnSharedPreferenceChangeListener(
+			OnSharedPreferenceChangeListener listener) {
+		mPref.registerOnSharedPreferenceChangeListener(listener);
+	}
+	
+	public void unregisterOnSharedPreferenceChangeListener(
+			OnSharedPreferenceChangeListener listener) {
+		mPref.unregisterOnSharedPreferenceChangeListener(listener);
 	}
 }
