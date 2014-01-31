@@ -62,7 +62,7 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 			Log.w(TAG, "No host defined for trigger with ID " + t.getId());
 		}
 		String desc = String.valueOf(t.getDescription());
-		if(!hostNames.isEmpty())
+		if (hostNames.length() > 0)
 			desc = desc.replaceAll("\\{HOSTNAME\\}", hostNames);
 		description.setText(desc);
 		title.setText(hostNames);
@@ -92,6 +92,7 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 	public int getItemViewType(int position) {
 		Trigger t = getItem(position);
 		switch (t.getPriority()) {
+		// TODO: change when images are actually different for severities
 		case DISASTER:
 		case HIGH:
 			return 0;
