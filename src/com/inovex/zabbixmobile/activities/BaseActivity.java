@@ -423,11 +423,6 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			Log.d(TAG, "onActivityResult: " + requestCode + " - " + resultCode);
 			if (resultCode == RESULT_PREFERENCES_CHANGED) {
 				mPreferencesChanged = true;
-				Intent intent = new Intent();
-				intent.setAction("com.inovex.zabbixmobile.WIDGET_UPDATE");
-				intent.putExtra(ZaxWidgetProvider.INTERVAL_CHANGED, true);
-				this.sendBroadcast(intent);
-				
 			} else {
 				mPreferencesChanged = false;
 			}

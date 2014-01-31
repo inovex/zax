@@ -17,7 +17,6 @@ import com.inovex.zabbixmobile.model.ZaxPreferences;
  * 
  */
 public class ZaxWidgetProvider extends AppWidgetProvider {
-	public static final String INTERVAL_CHANGED = "INTERVAL_CHANGED";
 	private static final String TAG = ZaxWidgetProvider.class.getSimpleName();
 
 	@Override
@@ -41,29 +40,22 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 	@Override
 	public void onEnabled(Context context) {
 		super.onEnabled(context);
+
 		Log.d(TAG, "onEnabled");
 		// Alarm Manager for refresh
-		int minutes = (ZaxPreferences.getInstance(context))
-				.getWidgetRefreshInterval();
+		ZaxPreferences prefs = ZaxPreferences.getInstance(context);
+		int minutes = prefs.getWidgetRefreshInterval();
+		prefs.setWidgetRefreshIntervalCache(minutes);
 
-		long interval = minutes * 1000;
+		long interval = minutes * 60 * 1000;
 		setAlarm(context, interval);
 		Log.d(TAG, "alarm set, interval: " + interval + " ms");
 
 	}
 
-	private static PendingIntent makeControlPendingIntent(Context context,
-			String command) {
-		Intent active = new Intent(context, HomescreenWidgetService.class);
-		active.setAction(command);
-		return (PendingIntent.getService(context, 0, active,
-				PendingIntent.FLAG_UPDATE_CURRENT));
-	}
-
 	private static void setAlarm(Context context, long updateRate) {
-		// PendingIntent newPending = makeControlPendingIntent(context,
-		// HomescreenWidgetService.UPDATE);
 		Intent intent = new Intent();
+		Log.d(TAG, "setting alarm to " + updateRate);
 		intent.setAction("com.inovex.zabbixmobile.WIDGET_UPDATE");
 		PendingIntent newPending = PendingIntent.getBroadcast(context, 0,
 				intent, 0);
@@ -82,18 +74,17 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 	public void onReceive(Context context, Intent intent) {
 		super.onReceive(context, intent);
 		// check whether the refresh time is still the same
-
-		if (intent.getExtras().getBoolean(INTERVAL_CHANGED)) {
-			Log.d(TAG, "refresh interval changed");
-			int minutes = (ZaxPreferences.getInstance(context))
-					.getWidgetRefreshInterval();
+		ZaxPreferences prefs = ZaxPreferences.getInstance(context);
+		
+		int widgetRefreshInterval = prefs.getWidgetRefreshInterval();
+		if(widgetRefreshInterval != prefs.getWidgetRefreshIntervalCache()) {
 			setAlarm(context, -1);
-			setAlarm(context, minutes * 1000);
+			setAlarm(context, widgetRefreshInterval * 60 * 1000);
+			prefs.setWidgetRefreshIntervalCache(widgetRefreshInterval);
 		}
 
 		Intent serviceIntent = new Intent(context,
 				HomescreenWidgetService.class);
 		context.startService(serviceIntent);
 	}
-
 }

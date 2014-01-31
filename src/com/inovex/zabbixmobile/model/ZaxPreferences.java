@@ -2,6 +2,7 @@ package com.inovex.zabbixmobile.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
 /**
@@ -74,6 +75,16 @@ public class ZaxPreferences {
 	public int getWidgetRefreshInterval() {
 		return Integer.parseInt(mPref.getString("widget_refresh_interval_mins",
 				"15"));
+	}
+
+	public int getWidgetRefreshIntervalCache() {
+		return mPref.getInt("widget_refresh_interval_mins_cache", 15);
+	}
+
+	public void setWidgetRefreshIntervalCache(int minutes) {
+		Editor edit = mPref.edit();
+		edit.putInt("widget_refresh_interval_mins_cache", minutes);
+		edit.commit();
 	}
 
 	/**
