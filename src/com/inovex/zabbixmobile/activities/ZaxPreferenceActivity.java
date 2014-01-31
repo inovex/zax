@@ -21,6 +21,10 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 	private String userName;
 	private String password;
 	private ZaxPreferences mPrefs;
+	private boolean trustSSL;
+	private boolean httpAuth;
+	private String httpUser;
+	private String httpPassword;
 
 	// We use the deprecated method because it is compatible to old Android
 	// versions.
@@ -33,29 +37,36 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 		zabbixUrl = mPrefs.getZabbixUrl();
 		userName = mPrefs.getUsername();
 		password = mPrefs.getPassword();
+		trustSSL = mPrefs.isTrustAllSSLCA();
+		httpAuth = mPrefs.isHttpAuthEnabled();
+		httpUser = mPrefs.getHttpAuthUsername();
+		httpPassword = mPrefs.getHttpAuthPassword();
 		addPreferencesFromResource(R.xml.preferences);
 	}
 
 	@Override
 	protected void onStop() {
-		ZaxPreferences prefs = ZaxPreferences.getInstance(this);
-		Intent returnIntent = new Intent();
-		if (!prefs.getZabbixUrl().equals(zabbixUrl)
-				|| !prefs.getUsername().equals(userName)
-				|| !prefs.getPassword().equals(password))
-			setResult(BaseActivity.RESULT_PREFERENCES_CHANGED, returnIntent);
+		inferResult();
 		super.onStop();
 	}
 
 	@Override
 	public void onBackPressed() {
+		inferResult();
+		finish();
+	}
+
+	private void inferResult() {
 		ZaxPreferences prefs = ZaxPreferences.getInstance(this);
 		Intent returnIntent = new Intent();
 		if (!prefs.getZabbixUrl().equals(zabbixUrl)
 				|| !prefs.getUsername().equals(userName)
-				|| !prefs.getPassword().equals(password))
+				|| !prefs.getPassword().equals(password)
+				|| prefs.isTrustAllSSLCA() != trustSSL
+				|| prefs.isHttpAuthEnabled() != httpAuth
+				|| !prefs.getHttpAuthUsername().equals(httpUser)
+				|| !prefs.getHttpAuthPassword().equals(httpPassword))
 			setResult(BaseActivity.RESULT_PREFERENCES_CHANGED, returnIntent);
-		finish();
 	}
 
 	@Override
