@@ -179,7 +179,13 @@ public class Trigger implements Comparable<Trigger> {
 			return 0;
 		if (lastChange < another.getLastChange())
 			return 1;
-		if(item.getId() < another.getItem().getId())
+		if (lastChange > another.getLastChange())
+			return -1;
+		if (item == null)
+			return 1;
+		if (another.getItem() == null)
+			return -1;
+		if (item.getId() > another.getItem().getId())
 			return 1;
 		else
 			return -1;
