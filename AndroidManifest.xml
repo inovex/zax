@@ -51,39 +51,44 @@
             android:name=".activities.ZaxPreferenceActivity"
             android:label="@string/activity_preferences" >
         </activity>
-        <activity
-            android:name=".activities.GraphFullscreenActivity">
+        <activity android:name=".activities.GraphFullscreenActivity" >
         </activity>
 
         <service android:name="com.inovex.zabbixmobile.data.ZabbixDataService" >
         </service>
 
-        <receiver android:name="com.inovex.zabbixmobile.ExceptionBroadcastReceiver" android:exported="false">
+        <receiver
+            android:name="com.inovex.zabbixmobile.ExceptionBroadcastReceiver"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.inovex.zabbixmobile.EXCEPTION" >
                 </action>
             </intent-filter>
         </receiver>
-        
-        <receiver android:name=".push.BootCompletedIntentReceiver">
-			<intent-filter>
-				<action android:name="android.intent.action.BOOT_COMPLETED" />
-			</intent-filter>
-		</receiver>
-		
+        <receiver android:name=".push.BootCompletedIntentReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <!-- Homescreen Widget -->
-		<receiver android:name=".widget.ZaxWidgetProvider">
-			<intent-filter>
-				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-				<action android:name="com.inovex.zabbixmobile.WIDGET_UPDATE" />
-			</intent-filter>
-			<meta-data
-				android:name="android.appwidget.provider"
-				android:resource="@xml/widget_info" />
-		</receiver>
-        
-		<service android:name=".data.HomescreenWidgetService"></service>
-        <service android:name=".push.PushService" android:process=":pushservice"></service>
+        <receiver android:name=".widget.ZaxWidgetProvider" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.inovex.zabbixmobile.WIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_info" />
+        </receiver>
+
+        <service android:name=".data.HomescreenWidgetService" >
+        </service>
+        <service
+            android:name=".push.PushService"
+            android:process=":pushservice" >
+        </service>
     </application>
 
 </manifest>

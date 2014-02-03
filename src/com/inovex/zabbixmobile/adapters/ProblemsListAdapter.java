@@ -75,14 +75,22 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 
 		switch (t.getPriority()) {
 		case DISASTER:
+			statusImage.setImageResource(R.drawable.severity_disaster);
+			break;
 		case HIGH:
 			statusImage.setImageResource(R.drawable.severity_high);
 			break;
+		case AVERAGE:
+			statusImage.setImageResource(R.drawable.severity_average);
+			break;
+		case WARNING:
+			statusImage.setImageResource(R.drawable.severity_warning);
+			break;
 		case INFORMATION:
-			statusImage.setImageResource(R.drawable.ok);
+			statusImage.setImageResource(R.drawable.severity_information);
 			break;
 		default:
-			statusImage.setImageResource(R.drawable.severity_average);
+			statusImage.setImageResource(R.drawable.severity_not_classified);
 		}
 
 		return row;
