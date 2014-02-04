@@ -1209,6 +1209,38 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	/**
+	 * Marks a data type cached for a certain amount of time.
+	 * 
+	 * @param type
+	 *            the data type
+	 * @param itemId
+	 *            ID of the item which has been cached or null if an entire
+	 *            table has been cached
+	 */
+	public void setNotCached(CacheDataType type, Long itemId) {
+		if (itemId == null)
+			itemId = (long) Cache.DEFAULT_ID;
+		try {
+			Dao<Cache, CacheDataType> cacheDao = getDao(Cache.class);
+			synchronized (cacheDao) {
+				Cache c;
+				QueryBuilder<Cache, CacheDataType> query = cacheDao
+						.queryBuilder();
+				query.where().eq(Cache.COLUMN_TYPE, type).and()
+						.eq(Cache.COLUMN_ITEM_ID, itemId);
+				c = query.queryForFirst();
+				if (c != null) {
+					cacheDao.delete(c);
+					c = null;
+				}
+			}
+		} catch (SQLException e) {
+			// no user message; after all, it's just caching
+			// handleException(new FatalException(Type.INTERNAL_ERROR, e));
+		}
+	}
+
+	/**
 	 * Checks whether a data type is cached in the local SQLite database.
 	 * 
 	 * @param type

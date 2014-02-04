@@ -20,6 +20,7 @@ import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
+import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProvider;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
@@ -80,7 +81,14 @@ public class HomescreenWidgetService extends Service {
 				problems = new ArrayList<Trigger>();
 				try {
 					mRemoteAPI.authenticate();
+					// we need to refresh triggers AND events because otherwise
+					// we might lose triggers belonging to events
+					mDatabaseHelper.clearEvents();
+					mDatabaseHelper.clearTriggers();
+					mDatabaseHelper.setNotCached(CacheDataType.EVENT, null);
+					mDatabaseHelper.setNotCached(CacheDataType.TRIGGER, null);
 					mRemoteAPI.importActiveTriggers(null);
+					mRemoteAPI.importEvents(null);
 				} catch (FatalException e) {
 					error = true;
 					return;
@@ -103,8 +111,8 @@ public class HomescreenWidgetService extends Service {
 					return;
 				}
 				if (problems != null) {
-//					for (Trigger t : problems)
-//						Log.d(TAG, t.toString());
+					// for (Trigger t : problems)
+					// Log.d(TAG, t.toString());
 					String status;
 					int icon = R.drawable.ok;
 					if (problems.size() > 0) {
