@@ -1110,6 +1110,8 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
+				if(event == null)
+					return;
 				mRemoteAPI.acknowledgeEvent(event.getId(), comment);
 				mSuccess = mDatabaseHelper.acknowledgeEvent(event);
 			}

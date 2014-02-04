@@ -1017,7 +1017,7 @@ public class ZabbixRemoteAPI {
 						RECORDS_PER_INSERT_BATCH);
 				try {
 					int selI = 0;
-					while ((historydetail = historydetails.next()) != null) {
+					while (historydetails != null && (historydetail = historydetails.next()) != null) {
 						// save only every 20th
 						// TODO: This may produce odd graphs for a small amount
 						// of values
@@ -1279,7 +1279,8 @@ public class ZabbixRemoteAPI {
 						item.setDescription(itemReader.getText());
 					}
 				} else if (propName.equals(Item.COLUMN_LASTCLOCK)) {
-					item.setLastClock(Long.parseLong(itemReader.getText()) * 1000);
+					if(itemReader.getText() != null)
+						item.setLastClock(Long.parseLong(itemReader.getText()) * 1000);
 				} else if (propName.equals(Item.COLUMN_LASTVALUE)) {
 					item.setLastValue(itemReader.getText());
 				} else if (propName.equals(Item.COLUMN_UNITS)) {

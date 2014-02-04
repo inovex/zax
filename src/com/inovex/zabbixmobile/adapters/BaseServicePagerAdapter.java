@@ -112,12 +112,15 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 		if (mCurTransaction != null) {
 			mCurTransaction.commitAllowingStateLoss();
 			mCurTransaction = null;
-			mFragmentManager.executePendingTransactions();
+			if(mFragmentManager != null)
+				mFragmentManager.executePendingTransactions();
 		}
 	}
 
 	@Override
 	public boolean isViewFromObject(View view, Object object) {
+		if(object == null || view == null)
+			return false;
 		return ((Fragment) object).getView() == view;
 	}
 
