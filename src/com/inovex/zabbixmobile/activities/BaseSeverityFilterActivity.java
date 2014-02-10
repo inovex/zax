@@ -87,6 +87,8 @@ public abstract class BaseSeverityFilterActivity<T> extends
 
 	@Override
 	public void onSeveritySelected(TriggerSeverity severity) {
+		if(severity == null)
+			return;
 		mDetailsFragment.setSeverity(severity);
 		mDetailsFragment.redrawPageIndicator();
 		selectInitialItem(false);

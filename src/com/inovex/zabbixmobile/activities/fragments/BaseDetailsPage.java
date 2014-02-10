@@ -74,7 +74,7 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 		Log.d(TAG, "showGraph(" + item + ")");
 		ViewGroup layout = (LinearLayout) getView().findViewById(R.id.graphs);
 		dismissGraphProgressBar();
-		if (item != null) {
+		if (item != null && item.getHistoryDetails() != null) {
 			// create graph and add it to the layout
 			final LineGraphView graph = GraphUtil.createItemGraphPreview(
 					getSherlockActivity(), item);

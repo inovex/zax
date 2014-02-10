@@ -50,7 +50,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 
 	@Override
 	protected void fillDetailsText() {
-		if (mTrigger != null) {
+		if (mTrigger != null && getView() != null) {
 
 			((TextView) getView().findViewById(R.id.trigger_details_host))
 					.setText(mTrigger.getHostNames());
@@ -121,8 +121,10 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 	 * Refreshes this page's view by reloading the trigger from the database.
 	 */
 	public void refresh() {
-		this.mTrigger = mZabbixDataService.getTriggerById(mTriggerId);
-		fillDetailsText();
+		if (mZabbixDataService != null) {
+			this.mTrigger = mZabbixDataService.getTriggerById(mTriggerId);
+			fillDetailsText();
+		}
 	}
 
 }

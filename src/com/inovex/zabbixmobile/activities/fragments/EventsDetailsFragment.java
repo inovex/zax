@@ -56,6 +56,8 @@ public class EventsDetailsFragment extends
 		case R.id.menuitem_acknowledge_event:
 			Event e = mDetailsPagerAdapter.getCurrentObject();
 			Log.d(TAG, "Acknowledge event: " + e);
+			if(e == null)
+				return false;
 			// show dialog
 			AcknowledgeDialogFragment dialog = AcknowledgeDialogFragment
 					.getInstance();
@@ -97,7 +99,7 @@ public class EventsDetailsFragment extends
 			return;
 		}
 		Event e = mDetailsPagerAdapter.getCurrentObject();
-		if (e.isAcknowledged())
+		if (e != null && e.isAcknowledged())
 			this.setAcknowledgeButtonEnabled(false);
 		else
 			this.setAcknowledgeButtonEnabled(true);

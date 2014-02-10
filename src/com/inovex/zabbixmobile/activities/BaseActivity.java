@@ -405,6 +405,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 				// in case the progress is not being shown right now, a
 				// NullPointerException will be thrown, which we can safely
 				// ignore.
+			} catch (IllegalStateException e) {
+				// if the activity has been canceled, this exception will be
+				// thrown
+				e.printStackTrace();
 			}
 		}
 		if (success) {

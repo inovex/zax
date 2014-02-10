@@ -116,7 +116,7 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 	}
 
 	public void uncheckCurrentItem() {
-		if (getListView() != null)
+		if (getView() != null && getListView() != null)
 			getListView().setItemChecked(mListAdapter.getCurrentPosition(),
 					false);
 	}

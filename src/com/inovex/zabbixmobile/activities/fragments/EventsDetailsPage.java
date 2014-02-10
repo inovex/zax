@@ -157,7 +157,9 @@ public class EventsDetailsPage extends BaseDetailsPage {
 	 * Refreshes the current view by loading the event from the database.
 	 */
 	public void refresh() {
-		this.mEvent = mZabbixDataService.getEventById(mEventId);
-		fillDetailsText();
+		if (mZabbixDataService != null) {
+			this.mEvent = mZabbixDataService.getEventById(mEventId);
+			fillDetailsText();
+		}
 	}
 }

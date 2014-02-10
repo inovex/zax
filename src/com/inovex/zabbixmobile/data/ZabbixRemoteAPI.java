@@ -367,7 +367,7 @@ public class ZabbixRemoteAPI {
 	private JsonArrayOrObjectReader _queryStream(String method,
 			JSONObject params) throws JSONException, IOException,
 			ZabbixLoginRequiredException, FatalException {
-		
+
 		validateUrl();
 		// http request
 		HttpPost post = new HttpPost(url);
@@ -447,10 +447,10 @@ public class ZabbixRemoteAPI {
 
 	private void validateUrl() throws FatalException {
 		String exampleUrl = mContext.getResources().getString(
-				R.string.url_example) + (mContext.getResources().getString(
-						R.string.url_example).endsWith("/") ? "" : '/') + API_PHP;
-		if (url == null
-				|| url.equals(exampleUrl)) {
+				R.string.url_example)
+				+ (mContext.getResources().getString(R.string.url_example)
+						.endsWith("/") ? "" : '/') + API_PHP;
+		if (url == null || url.equals(exampleUrl)) {
 			throw new FatalException(Type.SERVER_NOT_FOUND);
 		}
 	}
@@ -849,7 +849,12 @@ public class ZabbixRemoteAPI {
 			return result.getInt("result");
 		} catch (JSONException e) {
 			try {
-				return ((JSONObject) result.get("result")).getInt("rowscount");
+				try {
+					return ((JSONObject) result.get("result"))
+							.getInt("rowscount");
+				} catch (ClassCastException e2) {
+					return ((JSONArray) result.get("result")).length();
+				}
 			} catch (JSONException e1) {
 				return Integer.MAX_VALUE;
 			}
@@ -886,7 +891,8 @@ public class ZabbixRemoteAPI {
 				RECORDS_PER_INSERT_BATCH);
 		HashSet<Long> triggerIds = new HashSet<Long>();
 		int i = 0;
-		while ((eventReader = jsonReader.next()) != null) {
+		while (jsonReader != null
+				&& ((eventReader = jsonReader.next()) != null)) {
 			i++;
 			Event e = new Event();
 			while (eventReader.nextValueToken()) {

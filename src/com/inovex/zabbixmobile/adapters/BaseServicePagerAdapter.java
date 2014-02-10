@@ -110,16 +110,22 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 		if (mFragmentManager == null)
 			return;
 		if (mCurTransaction != null) {
-			mCurTransaction.commitAllowingStateLoss();
-			mCurTransaction = null;
-			if(mFragmentManager != null)
-				mFragmentManager.executePendingTransactions();
+			try {
+				mCurTransaction.commitAllowingStateLoss();
+				mCurTransaction = null;
+				if (mFragmentManager != null)
+					mFragmentManager.executePendingTransactions();
+			} catch (IllegalStateException e) {
+				// this exception is thrown if the activity has been destroyed
+				// which unfortunately happens from time to time
+				e.printStackTrace();
+			}
 		}
 	}
 
 	@Override
 	public boolean isViewFromObject(View view, Object object) {
-		if(object == null || view == null)
+		if (object == null || view == null)
 			return false;
 		return ((Fragment) object).getView() == view;
 	}
@@ -195,6 +201,11 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 	 */
 	@SuppressWarnings("unchecked")
 	public T getCurrentObject() {
+		if (mObjects.size() <= mCurrentPosition) {
+			if (mObjects.size() > 0)
+				return (T) mObjects.toArray()[0];
+			return null;
+		}
 		return (T) mObjects.toArray()[mCurrentPosition];
 	}
 
