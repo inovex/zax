@@ -69,8 +69,7 @@ public class HomescreenWidgetService extends Service {
 					mDatabaseHelper, null, null);
 		}
 
-		// authenticate
-		RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI) {
+		RemoteAPITask importProblemsTask = new RemoteAPITask(mRemoteAPI) {
 
 			private List<Trigger> problems;
 			private boolean error;
@@ -88,7 +87,6 @@ public class HomescreenWidgetService extends Service {
 					mDatabaseHelper.setNotCached(CacheDataType.EVENT, null);
 					mDatabaseHelper.setNotCached(CacheDataType.TRIGGER, null);
 					mRemoteAPI.importActiveTriggers(null);
-					mRemoteAPI.importEvents(null);
 				} catch (FatalException e) {
 					error = true;
 					return;
@@ -144,12 +142,22 @@ public class HomescreenWidgetService extends Service {
 
 					}
 					updateView(icon, status, false);
-					stopSelf();
 				}
 			}
 
 		};
-		loginTask.execute();
+		importProblemsTask.execute();
+		
+		(new RemoteAPITask(mRemoteAPI) {
+			
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				mRemoteAPI.authenticate();
+				mRemoteAPI.importEvents(null);
+			}
+		}).execute();
+		stopSelf();
 	}
 
 	@Override
