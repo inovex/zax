@@ -63,6 +63,13 @@
             android:showSilent="true"
             android:title="@string/ringtone" >
         </RingtonePreference>
+
+        <CheckBoxPreference
+            android:dependency="zabbix_push_enabled"
+            android:key="zabbix_push_old_icons"
+            android:summary="@string/old_notification_icons_desc"
+            android:title="@string/old_notification_icons" >
+        </CheckBoxPreference>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/homescreen_widget" >
         <EditTextPreference

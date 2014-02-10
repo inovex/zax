@@ -18,6 +18,7 @@ import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
@@ -33,6 +34,10 @@ import com.inovex.zabbixmobile.model.ZaxPreferences;
  * 
  */
 public class PushService extends Service {
+	public static final String RINGTONE = "RINGTONE";
+	public static final String PUBNUB_SUBSCRIBE_KEY = "PUBNUB_SUBSCRIBE_KEY";
+	public static final String OLD_NOTIFICATION_ICONS = "OLD_NOTIFICATION_ICONS";
+
 	// Callback Interface when a channel is connected
 	class ConnectCallback implements Callback {
 		@Override
@@ -95,6 +100,7 @@ public class PushService extends Service {
 	protected static final int NUM_STACKED_NOTIFICATIONS = 5;
 	ArrayBlockingQueue<CharSequence> previousMessages = new ArrayBlockingQueue<CharSequence>(
 			NUM_STACKED_NOTIFICATIONS);
+	protected boolean oldNotificationIcons;
 
 	class PushReceiver implements Callback {
 
@@ -140,11 +146,19 @@ public class PushService extends Service {
 
 					NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
 							PushService.this);
-					notificationBuilder.setLargeIcon(BitmapFactory
-							.decodeResource(getResources(), notIcon));
-					notificationBuilder.setSmallIcon(R.drawable.icon);
 					notificationBuilder.setTicker(notMessage);
 					notificationBuilder.setWhen(System.currentTimeMillis());
+
+					if (oldNotificationIcons) {
+						notificationBuilder
+								.setLargeIcon(BitmapFactory.decodeResource(
+										getResources(), R.drawable.icon));
+						notificationBuilder.setSmallIcon(notIcon);
+					} else {
+						notificationBuilder.setLargeIcon(BitmapFactory
+								.decodeResource(getResources(), notIcon));
+						notificationBuilder.setSmallIcon(R.drawable.icon);
+					}
 
 					// we do not start MainActivity directly, but send a
 					// broadcast which will be received by a
@@ -189,13 +203,8 @@ public class PushService extends Service {
 						notificationBuilder.setStyle(inboxStyle);
 					}
 
-					ZaxPreferences preferences = ZaxPreferences
-							.getInstance(PushService.this);
-					String strRingtonePreference = preferences
-							.getPushRingtone();
-					if (strRingtonePreference != null) {
-						notificationBuilder.setSound(Uri
-								.parse(strRingtonePreference));
+					if (ringtone != null) {
+						notificationBuilder.setSound(Uri.parse(ringtone));
 					}
 
 					Notification notification = notificationBuilder.build();
@@ -272,15 +281,6 @@ public class PushService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
-		ZaxPreferences preferences = ZaxPreferences.getInstance(this);
-		String subscribe_key = preferences.getPushSubscribeKey();
-
-		pubnub = new Pubnub("", // PUBLISH_KEY
-				subscribe_key, // SUBSCRIBE_KEY
-				"", // SECRET_KEY
-				"", // CIPHER_KEY
-				false // SSL_ON?
-		);
 		Log.i("PushService", "create");
 	}
 
@@ -288,10 +288,26 @@ public class PushService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
 		Log.d("PushService", "starting");
+
+		subscribeKey = intent.getStringExtra(PUBNUB_SUBSCRIBE_KEY);
+		if (subscribeKey == null)
+			subscribeKey = "";
+		ringtone = intent.getStringExtra(RINGTONE);
+		oldNotificationIcons = intent.getBooleanExtra(OLD_NOTIFICATION_ICONS,
+				false);
+
+		pubnub = new Pubnub("", // PUBLISH_KEY
+				subscribeKey, // SUBSCRIBE_KEY
+				"", // SECRET_KEY
+				"", // CIPHER_KEY
+				false // SSL_ON?
+		);
+
 		if (mPushListener.getStatus() != AsyncTask.Status.RUNNING) {
 			mPushListener.execute(PUSHCHANNEL);
-			Log.i("PushService", "start ");
+			Log.i("PushService", "start");
 		}
+
 		// Register the notification broadcast receiver.
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(ACTION_ZABBIX_NOTIFICATION);
@@ -315,6 +331,8 @@ public class PushService extends Service {
 	}
 
 	private static AlarmManager am;
+	private String subscribeKey;
+	private String ringtone;
 
 	/**
 	 * This starts or stops the push service depending on the user's settings.
@@ -327,14 +345,25 @@ public class PushService extends Service {
 		boolean push = preferences.isPushEnabled();
 		if (am == null)
 			am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(context, PushService.class);
+
+		intent.putExtra(PUBNUB_SUBSCRIBE_KEY, preferences.getPushSubscribeKey());
+		intent.putExtra(RINGTONE, preferences.getPushRingtone());
+		intent.putExtra(OLD_NOTIFICATION_ICONS,
+				preferences.isOldNotificationIcons());
 		PendingIntent pendingIntent = PendingIntent.getService(context, 0,
-				new Intent(context, PushService.class), 0);
+				intent, PendingIntent.FLAG_CANCEL_CURRENT);
 		if (push) {
 			setRepeatingAlarm(pendingIntent);
 		} else {
 			stopRepeatingAlarm(pendingIntent);
 		}
 
+	}
+
+	public static void killPushService(Context context) {
+		Intent intent = new Intent(context, PushService.class);
+		context.stopService(intent);
 	}
 
 	private static void setRepeatingAlarm(PendingIntent pendingIntent) {

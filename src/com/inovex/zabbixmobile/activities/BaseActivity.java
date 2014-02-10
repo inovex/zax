@@ -36,7 +36,6 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.PushService;
-import com.inovex.zabbixmobile.widget.ZaxWidgetProvider;
 
 /**
  * Base class for all activities. Tasks performed in this class:
@@ -160,6 +159,9 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 				Intent intent = new Intent();
 				intent.setAction("com.inovex.zabbixmobile.WIDGET_UPDATE");
 				this.sendBroadcast(intent);
+				// restart service if preferences have changed
+				PushService.killPushService(getApplicationContext());
+				PushService.startOrStopPushService(getApplicationContext());
 				mPreferencesChanged = false;
 			}
 			mZabbixDataService.performZabbixLogin(this);

@@ -58,6 +58,8 @@
     <string name="password">Password</string>
     <string name="push_notifications">Push Notifications</string>
     <string name="enabled">Enabled</string>
+    <string name="old_notification_icons">Old notification icons</string>
+    <string name="old_notification_icons_desc">red cross / green check in status bar</string>
     <string name="other">other</string>
     <string name="no_history_data_found">No history data found for this item.</string>
     <string name="url">URL</string>

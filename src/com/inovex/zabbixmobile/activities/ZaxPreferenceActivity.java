@@ -46,27 +46,12 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 
 	@Override
 	protected void onStop() {
-		inferResult();
 		super.onStop();
 	}
 
 	@Override
 	public void onBackPressed() {
-		inferResult();
 		finish();
-	}
-
-	private void inferResult() {
-		ZaxPreferences prefs = ZaxPreferences.getInstance(this);
-		Intent returnIntent = new Intent();
-		if (!prefs.getZabbixUrl().equals(zabbixUrl)
-				|| !prefs.getUsername().equals(userName)
-				|| !prefs.getPassword().equals(password)
-				|| prefs.isTrustAllSSLCA() != trustSSL
-				|| prefs.isHttpAuthEnabled() != httpAuth
-				|| !prefs.getHttpAuthUsername().equals(httpUser)
-				|| !prefs.getHttpAuthPassword().equals(httpPassword))
-			setResult(BaseActivity.RESULT_PREFERENCES_CHANGED, returnIntent);
 	}
 
 	@Override
@@ -84,6 +69,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
+		setResult(BaseActivity.RESULT_PREFERENCES_CHANGED, new Intent());
 		if (key.equals("widget_refresh_interval_mins")) {
 			Intent intent = new Intent();
 			intent.setAction("com.inovex.zabbixmobile.WIDGET_UPDATE");

@@ -77,6 +77,10 @@ public class ZaxPreferences {
 		return Integer.parseInt(mPref.getString("widget_refresh_interval_mins",
 				"15"));
 	}
+	
+	public boolean isOldNotificationIcons() {
+		return mPref.getBoolean("zabbix_push_old_icons", false);
+	}
 
 	public int getWidgetRefreshIntervalCache() {
 		return mPref.getInt("widget_refresh_interval_mins_cache", 15);
@@ -108,4 +112,5 @@ public class ZaxPreferences {
 			OnSharedPreferenceChangeListener listener) {
 		mPref.unregisterOnSharedPreferenceChangeListener(listener);
 	}
+
 }
