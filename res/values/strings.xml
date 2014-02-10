@@ -61,7 +61,8 @@
     <string name="other">other</string>
     <string name="no_history_data_found">No history data found for this item.</string>
     <string name="url">URL</string>
-    <string name="url_example">inclusive path, e.g. http://zbx.company.com/zabbix</string>
+    <string name="url_example">http://zabbix.company.net/zabbix</string>
+    <string name="url_description">including path, e.g. http://zbx.company.com/zabbix</string>
     <string name="http_auth">HTTP Authentication</string>
     <string name="subscribe_key">Pubnub Subscribe Key</string>
     <string name="event_details">Event Details</string>

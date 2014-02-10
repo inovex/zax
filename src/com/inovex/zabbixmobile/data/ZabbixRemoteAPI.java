@@ -92,6 +92,7 @@ import com.inovex.zabbixmobile.util.JsonObjectReader;
  * 
  */
 public class ZabbixRemoteAPI {
+	private static final String API_PHP = "api_jsonrpc.php";
 	private static final String ZABBIX_ERROR_NO_API_ACCESS = "No API access";
 	private static final String ZABBIX_ERROR_NOT_AUTHORIZED = "Not authorized";
 	// Sometimes this message contains a dot in the end, sometimes it doesn't.
@@ -284,9 +285,7 @@ public class ZabbixRemoteAPI {
 	private JSONObject _queryBuffer(String method, JSONObject params)
 			throws IOException, JSONException, ZabbixLoginRequiredException,
 			FatalException {
-		if(url == null) {
-			throw new FatalException(Type.SERVER_NOT_FOUND);
-		}
+		validateUrl();
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
 
@@ -368,6 +367,8 @@ public class ZabbixRemoteAPI {
 	private JsonArrayOrObjectReader _queryStream(String method,
 			JSONObject params) throws JSONException, IOException,
 			ZabbixLoginRequiredException, FatalException {
+		
+		validateUrl();
 		// http request
 		HttpPost post = new HttpPost(url);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
@@ -441,6 +442,16 @@ public class ZabbixRemoteAPI {
 			// is cancelled. The interruption happens by design, so we can
 			// ignore this.
 			return null;
+		}
+	}
+
+	private void validateUrl() throws FatalException {
+		String exampleUrl = mContext.getResources().getString(
+				R.string.url_example) + (mContext.getResources().getString(
+						R.string.url_example).endsWith("/") ? "" : '/') + API_PHP;
+		if (url == null
+				|| url.equals(exampleUrl)) {
+			throw new FatalException(Type.SERVER_NOT_FOUND);
 		}
 	}
 
@@ -530,7 +541,7 @@ public class ZabbixRemoteAPI {
 		// String user = "admin";
 		// String password = "zabbix";
 
-		this.url = url + (url.endsWith("/") ? "" : '/') + "api_jsonrpc.php";
+		this.url = url + (url.endsWith("/") ? "" : '/') + API_PHP;
 		Log.d(TAG, url + "//" + user);
 
 		try {
@@ -1017,7 +1028,8 @@ public class ZabbixRemoteAPI {
 						RECORDS_PER_INSERT_BATCH);
 				try {
 					int selI = 0;
-					while (historydetails != null && (historydetail = historydetails.next()) != null) {
+					while (historydetails != null
+							&& (historydetail = historydetails.next()) != null) {
 						// save only every 20th
 						// TODO: This may produce odd graphs for a small amount
 						// of values
@@ -1279,7 +1291,7 @@ public class ZabbixRemoteAPI {
 						item.setDescription(itemReader.getText());
 					}
 				} else if (propName.equals(Item.COLUMN_LASTCLOCK)) {
-					if(itemReader.getText() != null)
+					if (itemReader.getText() != null)
 						item.setLastClock(Long.parseLong(itemReader.getText()) * 1000);
 				} else if (propName.equals(Item.COLUMN_LASTVALUE)) {
 					item.setLastValue(itemReader.getText());
@@ -1815,7 +1827,7 @@ public class ZabbixRemoteAPI {
 					triggerReader.nextProperty();
 				}
 			}
-			if(t.getStatus() != Trigger.STATUS_ENABLED)
+			if (t.getStatus() != Trigger.STATUS_ENABLED)
 				continue;
 			triggerCollection.add(t);
 			if (triggerCollection.size() >= RECORDS_PER_INSERT_BATCH) {

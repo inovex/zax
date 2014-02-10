@@ -3,10 +3,10 @@
 
     <PreferenceCategory android:title="@string/zabbix_login" >
         <EditTextPreference
-            android:defaultValue="http://zabbix.company.net/zabbix"
+            android:defaultValue="@string/url_example"
             android:inputType="textUri"
             android:key="zabbix_url"
-            android:summary="@string/url_example"
+            android:summary="@string/url_description"
             android:title="@string/url" >
         </EditTextPreference>
         <EditTextPreference
