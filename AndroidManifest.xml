@@ -73,7 +73,10 @@
         <receiver android:name=".widget.PackageReplacedReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
-                <data android:scheme="package" android:path="com.inovex.zabbixmobile" />
+
+                <data
+                    android:path="com.inovex.zabbixmobile"
+                    android:scheme="package" />
             </intent-filter>
         </receiver>
 
@@ -89,9 +92,9 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info_1x1" />
         </receiver>
-        
         <receiver
             android:name=".widget.ZaxWidgetProvider4x4"
+            android:enabled="@bool/honeycomb_or_later"
             android:label="@string/widget_label_4x4" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
