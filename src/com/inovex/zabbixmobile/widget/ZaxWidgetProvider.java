@@ -45,7 +45,6 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 		// Alarm Manager for refresh
 		ZaxPreferences prefs = ZaxPreferences.getInstance(context);
 		int minutes = prefs.getWidgetRefreshInterval();
-		prefs.setWidgetRefreshIntervalCache(minutes);
 
 		long interval = minutes * 60 * 1000;
 		setAlarm(context, interval);

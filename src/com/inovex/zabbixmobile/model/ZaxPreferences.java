@@ -82,16 +82,6 @@ public class ZaxPreferences {
 		return mPref.getBoolean("zabbix_push_old_icons", false);
 	}
 
-	public int getWidgetRefreshIntervalCache() {
-		return mPref.getInt("widget_refresh_interval_mins_cache", 15);
-	}
-
-	public void setWidgetRefreshIntervalCache(int minutes) {
-		Editor edit = mPref.edit();
-		edit.putInt("widget_refresh_interval_mins_cache", minutes);
-		edit.commit();
-	}
-
 	/**
 	 * Checks whether the server settings have been altered by the user
 	 * 
