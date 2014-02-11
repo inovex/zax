@@ -60,6 +60,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 		setResult(BaseActivity.RESULT_PREFERENCES_CHANGED, new Intent());
 		if (key.equals("widget_refresh_interval_mins")) {
 			Intent intent = new Intent(getApplicationContext(), WidgetUpdateBroadcastReceiver.class);
+			intent.putExtra(WidgetUpdateBroadcastReceiver.REFRESH_RATE_CHANGED, true);
 			this.sendBroadcast(intent);
 		}
 		if (key.equals("zabbix_push_enabled")

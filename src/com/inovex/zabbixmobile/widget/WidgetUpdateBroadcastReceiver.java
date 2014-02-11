@@ -10,20 +10,21 @@ import com.inovex.zabbixmobile.model.ZaxPreferences;
 
 public class WidgetUpdateBroadcastReceiver extends BroadcastReceiver {
 
-	private static final String TAG = WidgetUpdateBroadcastReceiver.class.getSimpleName();
+	public static final String REFRESH_RATE_CHANGED = "REFRESH_RATE_CHANGED";
+	private static final String TAG = WidgetUpdateBroadcastReceiver.class
+			.getSimpleName();
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		
+
 		Log.d(TAG, "received broadcast. Starting service.");
 		// check whether the refresh time is still the same
 		ZaxPreferences prefs = ZaxPreferences.getInstance(context);
 
-		int widgetRefreshInterval = prefs.getWidgetRefreshInterval();
-		if (widgetRefreshInterval != prefs.getWidgetRefreshIntervalCache()) {
+		if (intent.getBooleanExtra(REFRESH_RATE_CHANGED, false)) {
+			int widgetRefreshInterval = prefs.getWidgetRefreshInterval();
 			ZaxWidgetProvider.stopAlarm(context);
 			ZaxWidgetProvider.setAlarm(context, widgetRefreshInterval * 60 * 1000);
-			prefs.setWidgetRefreshIntervalCache(widgetRefreshInterval);
 		}
 
 		Intent serviceIntent = new Intent(context,
