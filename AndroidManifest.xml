@@ -72,16 +72,18 @@
         </receiver>
 
         <!-- Homescreen Widget -->
-        <receiver android:name=".widget.ZaxWidgetProvider" >
+        <receiver
+            android:name=".widget.ZaxWidgetProvider"
+            android:label="@string/widget_label_1x1" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.inovex.zabbixmobile.WIDGET_UPDATE" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
+        <receiver android:name=".widget.WidgetUpdateBroadcastReceiver" />
 
         <service android:name=".data.HomescreenWidgetService" >
         </service>

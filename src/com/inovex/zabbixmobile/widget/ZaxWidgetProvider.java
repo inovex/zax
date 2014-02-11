@@ -53,10 +53,9 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 
 	}
 
-	private static void setAlarm(Context context, long updateRate) {
-		Intent intent = new Intent();
+	public static void setAlarm(Context context, long updateRate) {
+		Intent intent = new Intent(context, WidgetUpdateBroadcastReceiver.class);
 		Log.d(TAG, "setting alarm to " + updateRate);
-		intent.setAction("com.inovex.zabbixmobile.WIDGET_UPDATE");
 		PendingIntent newPending = PendingIntent.getBroadcast(context, 0,
 				intent, 0);
 		AlarmManager alarms = (AlarmManager) context
@@ -75,21 +74,4 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 		setAlarm(context, -1);
 	}
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		super.onReceive(context, intent);
-		// check whether the refresh time is still the same
-		ZaxPreferences prefs = ZaxPreferences.getInstance(context);
-
-		int widgetRefreshInterval = prefs.getWidgetRefreshInterval();
-		if (widgetRefreshInterval != prefs.getWidgetRefreshIntervalCache()) {
-			setAlarm(context, -1);
-			setAlarm(context, widgetRefreshInterval * 60 * 1000);
-			prefs.setWidgetRefreshIntervalCache(widgetRefreshInterval);
-		}
-
-		Intent serviceIntent = new Intent(context,
-				HomescreenWidgetService.class);
-		context.startService(serviceIntent);
-	}
 }

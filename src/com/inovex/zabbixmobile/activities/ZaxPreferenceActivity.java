@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.PushService;
+import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
 
 /**
  * The preference activity.
@@ -58,8 +59,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 			String key) {
 		setResult(BaseActivity.RESULT_PREFERENCES_CHANGED, new Intent());
 		if (key.equals("widget_refresh_interval_mins")) {
-			Intent intent = new Intent();
-			intent.setAction("com.inovex.zabbixmobile.WIDGET_UPDATE");
+			Intent intent = new Intent(getApplicationContext(), WidgetUpdateBroadcastReceiver.class);
 			this.sendBroadcast(intent);
 		}
 		if (key.equals("zabbix_push_enabled")
