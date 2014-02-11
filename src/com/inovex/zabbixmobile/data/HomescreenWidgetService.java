@@ -22,6 +22,7 @@ import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProvider;
+import com.inovex.zabbixmobile.widget.ZaxWidgetProvider4x4;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 /**
@@ -30,6 +31,8 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
  * 
  */
 public class HomescreenWidgetService extends Service {
+	public static final String WIDGET_ID = "WIDGET_ID";
+
 	private enum DisplayStatus {
 		ZAX_ERROR(R.drawable.severity_high), OK(R.drawable.ok), AVG(
 				R.drawable.severity_average), HIGH(R.drawable.severity_high), LOADING(
@@ -57,8 +60,9 @@ public class HomescreenWidgetService extends Service {
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
 		Log.d(TAG, "onStart");
+		final int widgetId = intent.getIntExtra(WIDGET_ID, -1);
 		updateView(null, getResources().getString(R.string.widget_loading),
-				false);
+				false, widgetId);
 		if (mDatabaseHelper == null) {
 			// set up SQLite connection using OrmLite
 			mDatabaseHelper = OpenHelperManager.getHelper(this,
@@ -104,7 +108,7 @@ public class HomescreenWidgetService extends Service {
 					updateView(
 							DisplayStatus.ZAX_ERROR.getDrawable(),
 							getResources().getString(
-									R.string.widget_connection_error), false);
+									R.string.widget_connection_error), false, widgetId);
 					stopSelf();
 					return;
 				}
@@ -141,15 +145,15 @@ public class HomescreenWidgetService extends Service {
 						status = getResources().getString(R.string.ok);
 
 					}
-					updateView(icon, status, false);
+					updateView(icon, status, false, widgetId);
 				}
 			}
 
 		};
 		importProblemsTask.execute();
-		
+
 		(new RemoteAPITask(mRemoteAPI) {
-			
+
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
@@ -167,24 +171,55 @@ public class HomescreenWidgetService extends Service {
 	}
 
 	private void updateView(Integer statusIcon, String statusText,
-			boolean startProgressSpinner) {
+			boolean startProgressSpinner, int widgetId) {
 		AppWidgetManager appWidgetManager = AppWidgetManager
 				.getInstance(getApplicationContext());
-		ComponentName thisWidget = new ComponentName(getApplicationContext(),
+		ComponentName widget1x1 = new ComponentName(getApplicationContext(),
 				ZaxWidgetProvider.class);
-		int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
-		
-		if(allWidgetIds.length <= 0) {
+		ComponentName widget4x4 = new ComponentName(getApplicationContext(),
+				ZaxWidgetProvider4x4.class);
+		List<Integer> widgetIds1x1 = new ArrayList<Integer>();
+		for(int id : appWidgetManager.getAppWidgetIds(widget1x1)) {
+			widgetIds1x1.add(id);
+		}
+		List<Integer> widgetIds4x4 = new ArrayList<Integer>();
+		for(int id : appWidgetManager.getAppWidgetIds(widget4x4)) {
+			widgetIds4x4.add(id);
+		}
+
+		Log.d(TAG, "widget IDs 1x1: " + widgetIds1x1);
+
+		Log.d(TAG, "widget IDs 4x4: " + widgetIds4x4);
+
+		if (widgetIds1x1.size() <= 0 && widgetIds4x4.size() <= 0) {
 			ZaxWidgetProvider.stopAlarm(getApplicationContext());
 			Log.d(TAG, "no widgets added -> stopping alarm");
 		}
+		
+		if(widgetIds1x1.contains(widgetId)) {
+			widgetIds1x1.clear();
+			widgetIds1x1.add(widgetId);
+			widgetIds4x4.clear();
+		}
+		if(widgetIds4x4.contains(widgetId)) {
+			widgetIds4x4.clear();
+			widgetIds4x4.add(widgetId);
+			widgetIds1x1.clear();
+		}
 
-		for (int widgetId : allWidgetIds) {
+		for (int id : widgetIds1x1) {
+			Log.d(TAG,
+					"updating widget. ID: "
+							+ id
+							+ ", Provider: "
+							+ appWidgetManager.getAppWidgetInfo(id).provider
+									.toString());
 
 			RemoteViews remoteViews = new RemoteViews(getApplicationContext()
 					.getPackageName(), R.layout.homescreen_widget_small);
 
-			// ZaxPreferences preferences = ZaxPreferences.getInstance(this);
+			// ZaxPreferences preferences =
+			// ZaxPreferences.getInstance(this);
 			// remoteViews.setTextViewText(R.id.widget_headline,
 			// preferences.getZabbixUrl());
 
@@ -234,15 +269,91 @@ public class HomescreenWidgetService extends Service {
 					this.getApplicationContext(), ZaxWidgetProvider.class);
 			refreshClickIntent
 					.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+			int[] ids = {id};
 			refreshClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
-					allWidgetIds);
+					ids);
 
 			PendingIntent pendingIntent2 = PendingIntent.getBroadcast(
 					getApplicationContext(), 1, refreshClickIntent,
 					PendingIntent.FLAG_UPDATE_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.refresh_button,
 					pendingIntent2);
-			appWidgetManager.updateAppWidget(widgetId, remoteViews);
+			appWidgetManager.updateAppWidget(id, remoteViews);
+		}
+
+		for (int id : widgetIds4x4) {
+			Log.d(TAG,
+					"updating widget. ID: "
+							+ id
+							+ ", Provider: "
+							+ appWidgetManager.getAppWidgetInfo(id).provider
+									.toString());
+
+			RemoteViews remoteViews = new RemoteViews(getApplicationContext()
+					.getPackageName(), R.layout.homescreen_widget_small);
+
+			// ZaxPreferences preferences =
+			// ZaxPreferences.getInstance(this);
+			// remoteViews.setTextViewText(R.id.widget_headline,
+			// preferences.getZabbixUrl());
+
+			if (startProgressSpinner) {
+				remoteViews.setViewVisibility(R.id.refresh_button, View.GONE);
+				remoteViews.setViewVisibility(R.id.refresh_progress,
+						View.VISIBLE);
+			} else {
+				remoteViews
+						.setViewVisibility(R.id.refresh_button, View.VISIBLE);
+				remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE);
+			}
+
+			// Set the text
+			remoteViews.setTextViewText(R.id.content, statusText);
+
+			// set icon
+			if (statusIcon != null)
+				remoteViews
+						.setImageViewResource(R.id.status_button, statusIcon);
+
+			// int moreProblems = problems.size() - 1;
+			//
+			// if (moreProblems == 1)
+			// remoteViews.setTextViewText(R.id.widget_more, getResources()
+			// .getString(R.string.widget_more_problem, moreProblems));
+			// else
+			// remoteViews
+			// .setTextViewText(
+			// R.id.widget_more,
+			// getResources().getString(
+			// R.string.widget_more_problems,
+			// moreProblems));
+
+			// status button click
+			Intent statusButtonClickIntent = new Intent(
+					this.getApplicationContext(), ProblemsActivity.class);
+			statusButtonClickIntent.setAction(Intent.ACTION_MAIN);
+			statusButtonClickIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+			PendingIntent pendingIntent = PendingIntent.getActivity(
+					getApplicationContext(), 0, statusButtonClickIntent,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			remoteViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
+
+			// refresh click
+			Intent refreshClickIntent = new Intent(
+					this.getApplicationContext(), ZaxWidgetProvider4x4.class);
+			refreshClickIntent
+					.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+			
+			int[] ids = {id};
+			refreshClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
+					ids);
+
+			PendingIntent pendingIntent2 = PendingIntent.getBroadcast(
+					getApplicationContext(), 1, refreshClickIntent,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			remoteViews.setOnClickPendingIntent(R.id.refresh_button,
+					pendingIntent2);
+			appWidgetManager.updateAppWidget(id, remoteViews);
 		}
 	}
 

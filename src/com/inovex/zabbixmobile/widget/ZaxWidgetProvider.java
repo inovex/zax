@@ -26,6 +26,8 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 		// start service
 		Intent serviceIntent = new Intent(context,
 				HomescreenWidgetService.class);
+		if(appWidgetIds.length > 0)
+			serviceIntent.putExtra(HomescreenWidgetService.WIDGET_ID, appWidgetIds[0]);
 		context.startService(serviceIntent);
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
 	}

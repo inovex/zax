@@ -83,6 +83,7 @@
      <string name="notification_title">Zabbix triggers</string>
      
      <string name="widget_label_1x1">ZAX 1x1</string>
+     <string name="widget_label_4x4">ZAX 4x4</string>
      <string name="widget_refresh">refresh widget</string>
      <string name="widget_no_problems">There are no problems at the moment</string>
      <string name="widget_more_problem">and %1$d more problem</string>
