@@ -34,7 +34,7 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 	public void onDisabled(Context context) {
 		super.onDisabled(context);
 		Log.d(TAG, "onDisabled: deleting alarm");
-		setAlarm(context, -1);
+		stopAlarm(context);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 				intent, 0);
 		AlarmManager alarms = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
-		if (updateRate >= 0) {
+		if (updateRate > 0) {
 			alarms.setRepeating(AlarmManager.ELAPSED_REALTIME,
 					SystemClock.elapsedRealtime() + updateRate, updateRate,
 					newPending);
@@ -69,6 +69,10 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 			// on a negative updateRate stop the refreshing
 			alarms.cancel(newPending);
 		}
+	}
+	
+	public static void stopAlarm(Context context) {
+		setAlarm(context, -1);
 	}
 
 	@Override

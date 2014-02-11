@@ -17,10 +17,10 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.ProblemsActivity;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
+import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.inovex.zabbixmobile.model.Cache.CacheDataType;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProvider;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
@@ -173,6 +173,11 @@ public class HomescreenWidgetService extends Service {
 		ComponentName thisWidget = new ComponentName(getApplicationContext(),
 				ZaxWidgetProvider.class);
 		int[] allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+		
+		if(allWidgetIds.length <= 0) {
+			ZaxWidgetProvider.stopAlarm(getApplicationContext());
+			Log.d(TAG, "no widgets added -> stopping alarm");
+		}
 
 		for (int widgetId : allWidgetIds) {
 
