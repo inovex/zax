@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
+import com.inovex.zabbixmobile.push.PushService;
 
 /**
  * The preference activity.
@@ -17,14 +18,7 @@ import com.inovex.zabbixmobile.model.ZaxPreferences;
 public class ZaxPreferenceActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
 
-	private String zabbixUrl;
-	private String userName;
-	private String password;
 	private ZaxPreferences mPrefs;
-	private boolean trustSSL;
-	private boolean httpAuth;
-	private String httpUser;
-	private String httpPassword;
 
 	// We use the deprecated method because it is compatible to old Android
 	// versions.
@@ -34,13 +28,6 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 		super.onCreate(savedInstanceState);
 
 		mPrefs = ZaxPreferences.getInstance(this);
-		zabbixUrl = mPrefs.getZabbixUrl();
-		userName = mPrefs.getUsername();
-		password = mPrefs.getPassword();
-		trustSSL = mPrefs.isTrustAllSSLCA();
-		httpAuth = mPrefs.isHttpAuthEnabled();
-		httpUser = mPrefs.getHttpAuthUsername();
-		httpPassword = mPrefs.getHttpAuthPassword();
 		addPreferencesFromResource(R.xml.preferences);
 	}
 
@@ -75,6 +62,13 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 			intent.setAction("com.inovex.zabbixmobile.WIDGET_UPDATE");
 			this.sendBroadcast(intent);
 		}
-	}
+		if (key.equals("zabbix_push_enabled")
+				|| key.equals("zabbix_push_subscribe_key")
+				|| key.equals("zabbix_push_ringtone")
+				|| key.equals("zabbix_push_old_icons")) {
+			PushService.killPushService(getApplicationContext());
+			PushService.startOrStopPushService(getApplicationContext());
+		}
 
+	}
 }

@@ -159,9 +159,6 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 				Intent intent = new Intent();
 				intent.setAction("com.inovex.zabbixmobile.WIDGET_UPDATE");
 				this.sendBroadcast(intent);
-				// restart service if preferences have changed
-				PushService.killPushService(getApplicationContext());
-				PushService.startOrStopPushService(getApplicationContext());
 				mPreferencesChanged = false;
 			}
 			mZabbixDataService.performZabbixLogin(this);

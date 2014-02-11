@@ -234,6 +234,7 @@ public class PushService extends Service {
 	}
 
 	public static final String ACTION_ZABBIX_NOTIFICATION = "com.inovex.zabbixmobile.push.PushService.ACTION_ZABBIX_NOTIFICATION";
+	private static final String TAG = PushService.class.getSimpleName();
 
 	/**
 	 * This broadcast receiver reacts on a click on a notification by performing
@@ -287,7 +288,7 @@ public class PushService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-		Log.d("PushService", "starting");
+		Log.d(TAG, "starting");
 
 		subscribeKey = intent.getStringExtra(PUBNUB_SUBSCRIBE_KEY);
 		if (subscribeKey == null)
@@ -318,7 +319,7 @@ public class PushService extends Service {
 
 	@Override
 	public void onDestroy() {
-		Log.d("PushService", "onDestroy");
+		Log.d(TAG, "onDestroy");
 		mPushListener.cancel(true);
 		HashMap<String, Object> args = new HashMap<String, Object>(1);
 		args.put("channel", PUSHCHANNEL);
@@ -354,14 +355,17 @@ public class PushService extends Service {
 		PendingIntent pendingIntent = PendingIntent.getService(context, 0,
 				intent, PendingIntent.FLAG_CANCEL_CURRENT);
 		if (push) {
+			Log.d(TAG, "setting alarm");
 			setRepeatingAlarm(pendingIntent);
 		} else {
+			Log.d(TAG, "stopping alarm");
 			stopRepeatingAlarm(pendingIntent);
 		}
 
 	}
 
 	public static void killPushService(Context context) {
+		Log.d(TAG, "stopping push service");
 		Intent intent = new Intent(context, PushService.class);
 		context.stopService(intent);
 	}
