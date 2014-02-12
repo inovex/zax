@@ -47,8 +47,8 @@ public class HomescreenCollectionWidgetService extends RemoteViewsService {
 			// set up database connection to be able to query the problems later
 			if (mDatabaseHelper == null) {
 				// set up SQLite connection using OrmLite
-				mDatabaseHelper = OpenHelperManager.getHelper(getApplicationContext(),
-						DatabaseHelper.class);
+				mDatabaseHelper = OpenHelperManager.getHelper(
+						getApplicationContext(), DatabaseHelper.class);
 			}
 		}
 
@@ -60,7 +60,7 @@ public class HomescreenCollectionWidgetService extends RemoteViewsService {
 
 		@Override
 		public void onDestroy() {
-			if(mDatabaseHelper != null)
+			if (mDatabaseHelper != null)
 				mDatabaseHelper.close();
 		}
 
@@ -73,7 +73,11 @@ public class HomescreenCollectionWidgetService extends RemoteViewsService {
 		public RemoteViews getViewAt(int position) {
 			RemoteViews rv = new RemoteViews(mContext.getPackageName(),
 					R.layout.homescreen_widget_list_item);
-			rv.setTextViewText(R.id.title, mWidgetItems.get(position).getDescription());
+			Trigger trigger = mWidgetItems.get(position);
+			rv.setImageViewResource(R.id.status, trigger.getPriority()
+					.getImageResourceId());
+			rv.setTextViewText(R.id.host, trigger.getHostNames());
+			rv.setTextViewText(R.id.description, trigger.getDescription());
 
 			return rv;
 		}

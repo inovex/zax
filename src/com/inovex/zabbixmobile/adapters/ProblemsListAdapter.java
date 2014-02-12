@@ -73,25 +73,7 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 				Locale.getDefault());
 		clock.setText(String.valueOf(dateFormatter.format(cal.getTime())));
 
-		switch (t.getPriority()) {
-		case DISASTER:
-			statusImage.setImageResource(R.drawable.severity_disaster);
-			break;
-		case HIGH:
-			statusImage.setImageResource(R.drawable.severity_high);
-			break;
-		case AVERAGE:
-			statusImage.setImageResource(R.drawable.severity_average);
-			break;
-		case WARNING:
-			statusImage.setImageResource(R.drawable.severity_warning);
-			break;
-		case INFORMATION:
-			statusImage.setImageResource(R.drawable.severity_information);
-			break;
-		default:
-			statusImage.setImageResource(R.drawable.severity_not_classified);
-		}
+		statusImage.setImageResource(t.getPriority().getImageResourceId());
 
 		return row;
 	}

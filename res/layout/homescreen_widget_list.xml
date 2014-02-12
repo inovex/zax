@@ -13,14 +13,6 @@
         android:layout_height="27dp"
         android:orientation="horizontal" >
 
-        <!-- <TextView -->
-        <!-- android:layout_width="wrap_content" -->
-        <!-- android:layout_height="wrap_content" -->
-        <!-- android:text="ZAX" -->
-        <!-- android:textColor="#fefefe" -->
-        <!-- android:textSize="12sp" -->
-        <!-- android:layout_marginLeft="5dip" /> -->
-
         <ImageView
             android:id="@+id/zax_icon"
             android:layout_width="25dp"
@@ -48,6 +40,17 @@
             android:layout_alignParentTop="true"
             android:indeterminate="true"
             android:visibility="gone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@id/refresh_button"
+            android:layout_toRightOf="@id/zax_icon"
+            android:text="@string/widget_headline"
+            android:textSize="14sp"
+            android:paddingLeft="2dp"
+            android:textStyle="bold" />
     </RelativeLayout>
 
     <ListView

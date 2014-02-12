@@ -5,16 +5,20 @@ import android.util.SparseArray;
 import com.inovex.zabbixmobile.R;
 
 public enum TriggerSeverity {
-	ALL(R.string.severity_all, -1, 0), DISASTER(R.string.severity_disaster, 5,
-			1), HIGH(R.string.severity_high, 4, 2), AVERAGE(
-			R.string.severity_average, 3, 3), WARNING(
-			R.string.severity_warning, 2, 4), INFORMATION(
-			R.string.severity_information, 1, 5), NOT_CLASSIFIED(
-			R.string.severity_not_classified, 0, 6);
+	ALL(R.string.severity_all, -1, 0, R.drawable.severity_not_classified), DISASTER(
+			R.string.severity_disaster, 5, 1, R.drawable.severity_disaster), HIGH(
+			R.string.severity_high, 4, 2, R.drawable.severity_high), AVERAGE(
+			R.string.severity_average, 3, 3, R.drawable.severity_average), WARNING(
+			R.string.severity_warning, 2, 4, R.drawable.severity_warning), INFORMATION(
+			R.string.severity_information, 1, 5,
+			R.drawable.severity_information), NOT_CLASSIFIED(
+			R.string.severity_not_classified, 0, 6,
+			R.drawable.severity_not_classified);
 
 	private final int nameResourceId;
 	private final int number;
 	private final int position;
+	private final int imageResourceId;
 	private static final SparseArray<TriggerSeverity> valuesByNumber;
 	private static final SparseArray<TriggerSeverity> valuesByPosition;
 
@@ -31,10 +35,11 @@ public enum TriggerSeverity {
 		}
 	}
 
-	TriggerSeverity(int nameResourceId, int n, int position) {
+	TriggerSeverity(int nameResourceId, int n, int position, int imageResourceId) {
 		this.nameResourceId = nameResourceId;
 		number = n;
 		this.position = position;
+		this.imageResourceId = imageResourceId;
 	}
 
 	public int getPosition() {
@@ -47,6 +52,10 @@ public enum TriggerSeverity {
 
 	public int getNumber() {
 		return number;
+	}
+
+	public int getImageResourceId() {
+		return imageResourceId;
 	}
 
 	public static TriggerSeverity getSeverityByNumber(int n) {

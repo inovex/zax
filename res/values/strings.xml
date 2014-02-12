@@ -84,6 +84,7 @@
      
      <string name="widget_label_1x1">ZAX 1x1</string>
      <string name="widget_label_list">ZAX Problems List</string>
+     <string name="widget_headline">Problems</string>
      <string name="widget_refresh">refresh widget</string>
      <string name="widget_no_problems">There are no problems at the moment</string>
      <string name="widget_more_problem">and %1$d more problem</string>
