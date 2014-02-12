@@ -6,6 +6,7 @@
     android:minResizeHeight="40dp"
     android:minResizeWidth="110dp"
     android:minWidth="110dp"
+    android:previewImage="@drawable/widget_preview_list"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="30000"
     android:widgetCategory="home_screen|keyguard" >
