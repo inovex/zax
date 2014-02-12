@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:background="@drawable/widget_shape"
     android:paddingBottom="2dp"
-    android:paddingTop="2dp" >
+    android:paddingTop="2dp" 
+    android:id="@+id/widget_item">
 
     <ImageView
         android:id="@+id/status"

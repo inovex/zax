@@ -12,6 +12,7 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.activities.ProblemsActivity;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
@@ -19,8 +20,6 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class HomescreenCollectionWidgetService extends RemoteViewsService {
-
-	public static final String EXTRA_PROBLEMS = "EXTRA_PROBLEMS";
 
 	@Override
 	public RemoteViewsFactory onGetViewFactory(Intent intent) {
@@ -78,6 +77,12 @@ public class HomescreenCollectionWidgetService extends RemoteViewsService {
 					.getImageResourceId());
 			rv.setTextViewText(R.id.host, trigger.getHostNames());
 			rv.setTextViewText(R.id.description, trigger.getDescription());
+			
+			// on click intent
+			Intent fillInIntent = new Intent();
+			fillInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+			fillInIntent.putExtra(ProblemsActivity.ARG_TRIGGER_POSITION, position);
+			rv.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
 
 			return rv;
 		}

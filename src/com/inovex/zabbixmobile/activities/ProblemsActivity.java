@@ -19,12 +19,14 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
  */
 public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
+	public static final String ARG_TRIGGER_POSITION = "ARG_TRIGGER_POSITION";
 	private static final String TAG = ProblemsActivity.class.getSimpleName();
 	public static final String ARG_START_FROM_NOTIFICATION = "arg_start_from_notification";
 
 	// This flag is necessary to select the correct element when coming from
 	// the push notification
 	private boolean mStartFromNotification = false;
+	private int mTriggerPosition = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			if (extras.getBoolean(ARG_START_FROM_NOTIFICATION, false)) {
 				mStartFromNotification = true;
 			}
+			mTriggerPosition = extras.getInt(ARG_TRIGGER_POSITION, -1);
 		}
 
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
@@ -67,6 +70,11 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			severityAdapter.setCurrentPosition(0);
 			selectHostGroupInSpinner(0, HostGroup.GROUP_ID_ALL);
 			mStartFromNotification = false;
+		}
+		if (mTriggerPosition != -1) {
+			selectItem(mTriggerPosition);
+			showDetailsFragment();
+			mTriggerPosition = -1;
 		}
 	}
 

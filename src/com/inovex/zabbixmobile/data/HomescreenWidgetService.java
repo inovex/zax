@@ -64,7 +64,7 @@ public class HomescreenWidgetService extends Service {
 		Log.d(TAG, "onStart");
 		final int widgetId = intent.getIntExtra(WIDGET_ID, -1);
 		updateView(null, getResources().getString(R.string.widget_loading),
-				null, true, widgetId);
+				true, widgetId);
 		if (mDatabaseHelper == null) {
 			// set up SQLite connection using OrmLite
 			mDatabaseHelper = OpenHelperManager.getHelper(this,
@@ -110,8 +110,8 @@ public class HomescreenWidgetService extends Service {
 					updateView(
 							DisplayStatus.ZAX_ERROR.getDrawable(),
 							getResources().getString(
-									R.string.widget_connection_error),
-							problems, false, widgetId);
+									R.string.widget_connection_error), false,
+							widgetId);
 					stopSelf();
 					return;
 				}
@@ -148,7 +148,7 @@ public class HomescreenWidgetService extends Service {
 						status = getResources().getString(R.string.ok);
 
 					}
-					updateView(icon, status, problems, false, widgetId);
+					updateView(icon, status, false, widgetId);
 				}
 			}
 
@@ -175,7 +175,7 @@ public class HomescreenWidgetService extends Service {
 
 	@SuppressLint("NewApi")
 	private void updateView(Integer statusIcon, String statusText,
-			List<Trigger> problems, boolean startProgressSpinner, int widgetId) {
+			boolean startProgressSpinner, int widgetId) {
 		AppWidgetManager appWidgetManager = AppWidgetManager
 				.getInstance(getApplicationContext());
 		ComponentName widget1x1 = new ComponentName(getApplicationContext(),
@@ -257,10 +257,11 @@ public class HomescreenWidgetService extends Service {
 			// status button click
 			Intent statusButtonClickIntent = new Intent(
 					this.getApplicationContext(), ProblemsActivity.class);
+			statusButtonClickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			statusButtonClickIntent.setAction(Intent.ACTION_MAIN);
 			statusButtonClickIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 			PendingIntent pendingIntent = PendingIntent.getActivity(
-					getApplicationContext(), 0, statusButtonClickIntent,
+					getApplicationContext(), 123456, statusButtonClickIntent,
 					PendingIntent.FLAG_CANCEL_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
 
@@ -274,7 +275,7 @@ public class HomescreenWidgetService extends Service {
 					ids);
 			PendingIntent pendingIntent2 = PendingIntent.getBroadcast(
 					getApplicationContext(), 1, refreshClickIntent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
+					PendingIntent.FLAG_CANCEL_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.refresh_button,
 					pendingIntent2);
 
@@ -284,7 +285,8 @@ public class HomescreenWidgetService extends Service {
 		for (int id : widgetIdsList) {
 			Log.d(TAG, "updating widget. ID: " + id + ", Provider: "
 					+ appWidgetManager.getAppWidgetInfo(id).provider.toString());
-
+			// appWidgetManager.notifyAppWidgetViewDataChanged(id,
+			// R.id.list_view);
 			RemoteViews remoteViews = new RemoteViews(getApplicationContext()
 					.getPackageName(), R.layout.homescreen_widget_list);
 
@@ -297,15 +299,16 @@ public class HomescreenWidgetService extends Service {
 						.setViewVisibility(R.id.refresh_button, View.VISIBLE);
 				remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE);
 			}
-			
+
 			// status button click
 			Intent statusButtonClickIntent = new Intent(
 					this.getApplicationContext(), ProblemsActivity.class);
 			statusButtonClickIntent.setAction(Intent.ACTION_MAIN);
+			statusButtonClickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			statusButtonClickIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 			PendingIntent pendingIntent = PendingIntent.getActivity(
-					getApplicationContext(), 0, statusButtonClickIntent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
+					getApplicationContext(), 12345, statusButtonClickIntent,
+					PendingIntent.FLAG_CANCEL_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
 
 			// refresh click
@@ -322,19 +325,18 @@ public class HomescreenWidgetService extends Service {
 			remoteViews.setOnClickPendingIntent(R.id.refresh_button,
 					pendingIntent2);
 
-			// fill list 
+			// set up item click intents
+			Intent itemIntent = new Intent(getApplicationContext(),
+					ProblemsActivity.class);
+			PendingIntent itemPendingIntent = PendingIntent.getActivity(
+					getApplicationContext(), 0, itemIntent,
+					PendingIntent.FLAG_CANCEL_CURRENT);
+			remoteViews.setPendingIntentTemplate(R.id.list_view, itemPendingIntent);
+
+			// fill list
 			Intent intent = new Intent(getApplicationContext(),
 					HomescreenCollectionWidgetService.class);
 			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
-			if (problems != null) {
-				String[] problemTitles = new String[problems.size()];
-				for (int i = 0; i < problems.size(); i++) {
-					problemTitles[i] = problems.get(i).getDescription();
-				}
-				intent.putExtra(
-						HomescreenCollectionWidgetService.EXTRA_PROBLEMS,
-						problemTitles);
-			}
 			remoteViews.setRemoteAdapter(id, R.id.list_view, intent);
 
 			// remoteViews.setEmptyView(R.id.list_view, R.id.list_view);
