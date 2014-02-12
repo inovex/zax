@@ -333,6 +333,9 @@ public class HomescreenWidgetService extends Service {
 					PendingIntent.FLAG_CANCEL_CURRENT);
 			remoteViews.setPendingIntentTemplate(R.id.list_view, itemPendingIntent);
 
+			// empty view
+			remoteViews.setEmptyView(R.id.list_view, R.id.empty_view);
+			
 			// fill list
 			Intent intent = new Intent(getApplicationContext(),
 					HomescreenCollectionWidgetService.class);

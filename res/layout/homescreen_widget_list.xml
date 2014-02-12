@@ -47,9 +47,9 @@
             android:layout_centerInParent="true"
             android:layout_toLeftOf="@id/refresh_button"
             android:layout_toRightOf="@id/zax_icon"
+            android:paddingLeft="2dp"
             android:text="@string/widget_headline"
             android:textSize="14sp"
-            android:paddingLeft="2dp"
             android:textStyle="bold" />
     </RelativeLayout>
 
@@ -57,5 +57,15 @@
         android:id="@+id/list_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/widget_no_problems"
+        android:gravity="center_vertical|center_horizontal"
+        android:textSize="14sp"
+        android:visibility="gone" >
+    </TextView>
 
 </LinearLayout>
