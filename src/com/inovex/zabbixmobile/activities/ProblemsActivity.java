@@ -71,11 +71,6 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			selectHostGroupInSpinner(0, HostGroup.GROUP_ID_ALL);
 			mStartFromNotification = false;
 		}
-		if (mTriggerPosition != -1) {
-			selectItem(mTriggerPosition);
-			showDetailsFragment();
-			mTriggerPosition = -1;
-		}
 	}
 
 	@Override
@@ -116,6 +111,12 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 				.getProblemsListAdapter(severity).getCount());
 		mListFragment.refreshTabTitles();
 
+		if (severity == TriggerSeverity.ALL && mTriggerPosition != -1) {
+			selectItem(mTriggerPosition);
+			showDetailsFragment();
+			mTriggerPosition = -1;
+			return;
+		}
 		if (severity == mZabbixDataService.getProblemsListPagerAdapter()
 				.getCurrentObject()) {
 			selectInitialItem(hostGroupChanged);

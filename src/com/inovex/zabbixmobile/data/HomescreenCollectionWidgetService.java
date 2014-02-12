@@ -1,7 +1,6 @@
 package com.inovex.zabbixmobile.data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.TreeSet;
 
 import android.annotation.TargetApi;
 import android.appwidget.AppWidgetManager;
@@ -31,7 +30,7 @@ public class HomescreenCollectionWidgetService extends RemoteViewsService {
 
 		private Context mContext;
 		private int mAppWidgetId;
-		private List<Trigger> mWidgetItems = new ArrayList<Trigger>();
+		private TreeSet<Trigger> mWidgetItems = new TreeSet<Trigger>();
 		private DatabaseHelper mDatabaseHelper;
 
 		public CollectionRemoteViewsFactory(Context context, Intent intent) {
@@ -53,8 +52,10 @@ public class HomescreenCollectionWidgetService extends RemoteViewsService {
 
 		@Override
 		public void onDataSetChanged() {
-			mWidgetItems = mDatabaseHelper.getProblemsBySeverityAndHostGroupId(
-					TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL);
+			mWidgetItems.clear();
+			mWidgetItems.addAll(mDatabaseHelper
+					.getProblemsBySeverityAndHostGroupId(TriggerSeverity.ALL,
+							HostGroup.GROUP_ID_ALL));
 		}
 
 		@Override
@@ -72,18 +73,20 @@ public class HomescreenCollectionWidgetService extends RemoteViewsService {
 		public RemoteViews getViewAt(int position) {
 			RemoteViews rv = new RemoteViews(mContext.getPackageName(),
 					R.layout.homescreen_widget_list_item);
-			Trigger trigger = mWidgetItems.get(position);
-			rv.setImageViewResource(R.id.status, trigger.getPriority()
-					.getImageResourceId());
-			rv.setTextViewText(R.id.host, trigger.getHostNames());
-			rv.setTextViewText(R.id.description, trigger.getDescription());
-			
-			// on click intent
-			Intent fillInIntent = new Intent();
-			fillInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-			fillInIntent.putExtra(ProblemsActivity.ARG_TRIGGER_POSITION, position);
-			rv.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
+			if (mWidgetItems.size() > position) {
+				Trigger trigger = (Trigger) mWidgetItems.toArray()[position];
+				rv.setImageViewResource(R.id.status, trigger.getPriority()
+						.getImageResourceId());
+				rv.setTextViewText(R.id.host, trigger.getHostNames());
+				rv.setTextViewText(R.id.description, trigger.getDescription());
 
+				// on click intent
+				Intent fillInIntent = new Intent();
+				fillInIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+				fillInIntent.putExtra(ProblemsActivity.ARG_TRIGGER_POSITION,
+						position);
+				rv.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
+			}
 			return rv;
 		}
 
