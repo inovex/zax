@@ -86,10 +86,11 @@ public class HomescreenWidgetService extends Service {
 				problems = new ArrayList<Trigger>();
 				try {
 					mRemoteAPI.authenticate();
-					// we need to refresh triggers AND events because otherwise
-					// we might lose triggers belonging to events
-					mDatabaseHelper.clearEvents();
 					mDatabaseHelper.clearTriggers();
+					// we need to refresh triggers AND events because otherwise
+					// we might lose triggers belonging to events. But we do not
+					// want to do that here, but set them to "not cached" so
+					// they will be refreshed on demand
 					mDatabaseHelper.setNotCached(CacheDataType.EVENT, null);
 					mDatabaseHelper.setNotCached(CacheDataType.TRIGGER, null);
 					mRemoteAPI.importActiveTriggers(null);
@@ -155,15 +156,6 @@ public class HomescreenWidgetService extends Service {
 		};
 		importProblemsTask.execute();
 
-		(new RemoteAPITask(mRemoteAPI) {
-
-			@Override
-			protected void executeTask() throws ZabbixLoginRequiredException,
-					FatalException {
-				mRemoteAPI.authenticate();
-				mRemoteAPI.importEvents(null);
-			}
-		}).execute();
 		stopSelf();
 	}
 
@@ -331,11 +323,12 @@ public class HomescreenWidgetService extends Service {
 			PendingIntent itemPendingIntent = PendingIntent.getActivity(
 					getApplicationContext(), 0, itemIntent,
 					PendingIntent.FLAG_CANCEL_CURRENT);
-			remoteViews.setPendingIntentTemplate(R.id.list_view, itemPendingIntent);
+			remoteViews.setPendingIntentTemplate(R.id.list_view,
+					itemPendingIntent);
 
 			// empty view
 			remoteViews.setEmptyView(R.id.list_view, R.id.empty_view);
-			
+
 			// fill list
 			Intent intent = new Intent(getApplicationContext(),
 					HomescreenCollectionWidgetService.class);
