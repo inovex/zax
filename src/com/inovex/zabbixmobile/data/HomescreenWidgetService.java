@@ -64,7 +64,7 @@ public class HomescreenWidgetService extends Service {
 		Log.d(TAG, "onStart");
 		final int widgetId = intent.getIntExtra(WIDGET_ID, -1);
 		updateView(null, getResources().getString(R.string.widget_loading),
-				null, false, widgetId);
+				null, true, widgetId);
 		if (mDatabaseHelper == null) {
 			// set up SQLite connection using OrmLite
 			mDatabaseHelper = OpenHelperManager.getHelper(this,
@@ -261,6 +261,50 @@ public class HomescreenWidgetService extends Service {
 			statusButtonClickIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 			PendingIntent pendingIntent = PendingIntent.getActivity(
 					getApplicationContext(), 0, statusButtonClickIntent,
+					PendingIntent.FLAG_CANCEL_CURRENT);
+			remoteViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
+
+			// refresh click
+			Intent refreshClickIntent = new Intent(
+					this.getApplicationContext(), ZaxWidgetProvider.class);
+			refreshClickIntent
+					.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+			int[] ids = { id };
+			refreshClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
+					ids);
+			PendingIntent pendingIntent2 = PendingIntent.getBroadcast(
+					getApplicationContext(), 1, refreshClickIntent,
+					PendingIntent.FLAG_UPDATE_CURRENT);
+			remoteViews.setOnClickPendingIntent(R.id.refresh_button,
+					pendingIntent2);
+
+			appWidgetManager.updateAppWidget(id, remoteViews);
+		}
+
+		for (int id : widgetIdsList) {
+			Log.d(TAG, "updating widget. ID: " + id + ", Provider: "
+					+ appWidgetManager.getAppWidgetInfo(id).provider.toString());
+
+			RemoteViews remoteViews = new RemoteViews(getApplicationContext()
+					.getPackageName(), R.layout.homescreen_widget_list);
+
+			if (startProgressSpinner) {
+				remoteViews.setViewVisibility(R.id.refresh_button, View.GONE);
+				remoteViews.setViewVisibility(R.id.refresh_progress,
+						View.VISIBLE);
+			} else {
+				remoteViews
+						.setViewVisibility(R.id.refresh_button, View.VISIBLE);
+				remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE);
+			}
+			
+			// status button click
+			Intent statusButtonClickIntent = new Intent(
+					this.getApplicationContext(), ProblemsActivity.class);
+			statusButtonClickIntent.setAction(Intent.ACTION_MAIN);
+			statusButtonClickIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+			PendingIntent pendingIntent = PendingIntent.getActivity(
+					getApplicationContext(), 0, statusButtonClickIntent,
 					PendingIntent.FLAG_UPDATE_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.widget, pendingIntent);
 
@@ -272,22 +316,13 @@ public class HomescreenWidgetService extends Service {
 			int[] ids = { id };
 			refreshClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
 					ids);
-
 			PendingIntent pendingIntent2 = PendingIntent.getBroadcast(
-					getApplicationContext(), 1, refreshClickIntent,
-					PendingIntent.FLAG_UPDATE_CURRENT);
+					getApplicationContext(), 2, refreshClickIntent,
+					PendingIntent.FLAG_CANCEL_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.refresh_button,
 					pendingIntent2);
-			appWidgetManager.updateAppWidget(id, remoteViews);
-		}
 
-		for (int id : widgetIdsList) {
-			Log.d(TAG, "updating widget. ID: " + id + ", Provider: "
-					+ appWidgetManager.getAppWidgetInfo(id).provider.toString());
-
-			RemoteViews remoteViews = new RemoteViews(getApplicationContext()
-					.getPackageName(), R.layout.homescreen_widget_list);
-
+			// fill list 
 			Intent intent = new Intent(getApplicationContext(),
 					HomescreenCollectionWidgetService.class);
 			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
