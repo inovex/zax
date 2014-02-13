@@ -212,11 +212,6 @@ public class HomescreenWidgetService extends Service {
 			RemoteViews remoteViews = new RemoteViews(getApplicationContext()
 					.getPackageName(), R.layout.homescreen_widget_1x1);
 
-			// ZaxPreferences preferences =
-			// ZaxPreferences.getInstance(this);
-			// remoteViews.setTextViewText(R.id.widget_headline,
-			// preferences.getZabbixUrl());
-
 			if (startProgressSpinner) {
 				remoteViews.setViewVisibility(R.id.refresh_button, View.GONE);
 				remoteViews.setViewVisibility(R.id.refresh_progress,
@@ -235,20 +230,7 @@ public class HomescreenWidgetService extends Service {
 				remoteViews
 						.setImageViewResource(R.id.status_button, statusIcon);
 
-			// int moreProblems = problems.size() - 1;
-			//
-			// if (moreProblems == 1)
-			// remoteViews.setTextViewText(R.id.widget_more, getResources()
-			// .getString(R.string.widget_more_problem, moreProblems));
-			// else
-			// remoteViews
-			// .setTextViewText(
-			// R.id.widget_more,
-			// getResources().getString(
-			// R.string.widget_more_problems,
-			// moreProblems));
-
-			// status button click
+			// widget click
 			Intent statusButtonClickIntent = new Intent(
 					this.getApplicationContext(), ProblemsActivity.class);
 			statusButtonClickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -294,7 +276,7 @@ public class HomescreenWidgetService extends Service {
 				remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE);
 			}
 
-			// status button click
+			// widget click
 			Intent statusButtonClickIntent = new Intent(
 					this.getApplicationContext(), ProblemsActivity.class);
 			statusButtonClickIntent.setAction(Intent.ACTION_MAIN);
@@ -328,18 +310,20 @@ public class HomescreenWidgetService extends Service {
 			remoteViews.setPendingIntentTemplate(R.id.list_view,
 					itemPendingIntent);
 
-			// empty view
-			remoteViews.setEmptyView(R.id.list_view, R.id.empty_view);
+			if (!startProgressSpinner) {
+				// empty view
+				remoteViews.setEmptyView(R.id.list_view, R.id.empty_view);
 
-			// fill list
-			Intent intent = new Intent(getApplicationContext(),
-					HomescreenCollectionWidgetService.class);
-			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
-			remoteViews.setRemoteAdapter(id, R.id.list_view, intent);
+				// fill list
+				Intent intent = new Intent(getApplicationContext(),
+						HomescreenCollectionWidgetService.class);
+				intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
+				remoteViews.setRemoteAdapter(id, R.id.list_view, intent);
 
-			// remoteViews.setEmptyView(R.id.list_view, R.id.list_view);
+				appWidgetManager.notifyAppWidgetViewDataChanged(id,
+						R.id.list_view);
+			}
 			appWidgetManager.updateAppWidget(id, remoteViews);
-			appWidgetManager.notifyAppWidgetViewDataChanged(id, R.id.list_view);
 		}
 	}
 
