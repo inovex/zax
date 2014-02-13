@@ -171,8 +171,7 @@ public class ZabbixRemoteAPI {
 	private final HttpClientWrapper httpClient;
 	private final DatabaseHelper databaseHelper;
 	private final ZaxPreferences mPreferences;
-	private String url;
-	private String token;
+	private String zabbixUrl;
 	private final Context mContext;
 	private boolean isVersion2 = true;
 	/**
@@ -285,15 +284,17 @@ public class ZabbixRemoteAPI {
 	private JSONObject _queryBuffer(String method, JSONObject params)
 			throws IOException, JSONException, ZabbixLoginRequiredException,
 			FatalException {
-		validateUrl();
-		HttpPost post = new HttpPost(url);
+		buildZabbixUrl();
+		validateZabbixUrl();
+		HttpPost post = new HttpPost(zabbixUrl);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
 
 		String auth = "null";
-		if (token != null && method != "user.authenticate")
-			auth = "\"" + token + "\"";
+		if (mPreferences.getZabbixAuthToken() != null
+				&& method != "user.authenticate")
+			auth = "\"" + mPreferences.getZabbixAuthToken() + "\"";
 
-		Log.d(TAG, "queryBuffer: " + url);
+		Log.d(TAG, "queryBuffer: " + zabbixUrl);
 		String json = "{" + "	\"jsonrpc\" : \"2.0\"," + "	\"method\" : \""
 				+ method + "\"," + "	\"params\" : " + params.toString() + ","
 				+ "	\"auth\" : " + auth + "," + "	\"id\" : 0" + "}";
@@ -368,16 +369,17 @@ public class ZabbixRemoteAPI {
 			JSONObject params) throws JSONException, IOException,
 			ZabbixLoginRequiredException, FatalException {
 
-		validateUrl();
+		buildZabbixUrl();
+		validateZabbixUrl();
 		// http request
-		HttpPost post = new HttpPost(url);
+		HttpPost post = new HttpPost(zabbixUrl);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
 
 		JSONObject json = new JSONObject().put("jsonrpc", "2.0")
-				.put("method", method).put("params", params).put("auth", token)
-				.put("id", 0);
+				.put("method", method).put("params", params)
+				.put("auth", mPreferences.getZabbixAuthToken()).put("id", 0);
 
-		Log.d(TAG, "_queryStream: " + url);
+		Log.d(TAG, "_queryStream: " + zabbixUrl);
 		Log.d(TAG, "_queryStream: " + json.toString());
 
 		post.setEntity(new StringEntity(json.toString(), "UTF-8"));
@@ -442,16 +444,6 @@ public class ZabbixRemoteAPI {
 			// is cancelled. The interruption happens by design, so we can
 			// ignore this.
 			return null;
-		}
-	}
-
-	private void validateUrl() throws FatalException {
-		String exampleUrl = mContext.getResources().getString(
-				R.string.url_example)
-				+ (mContext.getResources().getString(R.string.url_example)
-						.endsWith("/") ? "" : '/') + API_PHP;
-		if (url == null || url.equals(exampleUrl)) {
-			throw new FatalException(Type.SERVER_NOT_FOUND);
 		}
 	}
 
@@ -534,16 +526,13 @@ public class ZabbixRemoteAPI {
 	 */
 	public boolean authenticate() throws ZabbixLoginRequiredException,
 			FatalException {
-		String url = mPreferences.getZabbixUrl().trim();
 		String user = mPreferences.getUsername().trim();
 		String password = mPreferences.getPassword();
 		// String url = "http://10.10.0.21/zabbix";
 		// String user = "admin";
 		// String password = "zabbix";
 
-		this.url = url + (url.endsWith("/") ? "" : '/') + API_PHP;
-		Log.d(TAG, url + "//" + user);
-
+		String token = null;
 		try {
 			JSONObject result = _queryBuffer("user.authenticate",
 					new JSONObject().put("user", user)
@@ -561,6 +550,8 @@ public class ZabbixRemoteAPI {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
 		if (token != null) {
+			// persist token
+			mPreferences.setZabbixAuthToken(token);
 			// get API version
 			JSONObject result;
 			try {
@@ -1871,6 +1862,41 @@ public class ZabbixRemoteAPI {
 			hostnames.add(h.getName());
 		}
 		return hostnames.toString().replaceAll("[\\[\\]]", "");
+	}
+
+	/**
+	 * Builds the Zabbix URL using the URL set in the preferences and a constant
+	 * suffix
+	 */
+	private void buildZabbixUrl() {
+		String url = mPreferences.getZabbixUrl().trim();
+		this.zabbixUrl = url + (url.endsWith("/") ? "" : '/') + API_PHP;
+	}
+
+	/**
+	 * Validates the Zabbix URL.
+	 * 
+	 * @throws FatalException
+	 *             type SERVER_NOT_FOUND, if the URL is null or equal to the
+	 *             default example URL
+	 */
+	private void validateZabbixUrl() throws FatalException {
+		String exampleUrl = mContext.getResources().getString(
+				R.string.url_example)
+				+ (mContext.getResources().getString(R.string.url_example)
+						.endsWith("/") ? "" : '/') + API_PHP;
+		if (zabbixUrl == null || zabbixUrl.equals(exampleUrl)) {
+			throw new FatalException(Type.SERVER_NOT_FOUND);
+		}
+	}
+
+	public boolean isLoggedIn() {
+		return (mPreferences.getZabbixAuthToken() != null);
+	}
+
+	public void logout() {
+		mPreferences.setZabbixAuthToken(null);
+		// TODO: perform actual logout
 	}
 
 }

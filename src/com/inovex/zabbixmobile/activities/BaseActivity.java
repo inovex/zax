@@ -154,7 +154,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		// have been changed), we start a relogin.
 		if (mPreferencesClosed && mZabbixDataService != null) {
 			if (mPreferencesChanged == true) {
-				mZabbixDataService.setLoggedIn(false);
+				mZabbixDataService.performZabbixLogout();
 				mZabbixDataService.clearAllData();
 				// update widget because server data has changed
 				Intent intent = new Intent(getApplicationContext(), WidgetUpdateBroadcastReceiver.class);

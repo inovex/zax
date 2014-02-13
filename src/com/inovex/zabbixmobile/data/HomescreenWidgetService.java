@@ -85,7 +85,8 @@ public class HomescreenWidgetService extends Service {
 					FatalException {
 				problems = new ArrayList<Trigger>();
 				try {
-					mRemoteAPI.authenticate();
+					if (!mRemoteAPI.isLoggedIn())
+						mRemoteAPI.authenticate();
 					mDatabaseHelper.clearTriggers();
 					// we need to refresh triggers AND events because otherwise
 					// we might lose triggers belonging to events. But we do not
@@ -96,6 +97,7 @@ public class HomescreenWidgetService extends Service {
 					mRemoteAPI.importActiveTriggers(null);
 				} catch (FatalException e) {
 					error = true;
+					e.printStackTrace();
 					return;
 				} finally {
 					problems = mDatabaseHelper

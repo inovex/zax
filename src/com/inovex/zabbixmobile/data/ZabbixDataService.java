@@ -61,6 +61,7 @@ import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.model.Screen;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 /**
@@ -125,8 +126,6 @@ public class ZabbixDataService extends Service {
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
 	private ZabbixRemoteAPI mRemoteAPI;
-
-	protected boolean mLoggedIn = false;
 	private int mBindings = 0;
 
 	/**
@@ -141,7 +140,7 @@ public class ZabbixDataService extends Service {
 	}
 
 	public boolean isLoggedIn() {
-		return mLoggedIn;
+		return mRemoteAPI.isLoggedIn();
 	}
 
 	/**
@@ -429,7 +428,7 @@ public class ZabbixDataService extends Service {
 					FatalException {
 				mRemoteAPI.authenticate();
 				success = true;
-				mLoggedIn = true;
+
 				hostGroups = new ArrayList<HostGroup>();
 				try {
 					mRemoteAPI.importHostsAndGroups();
@@ -1110,7 +1109,7 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
-				if(event == null)
+				if (event == null)
 					return;
 				mRemoteAPI.acknowledgeEvent(event.getId(), comment);
 				mSuccess = mDatabaseHelper.acknowledgeEvent(event);
@@ -1167,8 +1166,8 @@ public class ZabbixDataService extends Service {
 		return mDatabaseHelper.getGraphById(graphId);
 	}
 
-	public void setLoggedIn(boolean loggedIn) {
-		mLoggedIn = loggedIn;
+	public void performZabbixLogout() {
+		mRemoteAPI.logout();
 	}
 
 }

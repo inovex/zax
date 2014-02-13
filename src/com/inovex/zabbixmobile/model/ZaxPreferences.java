@@ -107,4 +107,14 @@ public class ZaxPreferences {
 		mPref.unregisterOnSharedPreferenceChangeListener(listener);
 	}
 
+	public String getZabbixAuthToken() {
+		return mPref.getString("zabbix_auth_token", null);
+	}
+
+	public void setZabbixAuthToken(String token) {
+		Editor edit = mPref.edit();
+		edit.putString("zabbix_auth_token", token);
+		edit.commit();
+	}
+
 }
