@@ -93,7 +93,10 @@ public class Trigger implements Comparable<Trigger> {
 	}
 
 	public String getDescription() {
-		return description;
+		String desc = String.valueOf(description);
+		if (hostNames != null && hostNames.length() > 0)
+			desc = desc.replaceAll("\\{HOSTNAME\\}", hostNames);
+		return desc;
 	}
 
 	public String getExpression() {

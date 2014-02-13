@@ -78,10 +78,7 @@ public class EventsListAdapter extends BaseServiceAdapter<Event> {
 		if (t == null) {
 			Log.w(TAG, "No trigger defined for Event with ID " + e.getId());
 		} else {
-			String desc = String.valueOf(t.getDescription());
-			if(hostNames.length() > 0)
-				desc = desc.replaceAll("\\{HOSTNAME\\}", hostNames);
-			description.setText(desc);
+			description.setText(t.getDescription());
 		}
 
 		return row;

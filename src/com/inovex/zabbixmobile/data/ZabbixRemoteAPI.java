@@ -924,6 +924,11 @@ public class ZabbixRemoteAPI {
 				} else {
 					eventReader.nextProperty();
 				}
+				Trigger t = e.getTrigger();
+				if (t != null
+						&& (t.getHostNames() == null || (t.getHostNames()
+								.length() == 0)))
+					t.setHostNames(e.getHostNames());
 			}
 			eventsCollection.add(e);
 			if (eventsCollection.size() >= RECORDS_PER_INSERT_BATCH) {

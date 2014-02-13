@@ -61,10 +61,7 @@ public class ProblemsListAdapter extends BaseServiceAdapter<Trigger> {
 			hostNames = "";
 			Log.w(TAG, "No host defined for trigger with ID " + t.getId());
 		}
-		String desc = String.valueOf(t.getDescription());
-		if (hostNames.length() > 0)
-			desc = desc.replaceAll("\\{HOSTNAME\\}", hostNames);
-		description.setText(desc);
+		description.setText(t.getDescription());
 		title.setText(hostNames);
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(t.getLastChange());
