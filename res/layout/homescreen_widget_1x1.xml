@@ -13,21 +13,12 @@
         android:layout_alignParentTop="true"
         android:orientation="horizontal" >
 
-        <!-- <TextView -->
-        <!-- android:layout_width="wrap_content" -->
-        <!-- android:layout_height="wrap_content" -->
-        <!-- android:text="ZAX" -->
-        <!-- android:textColor="#fefefe" -->
-        <!-- android:textSize="12sp" -->
-        <!-- android:layout_marginLeft="5dip" /> -->
-
         <ImageButton
-            android:id="@+id/status_button"
+            android:id="@+id/status_image"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginTop="2dp"
-            android:background="@android:color/transparent" />
+            android:background="@android:color/transparent" 
+            android:clickable="false"/>
 
         <ImageButton
             android:id="@+id/refresh_button"

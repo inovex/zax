@@ -228,7 +228,7 @@ public class HomescreenWidgetService extends Service {
 			// set icon
 			if (statusIcon != null)
 				remoteViews
-						.setImageViewResource(R.id.status_button, statusIcon);
+						.setImageViewResource(R.id.status_image, statusIcon);
 
 			// widget click
 			Intent statusButtonClickIntent = new Intent(
