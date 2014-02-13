@@ -74,10 +74,14 @@ public class ZaxPreferences {
 	}
 
 	public int getWidgetRefreshInterval() {
-		return Integer.parseInt(mPref.getString("widget_refresh_interval_mins",
-				"15"));
+		try {
+			return Integer.parseInt(mPref.getString(
+					"widget_refresh_interval_mins", "15"));
+		} catch (NumberFormatException e) {
+			return 0;
+		}
 	}
-	
+
 	public boolean isOldNotificationIcons() {
 		return mPref.getBoolean("zabbix_push_old_icons", false);
 	}
@@ -97,7 +101,7 @@ public class ZaxPreferences {
 			OnSharedPreferenceChangeListener listener) {
 		mPref.registerOnSharedPreferenceChangeListener(listener);
 	}
-	
+
 	public void unregisterOnSharedPreferenceChangeListener(
 			OnSharedPreferenceChangeListener listener) {
 		mPref.unregisterOnSharedPreferenceChangeListener(listener);

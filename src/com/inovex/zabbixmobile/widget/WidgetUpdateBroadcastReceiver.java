@@ -24,7 +24,10 @@ public class WidgetUpdateBroadcastReceiver extends BroadcastReceiver {
 		if (intent.getBooleanExtra(REFRESH_RATE_CHANGED, false)) {
 			int widgetRefreshInterval = prefs.getWidgetRefreshInterval();
 			ZaxWidgetProvider.stopAlarm(context);
-			ZaxWidgetProvider.setAlarm(context, widgetRefreshInterval * 60 * 1000);
+			// refresh rate 0 means no automatic refresh
+			if (widgetRefreshInterval > 0)
+				ZaxWidgetProvider.setAlarm(context,
+						widgetRefreshInterval * 60 * 1000);
 		}
 
 		Intent serviceIntent = new Intent(context,

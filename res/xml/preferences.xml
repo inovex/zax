@@ -76,6 +76,7 @@
             android:defaultValue="15"
             android:inputType="number"
             android:key="widget_refresh_interval_mins"
+            android:summary="Set this to 0 to disable automatic refresh"
             android:title="Refresh interval (min)" />
     </PreferenceCategory>
 
