@@ -7,6 +7,8 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "items")
 public class Item implements Comparable<Item> {
+	
+	public static int STATUS_ENABLED = 0;
 
 	public static final String COLUMN_ITEMID = "itemid";
 	@DatabaseField(id = true, columnName = COLUMN_ITEMID)
@@ -30,6 +32,9 @@ public class Item implements Comparable<Item> {
 	public static final String COLUMN_UNITS = "units";
 	@DatabaseField(columnName = COLUMN_UNITS)
 	String units;
+	public static final String COLUMN_STATUS = "status";
+	@DatabaseField(columnName = COLUMN_STATUS)
+	int status;
 
 	// only local
 	Collection<HistoryDetail> historyDetails;
@@ -80,6 +85,14 @@ public class Item implements Comparable<Item> {
 	public Collection<HistoryDetail> getHistoryDetails() {
 		return historyDetails;
 	}
+	
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
 
 	public void setId(long id) {
 		this.id = id;
@@ -112,7 +125,7 @@ public class Item implements Comparable<Item> {
 	public void setHistoryDetails(Collection<HistoryDetail> historyDetails) {
 		this.historyDetails = historyDetails;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "item " + getId() + ": " + getDescription();

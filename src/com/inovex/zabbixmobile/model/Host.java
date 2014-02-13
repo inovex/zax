@@ -5,6 +5,8 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "hosts")
 public class Host implements Comparable<Host> {
+	
+	public static final int STATUS_MONITORED = 0;
 
 	public static final String COLUMN_ID = "hostid";
 	@DatabaseField(id = true, columnName = COLUMN_ID)
@@ -13,6 +15,10 @@ public class Host implements Comparable<Host> {
 	public static final String COLUMN_HOST = "host";
 	@DatabaseField(columnName = COLUMN_HOST)
 	String name;
+	
+	public static final String COLUMN_STATUS = "status";
+	@DatabaseField(columnName = COLUMN_STATUS)
+	int status;
 
 	HostGroup group;
 
@@ -47,6 +53,14 @@ public class Host implements Comparable<Host> {
 
 	public void setGroup(HostGroup group) {
 		this.group = group;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
 	}
 
 	@Override

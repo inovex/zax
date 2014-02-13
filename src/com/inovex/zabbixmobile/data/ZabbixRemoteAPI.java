@@ -1161,6 +1161,8 @@ public class ZabbixRemoteAPI {
 				} else if (propName.equals(Host.COLUMN_HOST)) {
 					String host = hostReader.getText();
 					h.setHost(host);
+				} else if (propName.equals(Host.COLUMN_STATUS)) {
+					h.setStatus(Integer.parseInt(hostReader.getText()));
 				} else if (propName.equals("groups")) {
 					List<HostGroup> groups = importHostGroupsFromStream(hostReader
 							.getJsonArrayOrObjectReader());
@@ -1294,6 +1296,8 @@ public class ZabbixRemoteAPI {
 					item.setLastValue(itemReader.getText());
 				} else if (propName.equals(Item.COLUMN_UNITS)) {
 					item.setUnits(itemReader.getText());
+				} else if (propName.equals(Item.COLUMN_STATUS)) {
+					item.setStatus(Integer.parseInt(itemReader.getText()));
 				} else if (propName.equals("key_")) {
 					key_ = itemReader.getText();
 				} else if (propName.equals("applications")) {
@@ -1708,8 +1712,6 @@ public class ZabbixRemoteAPI {
 			if (triggerIds != null) {
 				params.put("triggerids", new JSONArray(triggerIds));
 			}
-			if (onlyActive)
-				params.put("only_true", "1");
 
 			// count of events
 			JSONObject result = _queryBuffer("trigger.get", params);
@@ -1733,8 +1735,10 @@ public class ZabbixRemoteAPI {
 			if (triggerIds != null) {
 				params.put("triggerids", new JSONArray(triggerIds));
 			}
-			if (onlyActive)
+			if (onlyActive) {
 				params.put("only_true", "1");
+				params.put("monitored", "1");
+			}
 			JsonArrayOrObjectReader triggers = _queryStream("trigger.get",
 					params);
 			importTriggersFromStream(triggers, numTriggers, task);
@@ -1774,6 +1778,7 @@ public class ZabbixRemoteAPI {
 		int i = 0;
 		while ((triggerReader = jsonReader.next()) != null) {
 			Trigger t = new Trigger();
+			boolean enabled = true;
 			while (triggerReader.nextValueToken()) {
 				String propName = triggerReader.getCurrentName();
 				if (propName == null)
@@ -1803,6 +1808,10 @@ public class ZabbixRemoteAPI {
 					// import hosts
 					List<Host> hosts = importHostsFromStream(triggerReader
 							.getJsonArrayOrObjectReader());
+					for (Host host : hosts) {
+						if (host.getStatus() != Host.STATUS_MONITORED)
+							enabled = false;
+					}
 					String hostNames = createHostNamesString(hosts);
 					// store hosts names
 					t.setHostNames(hostNames);
@@ -1818,14 +1827,25 @@ public class ZabbixRemoteAPI {
 					List<Item> items = importItemsFromStream(
 							triggerReader.getJsonArrayOrObjectReader(), null,
 							1, true);
+					for (Item item : items) {
+						if (item.getStatus() != Item.STATUS_ENABLED)
+							enabled = false;
+					}
 					if (items.size() > 0)
 						t.setItem(items.get(0));
 				} else {
 					triggerReader.nextProperty();
 				}
 			}
-			if (t.getStatus() != Trigger.STATUS_ENABLED)
-				continue;
+
+			// triggers imported with events may be active but outside the time
+			// range -> they should always be set to disabled
+			if (t.getLastChange() < (new Date().getTime() - ZabbixConfig.STATUS_SHOW_TRIGGER_TIME * 1000)) {
+				t.setEnabled(false);
+			} else {
+				t.setEnabled(enabled);
+			}
+
 			triggerCollection.add(t);
 			if (triggerCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper.insertTriggers(triggerCollection);

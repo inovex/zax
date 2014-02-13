@@ -44,6 +44,9 @@ public class Trigger implements Comparable<Trigger> {
 	public static final String COLUMN_ITEMID = "itemid";
 	@DatabaseField(columnName = COLUMN_ITEMID, foreign = true, foreignAutoRefresh = true)
 	Item item;
+	public static final String COLUMN_ENABLED = "enabled";
+	@DatabaseField(columnName = COLUMN_ENABLED)
+	boolean enabled;
 
 	// only local
 	@DatabaseField
@@ -67,8 +70,26 @@ public class Trigger implements Comparable<Trigger> {
 		this.url = url;
 	}
 
-	public long getId() {
-		return id;
+	@Override
+	public int compareTo(Trigger another) {
+		if (id == another.getId())
+			return 0;
+		if (lastChange < another.getLastChange())
+			return 1;
+		if (lastChange > another.getLastChange())
+			return -1;
+		if (item == null)
+			return 1;
+		if (another.getItem() == null)
+			return -1;
+		if (item.getId() > another.getItem().getId())
+			return 1;
+		else
+			return -1;
+	}
+
+	public String getComments() {
+		return comments;
 	}
 
 	public String getDescription() {
@@ -79,8 +100,20 @@ public class Trigger implements Comparable<Trigger> {
 		return expression;
 	}
 
-	public String getComments() {
-		return comments;
+	public String getHostNames() {
+		return hostNames;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public Item getItem() {
+		return item;
+	}
+
+	public long getLastChange() {
+		return lastChange;
 	}
 
 	public TriggerSeverity getPriority() {
@@ -91,28 +124,40 @@ public class Trigger implements Comparable<Trigger> {
 		return status;
 	}
 
-	public int getValue() {
-		return value;
-	}
-
 	public String getUrl() {
 		return url;
 	}
 
-	public long getLastChange() {
-		return lastChange;
+	public int getValue() {
+		return value;
 	}
 
-	public Item getItem() {
-		return item;
+	public boolean isEnabled() {
+		return enabled;
 	}
 
-	public String getHostNames() {
-		return hostNames;
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public void setExpression(String expression) {
+		this.expression = expression;
 	}
 
 	public void setHostNames(String hostNames) {
 		this.hostNames = hostNames;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public void setItem(Item item) {
@@ -123,22 +168,6 @@ public class Trigger implements Comparable<Trigger> {
 		this.lastChange = lastChange;
 	}
 
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public void setExpression(String expression) {
-		this.expression = expression;
-	}
-
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
-
 	public void setPriority(TriggerSeverity priority) {
 		this.priority = priority;
 	}
@@ -147,12 +176,12 @@ public class Trigger implements Comparable<Trigger> {
 		this.status = status;
 	}
 
-	public void setValue(int value) {
-		this.value = value;
-	}
-
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public void setValue(int value) {
+		this.value = value;
 	}
 
 	@Override
@@ -171,24 +200,6 @@ public class Trigger implements Comparable<Trigger> {
 		sb.append(", ").append("value=").append(value);
 		sb.append(", ").append("url=").append(url);
 		return sb.toString();
-	}
-
-	@Override
-	public int compareTo(Trigger another) {
-		if (id == another.getId())
-			return 0;
-		if (lastChange < another.getLastChange())
-			return 1;
-		if (lastChange > another.getLastChange())
-			return -1;
-		if (item == null)
-			return 1;
-		if (another.getItem() == null)
-			return -1;
-		if (item.getId() > another.getItem().getId())
-			return 1;
-		else
-			return -1;
 	}
 
 }

@@ -56,7 +56,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final String DATABASE_NAME = "zabbixmobile2.db";
 	// any time you make changes to your database objects, you may have to
 	// increase the database version
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 5;
 	private static final String TAG = DatabaseHelper.class.getSimpleName();
 	private DatabaseConnection mThreadConnection;
 	private final Context mContext;
@@ -179,6 +179,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			where.and();
 			where.eq(Trigger.COLUMN_VALUE, Trigger.VALUE_PROBLEM);
+			
+			// only active triggers
+			where.and().eq(Trigger.COLUMN_ENABLED, true);
 
 			// filter events by trigger severity
 			if (!severity.equals(TriggerSeverity.ALL)) {
