@@ -1088,13 +1088,14 @@ public class ZabbixRemoteAPI {
 	 * 
 	 * @param jsonReader
 	 *            JSON stream reader
+	 * @param insertHostGroups
 	 * @return list of host groups parsed from jsonReader
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
 	private List<HostGroup> importHostGroupsFromStream(
-			JsonArrayOrObjectReader jsonReader) throws JsonParseException,
-			IOException {
+			JsonArrayOrObjectReader jsonReader, boolean insertHostGroups)
+			throws JsonParseException, IOException {
 		long firstHostGroupId = -1;
 		ArrayList<HostGroup> hostGroupCollection = new ArrayList<HostGroup>();
 		JsonObjectReader hostReader;
@@ -1114,12 +1115,16 @@ public class ZabbixRemoteAPI {
 				}
 			}
 			hostGroupCollection.add(h);
-			if (hostGroupCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+			if (insertHostGroups
+					&& hostGroupCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper.insertHostGroups(hostGroupCollection);
 				hostGroupCollection.clear();
 			}
 		}
-		databaseHelper.insertHostGroups(hostGroupCollection);
+		if (insertHostGroups) {
+			databaseHelper.insertHostGroups(hostGroupCollection);
+			Log.d(TAG, "host groups inserted");
+		}
 
 		return hostGroupCollection;
 		// return firstHostGroupId;
@@ -1165,7 +1170,7 @@ public class ZabbixRemoteAPI {
 					h.setStatus(Integer.parseInt(hostReader.getText()));
 				} else if (propName.equals("groups")) {
 					List<HostGroup> groups = importHostGroupsFromStream(hostReader
-							.getJsonArrayOrObjectReader());
+							.getJsonArrayOrObjectReader(), true);
 					for (HostGroup group : groups) {
 						// create HostHostGroupRelation
 						hostHostGroupCollection.add(new HostHostGroupRelation(
@@ -1728,7 +1733,7 @@ public class ZabbixRemoteAPI {
 					.put("sortorder", "desc")
 					.put(isVersion2 ? "selectHosts" : "select_hosts", "refer")
 					.put(isVersion2 ? "selectGroups" : "select_groups",
-							"extend")
+							"refer")
 					.put(isVersion2 ? "selectItems" : "select_items", "extend")
 					.put("lastChangeSince", min)
 					.put("limit", ZabbixConfig.TRIGGER_GET_LIMIT)
@@ -1819,8 +1824,8 @@ public class ZabbixRemoteAPI {
 					// store hosts names
 					t.setHostNames(hostNames);
 				} else if (propName.equals("groups")) {
-					List<HostGroup> hostGroups = importHostGroupsFromStream(triggerReader
-							.getJsonArrayOrObjectReader());
+					List<HostGroup> hostGroups = importHostGroupsFromStream(
+							triggerReader.getJsonArrayOrObjectReader(), false);
 					for (HostGroup h : hostGroups) {
 						triggerHostGroupCollection
 								.add(new TriggerHostGroupRelation(t, h));
