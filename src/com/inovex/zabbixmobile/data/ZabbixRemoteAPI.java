@@ -614,7 +614,7 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject();
 			params.put("output", "extend")
 					.put("limit", ZabbixConfig.APPLICATION_GET_LIMIT)
-					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
+					.put(isVersion2 ? "selectHosts" : "select_hosts", "refer")
 					.put("source", 0);
 			if (!isVersion2) {
 				// in Zabbix version <2.0, this is not default
@@ -679,19 +679,12 @@ public class ZabbixRemoteAPI {
 					// Long.parseLong(application.getText()));
 				} else if (propName.equals("hosts")) {
 					// import hosts
-					List<Host> hosts = importHostsFromStream(application
-							.getJsonArrayOrObjectReader());
+					List<Host> hosts = importHostsFromStream(
+							application.getJsonArrayOrObjectReader(), false);
+					databaseHelper.refreshHosts(hosts);
 					if (hosts.size() > 0) {
 						Host h = hosts.get(0);
 						if (h != null) {
-							if (h.getName() == null) {
-								// if the host's information is not complete, we
-								// need to query it from the database
-								Host hostFromDB = databaseHelper.getHostById(h
-										.getId());
-								if (hostFromDB != null)
-									h = hostFromDB;
-							}
 							app.setHost(h);
 						}
 					}
@@ -798,7 +791,7 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject()
 					.put("output", "extend")
 					.put("limit", ZabbixConfig.EVENTS_GET_LIMIT)
-					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
+					.put(isVersion2 ? "selectHosts" : "select_hosts", "refer")
 					.put(isVersion2 ? "selectTriggers" : "select_triggers",
 							"extend")
 					.put("source", 0)
@@ -890,8 +883,9 @@ public class ZabbixRemoteAPI {
 				String propName = eventReader.getCurrentName();
 				if (propName.equals("hosts")) {
 					// import hosts
-					List<Host> hosts = importHostsFromStream(eventReader
-							.getJsonArrayOrObjectReader());
+					List<Host> hosts = importHostsFromStream(
+							eventReader.getJsonArrayOrObjectReader(), false);
+					databaseHelper.refreshHosts(hosts);
 					String hostNames = createHostNamesString(hosts);
 					// store hosts names
 					e.setHostNames(hostNames);
@@ -1140,15 +1134,16 @@ public class ZabbixRemoteAPI {
 	 * 
 	 * @param jsonReader
 	 *            JSON stream reader
-	 * @param task
-	 *            task to be notified about progress
-	 * @param numHosts
-	 *            count of hosts for progressbar; null if unknown
+	 * @param insertHosts
+	 *            whether or not the imported hosts shall be inserted into the
+	 *            database (this should be false if the hosts are imported using
+	 *            "refer" as their information is not complete)
 	 * @return list of hosts retrieved from the stream
 	 * @throws JsonParseException
 	 * @throws IOException
 	 */
-	private List<Host> importHostsFromStream(JsonArrayOrObjectReader jsonReader)
+	private List<Host> importHostsFromStream(
+			JsonArrayOrObjectReader jsonReader, boolean insertHosts)
 			throws JsonParseException, IOException {
 
 		List<Host> hostCollection = new ArrayList<Host>();
@@ -1165,7 +1160,7 @@ public class ZabbixRemoteAPI {
 					// }
 				} else if (propName.equals(Host.COLUMN_HOST)) {
 					String host = hostReader.getText();
-					h.setHost(host);
+					h.setName(host);
 				} else if (propName.equals(Host.COLUMN_STATUS)) {
 					h.setStatus(Integer.parseInt(hostReader.getText()));
 				} else if (propName.equals("groups")) {
@@ -1181,17 +1176,19 @@ public class ZabbixRemoteAPI {
 				}
 			}
 			hostCollection.add(h);
-			if (hostCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+			if (insertHosts
+					&& hostCollection.size() >= RECORDS_PER_INSERT_BATCH) {
 				databaseHelper.insertHosts(hostCollection);
 				hostCollection.clear();
 			}
 		}
 		// insert the last batch of events
-		databaseHelper.insertHosts(hostCollection);
+		if (insertHosts) {
+			databaseHelper.insertHosts(hostCollection);
+			Log.d(TAG, "hosts inserted.");
+		}
 
-		Log.d(TAG, "hosts inserted.");
-
-		if (!hostHostGroupCollection.isEmpty())
+		if (insertHosts && !hostHostGroupCollection.isEmpty())
 			databaseHelper
 					.insertHostHostgroupRelations(hostHostGroupCollection);
 
@@ -1226,7 +1223,7 @@ public class ZabbixRemoteAPI {
 								.put("limit", ZabbixConfig.HOST_GET_LIMIT)
 								.put(isVersion2 ? "selectGroups"
 										: "select_groups", "extend"));
-				importHostsFromStream(hosts);
+				importHostsFromStream(hosts, true);
 				hosts.close();
 			}
 
@@ -1729,7 +1726,7 @@ public class ZabbixRemoteAPI {
 			params.put("output", "extend")
 					.put("sortfield", "lastchange")
 					.put("sortorder", "desc")
-					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend")
+					.put(isVersion2 ? "selectHosts" : "select_hosts", "refer")
 					.put(isVersion2 ? "selectGroups" : "select_groups",
 							"extend")
 					.put(isVersion2 ? "selectItems" : "select_items", "extend")
@@ -1811,8 +1808,9 @@ public class ZabbixRemoteAPI {
 					t.setUrl(triggerReader.getText());
 				} else if (propName.equals("hosts")) {
 					// import hosts
-					List<Host> hosts = importHostsFromStream(triggerReader
-							.getJsonArrayOrObjectReader());
+					List<Host> hosts = importHostsFromStream(
+							triggerReader.getJsonArrayOrObjectReader(), false);
+					databaseHelper.refreshHosts(hosts);
 					for (Host host : hosts) {
 						if (host.getStatus() != Host.STATUS_MONITORED)
 							enabled = false;

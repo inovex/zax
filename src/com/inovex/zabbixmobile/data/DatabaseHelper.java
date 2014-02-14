@@ -235,6 +235,22 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 		return new ArrayList<Host>();
 	}
+	
+	/**
+	 * Queries all hosts with the given IDs from the database.
+	 * 
+	 * @return list of all hosts
+	 */
+	public void refreshHosts(Iterable<Host> hosts) {
+		try {
+			Dao<Host, Long> hostDao = getDao(Host.class);
+			for(Host host : hosts) {
+				hostDao.refresh(host);
+			}
+		} catch (SQLException e) {
+			handleException(new FatalException(Type.INTERNAL_ERROR, e));
+		}
+	}
 
 	/**
 	 * Queries all hosts in a specified group from the database.

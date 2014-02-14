@@ -43,8 +43,8 @@ public class Host implements Comparable<Host> {
 		return name;
 	}
 
-	public void setHost(String host) {
-		this.name = host;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public HostGroup getGroup() {
