@@ -1407,8 +1407,7 @@ public class ZabbixRemoteAPI {
 			params.put("output", "extend")
 					.put("limit", ZabbixConfig.ITEM_GET_LIMIT)
 					.put(isVersion2 ? "selectApplications"
-							: "select_applications", "refer")
-					.put(isVersion2 ? "selectHosts" : "select_hosts", "extend");
+							: "select_applications", "refer");
 			if (hostId != null)
 				params.put("hostids", new JSONArray().put(hostId));
 			JsonArrayOrObjectReader items = _queryStream("item.get", params);
