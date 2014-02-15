@@ -600,7 +600,7 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject();
 			int numApplications;
 
-			params.put("output", "extend").put("countOutput", 1);
+			params.put("countOutput", 1);
 			if (hostId != null)
 				params.put("hostids", new JSONArray().put(hostId));
 
@@ -994,7 +994,6 @@ public class ZabbixRemoteAPI {
 					result = _queryBuffer(
 							"history.get",
 							new JSONObject()
-									.put("output", "extend")
 									.put("limit", 1)
 									.put("history", historytype)
 									.put("itemids", new JSONArray().put(itemId))
@@ -1394,7 +1393,7 @@ public class ZabbixRemoteAPI {
 		try {
 			// count of items
 			JSONObject params = new JSONObject();
-			params.put("output", "extend").put("countOutput", 1);
+			params.put("countOutput", 1);
 			if (hostId != null)
 				params.put("hostids", new JSONArray().put(hostId));
 
@@ -1713,7 +1712,7 @@ public class ZabbixRemoteAPI {
 			int numTriggers;
 
 			JSONObject params = new JSONObject();
-			params.put("output", "extend").put("countOutput", 1)
+			params.put("countOutput", 1)
 					.put("lastChangeSince", min).put("expandDescription", true);
 			if (triggerIds != null) {
 				params.put("triggerids", new JSONArray(triggerIds));
