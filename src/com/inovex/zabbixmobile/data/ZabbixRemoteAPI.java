@@ -1315,7 +1315,7 @@ public class ZabbixRemoteAPI {
 			}
 			// if applicable replace placeholder
 			String description = item.getDescription();
-			if (description.matches(".*\\$[0-9].*")) {
+			if (description != null && description.matches(".*\\$[0-9].*")) {
 				if (key_ != null && key_.indexOf('[') != -1) {
 					String[] keys = key_.substring(key_.indexOf('[') + 1,
 							key_.indexOf(']')).split(",");
