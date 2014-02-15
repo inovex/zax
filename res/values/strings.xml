@@ -92,5 +92,6 @@
      <string name="widget_problems">%1$d &gt;=high\n%2$d &lt;=avg"</string>
      <string name="widget_loading">loading...</string>
      <string name="widget_connection_error">connection error</string>
+     <string name="widget_connection_error_long">connection error - Please check your internet connection and your server settings.</string>
 
 </resources>

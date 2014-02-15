@@ -62,10 +62,20 @@
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/widget_no_problems"
         android:gravity="center_vertical|center_horizontal"
+        android:padding="3dp"
+        android:text="@string/widget_no_problems"
         android:textSize="14sp"
         android:visibility="gone" >
     </TextView>
+
+    <TextView
+        android:id="@+id/error_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="@string/widget_connection_error_long"
+        android:textSize="14sp"
+        android:visibility="gone" />
 
 </LinearLayout>

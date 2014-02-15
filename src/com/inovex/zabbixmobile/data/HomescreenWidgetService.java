@@ -227,8 +227,7 @@ public class HomescreenWidgetService extends Service {
 
 			// set icon
 			if (statusIcon != null)
-				remoteViews
-						.setImageViewResource(R.id.status_image, statusIcon);
+				remoteViews.setImageViewResource(R.id.status_image, statusIcon);
 
 			// widget click
 			Intent statusButtonClickIntent = new Intent(
@@ -310,7 +309,15 @@ public class HomescreenWidgetService extends Service {
 			remoteViews.setPendingIntentTemplate(R.id.list_view,
 					itemPendingIntent);
 
-			if (!startProgressSpinner) {
+			boolean isError = statusText.equals(getResources().getString(
+					R.string.widget_connection_error));
+			if (isError) {
+				remoteViews.setViewVisibility(R.id.list_view, View.GONE);
+				remoteViews.setViewVisibility(R.id.error_view, View.VISIBLE);
+
+			} else if (!startProgressSpinner) {
+				remoteViews.setViewVisibility(R.id.list_view, View.VISIBLE);
+				remoteViews.setViewVisibility(R.id.error_view, View.GONE);
 				// empty view
 				remoteViews.setEmptyView(R.id.list_view, R.id.empty_view);
 
