@@ -126,6 +126,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		}
 		if (!mZabbixDataService.isLoggedIn())
 			mZabbixDataService.performZabbixLogin(this);
+		// as we need the hosts and host groups almost everywhere, we should
+		// load them (they are loaded with every login, but if no login is
+		// necessary, we should load them explicitly)
+		mZabbixDataService.loadHostsAndHostGroups();
 
 	}
 
@@ -157,7 +161,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 				mZabbixDataService.performZabbixLogout();
 				mZabbixDataService.clearAllData();
 				// update widget because server data has changed
-				Intent intent = new Intent(getApplicationContext(), WidgetUpdateBroadcastReceiver.class);
+				Intent intent = new Intent(getApplicationContext(),
+						WidgetUpdateBroadcastReceiver.class);
 				this.sendBroadcast(intent);
 				mPreferencesChanged = false;
 			}

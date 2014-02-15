@@ -672,7 +672,7 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Loads all hosts with a given host group from the database asynchronously.
-	 * After loading the events, the host list adapter is updated. If necessary,
+	 * After loading the hosts, the host list adapter is updated. If necessary,
 	 * an import from the Zabbix API is triggered.
 	 * 
 	 * Additionally, this method initializes
@@ -719,6 +719,46 @@ public class ZabbixDataService extends Service {
 				if (callback != null)
 					callback.onHostsLoaded();
 				Log.d(TAG, "Hosts imported.");
+
+			}
+
+		}.execute();
+	}
+	
+	/**
+	 * Loads all hosts and host groups from the database asynchronously.
+	 * After loading, the host groups spinner adapter is updated. If necessary,
+	 * an import from the Zabbix API is triggered.
+	 * 
+	 */
+	public void loadHostsAndHostGroups() {
+		new RemoteAPITask(mRemoteAPI) {
+
+			private List<HostGroup> hostGroups;
+			private final BaseServiceAdapter<HostGroup> hostGroupsAdapter = mHostGroupsSpinnerAdapter;
+
+			@Override
+			protected void executeTask() throws ZabbixLoginRequiredException,
+					FatalException {
+				hostGroups = new ArrayList<HostGroup>();
+				try {
+					mRemoteAPI.importHostsAndGroups();
+					// even if the api call is not successful, we can still use
+					// the cached events
+				} finally {
+					hostGroups = mDatabaseHelper.getHostGroups();
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
+				if (hostGroupsAdapter != null) {
+					hostGroupsAdapter.clear();
+					hostGroupsAdapter.addAll(hostGroups);
+					hostGroupsAdapter.notifyDataSetChanged();
+				}
+				Log.d(TAG, "Hosts and host groups imported.");
 
 			}
 
