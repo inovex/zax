@@ -1215,8 +1215,7 @@ public class ZabbixRemoteAPI {
 			return;
 		try {
 			// hosts in the local database may not be empty; hence we prevent
-			// multiple database operations on the hosts table (as soon as
-			// caching is implemented, the performance impact will be 0)
+			// multiple database operations on the hosts table
 			synchronized (databaseHelper.getDao(Host.class)) {
 				databaseHelper.clearHosts();
 				databaseHelper.clearHostGroups();

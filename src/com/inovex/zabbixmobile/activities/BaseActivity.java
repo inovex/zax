@@ -124,13 +124,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			// return to avoid a login with incorrect credentials
 			return;
 		}
-		if (!mZabbixDataService.isLoggedIn())
-			mZabbixDataService.performZabbixLogin(this);
-		// as we need the hosts and host groups almost everywhere, we should
-		// load them (they are loaded with every login, but if no login is
-		// necessary, we should load them explicitly)
-		mZabbixDataService.loadHostsAndHostGroups();
-
+		mZabbixDataService.performZabbixLogin(this);
 	}
 
 	@Override

@@ -138,7 +138,7 @@ public class ZabbixDataService extends Service {
 			return ZabbixDataService.this;
 		}
 	}
-
+	
 	public boolean isLoggedIn() {
 		return mRemoteAPI.isLoggedIn();
 	}
@@ -403,7 +403,7 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Performs the Zabbix login using the server address and credentials from
-	 * the preferences. Additionally, this method loads the host groups and
+	 * the preferences. Login is only performed if the user Additionally, this method loads the host groups and
 	 * fills the corresponding adapter because host groups are used at so many
 	 * spots in the program, so they should be available all the time.
 	 * 
@@ -413,7 +413,8 @@ public class ZabbixDataService extends Service {
 	 * 
 	 */
 	public void performZabbixLogin(final OnLoginProgressListener listener) {
-		if (listener != null)
+		final boolean loginNecessary = !mRemoteAPI.isLoggedIn();
+		if (loginNecessary && listener != null)
 			listener.onLoginStarted();
 
 		// authenticate
@@ -426,7 +427,8 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
-				mRemoteAPI.authenticate();
+				if (loginNecessary)
+					mRemoteAPI.authenticate();
 				success = true;
 
 				hostGroups = new ArrayList<HostGroup>();
@@ -724,11 +726,11 @@ public class ZabbixDataService extends Service {
 
 		}.execute();
 	}
-	
+
 	/**
-	 * Loads all hosts and host groups from the database asynchronously.
-	 * After loading, the host groups spinner adapter is updated. If necessary,
-	 * an import from the Zabbix API is triggered.
+	 * Loads all hosts and host groups from the database asynchronously. After
+	 * loading, the host groups spinner adapter is updated. If necessary, an
+	 * import from the Zabbix API is triggered.
 	 * 
 	 */
 	public void loadHostsAndHostGroups() {
