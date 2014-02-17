@@ -191,7 +191,7 @@ public class ZabbixRemoteAPI {
 	 */
 	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper,
 			HttpClientWrapper httpClientMock, ZaxPreferences prefsMock) {
-		
+
 		if (prefsMock != null) {
 			mPreferences = prefsMock;
 		} else {
@@ -237,21 +237,19 @@ public class ZabbixRemoteAPI {
 			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
 			SchemeRegistry registry = new SchemeRegistry();
 
+			SSLSocketFactory sf;
 			if (mPreferences.isTrustAllSSLCA()) {
 				KeyStore trustStore = KeyStore.getInstance(KeyStore
 						.getDefaultType());
 				trustStore.load(null, null);
-
-				SSLSocketFactory sf = new CustomSSLSocketFactory(trustStore);
+				sf = new CustomSSLSocketFactory(trustStore);
 				sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-				registry.register(new Scheme("http", PlainSocketFactory
-						.getSocketFactory(), 80));
-				registry.register(new Scheme("https", sf, 443));
 			} else {
-				registry.register(new Scheme("http", PlainSocketFactory
-						.getSocketFactory(), 80));
+				sf = SSLSocketFactory.getSocketFactory();
 			}
+			registry.register(new Scheme("http", PlainSocketFactory
+					.getSocketFactory(), 80));
+			registry.register(new Scheme("https", sf, 443));
 			ccm = new ThreadSafeClientConnManager(params, registry);
 		} catch (Exception e) {
 			// ignore for unit test

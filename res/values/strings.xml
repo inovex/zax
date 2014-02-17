@@ -76,7 +76,7 @@
     <string name="comment">Comment</string>
     <string name="cancel">Cancel</string>
     <string name="trust_all_ssl_certificates">Trust all SSL Certificates</string>
-    <string name="trust_all_ssl_certificates_description">Enable this option to trust your server if you are using SSL. Attention: At the moment, Zax does not verify your SSL certificate (it will be blindly trusted). Check only if you know what you are doing!</string>
+    <string name="trust_all_ssl_certificates_description">Enable this option if you are using SSL and your server\'s certificate is not issued by a certificate authority trusted by your device. Attention: This basically disables SSL. Check only if you know what you are doing!</string>
     <string name="homescreen_widget">Homescreen Widget</string>
     <string name="empty_list_checks">No items found for this application.</string>
     <string name="empty_list_events">No events found for this severity.</string>
