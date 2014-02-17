@@ -647,11 +647,14 @@ public class ZabbixRemoteAPI {
 	 * @throws JsonParseException
 	 * @throws NumberFormatException
 	 * @throws IOException
+	 * @throws FatalException
+	 * @throws ZabbixLoginRequiredException
 	 */
 	private Collection<Application> importApplicationsFromStream(
 			JsonArrayOrObjectReader jsonReader, RemoteAPITask task,
 			int numApplications) throws JsonParseException,
-			NumberFormatException, IOException {
+			NumberFormatException, IOException, ZabbixLoginRequiredException,
+			FatalException {
 		List<Application> applicationsComplete = new ArrayList<Application>();
 		List<Application> applicationsPerBatch = new ArrayList<Application>(
 				RECORDS_PER_INSERT_BATCH);
@@ -685,6 +688,10 @@ public class ZabbixRemoteAPI {
 					if (hosts.size() > 0) {
 						Host h = hosts.get(0);
 						if (h != null) {
+							if (h.getName() == null) {
+								importHostsAndGroups();
+								databaseHelper.refreshHosts(hosts);
+							}
 							app.setHost(h);
 						}
 					}
@@ -886,6 +893,12 @@ public class ZabbixRemoteAPI {
 					List<Host> hosts = importHostsFromStream(
 							eventReader.getJsonArrayOrObjectReader(), false);
 					databaseHelper.refreshHosts(hosts);
+					for (Host h : hosts) {
+						if (h.getName() == null) {
+							importHostsAndGroups();
+							databaseHelper.refreshHosts(hosts);
+						}
+					}
 					String hostNames = createHostNamesString(hosts);
 					// store hosts names
 					e.setHostNames(hostNames);
@@ -1168,8 +1181,8 @@ public class ZabbixRemoteAPI {
 				} else if (propName.equals(Host.COLUMN_STATUS)) {
 					h.setStatus(Integer.parseInt(hostReader.getText()));
 				} else if (propName.equals("groups")) {
-					List<HostGroup> groups = importHostGroupsFromStream(hostReader
-							.getJsonArrayOrObjectReader(), true);
+					List<HostGroup> groups = importHostGroupsFromStream(
+							hostReader.getJsonArrayOrObjectReader(), true);
 					for (HostGroup group : groups) {
 						// create HostHostGroupRelation
 						hostHostGroupCollection.add(new HostHostGroupRelation(
@@ -1711,8 +1724,8 @@ public class ZabbixRemoteAPI {
 			int numTriggers;
 
 			JSONObject params = new JSONObject();
-			params.put("countOutput", 1)
-					.put("lastChangeSince", min).put("expandDescription", true);
+			params.put("countOutput", 1).put("lastChangeSince", min)
+					.put("expandDescription", true);
 			if (triggerIds != null) {
 				params.put("triggerids", new JSONArray(triggerIds));
 			}
@@ -1729,8 +1742,7 @@ public class ZabbixRemoteAPI {
 					.put("sortfield", "lastchange")
 					.put("sortorder", "desc")
 					.put(isVersion2 ? "selectHosts" : "select_hosts", "refer")
-					.put(isVersion2 ? "selectGroups" : "select_groups",
-							"refer")
+					.put(isVersion2 ? "selectGroups" : "select_groups", "refer")
 					.put(isVersion2 ? "selectItems" : "select_items", "extend")
 					.put("lastChangeSince", min)
 					.put("limit", ZabbixConfig.TRIGGER_GET_LIMIT)
@@ -1770,10 +1782,13 @@ public class ZabbixRemoteAPI {
 	 * @return list of imported triggers
 	 * @throws JsonParseException
 	 * @throws IOException
+	 * @throws FatalException
+	 * @throws ZabbixLoginRequiredException
 	 */
 	private List<Trigger> importTriggersFromStream(
 			JsonArrayOrObjectReader jsonReader, int numTriggers,
-			RemoteAPITask task) throws JsonParseException, IOException {
+			RemoteAPITask task) throws JsonParseException, IOException,
+			ZabbixLoginRequiredException, FatalException {
 		List<Trigger> triggerCollection = new ArrayList<Trigger>(
 				RECORDS_PER_INSERT_BATCH);
 		List<TriggerHostGroupRelation> triggerHostGroupCollection = new ArrayList<TriggerHostGroupRelation>(
@@ -1814,6 +1829,10 @@ public class ZabbixRemoteAPI {
 							triggerReader.getJsonArrayOrObjectReader(), false);
 					databaseHelper.refreshHosts(hosts);
 					for (Host host : hosts) {
+						if (host.getName() == null) {
+							importHostsAndGroups();
+							databaseHelper.refreshHosts(hosts);
+						}
 						if (host.getStatus() != Host.STATUS_MONITORED)
 							enabled = false;
 					}

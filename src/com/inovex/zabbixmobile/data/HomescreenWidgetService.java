@@ -85,8 +85,12 @@ public class HomescreenWidgetService extends Service {
 					FatalException {
 				problems = new ArrayList<Trigger>();
 				try {
-					if (!mRemoteAPI.isLoggedIn())
+					if (!mRemoteAPI.isLoggedIn()) {
 						mRemoteAPI.authenticate();
+					}
+					// ensure that hosts and host groups are available; if they
+					// are cached, no API call will be triggered.
+					mRemoteAPI.importHostsAndGroups();
 					mDatabaseHelper.clearTriggers();
 					// we need to refresh triggers AND events because otherwise
 					// we might lose triggers belonging to events. But we do not
