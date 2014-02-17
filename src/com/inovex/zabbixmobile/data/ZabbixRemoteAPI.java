@@ -168,7 +168,7 @@ public class ZabbixRemoteAPI {
 		public static final int HTTP_SOCKET_TIMEOUT = 30000;
 	}
 
-	private final HttpClientWrapper httpClient;
+	private HttpClientWrapper httpClient;
 	private final DatabaseHelper databaseHelper;
 	private final ZaxPreferences mPreferences;
 	private String zabbixUrl;
@@ -191,17 +191,48 @@ public class ZabbixRemoteAPI {
 	 */
 	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper,
 			HttpClientWrapper httpClientMock, ZaxPreferences prefsMock) {
-		ClientConnectionManager ccm = null;
-		HttpParams params = null;
+		
 		if (prefsMock != null) {
 			mPreferences = prefsMock;
 		} else {
 			mPreferences = ZaxPreferences.getInstance(context);
 		}
 
-		try {
+		if (httpClientMock != null) {
+			httpClient = httpClientMock;
+		} else {
+			initConnection();
+		}
 
+		// if applicable http auth
+		try {
+			if (mPreferences.isHttpAuthEnabled()) {
+				String user = mPreferences.getHttpAuthUsername();
+				String pwd = mPreferences.getHttpAuthPassword();
+				httpClient.getCredentialsProvider().setCredentials(
+						AuthScope.ANY,
+						new UsernamePasswordCredentials(user, pwd));
+			}
+		} catch (java.lang.UnsupportedOperationException e1) {
+			// for unit test
+		}
+
+		this.mContext = context;
+		this.databaseHelper = databaseHelper;
+	}
+
+	protected void initConnection() {
+		ClientConnectionManager ccm = null;
+		HttpParams params = null;
+		try {
 			params = new BasicHttpParams();
+			HttpClientParams.setRedirecting(params, true); // redirecting
+			HttpConnectionParams.setConnectionTimeout(params,
+					ZabbixConfig.HTTP_CONNECTION_TIMEOUT);
+			HttpConnectionParams.setSoTimeout(params,
+					ZabbixConfig.HTTP_SOCKET_TIMEOUT);
+			// TODO: The timeouts do not work properly (neither in the emulator
+			// nor on a real device)
 			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
 			SchemeRegistry registry = new SchemeRegistry();
@@ -226,43 +257,12 @@ public class ZabbixRemoteAPI {
 			// ignore for unit test
 		}
 
-		// not for testing...
-		if (httpClientMock == null) {
-			HttpClientParams.setRedirecting(params, true); // redirecting
-			HttpConnectionParams.setConnectionTimeout(params,
-					ZabbixConfig.HTTP_CONNECTION_TIMEOUT);
-			HttpConnectionParams.setSoTimeout(params,
-					ZabbixConfig.HTTP_SOCKET_TIMEOUT);
-			// TODO: The timeouts do not work properly (neither in the emulator
-			// nor on a real device)
-		}
-
-		if (httpClientMock != null) {
-			httpClient = httpClientMock;
+		if (ccm == null || params == null) {
+			httpClient = new HttpClientWrapper(new DefaultHttpClient());
 		} else {
-			if (ccm == null || params == null) {
-				httpClient = new HttpClientWrapper(new DefaultHttpClient());
-			} else {
-				httpClient = new HttpClientWrapper(new DefaultHttpClient(ccm,
-						params));
-			}
+			httpClient = new HttpClientWrapper(new DefaultHttpClient(ccm,
+					params));
 		}
-
-		// if applicable http auth
-		try {
-			if (mPreferences.isHttpAuthEnabled()) {
-				String user = mPreferences.getHttpAuthUsername();
-				String pwd = mPreferences.getHttpAuthPassword();
-				httpClient.getCredentialsProvider().setCredentials(
-						AuthScope.ANY,
-						new UsernamePasswordCredentials(user, pwd));
-			}
-		} catch (java.lang.UnsupportedOperationException e1) {
-			// for unit test
-		}
-
-		this.mContext = context;
-		this.databaseHelper = databaseHelper;
 	}
 
 	public Context getContext() {
@@ -338,6 +338,10 @@ public class ZabbixRemoteAPI {
 				// ignore
 			}
 			return result;
+		} catch (IllegalStateException e) {
+			if (e.getMessage().equals("Scheme 'https' not registered."))
+				throw new FatalException(Type.HTTPS_TRUST_NOT_ENABLED, e);
+			return null;
 		} catch (SocketException e) {
 			throw new FatalException(Type.NO_CONNECTION, e);
 		} catch (NoHttpResponseException e) {
@@ -1915,9 +1919,10 @@ public class ZabbixRemoteAPI {
 	private void buildZabbixUrl() {
 		String url = mPreferences.getZabbixUrl().trim();
 		String prefix = "";
-		if(!url.startsWith("http"))
+		if (!url.startsWith("http"))
 			prefix = "http://";
-		this.zabbixUrl = prefix + url + (url.endsWith("/") ? "" : '/') + API_PHP;
+		this.zabbixUrl = prefix + url + (url.endsWith("/") ? "" : '/')
+				+ API_PHP;
 	}
 
 	/**

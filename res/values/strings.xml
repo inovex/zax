@@ -22,6 +22,7 @@
 	<string name="exc_no_response">The Zabbix server did not respond. Please verify that the server address is correct.</string>    
     <string name="exc_account_blocked">Your account is blocked because of too many failed login attempts. Please unblock your account by using the web login on your Zabbix server.</string>
     <string name="exc_internal_error">Internal error.</string>
+    <string name="exc_https_auth_not_enabled">Server could not be contacted via HTTPS. Please enable the "Trust all SSL certificates" option to use the server via HTTPS.</string>
     
     <string name="no_items_to_display">No items to display.</string>
     <string name="trigger_details">Trigger Details</string>
@@ -74,24 +75,25 @@
     <string name="acknowledge_event">Acknowledge Event</string>
     <string name="comment">Comment</string>
     <string name="cancel">Cancel</string>
-     <string name="trust_all_ssl_certificates">Trust all SSL Certificates</string>
-     <string name="homescreen_widget">Homescreen Widget</string>
-     <string name="empty_list_checks">No items found for this application.</string>
-     <string name="empty_list_events">No events found for this severity.</string>
-     <string name="empty_list_problems">No problems found for this severity.</string>
+    <string name="trust_all_ssl_certificates">Trust all SSL Certificates</string>
+    <string name="trust_all_ssl_certificates_description">Enable this option to trust your server if you are using SSL. Attention: At the moment, Zax does not verify your SSL certificate (it will be blindly trusted). Check only if you know what you are doing!</string>
+    <string name="homescreen_widget">Homescreen Widget</string>
+    <string name="empty_list_checks">No items found for this application.</string>
+    <string name="empty_list_events">No events found for this severity.</string>
+    <string name="empty_list_problems">No problems found for this severity.</string>
      
-     <string name="notification_title">Zabbix triggers</string>
-     
-     <string name="widget_label_1x1">ZAX 1x1</string>
-     <string name="widget_label_list">ZAX Problems List</string>
-     <string name="widget_headline">Problems</string>
-     <string name="widget_refresh">refresh widget</string>
-     <string name="widget_no_problems">There are no problems at the moment</string>
-     <string name="widget_more_problem">and %1$d more problem</string>
-     <string name="widget_more_problems">and %1$d more problems</string>
-     <string name="widget_problems">%1$d &gt;=high\n%2$d &lt;=avg"</string>
-     <string name="widget_loading">loading...</string>
-     <string name="widget_connection_error">connection error</string>
-     <string name="widget_connection_error_long">connection error - Please check your internet connection and your server settings.</string>
+    <string name="notification_title">Zabbix triggers</string>
+    
+    <string name="widget_label_1x1">ZAX 1x1</string>
+    <string name="widget_label_list">ZAX Problems List</string>
+    <string name="widget_headline">Problems</string>
+    <string name="widget_refresh">refresh widget</string>
+    <string name="widget_no_problems">There are no problems at the moment</string>
+    <string name="widget_more_problem">and %1$d more problem</string>
+    <string name="widget_more_problems">and %1$d more problems</string>
+    <string name="widget_problems">%1$d &gt;=high\n%2$d &lt;=avg"</string>
+    <string name="widget_loading">loading...</string>
+    <string name="widget_connection_error">connection error</string>
+    <string name="widget_connection_error_long">connection error - Please check your internet connection and your server settings.</string>
 
 </resources>

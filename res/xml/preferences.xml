@@ -22,7 +22,8 @@
 
         <CheckBoxPreference
             android:key="zabbix_trust_all_ssl_ca"
-            android:title="@string/trust_all_ssl_certificates" />
+            android:title="@string/trust_all_ssl_certificates"
+            android:summary="@string/trust_all_ssl_certificates_description" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/http_auth" >
         <CheckBoxPreference

@@ -1212,4 +1212,8 @@ public class ZabbixDataService extends Service {
 		mRemoteAPI.logout();
 	}
 
+	public void initConnection() {
+		mRemoteAPI.initConnection();
+	}
+
 }

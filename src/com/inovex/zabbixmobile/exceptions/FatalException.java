@@ -21,7 +21,8 @@ public class FatalException extends Exception {
 				R.string.exc_not_found), INTERNAL_ERROR(
 				R.string.exc_internal_error), ACCOUNT_BLOCKED(
 				R.string.exc_account_blocked), NO_HTTP_RESPONSE(
-				R.string.exc_no_response);
+				R.string.exc_no_response), HTTPS_TRUST_NOT_ENABLED(
+				R.string.exc_https_auth_not_enabled);
 
 		private int messageResourceId;
 
