@@ -99,7 +99,7 @@ public class HomescreenWidgetService extends Service {
 					mDatabaseHelper.setNotCached(CacheDataType.EVENT, null);
 					mDatabaseHelper.setNotCached(CacheDataType.TRIGGER, null);
 					mRemoteAPI.importActiveTriggers(null);
-				} catch (FatalException e) {
+				} catch (Exception e) {
 					error = true;
 					e.printStackTrace();
 					return;

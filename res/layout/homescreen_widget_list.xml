@@ -74,6 +74,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical|center_horizontal"
+        android:padding="3dp"
         android:text="@string/widget_connection_error_long"
         android:textSize="14sp"
         android:visibility="gone" />
