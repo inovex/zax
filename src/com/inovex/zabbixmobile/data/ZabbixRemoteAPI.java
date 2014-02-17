@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -336,10 +337,8 @@ public class ZabbixRemoteAPI {
 				// ignore
 			}
 			return result;
-		} catch (IllegalStateException e) {
-			if (e.getMessage().equals("Scheme 'https' not registered."))
-				throw new FatalException(Type.HTTPS_TRUST_NOT_ENABLED, e);
-			return null;
+		} catch (SSLPeerUnverifiedException e) {
+			throw new FatalException(Type.HTTPS_CERTIFICATE_NOT_TRUSTED, e);
 		} catch (SocketException e) {
 			throw new FatalException(Type.NO_CONNECTION, e);
 		} catch (NoHttpResponseException e) {
@@ -435,8 +434,12 @@ public class ZabbixRemoteAPI {
 				}
 			}
 			return new JsonArrayOrObjectReader(jp);
+		} catch (SSLPeerUnverifiedException e) {
+			throw new FatalException(Type.HTTPS_CERTIFICATE_NOT_TRUSTED, e);
 		} catch (SocketException e) {
 			throw new FatalException(Type.NO_CONNECTION, e);
+		} catch (NoHttpResponseException e) {
+			throw new FatalException(Type.NO_HTTP_RESPONSE, e);
 		} catch (ConnectTimeoutException e) {
 			throw new FatalException(Type.CONNECTION_TIMEOUT, e);
 		} catch (UnknownHostException e) {

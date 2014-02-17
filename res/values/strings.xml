@@ -22,7 +22,7 @@
 	<string name="exc_no_response">The Zabbix server did not respond. Please verify that the server address is correct.</string>    
     <string name="exc_account_blocked">Your account is blocked because of too many failed login attempts. Please unblock your account by using the web login on your Zabbix server.</string>
     <string name="exc_internal_error">Internal error.</string>
-    <string name="exc_https_auth_not_enabled">Server could not be contacted via HTTPS. Please enable the "Trust all SSL certificates" option to use the server via HTTPS.</string>
+    <string name="exc_https_certificate_not_trusted">The SSL certificate of the configured server could not be verified.</string>
     
     <string name="no_items_to_display">No items to display.</string>
     <string name="trigger_details">Trigger Details</string>
