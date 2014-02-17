@@ -1914,7 +1914,10 @@ public class ZabbixRemoteAPI {
 	 */
 	private void buildZabbixUrl() {
 		String url = mPreferences.getZabbixUrl().trim();
-		this.zabbixUrl = url + (url.endsWith("/") ? "" : '/') + API_PHP;
+		String prefix = "";
+		if(!url.startsWith("http"))
+			prefix = "http://";
+		this.zabbixUrl = prefix + url + (url.endsWith("/") ? "" : '/') + API_PHP;
 	}
 
 	/**
