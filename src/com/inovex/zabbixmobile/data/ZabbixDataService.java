@@ -79,7 +79,7 @@ public class ZabbixDataService extends Service {
 
 		public void onLoginStarted();
 
-		public void onLoginFinished(boolean success);
+		public void onLoginFinished(boolean success, boolean showToast);
 
 	}
 
@@ -450,7 +450,7 @@ public class ZabbixDataService extends Service {
 					groupsAdapter.notifyDataSetChanged();
 				}
 				if (listener != null)
-					listener.onLoginFinished(success);
+					listener.onLoginFinished(success, loginNecessary);
 			}
 
 		};

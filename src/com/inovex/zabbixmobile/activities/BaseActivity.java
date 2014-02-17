@@ -373,6 +373,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	 */
 	protected void refreshData() {
 		mZabbixDataService.clearAllData();
+		mZabbixDataService.performZabbixLogout();
 		// re-login and load host groups
 		mZabbixDataService.performZabbixLogin(this);
 	}
@@ -396,7 +397,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
-	public void onLoginFinished(boolean success) {
+	public void onLoginFinished(boolean success, boolean showToast) {
 		if (mLoginProgress != null && mLoginProgress.isAdded()) {
 			try {
 				mLoginProgress.dismiss();
@@ -411,8 +412,9 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			}
 		}
 		if (success) {
-			Toast.makeText(this, R.string.zabbix_login_successful,
-					Toast.LENGTH_LONG).show();
+			if (showToast)
+				Toast.makeText(this, R.string.zabbix_login_successful,
+						Toast.LENGTH_LONG).show();
 			loadData();
 		}
 	}
