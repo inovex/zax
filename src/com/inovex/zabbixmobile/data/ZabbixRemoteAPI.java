@@ -149,8 +149,6 @@ public class ZabbixRemoteAPI {
 		public static final int EVENTS_GET_LIMIT = 60;
 		public static final int HISTORY_GET_TIME_FROM_SHIFT = 24 * 60 * 60; // -24h
 		public static final int HISTORY_GET_LIMIT = 8000;
-		public static final int HOSTGROUP_GET_LIMIT = 200;
-		public static final int HOST_GET_LIMIT = 300;
 		public static final int ITEM_GET_LIMIT = 200;
 		public static final int TRIGGER_GET_LIMIT = 100;
 		public static final int EVENT_GET_TIME_FROM_SHIFT = 7 * 24 * 60 * 60; // -7
@@ -164,7 +162,7 @@ public class ZabbixRemoteAPI {
 		public static final int CACHE_LIFETIME_SCREENS = 2 * 24 * 60 * 60;
 		public static final int CACHE_LIFETIME_ITEMS = 4 * 60;
 		public static final int CACHE_LIFETIME_TRIGGERS = 2 * 60;
-		public static final long STATUS_SHOW_TRIGGER_TIME = 14 * 24 * 60 * 60;
+		public static final long STATUS_SHOW_TRIGGER_TIME = 30 * 24 * 60 * 60;
 		public static final int HTTP_CONNECTION_TIMEOUT = 10000;
 		public static final int HTTP_SOCKET_TIMEOUT = 30000;
 	}
@@ -1241,7 +1239,6 @@ public class ZabbixRemoteAPI {
 						"host.get",
 						new JSONObject()
 								.put("output", "extend")
-								.put("limit", ZabbixConfig.HOST_GET_LIMIT)
 								.put(isVersion2 ? "selectGroups"
 										: "select_groups", "extend"));
 				importHostsFromStream(hosts, true);
