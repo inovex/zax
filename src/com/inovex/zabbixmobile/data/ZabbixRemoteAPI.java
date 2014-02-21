@@ -717,7 +717,8 @@ public class ZabbixRemoteAPI {
 
 			i++;
 
-			task.updateProgress(((i * 20) / numApplications));
+			if (numApplications > 0)
+				task.updateProgress(((i * 20) / numApplications));
 
 		}
 		// insert the last batch of applications
@@ -945,7 +946,7 @@ public class ZabbixRemoteAPI {
 				databaseHelper.insertEvents(eventsCollection);
 				eventsCollection.clear();
 			}
-			if (task != null)
+			if (task != null && numEvents > 0)
 				task.updateProgress((i * 100) / numEvents);
 		}
 		// insert the last batch of events
@@ -1077,7 +1078,7 @@ public class ZabbixRemoteAPI {
 									.insertHistoryDetails(historyDetailsCollection);
 							historyDetailsCollection.clear();
 						}
-						if (task != null)
+						if (task != null && numDetails > 0)
 							task.updateProgress(Math.min(selI * 100
 									/ numDetails, 84));
 					}
@@ -1237,10 +1238,9 @@ public class ZabbixRemoteAPI {
 				databaseHelper.clearHostGroups();
 				JsonArrayOrObjectReader hosts = _queryStream(
 						"host.get",
-						new JSONObject()
-								.put("output", "extend")
-								.put(isVersion2 ? "selectGroups"
-										: "select_groups", "extend"));
+						new JSONObject().put("output", "extend").put(
+								isVersion2 ? "selectGroups" : "select_groups",
+								"extend"));
 				importHostsFromStream(hosts, true);
 				hosts.close();
 			}
@@ -1378,7 +1378,7 @@ public class ZabbixRemoteAPI {
 				applicationItemRelations.clear();
 			}
 			i++;
-			if (task != null)
+			if (task != null && numItems > 0)
 				task.updateProgress(20 + ((i * 80) / numItems));
 		}
 		// insert the last batch of events
@@ -1883,7 +1883,7 @@ public class ZabbixRemoteAPI {
 				triggerHostGroupCollection.clear();
 			}
 			i++;
-			if (task != null)
+			if (task != null && numTriggers > 0)
 				task.updateProgress((i * 100) / numTriggers);
 		}
 		databaseHelper.insertTriggers(triggerCollection);

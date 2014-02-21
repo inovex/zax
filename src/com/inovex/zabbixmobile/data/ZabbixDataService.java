@@ -138,7 +138,7 @@ public class ZabbixDataService extends Service {
 			return ZabbixDataService.this;
 		}
 	}
-	
+
 	public boolean isLoggedIn() {
 		return mRemoteAPI.isLoggedIn();
 	}
@@ -403,9 +403,10 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Performs the Zabbix login using the server address and credentials from
-	 * the preferences. Login is only performed if the user Additionally, this method loads the host groups and
-	 * fills the corresponding adapter because host groups are used at so many
-	 * spots in the program, so they should be available all the time.
+	 * the preferences. Login is only performed if the user Additionally, this
+	 * method loads the host groups and fills the corresponding adapter because
+	 * host groups are used at so many spots in the program, so they should be
+	 * available all the time.
 	 * 
 	 * @param listener
 	 *            listener to be informed about start and end of the login
@@ -1014,8 +1015,9 @@ public class ZabbixDataService extends Service {
 						item.setHistoryDetails(mDatabaseHelper
 								.getHistoryDetailsByItemId(item.getId()));
 						k++;
-						updateProgress((100 * j + ((100 * k) / numItems))
-								/ numGraphs);
+						if (numItems > 0 && numGraphs > 0)
+							updateProgress((100 * j + ((100 * k) / numItems))
+									/ numGraphs);
 					}
 					j++;
 					// updateProgress((100 * j) / numGraphs);
