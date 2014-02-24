@@ -15,7 +15,7 @@
 
         <ProgressBar
             android:id="@+id/applications_progress"
-            style="@style/MyProgressBarStyle"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
         </ProgressBar>
@@ -30,7 +30,6 @@
 
         <com.viewpagerindicator.TitlePageIndicator
             android:id="@+id/checks_page_indicator"
-            style="@style/ChecksTitlePageIndicator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

@@ -14,33 +14,11 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        All customizations that are NOT specific to a particular API-level can go here.        <item name="vpiTabPageIndicatorStyle">@style/MyTabPageIndicator</item>
-        <item name="android:textViewStyle">@style/MyTextViewStyle</item>
-        <item name="severityDetailsTitlePageIndicator">@style/SeverityDetailsTitlePageIndicator</item>
-    </style>
-    
-    <style name="MyTextViewStyle" parent="android:Widget.TextView">
-        <item name="android:textColor">@color/text</item>
-    </style>
-
-    <style name="MyTabPageIndicator" parent="Widget.TabPageIndicator">
-        <item name="android:textColor">@color/text</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="SeverityDetailsTitlePageIndicator">
-        <item name="android:textColor">@color/text</item>
-        <item name="android:background">@color/background_grey</item>
-        <item name="selectedColor">@color/text</item>
-        <item name="footerLineHeight">0dp</item>
-        <item name="footerIndicatorHeight">0dp</item>
-        <item name="footerIndicatorStyle">none</item>
-        <item name="android:textSize">12sp</item>
-    </style>
-
-    <style name="ChecksTitlePageIndicator">
-        <item name="android:textColor">@color/text</item>
-        <item name="selectedColor">@color/text</item>
+        All customizations that are NOT specific to a particular API-level can go here.                <item name="vpiTabPageIndicatorStyle">@style/TabPageIndicatorDefault</item>
+        <item name="vpiTitlePageIndicatorStyle">@style/TitlePageIndicatorDefault</item>
+        <item name="android:textViewStyle">@style/TextViewStyleDefault</item>
+        <item name="android:progressBarStyleHorizontal">@style/ProgressBarHorizontalDefault</item>
+        <item name="severityDetailsTitlePageIndicator">@style/TitlePageIndicatorSeverityDetails</item>
     </style>
 
     <style name="ListFragment">
@@ -50,10 +28,34 @@
     <style name="ListFragmentWhiteBackground">
         <item name="android:background">@drawable/list_fragment_white_background</item>
     </style>
-    
+
     <style name="GraphFullscreenTheme" parent="android:Theme.Holo" />
 
-    <style name="MyProgressBarStyle" parent="android:Widget.ProgressBar.Horizontal">
+    <style name="TextViewStyleDefault" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/text</item>
+    </style>
+
+    <style name="TabPageIndicatorDefault" parent="Widget.TabPageIndicator">
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TitlePageIndicatorSeverityDetails">
+        <item name="android:textColor">@color/text</item>
+        <item name="android:background">@color/background_grey</item>
+        <item name="selectedColor">@color/text</item>
+        <item name="footerLineHeight">0dp</item>
+        <item name="footerIndicatorHeight">0dp</item>
+        <item name="footerIndicatorStyle">none</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TitlePageIndicatorDefault">
+        <item name="android:textColor">@color/text</item>
+        <item name="selectedColor">@color/text</item>
+    </style>
+
+    <style name="ProgressBarHorizontalDefault" parent="android:Widget.ProgressBar.Horizontal">
         <item name="android:progressDrawable">@android:drawable/progress_horizontal</item>
         <item name="android:minHeight">8dip</item>
         <item name="android:maxHeight">8dip</item>

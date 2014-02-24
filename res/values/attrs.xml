@@ -2,7 +2,6 @@
 <resources>
 
     <declare-styleable name="CustomTheme">
-
         <attr name="severityDetailsTitlePageIndicator" format="reference" />
     </declare-styleable>
 
