@@ -1,4 +1,4 @@
-package com.inovex.zabbixmobile.util;
+package com.inovex.zabbixmobile.view;
 
 import android.content.Context;
 import android.util.AttributeSet;

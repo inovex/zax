@@ -26,9 +26,8 @@
         android:padding="@dimen/default_content_padding" >
     </android.support.v4.view.ViewPager>
 
-    <com.viewpagerindicator.TitlePageIndicator
+    <com.inovex.zabbixmobile.view.SeverityDetailsTitlePageIndicator
         android:id="@+id/severity_page_indicator"
-        style="@style/SeverityDetailsTitlePageIndicator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="2dip" />
