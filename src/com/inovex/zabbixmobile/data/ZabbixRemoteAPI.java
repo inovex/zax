@@ -1042,15 +1042,6 @@ public class ZabbixRemoteAPI {
 					int selI = 0;
 					while (historydetails != null
 							&& (historydetail = historydetails.next()) != null) {
-						// save only every 20th
-						// TODO: This may produce odd graphs for a small amount
-						// of values
-						if (selI++ % 20 != 0) {
-							while (historydetail.nextValueToken()) {
-								historydetail.nextProperty();
-							}
-							continue;
-						}
 
 						HistoryDetail h = new HistoryDetail();
 						while (historydetail.nextValueToken()) {
@@ -1082,7 +1073,7 @@ public class ZabbixRemoteAPI {
 							task.updateProgress(Math.min(selI * 100
 									/ numDetails, 84));
 					}
-					Log.d(TAG, "itemID " + itemId + ": imported " + (selI / 20)
+					Log.d(TAG, "itemID " + itemId + ": imported " + (selI)
 							+ " history details.");
 				} catch (NumberFormatException e) {
 					// data are unuseable, e.g. because it's a string
