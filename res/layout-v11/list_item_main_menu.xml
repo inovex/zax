@@ -23,5 +23,5 @@
     android:paddingLeft="6dip"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:background="?android:attr/activatedBackgroundIndicator"
-    android:textColor="@color/menu"
+    android:textColor="@color/white"
 />

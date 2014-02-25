@@ -7,5 +7,16 @@
     <dimen name="default_content_padding">4dp</dimen>
     
     <dimen name="graph_text_size">14sp</dimen>
-
+    <dimen name="graph_min_height">200dp</dimen>
+    
+    <dimen name="dialog_margin_top">16dp</dimen>
+    <dimen name="dialog_margin">8dp</dimen>
+    <dimen name="dialog_test_size">18sp</dimen>
+    
+    <dimen name="inc_padding_top">5dp</dimen>
+    
+    <dimen name="table_row_width">100dp</dimen>
+    
+    <dimen name="drawable_status_padding">10dp</dimen>
+    
 </resources>

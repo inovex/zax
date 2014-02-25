@@ -4,12 +4,8 @@
 
     <TextView
         android:id="@+id/host_groups_spinner_dropdown_title"
+        style="@style/HostGroupSpinnerItem"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="7dp"
-        android:paddingRight="12dp"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp" />
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

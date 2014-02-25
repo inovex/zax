@@ -21,6 +21,14 @@
         <item name="borderDrawable">@drawable/list_fragment</item>
         <item name="borderDrawableAlternateBackground">@drawable/list_fragment_alternate</item>
         <item name="android:textColor">@color/text</item>
+        <item name="backgroundDrawer">@color/background_dark_grey</item>
+        <item name="spinnerTextColor">@color/white</item>
+        <item name="actionMenuTextColor">@color/white</item>
+    </style>
+
+    <style name="Fragment">
+        <item name="android:background">@color/background</item>
+        <item name="android:padding">@dimen/default_content_padding</item>
     </style>
 
     <style name="ListFragment">
@@ -59,6 +67,41 @@
         <item name="android:minWidth">100dip</item>
         <item name="android:maxWidth">200dip</item>
         <item name="android:max">100</item>
+    </style>
+
+    <style name="Drawer">
+        <item name="android:dividerHeight">0dp</item>
+        <item name="android:divider">@android:color/transparent</item>
+        <item name="android:background">?backgroundDrawer</item>
+    </style>
+
+    <style name="ChecksDetailsTitle" parent="TextViewStyleDefault">
+        <item name="android:padding">@dimen/default_content_padding</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ListItemHost" parent="TextViewStyleDefault">
+        <item name="android:textAppearance">?android:attr/textAppearance</item>
+        <item name="android:padding">12dip</item>
+    </style>
+
+    <style name="HostGroupSpinnerTitle" parent="TextViewStyleDefault">
+        <item name="android:textColor">?spinnerTextColor</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="HostGroupSpinnerSubtitle" parent="TextViewStyleDefault">
+        <item name="android:textColor">?spinnerTextColor</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="HostGroupSpinnerItem" parent="TextViewStyleDefault">
+        <item name="android:padding">7dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:textColor">?spinnerTextColor</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
 </resources>

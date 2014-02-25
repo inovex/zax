@@ -1,10 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/items_details_base"
+    style="@style/Fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
-    android:orientation="vertical"
-    android:padding="@dimen/default_content_padding" >
+    android:orientation="vertical" >
 
     <LinearLayout
         android:id="@+id/progress_layout"

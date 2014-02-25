@@ -1,13 +1,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="8dp" >
+    android:orientation="vertical" >
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dialog_margin"
         android:text="@string/fill_in_server_data"
-        android:textSize="18sp" />
+        android:textSize="@dimen/dialog_test_size" />
 
 </LinearLayout>

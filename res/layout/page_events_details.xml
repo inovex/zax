@@ -4,7 +4,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="5dip" >
+        android:paddingTop="@dimen/inc_padding_top" >
 
         <TextView
             android:id="@+id/event_details_title"
@@ -23,7 +23,7 @@
                 android:layout_height="wrap_content" >
 
                 <TextView
-                    android:layout_width="100dip"
+                    android:layout_width="@dimen/table_row_width"
                     android:layout_height="wrap_content"
                     android:text="@string/time" >
                 </TextView>
@@ -50,7 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableLeft="@drawable/problem"
-                    android:drawablePadding="10dip" >
+                    android:drawablePadding="@dimen/drawable_status_padding" >
                 </TextView>
             </TableRow>
 
@@ -69,7 +69,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableLeft="@drawable/problem"
-                    android:drawablePadding="10dip" >
+                    android:drawablePadding="@dimen/drawable_status_padding" >
                 </TextView>
             </TableRow>
         </TableLayout>

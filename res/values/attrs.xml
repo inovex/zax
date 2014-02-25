@@ -4,6 +4,8 @@
     <declare-styleable name="CustomTheme">
         <attr name="borderDrawable" format="reference" />
         <attr name="borderDrawableAlternateBackground" format="reference" />
+        <attr name="backgroundDrawer" format="color|reference" />
+        <attr name="spinnerTextColor" format="color|reference" />
     </declare-styleable>
 
 </resources>

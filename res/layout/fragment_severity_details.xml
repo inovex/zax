@@ -31,6 +31,6 @@
         style="@style/TitlePageIndicatorSeverityDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="2dip" />
+        android:padding="@dimen/default_content_padding" />
 
 </LinearLayout>
