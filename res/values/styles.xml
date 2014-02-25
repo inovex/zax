@@ -58,9 +58,10 @@
 
     <style name="ListFragment">
         <item name="android:background">?borderDrawable</item>
+        <item name="android:paddingRight">1dp</item>
     </style>
 
-    <style name="ListFragmentAlternate">
+    <style name="ListFragmentAlternate" parent="ListFragment">
         <item name="android:background">?borderDrawableAlternateBackground</item>
     </style>
 
