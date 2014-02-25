@@ -5,6 +5,7 @@ import java.util.Date;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.text.format.DateFormat;
 import android.view.View;
@@ -51,10 +52,14 @@ public class GraphUtil {
 		};
 
 		GraphViewStyle style = new GraphViewStyle();
-		style.setHorizontalLabelsColor(context.getResources().getColor(
-				android.R.color.black));
-		style.setVerticalLabelsColor(context.getResources().getColor(
-				android.R.color.black));
+		TypedArray a = context.obtainStyledAttributes(R.attr.graphTextColor,
+				R.styleable.CustomTheme);
+
+		int color = a.getColor(R.styleable.CustomTheme_graphTextColor,
+				context.getResources().getColor(R.color.black));
+		a.recycle();
+		style.setHorizontalLabelsColor(color);
+		style.setVerticalLabelsColor(color);
 		style.setTextSize(context.getResources().getDimension(
 				R.dimen.graph_text_size));
 		graphView.setGraphViewStyle(style);

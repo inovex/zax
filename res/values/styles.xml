@@ -24,6 +24,7 @@
         <item name="backgroundDrawer">@color/dark_grey</item>
         <item name="spinnerTextColor">@color/white</item>
         <item name="actionMenuColor">@color/white</item>
+        <item name="graphTextColor">@color/black</item>
         <item name="backgroundFragment">@color/white</item>
         <item name="backgroundFragmentAlternate">@color/light_grey</item>
         <item name="pageIndicatorSelectedColor">@color/black</item>
@@ -41,6 +42,7 @@
         <item name="backgroundDrawer">@color/dark_grey</item>
         <item name="spinnerTextColor">@color/white</item>
         <item name="actionMenuColor">@color/white</item>
+        <item name="graphTextColor">@color/white</item>
         <item name="backgroundFragment">@color/black</item>
         <item name="backgroundFragmentAlternate">@color/dark_grey</item>
         <item name="pageIndicatorSelectedColor">@color/white</item>
