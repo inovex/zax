@@ -23,7 +23,7 @@
         <item name="android:textColor">@color/text</item>
         <item name="backgroundDrawer">@color/background_dark_grey</item>
         <item name="spinnerTextColor">@color/white</item>
-        <item name="actionMenuTextColor">@color/white</item>
+        <item name="actionMenuColor">@color/white</item>
     </style>
 
     <style name="Fragment">
@@ -104,4 +104,9 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="MainMenuItem" parent="TextViewStyleDefault">
+        <item name="android:paddingLeft">6dip</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
 </resources>

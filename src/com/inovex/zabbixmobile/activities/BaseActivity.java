@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceActivity;
@@ -17,6 +18,9 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -336,6 +340,28 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		finish();
 		overridePendingTransition(android.R.anim.fade_in,
 				android.R.anim.fade_out);
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// this is a hack to set the text color of the overflow menu (apparently
+		// the only sane solution, according to
+		// http://www.techrepublic.com/article/style-androids-overflow-menu-using-this-sanity-saving-workaround/)
+		for (int i = 0; i < menu.size(); i++) {
+			MenuItem mi = menu.getItem(i);
+			String title = mi.getTitle().toString();
+			Spannable newTitle = new SpannableString(title);
+			TypedArray a = obtainStyledAttributes(R.attr.actionMenuColor,
+					R.styleable.CustomTheme);
+
+			int color = a.getColor(R.styleable.CustomTheme_actionMenuColor,
+					getResources().getColor(R.color.white));
+			a.recycle();
+			newTitle.setSpan(new ForegroundColorSpan(color), 0,
+					newTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			mi.setTitle(newTitle);
+		}
+		return true;
 	}
 
 	@Override

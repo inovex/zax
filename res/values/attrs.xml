@@ -6,6 +6,7 @@
         <attr name="borderDrawableAlternateBackground" format="reference" />
         <attr name="backgroundDrawer" format="color|reference" />
         <attr name="spinnerTextColor" format="color|reference" />
+        <attr name="actionMenuColor" format="color" />
     </declare-styleable>
 
 </resources>
