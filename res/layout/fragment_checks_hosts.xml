@@ -1,14 +1,9 @@
-<com.inovex.zabbixmobile.view.FrameLayoutWithBorder xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ListFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
+    <include layout="@layout/inc_list_with_loading_spinner" />
 
-        <include layout="@layout/inc_list_with_loading_spinner" />
-    </LinearLayout>
-
-</com.inovex.zabbixmobile.view.FrameLayoutWithBorder>
+</LinearLayout>

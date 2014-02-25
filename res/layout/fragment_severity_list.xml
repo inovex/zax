@@ -1,40 +1,35 @@
-<com.inovex.zabbixmobile.view.FrameLayoutWithBorder xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/severity_list_base"
+    style="@style/ListFragmentAlternate"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.inovex.zabbixmobile.view.ServiceTabPageIndicator
+        android:id="@+id/severity_list_tabindicator"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/severity_list_base"
+        android:id="@+id/severity_list_progress_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone" >
 
-        <com.inovex.zabbixmobile.view.ServiceTabPageIndicator
-            android:id="@+id/severity_list_tabindicator"
-            android:layout_width="fill_parent"
+        <ProgressBar
+            android:id="@+id/severity_list_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-
-        <LinearLayout
-            android:id="@+id/severity_list_progress_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone" >
-
-            <ProgressBar
-                android:id="@+id/severity_list_progress"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <android.support.v4.view.ViewPager
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/severity_list_viewpager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-        </android.support.v4.view.ViewPager>
     </LinearLayout>
 
-</com.inovex.zabbixmobile.view.FrameLayoutWithBorder>
+    <android.support.v4.view.ViewPager
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/severity_list_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </android.support.v4.view.ViewPager>
+
+</LinearLayout>

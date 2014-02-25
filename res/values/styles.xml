@@ -18,13 +18,12 @@
         <item name="vpiTitlePageIndicatorStyle">@style/TitlePageIndicatorDefault</item>
         <item name="android:textViewStyle">@style/TextViewStyleDefault</item>
         <item name="android:progressBarStyleHorizontal">@style/ProgressBarHorizontalDefault</item>
-        <item name="severityDetailsTitlePageIndicator">@style/TitlePageIndicatorSeverityDetails</item>
-        <item name="viewWithBorder">@style/ListFragment</item>
-        <item name="viewWithBorderAlternate">@style/ListFragmentAlternate</item>
+        <item name="borderDrawable">@drawable/list_fragment</item>
+        <item name="borderDrawableAlternateBackground">@drawable/list_fragment_alternate</item>
     </style>
 
     <style name="ListFragment">
-        <item name="android:background">@drawable/list_fragment</item>
+        <item name="android:background">?borderDrawable</item>
     </style>
 
     <style name="ListFragmentAlternate">

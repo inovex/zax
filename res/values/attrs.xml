@@ -2,9 +2,8 @@
 <resources>
 
     <declare-styleable name="CustomTheme">
-        <attr name="severityDetailsTitlePageIndicator" format="reference" />
-        <attr name="viewWithBorder" format="reference" />
-        <attr name="viewWithBorderAlternate" format="reference" />
+        <attr name="borderDrawable" format="reference" />
+        <attr name="borderDrawableAlternateBackground" format="reference" />
     </declare-styleable>
-    
+
 </resources>

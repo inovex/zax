@@ -1,15 +1,40 @@
-<com.inovex.zabbixmobile.view.FrameLayoutWithBorderAlternate xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/checks_details_base"
+    style="@style/ListFragmentAlternate"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
     <LinearLayout
-        android:id="@+id/checks_details_base"
+        android:id="@+id/applications_progress_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <ProgressBar
+            android:id="@+id/applications_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+        </ProgressBar>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
+        <include layout="@layout/fragment_checks_details_title" />
+
+        <com.viewpagerindicator.TitlePageIndicator
+            android:id="@+id/checks_page_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <LinearLayout
-            android:id="@+id/applications_progress_layout"
+            android:id="@+id/items_progress_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -17,46 +42,17 @@
             android:visibility="gone" >
 
             <ProgressBar
-                android:id="@+id/applications_progress"
-                style="?android:attr/progressBarStyleHorizontal"
+                android:id="@+id/items_progress_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" >
             </ProgressBar>
         </LinearLayout>
 
-        <LinearLayout
+        <android.support.v4.view.ViewPager
+            android:id="@+id/checks_view_pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
-
-            <include layout="@layout/fragment_checks_details_title" />
-
-            <com.viewpagerindicator.TitlePageIndicator
-                android:id="@+id/checks_page_indicator"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <LinearLayout
-                android:id="@+id/items_progress_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone" >
-
-                <ProgressBar
-                    android:id="@+id/items_progress_spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-                </ProgressBar>
-            </LinearLayout>
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/checks_view_pager"
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent" >
-            </android.support.v4.view.ViewPager>
-        </LinearLayout>
+            android:layout_height="fill_parent" >
+        </android.support.v4.view.ViewPager>
     </LinearLayout>
 
-</com.inovex.zabbixmobile.view.FrameLayoutWithBorderAlternate>
+</LinearLayout>
