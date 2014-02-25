@@ -19,4 +19,6 @@
     
     <dimen name="drawable_status_padding">10dp</dimen>
     
+    <dimen name="host_list_padding">12dp</dimen>
+    
 </resources>

@@ -108,7 +108,7 @@
 
     <style name="ListItemHost" parent="TextViewStyleDefault">
         <item name="android:textAppearance">?android:attr/textAppearance</item>
-        <item name="android:padding">12dip</item>
+        <item name="android:padding">@dimen/host_list_padding</item>
     </style>
 
     <style name="HostGroupSpinnerTitle" parent="TextViewStyleDefault">

@@ -1,0 +1,5 @@
+<resources>
+
+    <dimen name="host_list_padding">3dp</dimen>
+    
+</resources>
