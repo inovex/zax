@@ -14,12 +14,13 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        All customizations that are NOT specific to a particular API-level can go here.        <item name="vpiTabPageIndicatorStyle">@style/TabPageIndicatorDefault</item>
+        <item name="vpiTabPageIndicatorStyle">@style/TabPageIndicatorDefault</item>
         <item name="vpiTitlePageIndicatorStyle">@style/TitlePageIndicatorDefault</item>
         <item name="android:textViewStyle">@style/TextViewStyleDefault</item>
         <item name="android:progressBarStyleHorizontal">@style/ProgressBarHorizontalDefault</item>
         <item name="borderDrawable">@drawable/list_fragment</item>
         <item name="borderDrawableAlternateBackground">@drawable/list_fragment_alternate</item>
+        <item name="android:textColor">@color/text</item>
     </style>
 
     <style name="ListFragment">
@@ -27,22 +28,18 @@
     </style>
 
     <style name="ListFragmentAlternate">
-        <item name="android:background">@drawable/list_fragment_alternate</item>
+        <item name="android:background">?borderDrawableAlternateBackground</item>
     </style>
 
     <style name="GraphFullscreenTheme" parent="android:Theme.Holo" />
 
-    <style name="TextViewStyleDefault" parent="android:Widget.TextView">
-        <item name="android:textColor">@color/text</item>
-    </style>
+    <style name="TextViewStyleDefault" parent="android:Widget.TextView"></style>
 
     <style name="TabPageIndicatorDefault" parent="Widget.TabPageIndicator">
-        <item name="android:textColor">@color/text</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="TitlePageIndicatorSeverityDetails">
-        <item name="android:textColor">@color/text</item>
         <item name="android:background">@color/background_grey</item>
         <item name="selectedColor">@color/text</item>
         <item name="footerLineHeight">0dp</item>
@@ -52,7 +49,6 @@
     </style>
 
     <style name="TitlePageIndicatorDefault">
-        <item name="android:textColor">@color/text</item>
         <item name="selectedColor">@color/text</item>
     </style>
 
