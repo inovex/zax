@@ -4,8 +4,10 @@
     <color name="white">#ffffffff</color>
     <color name="light_grey">#fff0f0f0</color>
     <color name="grey">#ffcccccc</color>
-    <color name="dark_grey">#ff111111</color>
+    <color name="medium_grey">#ff333333</color>
+    <color name="dark_grey">#ff222222</color>
     <color name="border_list_light">#ffb2b2b2</color>
+    <color name="border_list_dark">#ffb2b2b2</color>
     <color name="black">#ff000000</color>
     <color name="holo_blue_light">#ff33b5e5</color>
 
