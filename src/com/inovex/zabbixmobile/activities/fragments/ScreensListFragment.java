@@ -83,7 +83,7 @@ public class ScreensListFragment extends BaseServiceConnectedListFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.page_base_list, null);
+		View rootView = inflater.inflate(R.layout.fragment_screens_list, null);
 		return rootView;
 	}
 
