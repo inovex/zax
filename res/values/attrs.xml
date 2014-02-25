@@ -5,8 +5,11 @@
         <attr name="borderDrawable" format="reference" />
         <attr name="borderDrawableAlternateBackground" format="reference" />
         <attr name="backgroundDrawer" format="color|reference" />
+        <attr name="backgroundFragment" format="color|reference" />
+        <attr name="backgroundFragmentAlternate" format="color|reference" />
         <attr name="spinnerTextColor" format="color|reference" />
         <attr name="actionMenuColor" format="color" />
+        <attr name="pageIndicatorSelectedColor" format="color|reference" />
     </declare-styleable>
 
 </resources>

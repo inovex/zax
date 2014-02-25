@@ -13,21 +13,24 @@
     </style>
 
     <!-- Application theme. -->
-    <style name="AppTheme" parent="AppBaseTheme">
+    <style name="AppTheme" parent="Theme.Sherlock.Light.DarkActionBar">
         <item name="vpiTabPageIndicatorStyle">@style/TabPageIndicatorDefault</item>
         <item name="vpiTitlePageIndicatorStyle">@style/TitlePageIndicatorDefault</item>
         <item name="android:textViewStyle">@style/TextViewStyleDefault</item>
         <item name="android:progressBarStyleHorizontal">@style/ProgressBarHorizontalDefault</item>
-        <item name="borderDrawable">@drawable/list_fragment</item>
-        <item name="borderDrawableAlternateBackground">@drawable/list_fragment_alternate</item>
-        <item name="android:textColor">@color/text</item>
-        <item name="backgroundDrawer">@color/background_dark_grey</item>
+        <item name="borderDrawable">@drawable/list_fragment_light</item>
+        <item name="borderDrawableAlternateBackground">@drawable/list_fragment_light_alternate</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="backgroundDrawer">@color/dark_grey</item>
         <item name="spinnerTextColor">@color/white</item>
         <item name="actionMenuColor">@color/white</item>
+        <item name="backgroundFragment">@color/white</item>
+        <item name="backgroundFragmentAlternate">@color/light_grey</item>
+        <item name="pageIndicatorSelectedColor">@color/black</item>
     </style>
 
     <style name="Fragment">
-        <item name="android:background">@color/background</item>
+        <item name="android:background">?attr/backgroundFragment</item>
         <item name="android:padding">@dimen/default_content_padding</item>
     </style>
 
@@ -48,8 +51,8 @@
     </style>
 
     <style name="TitlePageIndicatorSeverityDetails">
-        <item name="android:background">@color/background_grey</item>
-        <item name="selectedColor">@color/text</item>
+        <item name="android:background">@color/grey</item>
+        <item name="selectedColor">?pageIndicatorSelectedColor</item>
         <item name="footerLineHeight">0dp</item>
         <item name="footerIndicatorHeight">0dp</item>
         <item name="footerIndicatorStyle">none</item>
@@ -57,7 +60,7 @@
     </style>
 
     <style name="TitlePageIndicatorDefault">
-        <item name="selectedColor">@color/text</item>
+        <item name="selectedColor">?pageIndicatorSelectedColor</item>
     </style>
 
     <style name="ProgressBarHorizontalDefault" parent="android:Widget.ProgressBar.Horizontal">
@@ -109,4 +112,5 @@
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
         <item name="android:textColor">@color/white</item>
     </style>
+
 </resources>

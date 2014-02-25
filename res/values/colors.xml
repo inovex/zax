@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="background">#ffffffff</color>
-    <color name="background_light_grey">#fff0f0f0</color>
-    <color name="background_grey">#ffcccccc</color>
-    <color name="background_dark_grey">#ff111111</color>
-    <color name="border_list">#ffb2b2b2</color>
-    <color name="text">@color/vpi__light_theme</color>
     <color name="white">#ffffffff</color>
-    <color name="action_bar_background">#FF222222</color>
+    <color name="light_grey">#fff0f0f0</color>
+    <color name="grey">#ffcccccc</color>
+    <color name="dark_grey">#ff111111</color>
+    <color name="border_list_light">#ffb2b2b2</color>
+    <color name="black">#ff000000</color>
     <color name="holo_blue_light">#ff33b5e5</color>
 
 </resources>
