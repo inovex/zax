@@ -3,6 +3,8 @@
 
     <declare-styleable name="CustomTheme">
         <attr name="severityDetailsTitlePageIndicator" format="reference" />
+        <attr name="viewWithBorder" format="reference" />
+        <attr name="viewWithBorderAlternate" format="reference" />
     </declare-styleable>
-
+    
 </resources>

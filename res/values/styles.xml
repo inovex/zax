@@ -14,19 +14,21 @@
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        All customizations that are NOT specific to a particular API-level can go here.                <item name="vpiTabPageIndicatorStyle">@style/TabPageIndicatorDefault</item>
+        All customizations that are NOT specific to a particular API-level can go here.        <item name="vpiTabPageIndicatorStyle">@style/TabPageIndicatorDefault</item>
         <item name="vpiTitlePageIndicatorStyle">@style/TitlePageIndicatorDefault</item>
         <item name="android:textViewStyle">@style/TextViewStyleDefault</item>
         <item name="android:progressBarStyleHorizontal">@style/ProgressBarHorizontalDefault</item>
         <item name="severityDetailsTitlePageIndicator">@style/TitlePageIndicatorSeverityDetails</item>
+        <item name="viewWithBorder">@style/ListFragment</item>
+        <item name="viewWithBorderAlternate">@style/ListFragmentAlternate</item>
     </style>
 
     <style name="ListFragment">
         <item name="android:background">@drawable/list_fragment</item>
     </style>
 
-    <style name="ListFragmentWhiteBackground">
-        <item name="android:background">@drawable/list_fragment_white_background</item>
+    <style name="ListFragmentAlternate">
+        <item name="android:background">@drawable/list_fragment_alternate</item>
     </style>
 
     <style name="GraphFullscreenTheme" parent="android:Theme.Holo" />
