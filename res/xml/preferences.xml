@@ -22,8 +22,8 @@
 
         <CheckBoxPreference
             android:key="zabbix_trust_all_ssl_ca"
-            android:title="@string/trust_all_ssl_certificates"
-            android:summary="@string/trust_all_ssl_certificates_description" />
+            android:summary="@string/trust_all_ssl_certificates_description"
+            android:title="@string/trust_all_ssl_certificates" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/http_auth" >
         <CheckBoxPreference
@@ -79,6 +79,12 @@
             android:key="widget_refresh_interval_mins"
             android:summary="Set this to 0 to disable automatic refresh"
             android:title="Refresh interval (min)" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/theme" >
+        <CheckBoxPreference
+            android:key="dark_theme"
+            android:summary="@string/theme_dark_desc"
+            android:title="@string/theme_dark" />
     </PreferenceCategory>
 
 </PreferenceScreen>

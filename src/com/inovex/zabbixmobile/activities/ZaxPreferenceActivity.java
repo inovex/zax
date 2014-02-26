@@ -25,9 +25,13 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		mPrefs = ZaxPreferences.getInstance(getApplicationContext());
+		if(mPrefs.isDarkTheme())
+			setTheme(R.style.AppThemeDark);
+		else
+			setTheme(R.style.AppTheme);
 		super.onCreate(savedInstanceState);
 
-		mPrefs = ZaxPreferences.getInstance(this);
 		addPreferencesFromResource(R.xml.preferences);
 	}
 
@@ -58,9 +62,17 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 			String key) {
 		setResult(BaseActivity.RESULT_PREFERENCES_CHANGED, new Intent());
 		if (key.equals("widget_refresh_interval_mins")) {
-			Intent intent = new Intent(getApplicationContext(), WidgetUpdateBroadcastReceiver.class);
-			intent.putExtra(WidgetUpdateBroadcastReceiver.REFRESH_RATE_CHANGED, true);
+			Intent intent = new Intent(getApplicationContext(),
+					WidgetUpdateBroadcastReceiver.class);
+			intent.putExtra(WidgetUpdateBroadcastReceiver.REFRESH_RATE_CHANGED,
+					true);
 			this.sendBroadcast(intent);
+		}
+		if (key.equals("dark_theme")) {
+			Intent intent = getIntent();
+			finish();
+			startActivity(intent);
+			overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		}
 		if (key.equals("zabbix_push_enabled")
 				|| key.equals("zabbix_push_subscribe_key")

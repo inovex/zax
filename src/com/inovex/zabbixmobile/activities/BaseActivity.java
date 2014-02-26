@@ -165,6 +165,13 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 				this.sendBroadcast(intent);
 				mZabbixDataService.performZabbixLogin(this);
 				mPreferencesChanged = false;
+				Intent restartIntent = getIntent();
+				restartIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
+						| Intent.FLAG_ACTIVITY_NEW_TASK);
+				finish();
+				startActivity(restartIntent);
+				overridePendingTransition(android.R.anim.fade_in,
+						android.R.anim.fade_out);
 			}
 			mPreferencesClosed = false;
 		}
@@ -188,6 +195,12 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		ZaxPreferences prefs = ZaxPreferences
+				.getInstance(getApplicationContext());
+		if (prefs.isDarkTheme())
+			setTheme(R.style.AppThemeDark);
+		else
+			setTheme(R.style.AppTheme);
 		super.onCreate(savedInstanceState);
 
 		bindService();

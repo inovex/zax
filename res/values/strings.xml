@@ -78,6 +78,10 @@
     <string name="trust_all_ssl_certificates">Trust all SSL Certificates</string>
     <string name="trust_all_ssl_certificates_description">Enable this option if you are using SSL and your server\'s certificate is not issued by a certificate authority trusted by your device. Attention: This basically disables SSL. Check only if you know what you are doing!</string>
     <string name="homescreen_widget">Homescreen Widget</string>
+    <string name="theme">Theme</string>
+    <string name="theme_dark">Use dark theme</string>
+    <string name="theme_dark_desc">Choose the dark theme to improve battery usage (due to reduced brightness) when using the app.</string>
+    
     <string name="empty_list_checks">No items found for this application.</string>
     <string name="empty_list_events">No events found for this severity.</string>
     <string name="empty_list_problems">No problems found for this severity.</string>

@@ -116,5 +116,9 @@ public class ZaxPreferences {
 		edit.putString("zabbix_auth_token", token);
 		edit.commit();
 	}
+	
+	public boolean isDarkTheme() {
+		return mPref.getBoolean("dark_theme", false);
+	}
 
 }
