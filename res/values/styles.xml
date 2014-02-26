@@ -30,6 +30,7 @@
         <item name="pageIndicatorSelectedColor">@color/black</item>
         <item name="pageIndicatorBackground">@color/grey</item>
         <item name="android:panelBackground">@color/dark_grey</item>
+        <item name="android:popupBackground">@color/dark_grey</item>
     </style>
     
     <style name="AppThemeDark" parent="Theme.Sherlock">
@@ -49,6 +50,7 @@
         <item name="pageIndicatorSelectedColor">@color/white</item>
         <item name="pageIndicatorBackground">@color/medium_grey</item>
         <item name="android:panelBackground">@color/dark_grey</item>
+        <item name="android:popupBackground">@color/dark_grey</item>
     </style>
     
     <style name="Fragment">
