@@ -62,7 +62,7 @@ public class EventsDetailsPage extends BaseDetailsPage {
 	@Override
 	protected void fillDetailsText() {
 
-		if (mEvent != null) {
+		if (mEvent != null && getView() != null) {
 
 			Calendar cal = Calendar.getInstance();
 			cal.setTimeInMillis(mEvent.getClock());

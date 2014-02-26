@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -16,6 +18,7 @@ import android.os.IBinder;
 import android.preference.PreferenceActivity;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.IntentCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Spannable;
@@ -70,7 +73,11 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	private LoginProgressDialogFragment mLoginProgress;
 
 	private boolean mPreferencesClosed = false;
-	private boolean mPreferencesChanged = false;
+	private boolean mPreferencesChangedServer = false;
+	private boolean mPreferencesChangedPush = false;
+	private boolean mPreferencesChangedWidget = false;
+	private boolean mPreferencesChangedTheme = false;
+
 	private boolean mOnSaveInstanceStateCalled = false;
 
 	private static final String TAG = BaseActivity.class.getSimpleName();
@@ -78,6 +85,20 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	protected static final int ACTIVITY_EVENTS = 1;
 	protected static final int ACTIVITY_CHECKS = 2;
 	protected static final int ACTIVITY_SCREENS = 3;
+
+	private FinishReceiver finishReceiver;
+	private static final String ACTION_FINISH = "com.inovex.zabbixmobile.BaseActivity.ACTION_FINISH";
+
+	/**
+	 * Broadcast receiver that finishes an activity.
+	 */
+	private final class FinishReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(ACTION_FINISH))
+				finish();
+		}
+	}
 
 	/**
 	 * If the server settings have not been set yet by the user, a dialog is
@@ -152,10 +173,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		super.onResume();
 		Log.d(TAG, "onResume");
 		PushService.startOrStopPushService(getApplicationContext());
-		// if the preferences activity has been closed (and possibly preferences
-		// have been changed), we start a relogin.
-		if (mPreferencesClosed && mZabbixDataService != null) {
-			if (mPreferencesChanged == true) {
+		// if the preferences activity has been closed, we check which
+		// preferences have been changed and perform necessary actions
+		if (mPreferencesClosed) {
+			if (mPreferencesChangedServer == true && mZabbixDataService != null) {
 				mZabbixDataService.performZabbixLogout();
 				mZabbixDataService.clearAllData();
 				mZabbixDataService.initConnection();
@@ -164,14 +185,28 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 						WidgetUpdateBroadcastReceiver.class);
 				this.sendBroadcast(intent);
 				mZabbixDataService.performZabbixLogin(this);
-				mPreferencesChanged = false;
-				Intent restartIntent = getIntent();
-				restartIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
-						| Intent.FLAG_ACTIVITY_NEW_TASK);
-				finish();
-				startActivity(restartIntent);
-				overridePendingTransition(android.R.anim.fade_in,
-						android.R.anim.fade_out);
+				mPreferencesChangedServer = false;
+			}
+			if (mPreferencesChangedTheme) {
+				mPreferencesChangedTheme = false;
+				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+					// clear activity history and restart this activity
+					Intent restartIntent = getIntent();
+					restartIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
+							| Intent.FLAG_ACTIVITY_NEW_TASK);
+					finish();
+					startActivity(restartIntent);
+					overridePendingTransition(android.R.anim.fade_in,
+							android.R.anim.fade_out);
+				} else {
+					// as FLAG_ACTIVITY_CLEAR_TASK is not available on Android <
+					// version 11, we manually send a broadcast to clear the
+					// activity history
+					sendBroadcast(new Intent(ACTION_FINISH));
+					Intent restartIntent = getIntent();
+					restartIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(restartIntent);
+				}
 			}
 			mPreferencesClosed = false;
 		}
@@ -202,6 +237,9 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		else
 			setTheme(R.style.AppTheme);
 		super.onCreate(savedInstanceState);
+
+		finishReceiver = new FinishReceiver();
+		registerReceiver(finishReceiver, new IntentFilter(ACTION_FINISH));
 
 		bindService();
 
@@ -342,6 +380,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		super.onDestroy();
 		Log.d(TAG, "onDestroy");
 
+		unregisterReceiver(finishReceiver);
+
 		if (isFinishing()) {
 			Log.d(TAG, "unbindService");
 			getApplicationContext().unbindService(this);
@@ -464,16 +504,26 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d(TAG, "onActivityResult");
+		Log.d(TAG, "onActivityResult: " + requestCode + " - " + resultCode);
 
 		if (requestCode == REQUEST_CODE_PREFERENCES) {
-			mPreferencesClosed = true;
-			Log.d(TAG, "onActivityResult: " + requestCode + " - " + resultCode);
-			if (resultCode == RESULT_PREFERENCES_CHANGED) {
-				mPreferencesChanged = true;
-			} else {
-				mPreferencesChanged = false;
+			if ((resultCode & ZaxPreferenceActivity.PREFERENCES_CHANGED_SERVER) == ZaxPreferenceActivity.PREFERENCES_CHANGED_SERVER) {
+				mPreferencesChangedServer = true;
+				Log.d(TAG, "preferences changed: server");
 			}
+			if ((resultCode & ZaxPreferenceActivity.PREFERENCES_CHANGED_PUSH) == ZaxPreferenceActivity.PREFERENCES_CHANGED_PUSH) {
+				mPreferencesChangedPush = true;
+				Log.d(TAG, "preferences changed: push");
+			}
+			if ((resultCode & ZaxPreferenceActivity.PREFERENCES_CHANGED_WIDGET) == ZaxPreferenceActivity.PREFERENCES_CHANGED_WIDGET) {
+				mPreferencesChangedWidget = true;
+				Log.d(TAG, "preferences changed: widget");
+			}
+			if ((resultCode & ZaxPreferenceActivity.PREFERENCES_CHANGED_THEME) == ZaxPreferenceActivity.PREFERENCES_CHANGED_THEME) {
+				mPreferencesChangedTheme = true;
+				Log.d(TAG, "preferences changed: theme");
+			}
+			mPreferencesClosed = true;
 		}
 	}
 
