@@ -172,7 +172,6 @@ public class ZabbixRemoteAPI {
 	private final ZaxPreferences mPreferences;
 	private String zabbixUrl;
 	private final Context mContext;
-	private boolean isVersion2 = true;
 	/**
 	 * The API version. From 1.8.3 (maybe earlier) to 2.0 (excluded), this was
 	 * 1.3. With 2.0, it changed to 1.4. Finally, since 2.0.4, the API version
@@ -559,12 +558,13 @@ public class ZabbixRemoteAPI {
 			JSONObject result;
 			try {
 				result = _queryBuffer("apiinfo.version", new JSONObject());
-				if (result == null)
-					isVersion2 = false;
-				else {
+				if (result == null) {
+					mPreferences.setZabbixVersion2(false);
+				} else {
 					apiVersion = result.getString("result");
-					isVersion2 = (apiVersion.equals("1.4") || apiVersion
+					boolean isVersion2 = (apiVersion.equals("1.4") || apiVersion
 							.startsWith("2"));
+					mPreferences.setZabbixVersion2(isVersion2);
 				}
 				Log.i(TAG, "Zabbix API Version: " + apiVersion);
 			} catch (ClientProtocolException e) {
@@ -617,9 +617,9 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject();
 			params.put("output", "extend")
 					.put("limit", ZabbixConfig.APPLICATION_GET_LIMIT)
-					.put(isVersion2 ? "selectHosts" : "select_hosts", "refer")
-					.put("source", 0);
-			if (!isVersion2) {
+					.put(mPreferences.isZabbixVersion2() ? "selectHosts"
+							: "select_hosts", "refer").put("source", 0);
+			if (!mPreferences.isZabbixVersion2()) {
 				// in Zabbix version <2.0, this is not default
 				params.put("sortfield", "clock").put("sortorder", "DESC");
 			}
@@ -802,9 +802,10 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject()
 					.put("output", "extend")
 					.put("limit", ZabbixConfig.EVENTS_GET_LIMIT)
-					.put(isVersion2 ? "selectHosts" : "select_hosts", "refer")
-					.put(isVersion2 ? "selectTriggers" : "select_triggers",
-							"extend")
+					.put(mPreferences.isZabbixVersion2() ? "selectHosts"
+							: "select_hosts", "refer")
+					.put(mPreferences.isZabbixVersion2() ? "selectTriggers"
+							: "select_triggers", "extend")
 					.put("source", 0)
 					// sorting by clock is not possible, hence we sort by event
 					// ID to get the newest events
@@ -814,7 +815,7 @@ public class ZabbixRemoteAPI {
 							(new Date().getTime() / 1000)
 									- ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT);
 
-			if (!isVersion2) {
+			if (!mPreferences.isZabbixVersion2()) {
 				// in Zabbix version <2.0, this is not default
 				params.put("sortfield", "clock").put("sortorder", "DESC");
 			}
@@ -1229,9 +1230,10 @@ public class ZabbixRemoteAPI {
 				databaseHelper.clearHostGroups();
 				JsonArrayOrObjectReader hosts = _queryStream(
 						"host.get",
-						new JSONObject().put("output", "extend").put(
-								isVersion2 ? "selectGroups" : "select_groups",
-								"extend"));
+						new JSONObject()
+								.put("output", "extend")
+								.put(mPreferences.isZabbixVersion2() ? "selectGroups"
+										: "select_groups", "extend"));
 				importHostsFromStream(hosts, true);
 				hosts.close();
 			}
@@ -1294,10 +1296,10 @@ public class ZabbixRemoteAPI {
 						|| propName.equals(Item.COLUMN_DESCRIPTION_V2)) {
 					// since zabbix 2.x is the name of the item "name"
 					// before zabbix 2.x the name field was "description"
-					if (isVersion2
+					if (mPreferences.isZabbixVersion2()
 							&& propName.equals(Item.COLUMN_DESCRIPTION_V2)) {
 						item.setDescription(itemReader.getText());
-					} else if (!isVersion2) {
+					} else if (!mPreferences.isZabbixVersion2()) {
 						item.setDescription(itemReader.getText());
 					}
 				} else if (propName.equals(Item.COLUMN_LASTCLOCK)) {
@@ -1410,7 +1412,7 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject();
 			params.put("output", "extend")
 					.put("limit", ZabbixConfig.ITEM_GET_LIMIT)
-					.put(isVersion2 ? "selectApplications"
+					.put(mPreferences.isZabbixVersion2() ? "selectApplications"
 							: "select_applications", "refer");
 			if (hostId != null)
 				params.put("hostids", new JSONArray().put(hostId));
@@ -1485,10 +1487,10 @@ public class ZabbixRemoteAPI {
 			databaseHelper.clearScreens();
 			JSONObject params = new JSONObject();
 			params.put("output", "extend");
-			params.put(isVersion2 ? "selectScreenItems" : "select_screenitems",
-					"extend");
-			jsonReader = _queryStream((isVersion2 ? "s" : "S") + "creen.get",
-					params);
+			params.put(mPreferences.isZabbixVersion2() ? "selectScreenItems"
+					: "select_screenitems", "extend");
+			jsonReader = _queryStream((mPreferences.isZabbixVersion2() ? "s"
+					: "S") + "creen.get", params);
 
 			JsonObjectReader screenReader;
 			ArrayList<Screen> screensCollection = new ArrayList<Screen>(
@@ -1594,10 +1596,11 @@ public class ZabbixRemoteAPI {
 			graphs = _queryStream(
 					"graph.get",
 					new JSONObject()
-							.put(isVersion2 ? "selectGraphItems"
+							.put(mPreferences.isZabbixVersion2() ? "selectGraphItems"
 									: "select_graph_items", "extend")
-							.put(isVersion2 ? "selectItems" : "select_items",
-									"extend").put("output", "extend")
+							.put(mPreferences.isZabbixVersion2() ? "selectItems"
+									: "select_items", "extend")
+							.put("output", "extend")
 							.put("graphids", new JSONArray(graphIds)));
 
 			JsonObjectReader graphReader;
@@ -1734,9 +1737,12 @@ public class ZabbixRemoteAPI {
 			params.put("output", "extend")
 					.put("sortfield", "lastchange")
 					.put("sortorder", "desc")
-					.put(isVersion2 ? "selectHosts" : "select_hosts", "refer")
-					.put(isVersion2 ? "selectGroups" : "select_groups", "refer")
-					.put(isVersion2 ? "selectItems" : "select_items", "extend")
+					.put(mPreferences.isZabbixVersion2() ? "selectHosts"
+							: "select_hosts", "refer")
+					.put(mPreferences.isZabbixVersion2() ? "selectGroups"
+							: "select_groups", "refer")
+					.put(mPreferences.isZabbixVersion2() ? "selectItems"
+							: "select_items", "extend")
 					.put("lastChangeSince", min)
 					.put("limit", ZabbixConfig.TRIGGER_GET_LIMIT)
 					.put("expandDescription", true);
