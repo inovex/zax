@@ -3,9 +3,15 @@
     <item
         android:id="@+id/menuitem_acknowledge_event"
         android:icon="@drawable/menu_acknowledge"
+        android:orderInCategory="10"
         android:showAsAction="always|withText"
-        android:title="@string/acknowledge_event"
-        android:orderInCategory="10">
+        android:title="@string/acknowledge_event">
     </item>
+    <item
+        android:id="@+id/menuitem_share"
+        android:actionProviderClass="com.actionbarsherlock.widget.ShareActionProvider"
+        android:orderInCategory="20"
+        android:showAsAction="ifRoom"
+        android:title="@string/share"/>
 
 </menu>

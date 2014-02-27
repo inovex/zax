@@ -10,6 +10,7 @@
         <attr name="spinnerTextColor" format="color|reference" />
         <attr name="actionMenuColor" format="color" />
         <attr name="graphTextColor" format="color" />
+        <attr name="defaultTextColor" format="color" />
         <attr name="pageIndicatorSelectedColor" format="color|reference" />
         <attr name="pageIndicatorBackground" format="color|reference" />
     </declare-styleable>

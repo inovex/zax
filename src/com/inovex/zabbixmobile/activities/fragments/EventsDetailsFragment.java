@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.ShareActionProvider;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
@@ -48,6 +50,14 @@ public class EventsDetailsFragment extends
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.events_details, menu);
 		mMenuItemAcknowledge = menu.findItem(R.id.menuitem_acknowledge_event);
+		
+		MenuItem menuItemShare = menu.findItem(R.id.menuitem_share);
+		ShareActionProvider shareActionProvider = (ShareActionProvider) menuItemShare.getActionProvider();
+		Intent shareIntent = new Intent();
+		shareIntent.setAction(Intent.ACTION_SEND);
+		shareIntent.putExtra(Intent.EXTRA_TEXT, "share text");
+		shareIntent.setType("text/plain");
+		shareActionProvider.setShareIntent(shareIntent);
 	}
 
 	@Override

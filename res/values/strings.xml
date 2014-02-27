@@ -73,6 +73,7 @@
     <string name="at">at</string>
     <string name="ringtone">Ringtone</string>
     <string name="acknowledge_event">Acknowledge Event</string>
+    <string name="share">Share</string>
     <string name="comment">Comment</string>
     <string name="cancel">Cancel</string>
     <string name="trust_all_ssl_certificates">Trust all SSL Certificates</string>
