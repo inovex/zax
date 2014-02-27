@@ -25,6 +25,7 @@ import com.inovex.zabbixmobile.listeners.OnGraphDataLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnGraphsLoadedListener;
 import com.inovex.zabbixmobile.model.Graph;
 import com.inovex.zabbixmobile.model.Item;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.util.GraphUtil;
 import com.jjoe64.graphview.LineGraphView;
 
@@ -41,6 +42,12 @@ public class GraphFullscreenActivity extends SherlockFragmentActivity implements
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		ZaxPreferences prefs = ZaxPreferences
+				.getInstance(getApplicationContext());
+		if (prefs.isDarkTheme())
+			setTheme(R.style.AppThemeDark);
+		else
+			setTheme(R.style.AppTheme);
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);

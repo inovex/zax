@@ -76,8 +76,6 @@
         <item name="android:background">?borderDrawableAlternateBackground</item>
     </style>
 
-    <style name="GraphFullscreenTheme" parent="android:Theme.Holo" />
-
     <style name="TextViewStyleDefault" parent="android:Widget.TextView">
         <item name="android:textColor">?defaultTextColor</item>
     </style>
