@@ -41,23 +41,14 @@ public class EventsDetailsFragment extends
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
-	}
-
-	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.events_details, menu);
 		mMenuItemAcknowledge = menu.findItem(R.id.menuitem_acknowledge_event);
-		
+
 		MenuItem menuItemShare = menu.findItem(R.id.menuitem_share);
-		ShareActionProvider shareActionProvider = (ShareActionProvider) menuItemShare.getActionProvider();
-		Intent shareIntent = new Intent();
-		shareIntent.setAction(Intent.ACTION_SEND);
-		shareIntent.putExtra(Intent.EXTRA_TEXT, "share text");
-		shareIntent.setType("text/plain");
-		shareActionProvider.setShareIntent(shareIntent);
+		mShareActionProvider = (ShareActionProvider) menuItemShare
+				.getActionProvider();
+		updateShareIntent();
 	}
 
 	@Override
@@ -66,7 +57,7 @@ public class EventsDetailsFragment extends
 		case R.id.menuitem_acknowledge_event:
 			Event e = mDetailsPagerAdapter.getCurrentObject();
 			Log.d(TAG, "Acknowledge event: " + e);
-			if(e == null)
+			if (e == null)
 				return false;
 			// show dialog
 			AcknowledgeDialogFragment dialog = AcknowledgeDialogFragment
@@ -90,19 +81,13 @@ public class EventsDetailsFragment extends
 			mMenuItemAcknowledge.setVisible(enabled);
 	}
 
-	@Override
-	public void setHasOptionsMenu(boolean hasMenu) {
-		super.setHasOptionsMenu(hasMenu);
-		if (hasMenu == false)
-			return;
-		updateMenu();
-	}
-
 	/**
 	 * Updates the app's menu. If necessary (event is not acknowledged yet), the
 	 * acknowledge button is displayed in the action bar.
 	 */
+	@Override
 	protected void updateMenu() {
+		super.updateMenu();
 		if (mDetailsPagerAdapter == null
 				|| mDetailsPagerAdapter.getCount() == 0) {
 			this.setAcknowledgeButtonEnabled(false);
@@ -113,12 +98,6 @@ public class EventsDetailsFragment extends
 			this.setAcknowledgeButtonEnabled(false);
 		else
 			this.setAcknowledgeButtonEnabled(true);
-	}
-
-	@Override
-	public void refreshItemSelection() {
-		super.refreshItemSelection();
-		updateMenu();
 	}
 
 	@Override

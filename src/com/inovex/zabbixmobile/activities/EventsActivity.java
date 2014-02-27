@@ -82,22 +82,6 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	}
 
 	@Override
-	protected void showDetailsFragment() {
-		super.showDetailsFragment();
-		// details fragment becomes visible -> enable menu
-		mDetailsFragment.setHasOptionsMenu(true);
-	}
-
-	@Override
-	protected void showListFragment() {
-		super.showListFragment();
-		// details fragment becomes invisible -> disable menu
-		if (mFlipper != null) {// portrait
-			mDetailsFragment.setHasOptionsMenu(false);
-		}
-	}
-
-	@Override
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		Log.d(TAG, "loadAdapterContent");
 		super.loadAdapterContent(hostGroupChanged);

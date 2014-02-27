@@ -2,6 +2,7 @@ package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.view.ViewPager;
@@ -11,9 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.ShareActionProvider;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
+import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -40,6 +46,10 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 	private boolean mLoadingSpinnerVisible;
 
+	protected ShareActionProvider mShareActionProvider;
+
+	private MenuItem mMenuItemShare;
+
 	/**
 	 * Selects an item which shall be displayed in the view pager.
 	 * 
@@ -56,6 +66,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		if (position > mDetailsPagerAdapter.getCount() - 1)
 			position = 0;
 		setPosition(position);
+		if (mShareActionProvider != null)
+			setShareIntent(mDetailsPagerAdapter.getCurrentObject().toString());
 	}
 
 	/**
@@ -66,6 +78,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		if (mDetailsPagerAdapter == null)
 			return;
 		setPosition(mDetailsPagerAdapter.getCurrentPosition());
+		updateMenu();
 	}
 
 	/**
@@ -102,6 +115,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 		Log.d(TAG, "onCreate");
 		if (savedInstanceState != null) {
 			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
@@ -276,5 +290,54 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	 * Refreshes the data of the item currently displayed in the view pager.
 	 */
 	public abstract void refreshCurrentItem();
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.severity_details_fragment, menu);
+
+		mMenuItemShare = menu.findItem(R.id.menuitem_share);
+		mShareActionProvider = (ShareActionProvider) mMenuItemShare
+				.getActionProvider();
+		updateShareIntent();
+	}
+
+	protected void setShareIntent(String text) {
+		Intent shareIntent = new Intent();
+		shareIntent.setAction(Intent.ACTION_SEND);
+		shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+		shareIntent.setType("text/plain");
+		mShareActionProvider.setShareIntent(shareIntent);
+	}
+
+	public void updateShareIntent() {
+		if (mDetailsPagerAdapter == null)
+			return;
+		T currentObject = mDetailsPagerAdapter.getCurrentObject();
+		if (currentObject != null)
+			setShareIntent(currentObject.toString());
+	}
+
+	protected void updateMenu() {
+		if (mMenuItemShare == null)
+			return;
+		if (mDetailsPagerAdapter == null
+				|| mDetailsPagerAdapter.getCount() == 0) {
+			mMenuItemShare.setVisible(false);
+			return;
+		}
+		T e = mDetailsPagerAdapter.getCurrentObject();
+		if (e != null)
+			mMenuItemShare.setVisible(true);
+		else
+			mMenuItemShare.setVisible(false);
+	}
+
+	@Override
+	public void setHasOptionsMenu(boolean hasMenu) {
+		super.setHasOptionsMenu(hasMenu);
+		if (hasMenu == false)
+			return;
+		updateMenu();
+	}
 
 }

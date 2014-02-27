@@ -48,6 +48,9 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			}
 			mTriggerPosition = extras.getInt(ARG_TRIGGER_POSITION, -1);
 		}
+		
+		if (mFlipper != null)
+			mDetailsFragment.setHasOptionsMenu(false);
 
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 	}

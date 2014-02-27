@@ -82,12 +82,11 @@ public abstract class BaseSeverityFilterActivity<T> extends
 		// erroneously
 		showDetailsFragment();
 		selectItem(position);
-
 	}
 
 	@Override
 	public void onSeveritySelected(TriggerSeverity severity) {
-		if(severity == null)
+		if (severity == null)
 			return;
 		mDetailsFragment.setSeverity(severity);
 		mDetailsFragment.redrawPageIndicator();
@@ -116,6 +115,8 @@ public abstract class BaseSeverityFilterActivity<T> extends
 			// disable drawer toggle
 			mDrawerToggle.setDrawerIndicatorEnabled(false);
 		}
+		// details fragment becomes visible -> enable menu
+		mDetailsFragment.setHasOptionsMenu(true);
 	}
 
 	/**
@@ -127,6 +128,10 @@ public abstract class BaseSeverityFilterActivity<T> extends
 				mFlipper.setDisplayedChild(FLIPPER_LIST_FRAGMENT);
 			}
 			mDrawerToggle.setDrawerIndicatorEnabled(true);
+		}
+		// details fragment becomes invisible -> disable menu
+		if (mFlipper != null) {// portrait
+			mDetailsFragment.setHasOptionsMenu(false);
 		}
 	}
 
