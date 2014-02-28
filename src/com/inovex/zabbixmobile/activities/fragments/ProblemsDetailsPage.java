@@ -63,6 +63,8 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 
 			Item i = mTrigger.getItem();
 			if (i != null) {
+				((TextView) getView().findViewById(R.id.trigger_details_item))
+						.setText(i.getDescription());
 				Calendar cal = Calendar.getInstance();
 				cal.setTimeInMillis(i.getLastClock());
 				DateFormat dateFormatter = SimpleDateFormat

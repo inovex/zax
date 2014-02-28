@@ -85,6 +85,23 @@
                 android:layout_height="wrap_content" >
             </TextView>
         </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/item" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/trigger_details_item"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+            </TextView>
+        </TableRow>
     </TableLayout>
 
 </LinearLayout>

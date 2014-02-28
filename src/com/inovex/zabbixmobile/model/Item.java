@@ -153,6 +153,8 @@ public class Item implements Comparable<Item>, Sharable {
 		StringBuilder sb = new StringBuilder();
 		Resources res = context.getResources();
 		sb.append(res.getString(R.string.item) + ":\n");
+		sb.append("\t" + res.getString(R.string.title) + ": "
+				+ getDescription() + "\n");
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(lastClock);
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(

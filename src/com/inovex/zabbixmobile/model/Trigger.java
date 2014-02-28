@@ -199,8 +199,8 @@ public class Trigger implements Comparable<Trigger>, Sharable {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("id=").append(id);
-		sb.append(", ").append("description=").append(description);
-		sb.append(", ").append("expression=").append(expression);
+		sb.append(", ").append("description=").append(getDescription());
+		sb.append(", ").append("expression=").append(getExpression());
 		sb.append(", ").append("comments=").append(comments);
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
 				SimpleDateFormat.DEFAULT, SimpleDateFormat.DEFAULT, Locale.US);
@@ -219,12 +219,12 @@ public class Trigger implements Comparable<Trigger>, Sharable {
 		Resources res = context.getResources();
 		sb.append(res.getString(R.string.trigger) + ":\n");
 		sb.append("\t" + res.getString(R.string.host) + ": " + hostNames + "\n");
-		sb.append("\t" + res.getString(R.string.trigger) + ": " + description
-				+ "\n");
+		sb.append("\t" + res.getString(R.string.trigger) + ": "
+				+ getDescription() + "\n");
 		sb.append("\t" + res.getString(R.string.severity) + ": "
 				+ res.getString(priority.getNameResourceId()) + "\n");
-		sb.append("\t" + res.getString(R.string.expression) + ": " + expression
-				+ "\n");
+		sb.append("\t" + res.getString(R.string.expression) + ": "
+				+ getExpression() + "\n");
 
 		if (item != null) {
 			sb.append(item.getSharableString(context));

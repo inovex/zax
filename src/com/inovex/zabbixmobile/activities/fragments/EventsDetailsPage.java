@@ -103,6 +103,9 @@ public class EventsDetailsPage extends BaseDetailsPage {
 
 				Item i = t.getItem();
 				if (i != null) {
+					((TextView) getView().findViewById(
+							R.id.trigger_details_item)).setText(i
+							.getDescription());
 					cal.setTimeInMillis(i.getLastClock());
 					((TextView) getView().findViewById(R.id.latest_data))
 							.setText(i.getLastValue() + " " + i.getUnits()
