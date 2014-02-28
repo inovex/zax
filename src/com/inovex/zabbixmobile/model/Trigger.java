@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
 import com.j256.ormlite.field.DatabaseField;
@@ -210,8 +212,22 @@ public class Trigger implements Comparable<Trigger>, Sharable {
 
 	@Override
 	public String getSharableString(Context context) {
-		return "Trigger sharable - "
-				+ context.getResources().getString(R.string.acknowledge_event);
+		StringBuilder sb = new StringBuilder();
+		Resources res = context.getResources();
+		sb.append(res.getString(R.string.trigger) + ":\n");
+		sb.append("\t" + res.getString(R.string.host) + ": " + hostNames + "\n");
+		sb.append("\t" + res.getString(R.string.trigger) + ": " + description
+				+ "\n");
+		sb.append("\t" + res.getString(R.string.severity) + ": "
+				+ res.getString(priority.getNameResourceId()) + "\n");
+		sb.append("\t" + res.getString(R.string.expression) + ": " + expression
+				+ "\n");
+
+		if (item != null) {
+			sb.append(item.getSharableString(context));
+		}
+
+		return sb.toString();
 	}
 
 }

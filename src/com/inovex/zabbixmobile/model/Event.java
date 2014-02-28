@@ -3,8 +3,11 @@ package com.inovex.zabbixmobile.model;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
 import com.j256.ormlite.field.DatabaseField;
@@ -161,8 +164,32 @@ public class Event implements Comparable<Event>, Sharable {
 
 	@Override
 	public String getSharableString(Context context) {
-		return "Event sharable - "
-				+ context.getResources().getString(
-						R.string.widget_more_problems);
+		Resources res = context.getResources();
+		StringBuilder sb = new StringBuilder();
+		sb.append(res.getString(R.string.event) + ":\n");
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(clock);
+		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
+				SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
+				Locale.getDefault());
+		sb.append("\t" + res.getString(R.string.time) + ": "
+				+ dateFormatter.format(clock) + "\n");
+		sb.append("\t"
+				+ res.getString(R.string.status)
+				+ ": "
+				+ ((value == VALUE_OK) ? res.getString(R.string.ok) : res
+						.getString(R.string.problem)) + "\n");
+		sb.append("\t"
+				+ res.getString(R.string.acknowledged)
+				+ ": "
+				+ (acknowledged ? res.getString(R.string.yes) : res
+						.getString(R.string.no)) + "\n");
+
+		if (trigger != null) {
+			sb.append(trigger.getSharableString(context));
+		}
+
+		return sb.toString();
 	}
+
 }

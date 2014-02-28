@@ -1,13 +1,21 @@
 package com.inovex.zabbixmobile.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Locale;
 
+import android.content.Context;
+import android.content.res.Resources;
+
+import com.inovex.zabbixmobile.R;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "items")
-public class Item implements Comparable<Item> {
-	
+public class Item implements Comparable<Item>, Sharable {
+
 	public static int STATUS_ENABLED = 0;
 
 	public static final String COLUMN_ITEMID = "itemid";
@@ -85,7 +93,7 @@ public class Item implements Comparable<Item> {
 	public Collection<HistoryDetail> getHistoryDetails() {
 		return historyDetails;
 	}
-	
+
 	public int getStatus() {
 		return status;
 	}
@@ -125,7 +133,7 @@ public class Item implements Comparable<Item> {
 	public void setHistoryDetails(Collection<HistoryDetail> historyDetails) {
 		this.historyDetails = historyDetails;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "item " + getId() + ": " + getDescription();
@@ -138,4 +146,19 @@ public class Item implements Comparable<Item> {
 		return -1;
 	}
 
+	@Override
+	public String getSharableString(Context context) {
+		StringBuilder sb = new StringBuilder();
+		Resources res = context.getResources();
+		sb.append(res.getString(R.string.item) + ":\n");
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(lastClock);
+		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
+				SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
+				Locale.getDefault());
+		sb.append("\t" + res.getString(R.string.latest_data) + ": " + lastValue
+				+ units + " " + res.getString(R.string.at) + " "
+				+ dateFormatter.format(cal.getTime()));
+		return sb.toString();
+	}
 }

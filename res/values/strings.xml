@@ -27,7 +27,9 @@
     <string name="no_items_to_display">No items to display.</string>
     <string name="trigger_details">Trigger Details</string>
     <string name="host">Host</string>
+    <string name="event">Event</string>
     <string name="trigger">Trigger</string>
+    <string name="item">Item</string>
     <string name="severity">Severity</string>
     <string name="expression">Expression</string>
     <string name="disabled">Disabled</string>
