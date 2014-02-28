@@ -75,7 +75,9 @@ public class Item implements Comparable<Item>, Sharable {
 	}
 
 	public String getDescription() {
-		return description;
+		String desc = description;
+		desc = desc.replaceAll("&nbsp;", " ");
+		return desc;
 	}
 
 	public long getLastClock() {

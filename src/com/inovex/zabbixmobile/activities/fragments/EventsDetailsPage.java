@@ -105,7 +105,8 @@ public class EventsDetailsPage extends BaseDetailsPage {
 				if (i != null) {
 					cal.setTimeInMillis(i.getLastClock());
 					((TextView) getView().findViewById(R.id.latest_data))
-							.setText(i.getLastValue() + i.getUnits() + " "
+							.setText(i.getLastValue() + " " + i.getUnits()
+									+ " "
 									+ getResources().getString(R.string.at)
 									+ " " + dateFormatter.format(cal.getTime()));
 				}

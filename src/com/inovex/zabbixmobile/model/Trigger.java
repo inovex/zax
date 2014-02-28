@@ -98,14 +98,17 @@ public class Trigger implements Comparable<Trigger>, Sharable {
 	}
 
 	public String getDescription() {
-		String desc = String.valueOf(description);
+		String desc = description;
 		if (hostNames != null && hostNames.length() > 0)
 			desc = desc.replaceAll("\\{HOSTNAME\\}", hostNames);
+		desc = desc.replaceAll("&nbsp;", " ");
 		return desc;
 	}
 
 	public String getExpression() {
-		return expression;
+		String expr = expression;
+		expr = expr.replaceAll("&nbsp;", " ");
+		return expr;
 	}
 
 	public String getHostNames() {

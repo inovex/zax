@@ -71,6 +71,7 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 				cal.setTimeInMillis(i.getLastClock());
 				((TextView) getView().findViewById(R.id.latest_data)).setText(i
 						.getLastValue()
+						+ " "
 						+ i.getUnits()
 						+ " "
 						+ getResources().getString(R.string.at)
