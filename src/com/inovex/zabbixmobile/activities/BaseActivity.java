@@ -86,6 +86,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	protected static final int ACTIVITY_SCREENS = 3;
 
 	private FinishReceiver finishReceiver;
+	private boolean mDrawerOpened = false;
 	private static final String ACTION_FINISH = "com.inovex.zabbixmobile.BaseActivity.ACTION_FINISH";
 
 	/**
@@ -401,6 +402,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		// http://www.techrepublic.com/article/style-androids-overflow-menu-using-this-sanity-saving-workaround/)
 		for (int i = 0; i < menu.size(); i++) {
 			MenuItem mi = menu.getItem(i);
+			if (mDrawerOpened) {
+				mi.setVisible(false);
+				continue;
+			}
 			String title = mi.getTitle().toString();
 			Spannable newTitle = new SpannableString(title);
 			TypedArray a = obtainStyledAttributes(R.attr.actionMenuColor,
@@ -528,11 +533,13 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 	protected void onNavigationDrawerClosed() {
 		getSupportActionBar().setTitle(mTitle);
+		mDrawerOpened = false;
 		supportInvalidateOptionsMenu();
 	}
 
 	protected void onNavigationDrawerOpened() {
 		getSupportActionBar().setTitle(R.string.app_name);
+		mDrawerOpened = true;
 		supportInvalidateOptionsMenu();
 	}
 
