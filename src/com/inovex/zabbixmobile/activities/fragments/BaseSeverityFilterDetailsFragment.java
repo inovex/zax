@@ -61,8 +61,10 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	public void selectItem(int position) {
 		Log.d(TAG, "selectItem(" + position + ")");
 		if (mDetailsPagerAdapter == null
-				|| mDetailsPagerAdapter.getCount() == 0)
+				|| mDetailsPagerAdapter.getCount() == 0) {
+			updateMenu();
 			return;
+		}
 		if (position > mDetailsPagerAdapter.getCount() - 1)
 			position = 0;
 		setPosition(position);
