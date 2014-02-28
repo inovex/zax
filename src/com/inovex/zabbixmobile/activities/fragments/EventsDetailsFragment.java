@@ -45,8 +45,8 @@ public class EventsDetailsFragment extends
 		inflater.inflate(R.menu.events_details, menu);
 		mMenuItemAcknowledge = menu.findItem(R.id.menuitem_acknowledge_event);
 
-		MenuItem menuItemShare = menu.findItem(R.id.menuitem_share);
-		mShareActionProvider = (ShareActionProvider) menuItemShare
+		mMenuItemShare = menu.findItem(R.id.menuitem_share);
+		mShareActionProvider = (ShareActionProvider) mMenuItemShare
 				.getActionProvider();
 		updateShareIntent();
 	}

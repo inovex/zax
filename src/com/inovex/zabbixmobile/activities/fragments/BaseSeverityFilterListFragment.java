@@ -226,7 +226,8 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 	}
 
 	public void refreshTabTitles() {
-		mSeverityListPageIndicator.notifyDataSetChanged();
+		if (mSeverityListPageIndicator != null)
+			mSeverityListPageIndicator.notifyDataSetChanged();
 	}
 
 }

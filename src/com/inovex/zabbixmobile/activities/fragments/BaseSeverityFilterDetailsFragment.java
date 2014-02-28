@@ -48,7 +48,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 
 	protected ShareActionProvider mShareActionProvider;
 
-	private MenuItem mMenuItemShare;
+	protected MenuItem mMenuItemShare;
 
 	/**
 	 * Selects an item which shall be displayed in the view pager.
@@ -66,8 +66,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 		if (position > mDetailsPagerAdapter.getCount() - 1)
 			position = 0;
 		setPosition(position);
-		if (mShareActionProvider != null)
-			setShareIntent(mDetailsPagerAdapter.getCurrentObject().toString());
+		updateMenu();
 	}
 
 	/**
@@ -302,6 +301,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 	}
 
 	protected void setShareIntent(String text) {
+		if (mShareActionProvider == null)
+			return;
 		Intent shareIntent = new Intent();
 		shareIntent.setAction(Intent.ACTION_SEND);
 		shareIntent.putExtra(Intent.EXTRA_TEXT, text);
@@ -330,6 +331,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 			mMenuItemShare.setVisible(true);
 		else
 			mMenuItemShare.setVisible(false);
+		updateShareIntent();
 	}
 
 	@Override
