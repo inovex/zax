@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -13,6 +14,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.ShareActionProvider;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.model.Item;
@@ -30,9 +35,22 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 
 	private boolean mLoadingSpinnerVisible = false;
 
+	private MenuItem mMenuItemShare;
+
+	private ShareActionProvider mShareActionProvider;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+	}
+	
+	@Override
+	public void setHasOptionsMenu(boolean hasMenu) {
+		super.setHasOptionsMenu(hasMenu);
+		if (hasMenu == false)
+			return;
+		updateMenu();
 	}
 
 	@Override
@@ -50,10 +68,41 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 	}
 
 	@Override
+	public void onResume() {
+		super.onResume();
+		fillDetailsText();
+	}
+
+	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		super.onServiceConnected(name, service);
 		if (mItem != null)
 			mZabbixDataService.loadHistoryDetailsByItem(mItem, true, this);
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.severity_details_fragment, menu);
+
+		mMenuItemShare = menu.findItem(R.id.menuitem_share);
+		mShareActionProvider = (ShareActionProvider) mMenuItemShare
+				.getActionProvider();
+		updateShareIntent();
+	}
+
+	protected void setShareIntent(String text) {
+		if (mShareActionProvider == null)
+			return;
+		Intent shareIntent = new Intent();
+		shareIntent.setAction(Intent.ACTION_SEND);
+		shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+		shareIntent.setType("text/plain");
+		mShareActionProvider.setShareIntent(shareIntent);
+	}
+
+	public void updateShareIntent() {
+		if (mItem != null)
+			setShareIntent(mItem.getSharableString(this.getActivity()));
 	}
 
 	/**
@@ -82,6 +131,16 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 			showGraphProgressBar();
 			mZabbixDataService.loadHistoryDetailsByItem(mItem, true, this);
 		}
+	}
+
+	protected void updateMenu() {
+		if (mMenuItemShare == null)
+			return;
+		if (mItem != null)
+			mMenuItemShare.setVisible(true);
+		else
+			mMenuItemShare.setVisible(false);
+		updateShareIntent();
 	}
 
 	/**

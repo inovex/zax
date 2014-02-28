@@ -124,7 +124,8 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		// Selecting an application never makes the item details visible. If
 		// item details are already visible, we select the first item of the
 		// chosen application.
-		if (mItemDetailsFragment.isVisible()) {
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
+				&& mItemDetailsFragment.isVisible()) {
 			mItemDetailsFragment.setItem(null);
 			mApplicationsFragment.selectItem(0);
 		}
@@ -185,6 +186,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		// no longer visible.
 		mApplicationsFragment.uncheckCurrentListItem();
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
+		mItemDetailsFragment.setHasOptionsMenu(false);
 	}
 
 	protected void showApplicationsFragment() {
@@ -195,6 +197,8 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 			ft.show(mApplicationsFragment);
 			ft.commit();
 			mDrawerToggle.setDrawerIndicatorEnabled(false);
+			// details fragment becomes visible -> enable menu
+			mItemDetailsFragment.setHasOptionsMenu(false);
 		}
 		// nothing to do for landscape: applications are always visible
 	}
@@ -216,6 +220,8 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 			ft.commit();
 			mDrawerToggle.setDrawerIndicatorEnabled(false);
 		}
+		// details fragment becomes visible -> enable menu
+		mItemDetailsFragment.setHasOptionsMenu(true);
 	}
 
 	@Override
