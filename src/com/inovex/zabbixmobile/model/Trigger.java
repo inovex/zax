@@ -4,11 +4,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import android.content.Context;
+
+import com.inovex.zabbixmobile.R;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "triggers")
-public class Trigger implements Comparable<Trigger> {
+public class Trigger implements Comparable<Trigger>, Sharable {
 
 	public static final int VALUE_PROBLEM = 1;
 	public static final int VALUE_OK = 0;
@@ -203,6 +206,12 @@ public class Trigger implements Comparable<Trigger> {
 		sb.append(", ").append("value=").append(value);
 		sb.append(", ").append("url=").append(url);
 		return sb.toString();
+	}
+
+	@Override
+	public String getSharableString(Context context) {
+		return "Trigger sharable - "
+				+ context.getResources().getString(R.string.acknowledge_event);
 	}
 
 }

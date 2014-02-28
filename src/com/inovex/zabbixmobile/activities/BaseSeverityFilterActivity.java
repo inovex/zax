@@ -14,6 +14,7 @@ import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragme
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.listeners.OnSeverityListAdapterLoadedListener;
 import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
+import com.inovex.zabbixmobile.model.Sharable;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 
 /**
@@ -26,7 +27,7 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
  * @param <T>
  *            The type of data to be visualized
  */
-public abstract class BaseSeverityFilterActivity<T> extends
+public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 		BaseHostGroupSpinnerActivity implements OnListItemSelectedListener,
 		OnSeveritySelectedListener, OnSeverityListAdapterLoadedListener {
 

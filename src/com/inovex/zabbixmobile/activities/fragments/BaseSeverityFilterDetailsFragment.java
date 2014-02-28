@@ -19,7 +19,7 @@ import com.actionbarsherlock.widget.ShareActionProvider;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
-import com.inovex.zabbixmobile.model.Event;
+import com.inovex.zabbixmobile.model.Sharable;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -29,8 +29,8 @@ import com.viewpagerindicator.TitlePageIndicator;
  * @param <T>
  *            the data type
  */
-public abstract class BaseSeverityFilterDetailsFragment<T> extends
-		BaseServiceConnectedFragment {
+public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
+		extends BaseServiceConnectedFragment {
 
 	public static final String TAG = BaseSeverityFilterDetailsFragment.class
 			.getSimpleName();
@@ -317,7 +317,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T> extends
 			return;
 		T currentObject = mDetailsPagerAdapter.getCurrentObject();
 		if (currentObject != null)
-			setShareIntent(currentObject.toString());
+			setShareIntent(currentObject.getSharableString(this.getActivity()));
 	}
 
 	protected void updateMenu() {

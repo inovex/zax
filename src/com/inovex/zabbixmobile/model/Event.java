@@ -4,6 +4,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import android.content.Context;
+
+import com.inovex.zabbixmobile.R;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -11,7 +14,7 @@ import com.j256.ormlite.table.DatabaseTable;
  * A simple demonstration object we are creating and persisting to the database.
  */
 @DatabaseTable(tableName = "events")
-public class Event implements Comparable<Event> {
+public class Event implements Comparable<Event>, Sharable {
 
 	public static final int VALUE_OK = 0;
 
@@ -125,7 +128,17 @@ public class Event implements Comparable<Event> {
 
 	@Override
 	public String toString() {
-		return String.valueOf(id);
+		StringBuilder sb = new StringBuilder();
+		sb.append("id=").append(id);
+		sb.append(", ").append("objectId=").append(objectId);
+		sb.append(", ").append("clock=").append(clock);
+		sb.append(", ").append("value=").append(value);
+		sb.append(", ").append("acknowledged=").append(acknowledged);
+		sb.append(", ").append("hostNames=").append(hostNames);
+		if (trigger != null)
+			sb.append(", ").append("trigger={").append(trigger.toString())
+					.append("}");
+		return sb.toString();
 	}
 
 	@Override
@@ -144,5 +157,12 @@ public class Event implements Comparable<Event> {
 			return 1;
 		else
 			return -1;
+	}
+
+	@Override
+	public String getSharableString(Context context) {
+		return "Event sharable - "
+				+ context.getResources().getString(
+						R.string.widget_more_problems);
 	}
 }
