@@ -58,7 +58,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		mDrawerList.setItemChecked(BaseActivity.ACTIVITY_PROBLEMS, true);
+		selectDrawerItem(ACTIVITY_PROBLEMS);
 	}
 
 	@Override
