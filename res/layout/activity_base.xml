@@ -22,12 +22,18 @@
          with the content view.
     -->
 
-    <ListView
+    <FrameLayout
         android:id="@+id/left_drawer"
         style="@style/Drawer"
         android:layout_width="240dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:choiceMode="singleChoice" />
+        android:layout_gravity="start" >
+
+        <fragment
+            android:id="@+id/navigation_drawer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            class="com.inovex.zabbixmobile.activities.fragments.NavigationDrawerFragment" />
+    </FrameLayout>
 
 </android.support.v4.widget.DrawerLayout>
