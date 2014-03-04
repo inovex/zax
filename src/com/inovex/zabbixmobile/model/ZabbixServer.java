@@ -2,7 +2,7 @@ package com.inovex.zabbixmobile.model;
 
 import java.io.Serializable;
 
-public class ZabbixServer implements Serializable {
+public class ZabbixServer implements Serializable, Comparable<ZabbixServer> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -105,6 +105,11 @@ public class ZabbixServer implements Serializable {
 				+ trustAllSslCa + ", httpAuthEnabled=" + httpAuthEnabled
 				+ ", httpAuthUsername=" + httpAuthUsername
 				+ ", httpAuthPassword=" + httpAuthPassword + "]";
+	}
+
+	@Override
+	public int compareTo(ZabbixServer another) {
+		return this.getName().compareTo(another.getName());
 	}
 
 }
