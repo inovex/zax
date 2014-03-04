@@ -1,5 +1,9 @@
 package com.inovex.zabbixmobile.model;
 
+import java.util.ArrayList;
+
+import com.inovex.zabbixmobile.util.ObjectSerializer;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -129,6 +133,28 @@ public class ZaxPreferences {
 
 	public boolean isZabbixVersion2() {
 		return mPref.getBoolean("zabbix_version2", true);
+	}
+
+	public void setServers(ArrayList<ZabbixServer> servers) {
+		Editor edit = mPref.edit();
+		edit.putString("servers", ObjectSerializer.objectToString(servers));
+		edit.commit();
+	}
+
+	public ArrayList<ZabbixServer> getServers() {
+		return ObjectSerializer.stringToObject(mPref.getString("servers", ""));
+	}
+	
+	public void addServer(ZabbixServer server) {
+		ArrayList<ZabbixServer> servers = getServers();
+		servers.add(server);
+		setServers(servers);
+	}
+	
+	public void removeServer(int index) {
+		ArrayList<ZabbixServer> servers = getServers();
+		servers.remove(index);
+		setServers(servers);
 	}
 
 }
