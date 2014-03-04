@@ -1,14 +1,15 @@
 package com.inovex.zabbixmobile.model;
 
 import java.util.ArrayList;
-
-import com.inovex.zabbixmobile.util.ObjectSerializer;
+import java.util.TreeSet;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
+
+import com.inovex.zabbixmobile.util.ObjectSerializer;
 
 /**
  * Singleton providing an interface to the application's shared preferences.
@@ -135,25 +136,25 @@ public class ZaxPreferences {
 		return mPref.getBoolean("zabbix_version2", true);
 	}
 
-	public void setServers(ArrayList<ZabbixServer> servers) {
+	public void setServers(TreeSet<ZabbixServer> servers) {
 		Editor edit = mPref.edit();
 		edit.putString("servers", ObjectSerializer.objectToString(servers));
 		edit.commit();
 	}
 
-	public ArrayList<ZabbixServer> getServers() {
+	public TreeSet<ZabbixServer> getServers() {
 		return ObjectSerializer.stringToObject(mPref.getString("servers", ""));
 	}
-	
+
 	public void addServer(ZabbixServer server) {
-		ArrayList<ZabbixServer> servers = getServers();
+		TreeSet<ZabbixServer> servers = getServers();
 		servers.add(server);
 		setServers(servers);
 	}
-	
-	public void removeServer(int index) {
-		ArrayList<ZabbixServer> servers = getServers();
-		servers.remove(index);
+
+	public void removeServer(ZabbixServer server) {
+		TreeSet<ZabbixServer> servers = getServers();
+		servers.remove(server);
 		setServers(servers);
 	}
 

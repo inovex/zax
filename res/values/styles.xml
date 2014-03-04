@@ -32,6 +32,7 @@
         <item name="android:panelBackground">@color/dark_grey</item>
         <item name="android:popupBackground">@color/dark_grey</item>
         <item name="actionMenuTextColor">@color/white</item>
+        <item name="android:radioButtonStyle">@style/RadioButton</item>
     </style>
 
     <style name="AppThemeDark" parent="Theme.Sherlock">
@@ -52,6 +53,7 @@
         <item name="pageIndicatorBackground">@color/medium_grey</item>
         <item name="android:panelBackground">@color/dark_grey</item>
         <item name="android:popupBackground">@color/dark_grey</item>
+        <item name="android:radioButtonStyle">@style/RadioButton</item>
     </style>
 
     <style name="android:textAppearanceLargePopupMenu">
@@ -126,6 +128,11 @@
         <item name="android:textAppearance">?android:attr/textAppearance</item>
         <item name="android:padding">@dimen/host_list_padding</item>
     </style>
+    
+    <style name="ListItemServer" parent="TextViewStyleDefault">
+        <item name="android:textAppearance">?android:attr/textAppearance</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
 
     <style name="HostGroupSpinnerTitle" parent="TextViewStyleDefault">
         <item name="android:textColor">?spinnerTextColor</item>
@@ -157,6 +164,11 @@
 
     <style name="Widget.Sherlock.Light.ListPopupWindow" parent="Widget">
         <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="RadioButton" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:button">@drawable/button_radio</item>
     </style>
 
 </resources>
