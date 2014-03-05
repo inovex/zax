@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.PushService;
@@ -15,7 +17,7 @@ import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
  * The preference activity.
  * 
  */
-public class ZaxPreferenceActivity extends PreferenceActivity implements
+public class ZaxPreferenceActivity extends SherlockPreferenceActivity implements
 		OnSharedPreferenceChangeListener {
 
 	private static final int REQUEST_CODE_PREFERENCES_THEMED = 958723;
@@ -27,6 +29,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 
 	private ZaxPreferences mPrefs;
 	private int activityResult = 0;
+	private ActionBar mActionBar;
 
 	// We use the deprecated method because it is compatible to old Android
 	// versions.
@@ -39,6 +42,14 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 		else
 			setTheme(R.style.AppTheme);
 		super.onCreate(savedInstanceState);
+
+		mActionBar = getSupportActionBar();
+
+		if (mActionBar != null) {
+			mActionBar.setHomeButtonEnabled(true);
+			mActionBar.setDisplayHomeAsUpEnabled(true);
+			mActionBar.setDisplayShowTitleEnabled(true);
+		}
 
 		// the activity might have been started with a result code which we need
 		// to adopt
@@ -57,6 +68,17 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 	public void onBackPressed() {
 		setResult(activityResult, new Intent());
 		finish();
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			setResult(activityResult, new Intent());
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
