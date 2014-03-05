@@ -157,5 +157,15 @@ public class ZaxPreferences {
 		servers.remove(server);
 		setServers(servers);
 	}
+	
+	public int getServerSelection() {
+		return mPref.getInt("server_selection", 0);
+	}
+	
+	public void setServerSelection(int selection) {
+		Editor edit = mPref.edit();
+		edit.putInt("server_selection", selection);
+		edit.commit();
+	}
 
 }
