@@ -2,18 +2,22 @@ package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.BaseActivity;
+import com.inovex.zabbixmobile.activities.ZaxPreferenceActivity;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 
@@ -29,6 +33,8 @@ public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 	private ListView mServerList;
 
 	private BaseServiceAdapter<ZabbixServer> mServersListAdapter;
+
+	private Button mManageServersButton;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -60,6 +66,18 @@ public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 
 		mServerList = (ListView) getView()
 				.findViewById(R.id.drawer_server_list);
+
+		mManageServersButton = (Button) getView().findViewById(
+				R.id.drawer_manage_servers);
+		mManageServersButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getActivity(),
+						ZaxPreferenceActivity.class);
+				getActivity().startActivity(intent);
+			}
+		});
 
 		mMenuList = (ListView) getView().findViewById(R.id.drawer_menu);
 		// set up the drawer's list view with items and click listener
