@@ -1,17 +1,26 @@
 package com.inovex.zabbixmobile.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.widget.ViewFlipper;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.activities.fragments.ServersDetailsFragment;
+import com.inovex.zabbixmobile.activities.fragments.ServersListFragment;
+import com.inovex.zabbixmobile.listeners.OnServerSelectedListener;
+import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 
-public class ServersActivity extends SherlockFragmentActivity {
+public class ServersActivity extends SherlockFragmentActivity implements OnServerSelectedListener {
 
 	private ActionBar mActionBar;
+	private ViewFlipper mFlipper;
+	private ServersDetailsFragment mDetailsFragment;
+	private ServersListFragment mListFragment;
+	private FragmentManager mFragmentManager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +40,13 @@ public class ServersActivity extends SherlockFragmentActivity {
 			mActionBar.setDisplayHomeAsUpEnabled(true);
 			mActionBar.setDisplayShowTitleEnabled(true);
 		}
+
+		mFragmentManager = getSupportFragmentManager();
+		mFlipper = (ViewFlipper) findViewById(R.id.servers_flipper);
+		mDetailsFragment = (ServersDetailsFragment) mFragmentManager
+				.findFragmentById(R.id.servers_details);
+		mListFragment = (ServersListFragment) mFragmentManager
+				.findFragmentById(R.id.servers_list);
 	}
 
 	@Override
@@ -41,6 +57,11 @@ public class ServersActivity extends SherlockFragmentActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onServerSelected(ZabbixServer server) {
+		mDetailsFragment.setServer(server);
 	}
 
 }

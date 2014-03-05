@@ -174,4 +174,8 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="ServerDetailsLabel" parent="@style/TextAppearance.Sherlock">
+        <item name="android:textSize">@dimen/text_size_big</item>
+    </style>
+
 </resources>
