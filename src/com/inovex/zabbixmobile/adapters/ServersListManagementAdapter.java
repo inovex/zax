@@ -24,20 +24,31 @@ public class ServersListManagementAdapter extends
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = convertView;
 
+		ViewHolder viewHolder;
+
 		if (row == null) {
 			row = getInflater().inflate(R.layout.list_item_servers_management,
 					parent, false);
+			viewHolder = new ViewHolder();
+			viewHolder.name = (TextView) row.findViewById(R.id.server_name);
+			viewHolder.url = (TextView) row.findViewById(R.id.server_url);
+			row.setTag(viewHolder);
+		} else {
+			viewHolder = (ViewHolder) row.getTag();
 		}
 
 		ZabbixServer server = getItem(position);
 
-		TextView name = (TextView) row.findViewById(R.id.server_name);
-		name.setText(server.getName());
+		viewHolder.name.setText(server.getName());
 
-		TextView url = (TextView) row.findViewById(R.id.server_url);
-		url.setText(server.getUrl());
-		
+		viewHolder.url.setText(server.getUrl());
+
 		return row;
+	}
+
+	static class ViewHolder {
+		TextView name;
+		TextView url;
 	}
 
 }
