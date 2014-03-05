@@ -61,7 +61,7 @@ public class GraphUtil {
 		style.setHorizontalLabelsColor(color);
 		style.setVerticalLabelsColor(color);
 		style.setTextSize(context.getResources().getDimension(
-				R.dimen.graph_text_size));
+				R.dimen.text_size_graph));
 		graphView.setGraphViewStyle(style);
 
 		/*

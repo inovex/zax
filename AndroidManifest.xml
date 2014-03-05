@@ -49,6 +49,10 @@
             android:name=".activities.ZaxPreferenceActivity"
             android:label="@string/activity_preferences" >
         </activity>
+        <activity
+            android:name=".activities.ServersActivity"
+            android:label="@string/activity_servers" >
+        </activity>
         <activity android:name=".activities.GraphFullscreenActivity" >
         </activity>
 

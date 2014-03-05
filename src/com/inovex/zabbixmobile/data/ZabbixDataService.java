@@ -17,7 +17,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.widget.RadioButton;
 
 import com.inovex.zabbixmobile.activities.BaseSeverityFilterActivity;
 import com.inovex.zabbixmobile.activities.ChecksActivity;
@@ -42,7 +41,8 @@ import com.inovex.zabbixmobile.adapters.ProblemsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ProblemsListAdapter;
 import com.inovex.zabbixmobile.adapters.ProblemsListPagerAdapter;
 import com.inovex.zabbixmobile.adapters.ScreensListAdapter;
-import com.inovex.zabbixmobile.adapters.ServersListAdapter;
+import com.inovex.zabbixmobile.adapters.ServersListManagementAdapter;
+import com.inovex.zabbixmobile.adapters.ServersListSelectionAdapter;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
@@ -66,7 +66,6 @@ import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
-import com.inovex.zabbixmobile.util.ObjectSerializer;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 /**
@@ -102,10 +101,11 @@ public class ZabbixDataService extends Service {
 	/**
 	 * Adapters maintained by {@link ZabbixDataService}.
 	 */
-	
-	// global
-	private ServersListAdapter mServersListAdapter;
-	
+
+	// Servers
+	private ServersListSelectionAdapter mServersListSelectionAdapter;
+	private ServersListManagementAdapter mServersListManagementAdapter;
+
 	// Events
 	private EventsListPagerAdapter mEventsListPagerAdapter;
 	private HashMap<TriggerSeverity, EventsListAdapter> mEventsListAdapters;
@@ -190,14 +190,24 @@ public class ZabbixDataService extends Service {
 		}
 
 	}
-	
+
 	/**
-	 * Returns the Zabbix server list adapter.
+	 * Returns the Zabbix server list adapter for the server management
+	 * activity.
 	 * 
 	 * @return list adapter
 	 */
-	public BaseServiceAdapter<ZabbixServer> getServersListAdapter() {
-		return mServersListAdapter;
+	public BaseServiceAdapter<ZabbixServer> getServersListManagementAdapter() {
+		return mServersListManagementAdapter;
+	}
+
+	/**
+	 * Returns the Zabbix server selection list adapter for the drawer fragment.
+	 * 
+	 * @return list adapter
+	 */
+	public BaseServiceAdapter<ZabbixServer> getServersSelectionAdapter() {
+		return mServersListSelectionAdapter;
 	}
 
 	/**
@@ -482,27 +492,31 @@ public class ZabbixDataService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		Log.d(TAG, "onCreate");
-		
+
 		mPreferences = ZaxPreferences.getInstance(getApplicationContext());
 
 		// set up adapters
-		mServersListAdapter = new ServersListAdapter(this);
-		if(mPreferences.getServers() == null) {
+		mServersListSelectionAdapter = new ServersListSelectionAdapter(this);
+		mServersListManagementAdapter = new ServersListManagementAdapter(this);
+
+		if (mPreferences.getServers() == null) {
 			TreeSet<ZabbixServer> serverSet = new TreeSet<ZabbixServer>();
 			ZabbixServer server = new ZabbixServer("Zabbix local",
 					"http://10.10.0.21/zabbix", "admin", "zabbix", false, true,
 					"http", "pass");
 			ZabbixServer server2 = new ZabbixServer("MozBx",
-					"http://www.mozbx.net/zabbix", "demo", "demo", false, false,
-					null, null);
+					"http://www.mozbx.net/zabbix", "demo", "demo", false,
+					false, null, null);
 
 			serverSet.add(server);
 			serverSet.add(server2);
 
 			mPreferences.setServers(serverSet);
 		}
-		mServersListAdapter.addAll(mPreferences.getServers());
-		
+
+		mServersListSelectionAdapter.addAll(mPreferences.getServers());
+		mServersListManagementAdapter.addAll(mPreferences.getServers());
+
 		mEventsListPagerAdapter = new EventsListPagerAdapter(this);
 		mEventsListAdapters = new HashMap<TriggerSeverity, EventsListAdapter>(
 				TriggerSeverity.values().length);

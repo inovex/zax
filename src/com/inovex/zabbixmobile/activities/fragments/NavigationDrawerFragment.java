@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.BaseActivity;
+import com.inovex.zabbixmobile.activities.ServersActivity;
 import com.inovex.zabbixmobile.activities.ZaxPreferenceActivity;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.model.ZabbixServer;
@@ -75,7 +76,7 @@ public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(),
-						ZaxPreferenceActivity.class);
+						ServersActivity.class);
 				getActivity().startActivity(intent);
 			}
 		});
@@ -92,7 +93,7 @@ public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		super.onServiceConnected(name, service);
 
-		mServersListAdapter = mZabbixDataService.getServersListAdapter();
+		mServersListAdapter = mZabbixDataService.getServersSelectionAdapter();
 		mServerList.setAdapter(mServersListAdapter);
 		mServerList.setOnItemClickListener(this);
 		mServerList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);

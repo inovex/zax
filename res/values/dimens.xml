@@ -6,7 +6,12 @@
     
     <dimen name="default_content_padding">4dp</dimen>
     
-    <dimen name="graph_text_size">14sp</dimen>
+    <dimen name="list_item_padding">4dp</dimen>
+    
+    <dimen name="text_size_normal">12sp</dimen>
+    <dimen name="text_size_big">16sp</dimen>
+    
+    <dimen name="text_size_graph">14sp</dimen>
     <dimen name="graph_min_height">200dp</dimen>
     
     <dimen name="dialog_margin_top">16dp</dimen>
