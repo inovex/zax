@@ -531,7 +531,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	}
 
 	protected void selectDrawerItem(int index) {
-		mDrawerFragment.selectItem(index);
+		mDrawerFragment.selectMenuItem(index);
 		mDrawerLayout.closeDrawer(mDrawerFrame);
 		mDrawerToggle.syncState();
 	}
@@ -562,7 +562,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 				android.R.anim.fade_out);
 
 		// update selected item and title, then close the drawer
-		mDrawerFragment.selectItem(position);
+		mDrawerFragment.selectMenuItem(position);
 		mDrawerLayout.closeDrawer(mDrawerFrame);
 	}
 }

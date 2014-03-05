@@ -20,6 +20,7 @@ import com.inovex.zabbixmobile.activities.BaseActivity;
 import com.inovex.zabbixmobile.activities.ZaxPreferenceActivity;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.model.ZabbixServer;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
 
 public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 		implements OnItemClickListener {
@@ -102,21 +103,27 @@ public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 	}
 
 	private void restoreServerSelection() {
-		mServerList.setItemChecked(mServersListAdapter.getCurrentPosition(),
-				true);
-		mServerList.setSelection(mServersListAdapter.getCurrentPosition());
-	}
-
-	public void selectItem(int index) {
-		mMenuList.setItemChecked(index, true);
+		int persistedSelection = ZaxPreferences.getInstance(
+				getActivity().getApplicationContext()).getServerSelection();
+		selectServerItem(persistedSelection);
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
+		selectServerItem(position);
+		// persist selection
+		ZaxPreferences.getInstance(getActivity().getApplicationContext())
+				.setServerSelection(position);
+	}
+
+	protected void selectServerItem(int position) {
 		mServersListAdapter.setCurrentPosition(position);
 		mServerList.setItemChecked(position, true);
 		mServerList.setSelection(position);
 	}
 
+	public void selectMenuItem(int index) {
+		mMenuList.setItemChecked(index, true);
+	}
 }
