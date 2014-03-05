@@ -36,8 +36,7 @@ public class ServersListManagementAdapter extends
 
 		TextView url = (TextView) row.findViewById(R.id.server_url);
 		url.setText(server.getUrl());
-
-		row.setTag(position);
+		
 		return row;
 	}
 
