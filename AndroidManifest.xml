@@ -24,7 +24,7 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
-        android:label="@string/app_name">
+        android:label="@string/app_name" >
         <activity
             android:name=".activities.ProblemsActivity"
             android:label="@string/app_name" >
@@ -49,6 +49,10 @@
         <activity
             android:name=".activities.ZaxPreferenceActivity"
             android:label="@string/activity_preferences" >
+        </activity>
+        <activity
+            android:name=".activities.ServersActivity"
+            android:label="@string/activity_servers" >
         </activity>
         <activity android:name=".activities.GraphFullscreenActivity" >
         </activity>

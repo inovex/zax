@@ -10,9 +10,9 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 
-public class ServersListAdapter extends BaseServiceAdapter<ZabbixServer> {
+public class ServersListSelectionAdapter extends BaseServiceAdapter<ZabbixServer> {
 
-	public ServersListAdapter(ZabbixDataService service) {
+	public ServersListSelectionAdapter(ZabbixDataService service) {
 		super(service);
 	}
 
@@ -26,7 +26,7 @@ public class ServersListAdapter extends BaseServiceAdapter<ZabbixServer> {
 		View row = convertView;
 
 		if (row == null) {
-			row = getInflater().inflate(R.layout.list_item_servers, parent, false);
+			row = getInflater().inflate(R.layout.list_item_servers_selection, parent, false);
 		}
 		
 		ZabbixServer server = getItem(position);

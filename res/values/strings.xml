@@ -13,6 +13,7 @@
     <string name="activity_checks">Checks</string>
     <string name="activity_screens">Screens</string>
     <string name="activity_preferences">Preferences</string>
+    <string name="activity_servers">Servers</string>
     
     <string name="exc_http_auth_required">HTTP authorization required.</string>
     <string name="exc_no_api_access">No API access.</string>
