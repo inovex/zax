@@ -6,6 +6,8 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     
+    <string name="manage_servers">Manage servers</string>
+    
     <string name="activity_events">Events</string>
     <string name="activity_problems">Problems</string>
     <string name="activity_checks">Checks</string>

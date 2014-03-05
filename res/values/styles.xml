@@ -128,7 +128,7 @@
         <item name="android:textAppearance">?android:attr/textAppearance</item>
         <item name="android:padding">@dimen/host_list_padding</item>
     </style>
-    
+
     <style name="ListItemServer" parent="TextViewStyleDefault">
         <item name="android:textAppearance">?android:attr/textAppearance</item>
         <item name="android:textColor">@color/white</item>
@@ -169,6 +169,10 @@
     <style name="RadioButton" parent="@android:style/Widget.CompoundButton.RadioButton">
         <item name="android:textColor">@color/white</item>
         <item name="android:button">@drawable/button_radio</item>
+    </style>
+
+    <style name="ManageServersButton" parent="@style/Widget.Sherlock.Button.Small">
+        <item name="android:textSize">16sp</item>
     </style>
 
 </resources>
