@@ -76,19 +76,22 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 			String key) {
 		if (key.equals("zabbix_url") || key.equals("zabbix_username")
 				|| key.equals("zabbix_password")
-				|| key.equals("zabbix_trust_all_ssl_ca")) {
+				|| key.equals("zabbix_trust_all_ssl_ca")
+				|| key.equals("http_auth_enabled")
+				|| key.equals("http_auth_username")
+				|| key.equals("http_auth_password")) {
 			activityResult |= PREFERENCES_CHANGED_SERVER;
 		}
 		if (key.equals("zabbix_push_enabled")
 				|| key.equals("zabbix_push_subscribe_key")
 				|| key.equals("zabbix_push_ringtone")
-				|| key.equals("zabbix_push_old_icons")
-				|| key.equals("http_auth_enabled")
-				|| key.equals("http_auth_username")
-				|| key.equals("http_auth_password")) {
+				|| key.equals("zabbix_push_old_icons")) {
 			activityResult |= PREFERENCES_CHANGED_PUSH;
 			PushService.killPushService(getApplicationContext());
-			PushService.startOrStopPushService(getApplicationContext());
+			if (!mPrefs.isPushEnabled()
+					|| mPrefs.getPushSubscribeKey().length() > 0) {
+				PushService.startOrStopPushService(getApplicationContext());
+			}
 		}
 		if (key.equals("widget_refresh_interval_mins")) {
 			activityResult |= PREFERENCES_CHANGED_WIDGET;

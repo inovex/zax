@@ -172,7 +172,6 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	protected void onResume() {
 		super.onResume();
 		Log.d(TAG, "onResume");
-		PushService.startOrStopPushService(getApplicationContext());
 		// if the preferences activity has been closed, we check which
 		// preferences have been changed and perform necessary actions
 		if (mPreferencesClosed) {
@@ -209,6 +208,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 				}
 			}
 			mPreferencesClosed = false;
+		} else {
+			PushService.startOrStopPushService(getApplicationContext());
 		}
 
 	}
