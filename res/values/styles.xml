@@ -77,7 +77,7 @@
     </style>
 
     <style name="TextViewStyleDefault" parent="android:Widget.TextView">
-        <item name="android:textColor">?defaultTextColor</item>
+        <item name="android:textColorPrimary">?defaultTextColor</item>
     </style>
 
     <style name="TabPageIndicatorDefault" parent="Widget.TabPageIndicator">
