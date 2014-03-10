@@ -5,8 +5,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningServiceInfo;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -389,6 +388,28 @@ public class PushService extends Service {
 		Log.d(TAG, "stopping push service");
 		Intent intent = new Intent(context, PushService.class);
 		context.stopService(intent);
+	}
+
+	/**
+	 * Stops the legacy alarm which used to wake up the push service every 10
+	 * minutes.
+	 * 
+	 * @param context
+	 */
+	public static void stopPushServiceAlarm(Context context) {
+		Log.d(TAG, "stopping legacy push service alarm.");
+		ZaxPreferences preferences = ZaxPreferences.getInstance(context);
+		AlarmManager am = (AlarmManager) context
+				.getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(context, PushService.class);
+
+		intent.putExtra(PUBNUB_SUBSCRIBE_KEY, preferences.getPushSubscribeKey());
+		intent.putExtra(RINGTONE, preferences.getPushRingtone());
+		intent.putExtra(OLD_NOTIFICATION_ICONS,
+				preferences.isOldNotificationIcons());
+		PendingIntent pendingIntent = PendingIntent.getService(context, 0,
+				intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		am.cancel(pendingIntent);
 	}
 
 }
