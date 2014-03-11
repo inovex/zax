@@ -61,7 +61,8 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="push_notifications">Push Notifications</string>
-    <string name="push_error">Error connecting to Pubnub</string>
+    <string name="push_connection_error">Error connecting to Pubnub</string>
+    <string name="push_connection_success">Successfully connected to Pubnub</string>
     <string name="enabled">Enabled</string>
     <string name="old_notification_icons">Alternative notification icons</string>
     <string name="old_notification_icons_desc">red cross / green check in status bar</string>

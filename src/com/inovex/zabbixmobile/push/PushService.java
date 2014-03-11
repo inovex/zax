@@ -17,13 +17,14 @@ import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.ProblemsActivity;
-import com.inovex.zabbixmobile.activities.ZaxPreferenceActivity;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.pubnub.api.Callback;
 import com.pubnub.api.Pubnub;
@@ -47,8 +48,10 @@ public class PushService extends Service {
 	Pubnub pubnub;
 	PushListener mPushListener = new PushListener();
 	private BroadcastReceiver mNotificationBroadcastReceiver;
+	private Handler handler;	
 
 	int numNotifications = 0;
+	boolean initialConnect = true;
 	ArrayBlockingQueue<CharSequence> previousMessages = new ArrayBlockingQueue<CharSequence>(
 			NUM_STACKED_NOTIFICATIONS);
 	protected boolean oldNotificationIcons;
@@ -206,6 +209,21 @@ public class PushService extends Service {
 						Log.i(TAG,
 								"connect to " + channel + ": "
 										+ message.toString());
+						if (initialConnect) {
+							handler.post(new Runnable() {
+
+								@Override
+								public void run() {
+									Toast.makeText(
+											PushService.this,
+											PushService.this.getResources().getString(
+													R.string.push_connection_success),
+											Toast.LENGTH_SHORT).show();
+									initialConnect = false;									
+								}
+								
+							});
+						}
 					}
 
 					@Override
@@ -221,38 +239,22 @@ public class PushService extends Service {
 						Log.i(TAG,
 								"error (" + channel + "): "
 										+ error.getErrorString());
+						if (initialConnect) {
+							handler.post(new Runnable() {
 
-						int notIcon;
-						notIcon = R.drawable.problem;
-						String notMessage = getResources().getString(
-								R.string.push_error);
-
-						NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
-								PushService.this);
-						notificationBuilder.setTicker(notMessage);
-						notificationBuilder.setWhen(System.currentTimeMillis());
-
-						notificationBuilder.setLargeIcon(BitmapFactory
-								.decodeResource(getResources(), R.drawable.icon));
-						notificationBuilder.setSmallIcon(R.drawable.icon);
-
-						Intent notificationIntent = new Intent(
-								PushService.this, ZaxPreferenceActivity.class);
-						notificationIntent
-								.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						notificationBuilder.setContentTitle(getResources()
-								.getString(R.string.notification_title));
-						notificationBuilder.setContentText(notMessage);
-
-						notificationBuilder.setContentIntent(PendingIntent
-								.getActivity(PushService.this, 0,
-										notificationIntent, 0));
-
-						notificationBuilder.setAutoCancel(true);
-						Notification notification = notificationBuilder.build();
-
-						NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-						mNotificationManager.notify(1, notification);
+								@Override
+								public void run() {
+									Toast.makeText(
+											PushService.this,
+											PushService.this.getResources().getString(
+													R.string.push_connection_error),
+											Toast.LENGTH_SHORT).show();
+									initialConnect = false;									
+								}
+								
+							});
+							
+						}
 					}
 
 					@Override
@@ -317,6 +319,7 @@ public class PushService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
+		this.handler = new Handler();
 		Log.d(TAG, "starting");
 
 		subscribeKey = intent.getStringExtra(PUBNUB_SUBSCRIBE_KEY);
