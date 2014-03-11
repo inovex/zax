@@ -6,17 +6,18 @@ ZAX is a mobile frontend for the Zabbix enterprise monitoring system. It is free
 This app shows you not only active triggers, events and latest item data, but has a few more features:
 
 Features
-
 * view current problems
 * view events
 * view latest Items
 * view screens
 * mark events as acknowledged
 * history for items (graphs)
-* push notifications - trigger updates in realtime (using Pubnub)
+* push notifications - trigger updates in realtime (using Pubnub) - for setup instructions, see http://inovex.github.io/zax/#howto_push
 * HTTP auth for proxy
 * two homescreen widgets
 * Zabbix 2.x support
+
+For more information and screenshots, see our homepage: http://inovex.github.io/zax/
 
 This app uses the following libraries:
 * ActionBarSherlock (http://actionbarsherlock.com/)
