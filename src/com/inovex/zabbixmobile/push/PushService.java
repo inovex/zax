@@ -43,12 +43,14 @@ public class PushService extends Service {
 	String PUSHCHANNEL = "zabbixmobile";
 	protected static final int NUM_STACKED_NOTIFICATIONS = 5;
 	public static final String ACTION_ZABBIX_NOTIFICATION = "com.inovex.zabbixmobile.push.PushService.ACTION_ZABBIX_NOTIFICATION";
+	public static final String ACTION_ZABBIX_NOTIFICATION_DELETE = "com.inovex.zabbixmobile.push.PushService.ACTION_ZABBIX_NOTIFICATION_DELETE";
 	private static final String TAG = PushService.class.getSimpleName();
 	private static int lastRequestCode = 0;
 	Pubnub pubnub;
 	PushListener mPushListener = new PushListener();
 	private BroadcastReceiver mNotificationBroadcastReceiver;
-	private Handler handler;	
+	private BroadcastReceiver mNotificationDeleteBroadcastReceiver;
+	private Handler handler;
 
 	int numNotifications = 0;
 	boolean initialConnect = true;
@@ -192,6 +194,13 @@ public class PushService extends Service {
 								Notification notification = notificationBuilder
 										.build();
 
+								Intent notificationDeleteIntent = new Intent();
+								notificationDeleteIntent
+										.setAction(ACTION_ZABBIX_NOTIFICATION_DELETE);
+								notification.deleteIntent = PendingIntent
+										.getBroadcast(PushService.this, 0,
+												notificationDeleteIntent, 0);
+
 								NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 								// We use the same ID because we want to stack
 								// the notifications and we don't really care
@@ -216,12 +225,14 @@ public class PushService extends Service {
 								public void run() {
 									Toast.makeText(
 											PushService.this,
-											PushService.this.getResources().getString(
-													R.string.push_connection_success),
+											PushService.this
+													.getResources()
+													.getString(
+															R.string.push_connection_success),
 											Toast.LENGTH_SHORT).show();
-									initialConnect = false;									
+									initialConnect = false;
 								}
-								
+
 							});
 						}
 					}
@@ -246,14 +257,16 @@ public class PushService extends Service {
 								public void run() {
 									Toast.makeText(
 											PushService.this,
-											PushService.this.getResources().getString(
-													R.string.push_connection_error),
+											PushService.this
+													.getResources()
+													.getString(
+															R.string.push_connection_error),
 											Toast.LENGTH_SHORT).show();
-									initialConnect = false;									
+									initialConnect = false;
 								}
-								
+
 							});
-							
+
 						}
 					}
 
@@ -304,6 +317,26 @@ public class PushService extends Service {
 
 	}
 
+	/**
+	 * This broadcast receiver reacts on dismissal of a notification.
+	 * 
+	 * It resets the notification numbers and previous messages.
+	 * 
+	 */
+	public class NotificationDeleteReceiver extends BroadcastReceiver {
+
+		public NotificationDeleteReceiver() {
+			super();
+		}
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			numNotifications = 0;
+			previousMessages.clear();
+		}
+
+	}
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -347,6 +380,10 @@ public class PushService extends Service {
 		filter.addAction(ACTION_ZABBIX_NOTIFICATION);
 		mNotificationBroadcastReceiver = new NotificationBroadcastReceiver();
 		registerReceiver(mNotificationBroadcastReceiver, filter);
+		filter = new IntentFilter();
+		filter.addAction(ACTION_ZABBIX_NOTIFICATION_DELETE);
+		mNotificationDeleteBroadcastReceiver = new NotificationDeleteReceiver();
+		registerReceiver(mNotificationDeleteBroadcastReceiver, filter);
 		return START_REDELIVER_INTENT;
 	}
 
