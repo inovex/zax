@@ -9,7 +9,7 @@ use LWP::Simple;
 # config
 my $pubkey = "pub-c-d3743263-0749-4b81-966e-8b0f9aa11681";
 my $subkey = "sub-c-14f8a197-2cfc-11e0-b966-7321195d4657";
-my $url = "http://pubsub.pubnub.com/publish/pub-$pubkey/sub-$subkey/0/zabbixmobile/0/";
+my $url = "http://pubsub.pubnub.com/publish/$pubkey/$subkey/0/zabbixmobile/0/";
 
 # end config
 ######################
