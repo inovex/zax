@@ -47,7 +47,7 @@ public class PushService extends Service {
 	private static final String TAG = PushService.class.getSimpleName();
 	private static int lastRequestCode = 0;
 	Pubnub pubnub;
-	PushListener mPushListener = new PushListener();
+	PushListener mPushListener;
 	private BroadcastReceiver mNotificationBroadcastReceiver;
 	private BroadcastReceiver mNotificationDeleteBroadcastReceiver;
 	private Handler handler;
@@ -346,14 +346,26 @@ public class PushService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
-		Log.i("PushService", "create");
+		Log.i(TAG, "onCreate");
+		this.handler = new Handler();
+		if (mPushListener == null)
+			mPushListener = new PushListener();
+
+		// Register the notification broadcast receiver.
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(ACTION_ZABBIX_NOTIFICATION);
+		mNotificationBroadcastReceiver = new NotificationBroadcastReceiver();
+		registerReceiver(mNotificationBroadcastReceiver, filter);
+		filter = new IntentFilter();
+		filter.addAction(ACTION_ZABBIX_NOTIFICATION_DELETE);
+		mNotificationDeleteBroadcastReceiver = new NotificationDeleteReceiver();
+		registerReceiver(mNotificationDeleteBroadcastReceiver, filter);
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-		this.handler = new Handler();
-		Log.d(TAG, "starting");
+		Log.d(TAG, "onStartCommand");
 
 		subscribeKey = intent.getStringExtra(PUBNUB_SUBSCRIBE_KEY);
 		if (subscribeKey == null)
@@ -375,15 +387,6 @@ public class PushService extends Service {
 			Log.i("PushListener", "start");
 		}
 
-		// Register the notification broadcast receiver.
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(ACTION_ZABBIX_NOTIFICATION);
-		mNotificationBroadcastReceiver = new NotificationBroadcastReceiver();
-		registerReceiver(mNotificationBroadcastReceiver, filter);
-		filter = new IntentFilter();
-		filter.addAction(ACTION_ZABBIX_NOTIFICATION_DELETE);
-		mNotificationDeleteBroadcastReceiver = new NotificationDeleteReceiver();
-		registerReceiver(mNotificationDeleteBroadcastReceiver, filter);
 		return START_REDELIVER_INTENT;
 	}
 
