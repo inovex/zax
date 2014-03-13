@@ -1,8 +1,11 @@
 package com.inovex.zabbixmobile.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
@@ -13,7 +16,7 @@ import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
 
 /**
  * The preference activity.
- * 
+ *
  */
 public class ZaxPreferenceActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
@@ -93,6 +96,35 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 				PushService.startOrStopPushService(getApplicationContext());
 			}
 		}
+		// show hint for pubsub configuration
+		if (key.equals("zabbix_push_enabled") && mPrefs.isPushEnabled()) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(
+					"To use Push Notifications, you have to configure your Zabbix server. Please read the Howto at http://inovex.github.io/zax/#howto_push")
+					.setCancelable(false)
+					.setPositiveButton("View Howto in Browser",
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int id) {
+									Intent viewIntent = new Intent(
+											"android.intent.action.VIEW",
+											Uri.parse("http://inovex.github.io/zax/#howto_push"));
+									startActivity(viewIntent);
+								}
+							})
+					.setNegativeButton("Ok",
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+			AlertDialog alert = builder.create();
+			alert.show();
+		}
+
 		if (key.equals("widget_refresh_interval_mins")) {
 			activityResult |= PREFERENCES_CHANGED_WIDGET;
 			Intent intent = new Intent(getApplicationContext(),
