@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 /**
  * Base class for a pager adapter maintained by a service. The base
  * functionality is similar to {@link FragmentPagerAdapter}.
- * 
+ *
  * @param <T>
  *            class of the items in this adapter's data set
  */
@@ -119,6 +119,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 				// this exception is thrown if the activity has been destroyed
 				// which unfortunately happens from time to time
 				e.printStackTrace();
+				mCurTransaction = null;
 			}
 		}
 	}
@@ -141,12 +142,12 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 
 	/**
 	 * Return a unique identifier for the item at the given position.
-	 * 
+	 *
 	 * <p>
 	 * The default implementation returns the given position. Subclasses should
 	 * override this method if the positions of items can change.
 	 * </p>
-	 * 
+	 *
 	 * @param position
 	 *            Position within this adapter
 	 * @return Unique identifier for the item at position
@@ -159,7 +160,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 
 	/**
 	 * Creates a page (fragment) for a certain position.
-	 * 
+	 *
 	 * @param position
 	 *            the position within the adapter
 	 * @return the created fragment
@@ -173,7 +174,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 
 	/**
 	 * Wrapper for {@link TreeSet#addAll(Collection)}.
-	 * 
+	 *
 	 * @param objects
 	 */
 	public void addAll(Collection<? extends T> objects) {
@@ -182,7 +183,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 
 	/**
 	 * Returns an item from the underlying data set.
-	 * 
+	 *
 	 * @param position
 	 *            position of the item
 	 * @return
@@ -196,7 +197,7 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 
 	/**
 	 * Returns the current item.
-	 * 
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
