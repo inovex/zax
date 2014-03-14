@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -33,7 +34,7 @@ import com.pubnub.api.PubnubError;
 /**
  * Push service maintaining the connection to Pubnub and showing notifications
  * when Pubnub sends data.
- * 
+ *
  */
 public class PushService extends Service {
 	public static final String RINGTONE = "RINGTONE";
@@ -46,6 +47,7 @@ public class PushService extends Service {
 	public static final String ACTION_ZABBIX_NOTIFICATION_DELETE = "com.inovex.zabbixmobile.push.PushService.ACTION_ZABBIX_NOTIFICATION_DELETE";
 	private static final String TAG = PushService.class.getSimpleName();
 	private static int lastRequestCode = 0;
+	private static AlarmManager am;
 	Pubnub pubnub;
 	PushListener mPushListener;
 	private BroadcastReceiver mNotificationBroadcastReceiver;
@@ -290,11 +292,11 @@ public class PushService extends Service {
 	/**
 	 * This broadcast receiver reacts on a click on a notification by performing
 	 * the following tasks:
-	 * 
+	 *
 	 * 1. Reset the notification numbers and previous messages.
-	 * 
+	 *
 	 * 2. Start the main activity.
-	 * 
+	 *
 	 */
 	public class NotificationBroadcastReceiver extends BroadcastReceiver {
 
@@ -319,9 +321,9 @@ public class PushService extends Service {
 
 	/**
 	 * This broadcast receiver reacts on dismissal of a notification.
-	 * 
+	 *
 	 * It resets the notification numbers and previous messages.
-	 * 
+	 *
 	 */
 	public class NotificationDeleteReceiver extends BroadcastReceiver {
 
@@ -404,7 +406,7 @@ public class PushService extends Service {
 
 	/**
 	 * This starts or stops the push service depending on the user's settings.
-	 * 
+	 *
 	 * @param context
 	 */
 	public static void startOrStopPushService(Context context) {
@@ -417,11 +419,20 @@ public class PushService extends Service {
 		intent.putExtra(RINGTONE, preferences.getPushRingtone());
 		intent.putExtra(OLD_NOTIFICATION_ICONS,
 				preferences.isOldNotificationIcons());
+
+		// alarm manager
+		if (am == null)
+			am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		PendingIntent pendingIntent = PendingIntent.getService(context, 0,
+				intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
 		if (push) {
 			Log.d(TAG, "starting service");
+			setRepeatingAlarm(pendingIntent);
 			context.startService(intent);
 		} else {
 			Log.d(TAG, "stopping service");
+			stopRepeatingAlarm(pendingIntent);
 			context.stopService(intent);
 		}
 
@@ -433,25 +444,23 @@ public class PushService extends Service {
 		context.stopService(intent);
 	}
 
-	/**
-	 * Stops the legacy alarm which used to wake up the push service every 10
-	 * minutes.
-	 * 
-	 * @param context
-	 */
-	public static void stopPushServiceAlarm(Context context) {
-		Log.d(TAG, "stopping legacy push service alarm.");
-		ZaxPreferences preferences = ZaxPreferences.getInstance(context);
-		AlarmManager am = (AlarmManager) context
-				.getSystemService(Context.ALARM_SERVICE);
-		Intent intent = new Intent(context, PushService.class);
+	private static void setRepeatingAlarm(PendingIntent pendingIntent) {
+		Log.d("PushServiceAlarm", "setRepeatingAlarm");
 
-		intent.putExtra(PUBNUB_SUBSCRIBE_KEY, preferences.getPushSubscribeKey());
-		intent.putExtra(RINGTONE, preferences.getPushRingtone());
-		intent.putExtra(OLD_NOTIFICATION_ICONS,
-				preferences.isOldNotificationIcons());
-		PendingIntent pendingIntent = PendingIntent.getService(context, 0,
-				intent, PendingIntent.FLAG_CANCEL_CURRENT);
+		// cancel old alarm
+		am.cancel(pendingIntent);
+
+		// wake up every 60 minutes to ensure service stays alive
+		int alarmFrequency = 60 * 60 * 1000;
+		// start service after one minute to avoid wasting precious CPU time
+		// after device boot
+		am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+				SystemClock.elapsedRealtime() + 1 * 60 * 1000, alarmFrequency,
+				pendingIntent);
+	}
+
+	private static void stopRepeatingAlarm(PendingIntent pendingIntent) {
+		Log.d("PushServiceAlarm", "stopRepeatingAlarm");
 		am.cancel(pendingIntent);
 	}
 
