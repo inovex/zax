@@ -149,6 +149,8 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
 		// BaseActivity expects a result code, so we pass it through from the
 		// started themed preference activity
 		if (requestCode == REQUEST_CODE_PREFERENCES_THEMED) {
