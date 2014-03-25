@@ -1,7 +1,9 @@
 package com.inovex.zabbixmobile.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.widget.ViewFlipper;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -16,6 +18,7 @@ import com.inovex.zabbixmobile.model.ZaxPreferences;
 
 public class ServersActivity extends SherlockFragmentActivity implements OnServerSelectedListener {
 
+	private static final String TAG = "ServersActivity";
 	private ActionBar mActionBar;
 	private ViewFlipper mFlipper;
 	private ServersDetailsFragment mDetailsFragment;
@@ -61,7 +64,11 @@ public class ServersActivity extends SherlockFragmentActivity implements OnServe
 
 	@Override
 	public void onServerSelected(ZabbixServer server) {
-		mDetailsFragment.setServer(server);
+		//mDetailsFragment.setServer(server);
+		Intent intent = new Intent(this, ZabbixServerPreferenceActivity.class);
+		Log.d(TAG, "bbb="+server.getId());
+		intent.putExtra(ZabbixServerPreferenceActivity.ARG_ZABBIX_SERVER_ID, server.getId());
+		startActivity(intent);
 	}
 
 }

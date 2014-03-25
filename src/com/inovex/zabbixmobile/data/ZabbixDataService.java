@@ -72,10 +72,10 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
  * Bound service maintaining the connection with the Zabbix API as well as the
  * local SQLite database. It provides an interface to the data no matter where
  * it is stored,
- * 
+ *
  * This class also contains all adapters used for the various views throughout
  * the app. These are initialized when the service is created.
- * 
+ *
  */
 public class ZabbixDataService extends Service {
 
@@ -194,7 +194,7 @@ public class ZabbixDataService extends Service {
 	/**
 	 * Returns the Zabbix server list adapter for the server management
 	 * activity.
-	 * 
+	 *
 	 * @return list adapter
 	 */
 	public BaseServiceAdapter<ZabbixServer> getServersListManagementAdapter() {
@@ -203,7 +203,7 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Returns the Zabbix server selection list adapter for the drawer fragment.
-	 * 
+	 *
 	 * @return list adapter
 	 */
 	public BaseServiceAdapter<ZabbixServer> getServersSelectionAdapter() {
@@ -212,7 +212,7 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Returns the event list pager adapter.
-	 * 
+	 *
 	 * @return list pager adapter
 	 */
 	public BaseSeverityListPagerAdapter<Event> getEventsListPagerAdapter() {
@@ -221,9 +221,9 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Returns an event list adapter.
-	 * 
+	 *
 	 * See {@link EventsListPage}.
-	 * 
+	 *
 	 * @param severity
 	 *            severity of the adapter
 	 * @return list adapter
@@ -235,9 +235,9 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Returns an event details adapter to be used by the view pager.
-	 * 
+	 *
 	 * See {@link EventsDetailsFragment}.
-	 * 
+	 *
 	 * @param severity
 	 *            severity of the adapter
 	 * @return details pager adapter
@@ -249,9 +249,9 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Returns the adapter for the host group spinner.
-	 * 
+	 *
 	 * See {@link BaseSeverityFilterActivity}, {@link ChecksActivity}.
-	 * 
+	 *
 	 * @return spinner adapter
 	 */
 	public HostGroupsSpinnerAdapter getHostGroupSpinnerAdapter() {
@@ -260,7 +260,7 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Returns the problems list pager adapter.
-	 * 
+	 *
 	 * @return list pager adapter
 	 */
 	public BaseSeverityListPagerAdapter<Trigger> getProblemsListPagerAdapter() {
@@ -270,7 +270,7 @@ public class ZabbixDataService extends Service {
 	/**
 	 * Returns the problems list adapter for the main view. This adapter
 	 * contains all active problems regardless of severity and hostgroup.
-	 * 
+	 *
 	 * @return list adapter
 	 */
 	public BaseServiceAdapter<Trigger> getProblemsMainListAdapter() {
@@ -279,9 +279,9 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Returns a problems list adapter.
-	 * 
+	 *
 	 * See {@link ProblemsListPage}.
-	 * 
+	 *
 	 * @param severity
 	 *            severity of the adapter
 	 * @return list adapter
@@ -293,9 +293,9 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Returns a problems details adapter to be used by the view pager.
-	 * 
+	 *
 	 * See {@link ProblemsDetailsFragment}.
-	 * 
+	 *
 	 * @param severity
 	 *            severity of the adapter
 	 * @return details pager adapter
@@ -307,9 +307,9 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Returns a host list adapter.
-	 * 
+	 *
 	 * See {@link ChecksHostsFragment}.
-	 * 
+	 *
 	 * @return host list adapter
 	 */
 	public HostsListAdapter getHostsListAdapter() {
@@ -318,9 +318,9 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Returns the screens list adapter.
-	 * 
+	 *
 	 * See {@link ScreensListFragment}.
-	 * 
+	 *
 	 * @return screens list adapter
 	 */
 	public ScreensListAdapter getScreensListAdapter() {
@@ -329,7 +329,7 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Returns the application adapter.
-	 * 
+	 *
 	 * @return
 	 */
 	public ChecksApplicationsPagerAdapter getChecksApplicationsPagerAdapter() {
@@ -338,7 +338,7 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Returns the application items list adapter.
-	 * 
+	 *
 	 * @return
 	 */
 	public ChecksItemsListAdapter getChecksItemsListAdapter() {
@@ -347,7 +347,7 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Retrieves the host with the given ID from the database.
-	 * 
+	 *
 	 * @param hostId
 	 * @return
 	 */
@@ -358,7 +358,7 @@ public class ZabbixDataService extends Service {
 	/**
 	 * Retrieves the item with the given ID from the database. No remote api
 	 * call
-	 * 
+	 *
 	 * @param itemId
 	 * @return
 	 */
@@ -368,7 +368,7 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Retrieves the event with the given ID from the database.
-	 * 
+	 *
 	 * @param eventId
 	 * @return
 	 */
@@ -378,7 +378,7 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Retrieves the trigger with the given ID from the database.
-	 * 
+	 *
 	 * @param triggerId
 	 * @return
 	 */
@@ -437,11 +437,11 @@ public class ZabbixDataService extends Service {
 	 * method loads the host groups and fills the corresponding adapter because
 	 * host groups are used at so many spots in the program, so they should be
 	 * available all the time.
-	 * 
+	 *
 	 * @param listener
 	 *            listener to be informed about start and end of the login
 	 *            process
-	 * 
+	 *
 	 */
 	public void performZabbixLogin(final OnLoginProgressListener listener) {
 		final boolean loginNecessary = !mRemoteAPI.isLoggedIn();
@@ -499,23 +499,21 @@ public class ZabbixDataService extends Service {
 		mServersListSelectionAdapter = new ServersListSelectionAdapter(this);
 		mServersListManagementAdapter = new ServersListManagementAdapter(this);
 
-		if (mPreferences.getServers() == null) {
+		// TODO load from database
 			TreeSet<ZabbixServer> serverSet = new TreeSet<ZabbixServer>();
-			ZabbixServer server = new ZabbixServer("Zabbix local",
-					"http://10.10.0.21/zabbix", "admin", "zabbix", false, true,
-					"http", "pass");
-			ZabbixServer server2 = new ZabbixServer("MozBx",
-					"http://www.mozbx.net/zabbix", "demo", "demo", false,
-					false, null, null);
+			ZabbixServer server = new ZabbixServer();
+			server.setId(0);
+			server.setName("inovex");
+
+			ZabbixServer server2 = new ZabbixServer();
+			server2.setId(1);
+			server2.setName("Mozbx");
 
 			serverSet.add(server);
 			serverSet.add(server2);
 
-			mPreferences.setServers(serverSet);
-		}
-
-		mServersListSelectionAdapter.addAll(mPreferences.getServers());
-		mServersListManagementAdapter.addAll(mPreferences.getServers());
+		mServersListSelectionAdapter.addAll(serverSet);
+		mServersListManagementAdapter.addAll(serverSet);
 
 		mEventsListPagerAdapter = new EventsListPagerAdapter(this);
 		mEventsListAdapters = new HashMap<TriggerSeverity, EventsListAdapter>(
@@ -558,7 +556,7 @@ public class ZabbixDataService extends Service {
 	 * Loads all events with a given severity and host group from the database
 	 * asynchronously. After loading the events, the corresponding adapters are
 	 * updated. If necessary, an import from the Zabbix API is triggered.
-	 * 
+	 *
 	 * @param severity
 	 *            severity of the events to be retrieved
 	 * @param hostGroupId
@@ -642,7 +640,7 @@ public class ZabbixDataService extends Service {
 	 * Loads all triggers with a given severity and host group from the database
 	 * asynchronously. After loading the events, the corresponding adapters are
 	 * updated. If necessary, an import from the Zabbix API is triggered.
-	 * 
+	 *
 	 * @param hostGroupId
 	 *            host group id by which the events will be filtered
 	 * @param hostGroupChanged
@@ -730,10 +728,10 @@ public class ZabbixDataService extends Service {
 	 * Loads all hosts with a given host group from the database asynchronously.
 	 * After loading the hosts, the host list adapter is updated. If necessary,
 	 * an import from the Zabbix API is triggered.
-	 * 
+	 *
 	 * Additionally, this method initializes
 	 * {@link ChecksApplicationsPagerAdapter}s (one for each host) if necessary.
-	 * 
+	 *
 	 * @param hostGroupId
 	 *            host group id by which the events will be filtered
 	 * @param hostGroupChanged
@@ -785,7 +783,7 @@ public class ZabbixDataService extends Service {
 	 * Loads all hosts and host groups from the database asynchronously. After
 	 * loading, the host groups spinner adapter is updated. If necessary, an
 	 * import from the Zabbix API is triggered.
-	 * 
+	 *
 	 */
 	public void loadHostsAndHostGroups() {
 		new RemoteAPITask(mRemoteAPI) {
@@ -826,12 +824,12 @@ public class ZabbixDataService extends Service {
 	 * asynchronously. After loading the applications, the corresponding
 	 * adapters are updated. If necessary, an import from the Zabbix API is
 	 * triggered.
-	 * 
+	 *
 	 * Attention: This call needs to take care of loading all items inside the
 	 * applications as well. Otherwise they will not be available when
 	 * {@link ZabbixDataService#loadItemsByApplicationId(long, OnItemsLoadedListener)}
 	 * is called.
-	 * 
+	 *
 	 * @param hostId
 	 *            host id
 	 * @param callback
@@ -897,7 +895,7 @@ public class ZabbixDataService extends Service {
 	 * After loading the items, the corresponding adapters are updated. An
 	 * import from Zabbix is not necessary, because the items have already been
 	 * loaded together with the applications.
-	 * 
+	 *
 	 * @param hostGroupId
 	 *            host group id by which the events will be filtered
 	 * @param hostGroupChanged
@@ -952,7 +950,7 @@ public class ZabbixDataService extends Service {
 	/**
 	 * Loads all history details for a given item. If necessary, an import from
 	 * the Zabbix API is triggered.
-	 * 
+	 *
 	 * @param item
 	 */
 	public void loadHistoryDetailsByItem(final Item item,
@@ -1006,7 +1004,7 @@ public class ZabbixDataService extends Service {
 	/**
 	 * Loads all screens. If necessary, an import from the Zabbix API is
 	 * triggered.
-	 * 
+	 *
 	 */
 	public void loadScreens(final OnScreensLoadedListener callback) {
 		new RemoteAPITask(mRemoteAPI) {
@@ -1043,7 +1041,7 @@ public class ZabbixDataService extends Service {
 	/**
 	 * Loads graphs belonging to a screen. If necessary, an import from the
 	 * Zabbix API is triggered.
-	 * 
+	 *
 	 * @param screen
 	 * @param callback
 	 */
@@ -1099,10 +1097,10 @@ public class ZabbixDataService extends Service {
 	/**
 	 * Loads a graph's data from the database and triggers an import from Zabbix
 	 * if necessary (i.e. the graph is not cached).
-	 * 
+	 *
 	 * All graph items in the given graph are filled with the corresponding
 	 * history details from the local database / the Zabbix server.
-	 * 
+	 *
 	 * @param graph
 	 *            the graph to be filled with data
 	 * @param callback
@@ -1188,7 +1186,7 @@ public class ZabbixDataService extends Service {
 
 	/**
 	 * Acknowledges an event.
-	 * 
+	 *
 	 * @param event
 	 *            the event
 	 * @param comment
@@ -1226,7 +1224,7 @@ public class ZabbixDataService extends Service {
 	 * Sets the activity context, which is needed to inflate layout elements.
 	 * This also initializes the layout inflater
 	 * {@link ZabbixDataService#mInflater}.
-	 * 
+	 *
 	 * @param context
 	 *            the context
 	 */

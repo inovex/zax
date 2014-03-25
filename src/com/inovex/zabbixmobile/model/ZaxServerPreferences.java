@@ -6,23 +6,11 @@ import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 
-/**
- * Singleton providing an interface to the application's shared preferences.
- *
- */
-public class ZaxPreferences {
+public class ZaxServerPreferences {
 
 	private final SharedPreferences mPref;
 
-	private static ZaxPreferences instance;
-
-	public static ZaxPreferences getInstance(Context context) {
-		if (instance != null)
-			return instance;
-		return (new ZaxPreferences(context));
-	}
-
-	private ZaxPreferences(Context context) {
+	public ZaxServerPreferences(Context context, long serverId) {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		mPref = pref;
@@ -73,19 +61,6 @@ public class ZaxPreferences {
 		return mPref.getString("zabbix_push_subscribe_key", "").trim();
 	}
 
-	public int getWidgetRefreshInterval() {
-		try {
-			return Integer.parseInt(mPref.getString(
-					"widget_refresh_interval_mins", "15"));
-		} catch (NumberFormatException e) {
-			return 0;
-		}
-	}
-
-	public boolean isOldNotificationIcons() {
-		return mPref.getBoolean("zabbix_push_old_icons", false);
-	}
-
 	/**
 	 * Checks whether the server settings have been altered by the user
 	 *
@@ -117,10 +92,6 @@ public class ZaxPreferences {
 		edit.commit();
 	}
 
-	public boolean isDarkTheme() {
-		return mPref.getBoolean("dark_theme", false);
-	}
-
 	public void setZabbixVersion2(boolean version2) {
 		Editor edit = mPref.edit();
 		edit.putBoolean("zabbix_version2", version2);
@@ -129,16 +100,6 @@ public class ZaxPreferences {
 
 	public boolean isZabbixVersion2() {
 		return mPref.getBoolean("zabbix_version2", true);
-	}
-
-	public int getServerSelection() {
-		return mPref.getInt("server_selection", 0);
-	}
-
-	public void setServerSelection(int selection) {
-		Editor edit = mPref.edit();
-		edit.putInt("server_selection", selection);
-		edit.commit();
 	}
 
 }

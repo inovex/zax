@@ -54,7 +54,7 @@
             android:label="@string/activity_servers" >
         </activity>
         <activity android:name=".activities.GraphFullscreenActivity" >
-        </activity>
+        </activity><activity android:name=".activities.ZabbixServerPreferenceActivity"></activity>
 
         <service android:name="com.inovex.zabbixmobile.data.ZabbixDataService" >
         </service>
@@ -129,6 +129,7 @@
             android:name=".push.PushService"
             android:process=":pushservice" >
         </service>
+        
     </application>
 
 </manifest>
