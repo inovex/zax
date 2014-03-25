@@ -9,7 +9,7 @@ import android.util.Log;
 
 /**
  * Alarm to wake up the push service.
- * 
+ *
  */
 public class PushAlarm extends BroadcastReceiver {
 
@@ -21,8 +21,13 @@ public class PushAlarm extends BroadcastReceiver {
 				.getDefaultSharedPreferences(context);
 		boolean push = prefs.getBoolean("zabbix_push_enabled", false);
 		if (push) {
-			Intent myIntent = new Intent(context, PushService.class);
-			context.startService(myIntent);
+			PushService.startOrStopPushService(context, true);
+			// we wait a few seconds to ensure that wifi was activated
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

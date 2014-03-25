@@ -13,7 +13,7 @@ public class OnUpgradeReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		Log.d("UpdateBroadcastReceiver", "onUpdate");
 		PushService.killPushService(context);
-		PushService.startOrStopPushService(context);
+		PushService.startOrStopPushService(context, false);
 	}
 
 }

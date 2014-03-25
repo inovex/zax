@@ -46,14 +46,14 @@ import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
 
 /**
  * Base class for all activities. Tasks performed in this class:
- * 
+ *
  * * Show the navigation drawer
- * 
+ *
  * * initiate the connection to the data service and perform the Zabbix login
- * 
+ *
  * * open the settings dialog
- * 
- * 
+ *
+ *
  */
 public abstract class BaseActivity extends SherlockFragmentActivity implements
 		ServiceConnection, OnLoginProgressListener {
@@ -209,7 +209,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			}
 			mPreferencesClosed = false;
 		} else {
-			PushService.startOrStopPushService(getApplicationContext());
+			PushService.startOrStopPushService(getApplicationContext(), false);
 		}
 
 	}
@@ -546,7 +546,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 	/**
 	 * The login progress dialog.
-	 * 
+	 *
 	 */
 	public static class LoginProgressDialogFragment extends DialogFragment {
 

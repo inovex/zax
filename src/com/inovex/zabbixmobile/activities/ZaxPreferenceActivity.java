@@ -93,7 +93,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 			PushService.killPushService(getApplicationContext());
 			if (!mPrefs.isPushEnabled()
 					|| mPrefs.getPushSubscribeKey().length() > 0) {
-				PushService.startOrStopPushService(getApplicationContext());
+				PushService.startOrStopPushService(getApplicationContext(), false);
 			}
 		}
 		// show hint for pubsub configuration

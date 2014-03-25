@@ -376,12 +376,17 @@ public class PushService extends Service {
 		oldNotificationIcons = intent.getBooleanExtra(OLD_NOTIFICATION_ICONS,
 				false);
 
-		pubnub = new Pubnub("", // PUBLISH_KEY
-				subscribeKey, // SUBSCRIBE_KEY
-				"", // SECRET_KEY
-				"", // CIPHER_KEY
-				false // SSL_ON?
-		);
+		if (pubnub != null) {
+			// continue / reconnect
+			pubnub.disconnectAndResubscribe();
+		} else {
+			pubnub = new Pubnub("", // PUBLISH_KEY
+					subscribeKey, // SUBSCRIBE_KEY
+					"", // SECRET_KEY
+					"", // CIPHER_KEY
+					false // SSL_ON?
+			);
+		}
 
 		if (mPushListener.getStatus() != AsyncTask.Status.RUNNING
 				&& mPushListener.getStatus() != AsyncTask.Status.FINISHED) {
@@ -398,6 +403,7 @@ public class PushService extends Service {
 		mPushListener.cancel(true);
 		pubnub.unsubscribe(PUSHCHANNEL);
 		unregisterReceiver(mNotificationBroadcastReceiver);
+		unregisterReceiver(mNotificationDeleteBroadcastReceiver);
 	}
 
 	private int uniqueRequestCode() {
@@ -409,7 +415,7 @@ public class PushService extends Service {
 	 *
 	 * @param context
 	 */
-	public static void startOrStopPushService(Context context) {
+	public static void startOrStopPushService(Context context, boolean ignoreAlarm) {
 		// start the push receiver, if it is enabled
 		ZaxPreferences preferences = ZaxPreferences.getInstance(context);
 		boolean push = preferences.isPushEnabled();
@@ -423,16 +429,17 @@ public class PushService extends Service {
 		// alarm manager
 		if (am == null)
 			am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		PendingIntent pendingIntent = PendingIntent.getService(context, 0,
-				intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+		Intent alarmIntent = new Intent(context, PushAlarm.class);
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
 
 		if (push) {
 			Log.d(TAG, "starting service");
-			setRepeatingAlarm(pendingIntent);
+			if (!ignoreAlarm) setRepeatingAlarm(pendingIntent);
 			context.startService(intent);
 		} else {
 			Log.d(TAG, "stopping service");
-			stopRepeatingAlarm(pendingIntent);
+			if (!ignoreAlarm) stopRepeatingAlarm(pendingIntent);
 			context.stopService(intent);
 		}
 
@@ -451,7 +458,8 @@ public class PushService extends Service {
 		am.cancel(pendingIntent);
 
 		// wake up every 60 minutes to ensure service stays alive
-		int alarmFrequency = 60 * 60 * 1000;
+		long alarmFrequency = AlarmManager.INTERVAL_HALF_HOUR;
+		//long alarmFrequency = 3*60*1000;
 		// start service after one minute to avoid wasting precious CPU time
 		// after device boot
 		am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
