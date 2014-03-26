@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.inovex.zabbixmobile"
-    android:versionCode="31"
-    android:versionName="2.3.4" >
+    android:versionCode="32"
+    android:versionName="2.3.5" >
 
     <uses-sdk
         android:minSdkVersion="8"
