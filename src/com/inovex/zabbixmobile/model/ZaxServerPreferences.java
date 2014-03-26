@@ -9,11 +9,27 @@ import android.preference.PreferenceManager;
 public class ZaxServerPreferences {
 
 	private final SharedPreferences mPref;
+	private final long serverId;
 
 	public ZaxServerPreferences(Context context, long serverId) {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		mPref = pref;
+		this.serverId = serverId;
+
+		loadPrefs();
+	}
+
+	private void loadPrefs() {
+		Editor edit = mPref.edit();
+		edit.putString("zabbix_url", getZabbixUrl());
+		edit.commit();
+	}
+
+	public void savePrefs() {
+		Editor edit = mPref.edit();
+		edit.putString(serverId+"zabbix_url", mPref.getString("zabbix_url", null));
+		edit.commit();
 	}
 
 	public boolean isConfigurated() {
@@ -46,7 +62,7 @@ public class ZaxServerPreferences {
 	}
 
 	public String getZabbixUrl() {
-		return mPref.getString("zabbix_url", "");
+		return mPref.getString(serverId+"zabbix_url", "");
 	}
 
 	public boolean isPushEnabled() {

@@ -36,6 +36,7 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 	private ZaxServerPreferences mPrefs;
 	private int activityResult = 0;
 	private ActionBar mActionBar;
+	private boolean recursion;
 
 	// We use the deprecated method because it is compatible to old Android
 	// versions.
@@ -105,6 +106,13 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
+		if (recursion) {
+			return;
+		}
+		recursion = true;
+		mPrefs.savePrefs();
+		recursion = false;
+
 		if (key.equals("zabbix_url") || key.equals("zabbix_username")
 				|| key.equals("zabbix_password")
 				|| key.equals("zabbix_trust_all_ssl_ca")
