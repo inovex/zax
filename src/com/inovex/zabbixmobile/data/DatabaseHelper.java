@@ -57,7 +57,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final String DATABASE_NAME = "zabbixmobile2.db";
 	// any time you make changes to your database objects, you may have to
 	// increase the database version
-	private static final int DATABASE_VERSION = 6;
+	private static final int DATABASE_VERSION = 7;
 	private static final String TAG = DatabaseHelper.class.getSimpleName();
 	private DatabaseConnection mThreadConnection;
 	private final Context mContext;
@@ -1377,5 +1377,37 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		mContext.sendBroadcast(intent);
 		// print stack trace to log
 		exception.printStackTrace();
+	}
+
+	public void insertZabbixServer(ZabbixServer srv) {
+		try {
+			Dao<ZabbixServer, Long> dao = getDao(ZabbixServer.class);
+			mThreadConnection = dao.startThreadConnection();
+			Savepoint savePoint = null;
+			try {
+
+				dao.createOrUpdate(srv);
+
+			} finally {
+				// commit at the end
+				savePoint = mThreadConnection.setSavePoint(null);
+				mThreadConnection.commit(savePoint);
+				dao.endThreadConnection(mThreadConnection);
+			}
+		} catch (SQLException e) {
+			handleException(new FatalException(Type.INTERNAL_ERROR, e));
+		}
+	}
+
+	public void deleteZabbixServer(ZabbixServer item) {
+		Log.d(TAG, "deleting zabbix server");
+		try {
+			// delete zabbix server
+			Dao<ZabbixServer, Long> dao = getDao(ZabbixServer.class);
+			dao.delete(item);
+
+		} catch (SQLException e) {
+			handleException(new FatalException(Type.INTERNAL_ERROR, e));
+		}
 	}
 }

@@ -129,7 +129,7 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 			PushService.killPushService(getApplicationContext());
 			if (!mPrefs.isPushEnabled()
 					|| mPrefs.getPushSubscribeKey().length() > 0) {
-				PushService.startOrStopPushService(getApplicationContext());
+				PushService.startOrStopPushService(getApplicationContext(), false);
 			}
 		}
 		// show hint for pubsub configuration

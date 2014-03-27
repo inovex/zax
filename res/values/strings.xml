@@ -110,4 +110,9 @@
     <string name="widget_connection_error">connection error</string>
     <string name="widget_connection_error_long">connection error - Please check your internet connection and your server settings.</string>
 
+    <string name="add_server">Add Server</string>
+
+    <string name="remove">Remove</string>
+
+    <string name="change_name">Change Name</string>
 </resources>

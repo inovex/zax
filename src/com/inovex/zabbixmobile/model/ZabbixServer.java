@@ -8,8 +8,9 @@ public class ZabbixServer implements Comparable<ZabbixServer> {
 
 	/** Screen ID */
 	public static final String COLUMN_ZABBIXSERVERID = "zabbixserverid";
-	@DatabaseField(id = true, columnName = COLUMN_ZABBIXSERVERID)
+	@DatabaseField(columnName = COLUMN_ZABBIXSERVERID, generatedId = true)
 	long id;
+
 	/** Screen name */
 	public static final String COLUMN_NAME = "name";
 	@DatabaseField(columnName = COLUMN_NAME)
@@ -26,8 +27,8 @@ public class ZabbixServer implements Comparable<ZabbixServer> {
 		return name;
 	}
 
-	public void setId(long screenId) {
-		this.id = screenId;
+	public void setId(long serverId) {
+		this.id = serverId;
 	}
 
 	public void setName(String name) {

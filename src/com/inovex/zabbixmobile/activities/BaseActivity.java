@@ -115,6 +115,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		mZabbixDataService = zabbixBinder.getService();
 		mZabbixDataService.setActivityContext(BaseActivity.this);
 
+		mZabbixDataService.loadZabbixServers(); // sync
+
 		ZaxPreferences preferences = ZaxPreferences.getInstance(this);
 		if (preferences.isDefault()) {
 			new DialogFragment() {

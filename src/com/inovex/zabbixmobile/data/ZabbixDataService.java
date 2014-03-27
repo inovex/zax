@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import android.app.Service;
 import android.content.Context;
@@ -499,22 +498,6 @@ public class ZabbixDataService extends Service {
 		mServersListSelectionAdapter = new ServersListSelectionAdapter(this);
 		mServersListManagementAdapter = new ServersListManagementAdapter(this);
 
-		// TODO load from database
-			TreeSet<ZabbixServer> serverSet = new TreeSet<ZabbixServer>();
-			ZabbixServer server = new ZabbixServer();
-			server.setId(0);
-			server.setName("inovex");
-
-			ZabbixServer server2 = new ZabbixServer();
-			server2.setId(1);
-			server2.setName("Mozbx");
-
-			serverSet.add(server);
-			serverSet.add(server2);
-
-		mServersListSelectionAdapter.addAll(serverSet);
-		mServersListManagementAdapter.addAll(serverSet);
-
 		mEventsListPagerAdapter = new EventsListPagerAdapter(this);
 		mEventsListAdapters = new HashMap<TriggerSeverity, EventsListAdapter>(
 				TriggerSeverity.values().length);
@@ -947,6 +930,16 @@ public class ZabbixDataService extends Service {
 		mCurrentLoadItemsTask.execute();
 	}
 
+	public void loadZabbixServers() {
+		List<ZabbixServer> serverSet = mDatabaseHelper.getZabbixServers();
+
+		mServersListSelectionAdapter.clear();
+		mServersListSelectionAdapter.addAll(serverSet);
+
+		mServersListManagementAdapter.clear();
+		mServersListManagementAdapter.addAll(serverSet);
+	}
+
 	/**
 	 * Loads all history details for a given item. If necessary, an import from
 	 * the Zabbix API is triggered.
@@ -1267,6 +1260,26 @@ public class ZabbixDataService extends Service {
 
 	public void initConnection() {
 		mRemoteAPI.initConnection();
+	}
+
+	public ZabbixServer createNewZabbixServer(String name) {
+		ZabbixServer srv = new ZabbixServer();
+		srv.setName(name);
+		mDatabaseHelper.insertZabbixServer(srv);
+
+		loadZabbixServers();
+
+		return srv;
+	}
+
+	public void updateZabbixServer(ZabbixServer zabbixServer) {
+		mDatabaseHelper.insertZabbixServer(zabbixServer);
+	}
+
+	public void removeZabbixServer(ZabbixServer item) {
+		mDatabaseHelper.deleteZabbixServer(item);
+		loadZabbixServers();
+		mServersListManagementAdapter.notifyDataSetChanged();
 	}
 
 }
