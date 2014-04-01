@@ -36,6 +36,7 @@ import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.model.ZabbixServer;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
@@ -57,7 +58,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final String DATABASE_NAME = "zabbixmobile2.db";
 	// any time you make changes to your database objects, you may have to
 	// increase the database version
-	private static final int DATABASE_VERSION = 9;
+	private static final int DATABASE_VERSION = 10;
 	private static final String TAG = DatabaseHelper.class.getSimpleName();
 	private DatabaseConnection mThreadConnection;
 	private final Context mContext;
@@ -107,12 +108,19 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			int oldVersion, int newVersion) {
 		try {
 			Log.i(DatabaseHelper.class.getName(), "onUpgrade");
-			for (Class<?> table : mTables)
+			for (Class<?> table : mTables) {
+				if (table.getSimpleName().equals("ZabbixServer")) continue; // do not drop zabbix server table
 				TableUtils.dropTable(connectionSource, table, true);
+			}
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
 		} catch (SQLException e) {
 			handleException(new FatalException(Type.INTERNAL_ERROR, e));
+		}
+
+		// migrate old zabbix server preferences
+		if (getZabbixServers().isEmpty() && ZaxPreferences.getInstance(mContext).hasOldServerPreferences()) {
+			Log.d(TAG, "hhhhhhhh");
 		}
 	}
 

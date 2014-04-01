@@ -1,14 +1,10 @@
 package com.inovex.zabbixmobile.model;
 
-import java.util.TreeSet;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
-
-import com.inovex.zabbixmobile.util.ObjectSerializer;
 
 /**
  * Singleton providing an interface to the application's shared preferences.
@@ -69,26 +65,14 @@ public class ZaxPreferences {
 		mPref = pref;
 	}
 
-	public void setServers(TreeSet<ZabbixServer> servers) {
-		Editor edit = mPref.edit();
-		edit.putString("servers", ObjectSerializer.objectToString(servers));
-		edit.commit();
-	}
-
-	public TreeSet<ZabbixServer> getServers() {
-		return ObjectSerializer.stringToObject(mPref.getString("servers", ""));
-	}
-
-	public void addServer(ZabbixServer server) {
-		TreeSet<ZabbixServer> servers = getServers();
-		servers.add(server);
-		setServers(servers);
-	}
-
-	public void removeServer(ZabbixServer server) {
-		TreeSet<ZabbixServer> servers = getServers();
-		servers.remove(server);
-		setServers(servers);
+	public boolean hasOldServerPreferences() {
+		if (mPref.getString("zabbix_url", null) != null) {
+			Editor edit = mPref.edit();
+			edit.putString("zabbix_url", null);
+			edit.commit();
+			return true;
+		}
+		return false;
 	}
 
 }
