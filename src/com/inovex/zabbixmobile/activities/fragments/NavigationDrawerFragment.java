@@ -5,10 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-<<<<<<< HEAD
 import android.util.Log;
-=======
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,10 +19,6 @@ import android.widget.ListView;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.BaseActivity;
 import com.inovex.zabbixmobile.activities.ServersActivity;
-<<<<<<< HEAD
-=======
-import com.inovex.zabbixmobile.activities.ZaxPreferenceActivity;
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
@@ -111,11 +104,7 @@ public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 	}
 
 	private void restoreServerSelection() {
-<<<<<<< HEAD
 		long persistedSelection = ZaxPreferences.getInstance(
-=======
-		int persistedSelection = ZaxPreferences.getInstance(
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 				getActivity().getApplicationContext()).getServerSelection();
 		selectServerItem(persistedSelection);
 	}
@@ -123,7 +112,6 @@ public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-<<<<<<< HEAD
 		selectServerItem(id);
 		// persist selection
 		ZaxPreferences.getInstance(getActivity().getApplicationContext())
@@ -142,18 +130,6 @@ public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 				break;
 			}
 		}
-=======
-		selectServerItem(position);
-		// persist selection
-		ZaxPreferences.getInstance(getActivity().getApplicationContext())
-				.setServerSelection(position);
-	}
-
-	protected void selectServerItem(int position) {
-		mServersListAdapter.setCurrentPosition(position);
-		mServerList.setItemChecked(position, true);
-		mServerList.setSelection(position);
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 	}
 
 	public void selectMenuItem(int index) {

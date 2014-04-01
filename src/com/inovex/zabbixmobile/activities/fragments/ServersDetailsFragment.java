@@ -37,15 +37,6 @@ public class ServersDetailsFragment extends BaseServiceConnectedFragment {
 		if (mServer != null && getView() != null) {
 			((EditText) getView().findViewById(R.id.server_name))
 					.setText(mServer.getName());
-<<<<<<< HEAD
-=======
-			((EditText) getView().findViewById(R.id.server_url))
-					.setText(mServer.getUrl());
-			((EditText) getView().findViewById(R.id.server_username))
-					.setText(mServer.getUsername());
-			((EditText) getView().findViewById(R.id.server_password))
-					.setText(mServer.getPassword());
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 		}
 	}
 

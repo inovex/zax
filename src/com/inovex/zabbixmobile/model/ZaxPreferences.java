@@ -1,6 +1,5 @@
 package com.inovex.zabbixmobile.model;
 
-import java.util.ArrayList;
 import java.util.TreeSet;
 
 import android.content.Context;
@@ -90,16 +89,6 @@ public class ZaxPreferences {
 		TreeSet<ZabbixServer> servers = getServers();
 		servers.remove(server);
 		setServers(servers);
-	}
-	
-	public int getServerSelection() {
-		return mPref.getInt("server_selection", 0);
-	}
-	
-	public void setServerSelection(int selection) {
-		Editor edit = mPref.edit();
-		edit.putInt("server_selection", selection);
-		edit.commit();
 	}
 
 }

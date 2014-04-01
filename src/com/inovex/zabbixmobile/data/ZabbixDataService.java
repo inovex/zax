@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import android.app.Service;
 import android.content.Context;
@@ -140,8 +139,6 @@ public class ZabbixDataService extends Service {
 
 	private ZaxPreferences mPreferences;
 
-	private ZaxPreferences mPreferences;
-
 	/**
 	 * Class used for the client Binder. Because we know this service always
 	 * runs in the same process as its clients, we don't need to deal with IPC.
@@ -201,6 +198,7 @@ public class ZabbixDataService extends Service {
 				mDatabaseHelper, mCurrentZabbixServerId, null, null);
 	}
 
+
 	/**
 	 * Returns the Zabbix server list adapter for the server management
 	 * activity.
@@ -214,25 +212,6 @@ public class ZabbixDataService extends Service {
 	/**
 	 * Returns the Zabbix server selection list adapter for the drawer fragment.
 	 *
-	 * @return list adapter
-	 */
-	public BaseServiceAdapter<ZabbixServer> getServersSelectionAdapter() {
-		return mServersListSelectionAdapter;
-	}
-
-	/**
-	 * Returns the Zabbix server list adapter for the server management
-	 * activity.
-	 * 
-	 * @return list adapter
-	 */
-	public BaseServiceAdapter<ZabbixServer> getServersListManagementAdapter() {
-		return mServersListManagementAdapter;
-	}
-
-	/**
-	 * Returns the Zabbix server selection list adapter for the drawer fragment.
-	 * 
 	 * @return list adapter
 	 */
 	public BaseServiceAdapter<ZabbixServer> getServersSelectionAdapter() {
@@ -523,36 +502,12 @@ public class ZabbixDataService extends Service {
 		Log.d(TAG, "onCreate");
 
 		mPreferences = ZaxPreferences.getInstance(getApplicationContext());
-<<<<<<< HEAD
 		mCurrentZabbixServerId = mPreferences.getServerSelection();
-=======
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 
 		// set up adapters
 		mServersListSelectionAdapter = new ServersListSelectionAdapter(this);
 		mServersListManagementAdapter = new ServersListManagementAdapter(this);
 
-<<<<<<< HEAD
-=======
-		if (mPreferences.getServers() == null) {
-			TreeSet<ZabbixServer> serverSet = new TreeSet<ZabbixServer>();
-			ZabbixServer server = new ZabbixServer("Zabbix local",
-					"http://10.10.0.21/zabbix", "admin", "zabbix", false, true,
-					"http", "pass");
-			ZabbixServer server2 = new ZabbixServer("MozBx",
-					"http://www.mozbx.net/zabbix", "demo", "demo", false,
-					false, null, null);
-
-			serverSet.add(server);
-			serverSet.add(server2);
-
-			mPreferences.setServers(serverSet);
-		}
-
-		mServersListSelectionAdapter.addAll(mPreferences.getServers());
-		mServersListManagementAdapter.addAll(mPreferences.getServers());
-
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 		mEventsListPagerAdapter = new EventsListPagerAdapter(this);
 		mEventsListAdapters = new HashMap<TriggerSeverity, EventsListAdapter>(
 				TriggerSeverity.values().length);

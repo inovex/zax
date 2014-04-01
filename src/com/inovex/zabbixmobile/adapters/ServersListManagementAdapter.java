@@ -41,11 +41,6 @@ public class ServersListManagementAdapter extends
 
 		viewHolder.name.setText(server.getName());
 
-<<<<<<< HEAD
-=======
-		viewHolder.url.setText(server.getUrl());
-
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 		return row;
 	}
 

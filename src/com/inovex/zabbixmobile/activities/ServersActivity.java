@@ -1,6 +1,5 @@
 package com.inovex.zabbixmobile.activities;
 
-<<<<<<< HEAD
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -13,46 +12,30 @@ import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.widget.EditText;
-=======
-import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 import android.widget.ViewFlipper;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-<<<<<<< HEAD
 import com.actionbarsherlock.view.Menu;
-=======
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ServersDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ServersListFragment;
-<<<<<<< HEAD
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
-=======
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 import com.inovex.zabbixmobile.listeners.OnServerSelectedListener;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 
-<<<<<<< HEAD
 public class ServersActivity extends SherlockFragmentActivity implements OnServerSelectedListener, ServiceConnection {
 
 	private static final String TAG = "ServersActivity";
-=======
-public class ServersActivity extends SherlockFragmentActivity implements OnServerSelectedListener {
-
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 	private ActionBar mActionBar;
 	private ViewFlipper mFlipper;
 	private ServersDetailsFragment mDetailsFragment;
 	private ServersListFragment mListFragment;
 	private FragmentManager mFragmentManager;
 
-<<<<<<< HEAD
 	protected ZabbixDataService mZabbixDataService;
 
 	@SuppressLint("ValidFragment")
@@ -72,8 +55,6 @@ public class ServersActivity extends SherlockFragmentActivity implements OnServe
 		mZabbixDataService = null;
 	}
 
-=======
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		ZaxPreferences prefs = ZaxPreferences
@@ -85,11 +66,8 @@ public class ServersActivity extends SherlockFragmentActivity implements OnServe
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_servers);
 
-<<<<<<< HEAD
 		bindService();
 
-=======
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 		mActionBar = getSupportActionBar();
 
 		if (mActionBar != null) {
@@ -106,7 +84,6 @@ public class ServersActivity extends SherlockFragmentActivity implements OnServe
 				.findFragmentById(R.id.servers_list);
 	}
 
-<<<<<<< HEAD
 	/**
 	 * This unbinds the service if the application is exiting.
 	 */
@@ -135,25 +112,19 @@ public class ServersActivity extends SherlockFragmentActivity implements OnServe
 	}
 
 
-=======
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();
 			return true;
-<<<<<<< HEAD
 		case R.id.menuitem_add_server:
 			openNewServerDialog();
 			return true;
-=======
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-<<<<<<< HEAD
 	private void openNewServerDialog() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -199,11 +170,6 @@ public class ServersActivity extends SherlockFragmentActivity implements OnServe
 		Log.d(TAG, "bbb="+server.getId());
 		intent.putExtra(ZabbixServerPreferenceActivity.ARG_ZABBIX_SERVER_ID, server.getId());
 		startActivity(intent);
-=======
-	@Override
-	public void onServerSelected(ZabbixServer server) {
-		mDetailsFragment.setServer(server);
->>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 	}
 
 }
