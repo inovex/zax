@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.ProblemsActivity;
-import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.pubnub.api.Callback;
 import com.pubnub.api.Pubnub;
 import com.pubnub.api.PubnubError;
@@ -416,6 +415,8 @@ public class PushService extends Service {
 	 * @param context
 	 */
 	public static void startOrStopPushService(Context context, boolean ignoreAlarm) {
+		//TODO
+/*
 		// start the push receiver, if it is enabled
 		ZaxPreferences preferences = ZaxPreferences.getInstance(context);
 		boolean push = preferences.isPushEnabled();
@@ -442,7 +443,7 @@ public class PushService extends Service {
 			if (!ignoreAlarm) stopRepeatingAlarm(pendingIntent);
 			context.stopService(intent);
 		}
-
+*/
 	}
 
 	public static void killPushService(Context context) {

@@ -1,7 +1,6 @@
 package com.inovex.zabbixmobile.data;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -17,20 +16,13 @@ import android.widget.RemoteViews;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.ProblemsActivity;
-import com.inovex.zabbixmobile.exceptions.FatalException;
-import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
-import com.inovex.zabbixmobile.model.Cache.CacheDataType;
-import com.inovex.zabbixmobile.model.HostGroup;
-import com.inovex.zabbixmobile.model.Trigger;
-import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProvider;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProviderList;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 /**
  * Started service providing the homescreen widget with functionality to
  * retrieve data from Zabbix (at the moment the active triggers).
- * 
+ *
  */
 public class HomescreenWidgetService extends Service {
 	public static final String WIDGET_ID = "WIDGET_ID";
@@ -40,7 +32,7 @@ public class HomescreenWidgetService extends Service {
 				R.drawable.severity_average), HIGH(R.drawable.severity_high), LOADING(
 				R.drawable.icon);
 
-		private int drawable;
+		private final int drawable;
 
 		DisplayStatus(int drawable) {
 			this.drawable = drawable;
@@ -61,6 +53,8 @@ public class HomescreenWidgetService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
+		// TODO
+		/*
 		Log.d(TAG, "onStart");
 		final int widgetId = intent.getIntExtra(WIDGET_ID, -1);
 		updateView(null, getResources().getString(R.string.widget_loading),
@@ -163,6 +157,7 @@ public class HomescreenWidgetService extends Service {
 		importProblemsTask.execute();
 
 		stopSelf();
+		*/
 	}
 
 	@Override

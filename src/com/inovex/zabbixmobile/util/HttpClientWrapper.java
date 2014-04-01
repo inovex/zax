@@ -12,7 +12,7 @@ import org.apache.http.params.HttpParams;
 
 /**
  * Convenience class for dealing with an HTTP client.
- * 
+ *
  */
 public class HttpClientWrapper {
 	private final AbstractHttpClient mHttpClient;
@@ -33,4 +33,6 @@ public class HttpClientWrapper {
 			IOException {
 		return mHttpClient.execute(post);
 	}
+
+
 }

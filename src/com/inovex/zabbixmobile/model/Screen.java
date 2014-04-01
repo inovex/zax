@@ -17,6 +17,11 @@ public class Screen implements Comparable<Screen> {
 	@DatabaseField(columnName = COLUMN_NAME)
 	String name;
 
+	/** zabbix server */
+	public static final String COLUMN_ZABBIXSERVER_ID = "zabbixserverid";
+	@DatabaseField(columnName = COLUMN_ZABBIXSERVER_ID)
+	private Long zabbixServerId;
+
 	Collection<Graph> graphs;
 
 	public Screen() {
@@ -53,6 +58,14 @@ public class Screen implements Comparable<Screen> {
 		if (another.getId() > id)
 			return -1;
 		return 0;
+	}
+
+	public Long getZabbixServerId() {
+		return zabbixServerId;
+	}
+
+	public void setZabbixServerId(Long zabbixServerId) {
+		this.zabbixServerId = zabbixServerId;
 	}
 
 }

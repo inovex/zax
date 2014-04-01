@@ -57,7 +57,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final String DATABASE_NAME = "zabbixmobile2.db";
 	// any time you make changes to your database objects, you may have to
 	// increase the database version
-	private static final int DATABASE_VERSION = 7;
+	private static final int DATABASE_VERSION = 9;
 	private static final String TAG = DatabaseHelper.class.getSimpleName();
 	private DatabaseConnection mThreadConnection;
 	private final Context mContext;
@@ -213,29 +213,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 *
 	 * @return list of all host groups
 	 */
-	public List<HostGroup> getHostGroups() {
+	public List<HostGroup> getHostGroups(long zabbixServerId) {
 		try {
 			Dao<HostGroup, Long> hostGroupDao = getDao(HostGroup.class);
-			return hostGroupDao.queryForAll();
+			return hostGroupDao.queryBuilder().where().eq(HostGroup.COLUMN_ZABBIXSERVER_ID, zabbixServerId).query();
 		} catch (SQLException e) {
 			handleException(new FatalException(Type.INTERNAL_ERROR, e));
 		}
 		return new ArrayList<HostGroup>();
-	}
-
-	/**
-	 * Queries all hosts from the database.
-	 *
-	 * @return list of all hosts
-	 */
-	public List<Host> getHosts() {
-		try {
-			Dao<Host, Long> hostDao = getDao(Host.class);
-			return hostDao.queryForAll();
-		} catch (SQLException e) {
-			handleException(new FatalException(Type.INTERNAL_ERROR, e));
-		}
-		return new ArrayList<Host>();
 	}
 
 	/**
@@ -351,21 +336,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			handleException(new FatalException(Type.INTERNAL_ERROR, e));
 		}
 		return null;
-	}
-
-	/**
-	 * Queries all applications from the database.
-	 *
-	 * @return list of all applications
-	 */
-	public List<Application> getApplications() {
-		try {
-			Dao<Application, Long> appDao = getDao(Application.class);
-			return appDao.queryForAll();
-		} catch (SQLException e) {
-			handleException(new FatalException(Type.INTERNAL_ERROR, e));
-		}
-		return new ArrayList<Application>();
 	}
 
 	/**
@@ -500,10 +470,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 *
 	 * @return list of screens
 	 */
-	public List<Screen> getScreens() {
+	public List<Screen> getScreens(long zabbixServerId) {
 		try {
 			Dao<Screen, Long> screenDao = getDao(Screen.class);
-			return screenDao.queryForAll();
+			return screenDao.queryBuilder().where().eq(Screen.COLUMN_ZABBIXSERVER_ID, zabbixServerId).query();
 		} catch (SQLException e) {
 			handleException(new FatalException(Type.INTERNAL_ERROR, e));
 		}
@@ -1037,6 +1007,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void clearAllData() {
 		try {
 			for (Class<?> table : mTables) {
+				if (table.getSimpleName().equals("ZabbixServer")) continue;
 				clearTable(table);
 			}
 		} catch (SQLException e) {
@@ -1386,7 +1357,27 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			Savepoint savePoint = null;
 			try {
 
-				dao.createOrUpdate(srv);
+				dao.create(srv);
+
+			} finally {
+				// commit at the end
+				savePoint = mThreadConnection.setSavePoint(null);
+				mThreadConnection.commit(savePoint);
+				dao.endThreadConnection(mThreadConnection);
+			}
+		} catch (SQLException e) {
+			handleException(new FatalException(Type.INTERNAL_ERROR, e));
+		}
+	}
+
+	public void updateZabbixServer(ZabbixServer srv) {
+		try {
+			Dao<ZabbixServer, Long> dao = getDao(ZabbixServer.class);
+			mThreadConnection = dao.startThreadConnection();
+			Savepoint savePoint = null;
+			try {
+
+				dao.update(srv);
 
 			} finally {
 				// commit at the end

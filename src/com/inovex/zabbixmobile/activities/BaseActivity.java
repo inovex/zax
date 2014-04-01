@@ -118,7 +118,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		mZabbixDataService.loadZabbixServers(); // sync
 
 		ZaxPreferences preferences = ZaxPreferences.getInstance(this);
-		if (preferences.isDefault()) {
+		// TODO no server config
+		if (false) {
 			new DialogFragment() {
 
 				@Override
@@ -416,7 +417,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	/**
 	 * Clears all cached data and performs a fresh login.
 	 */
-	protected void refreshData() {
+	public void refreshData() {
 		mZabbixDataService.clearAllData();
 		mZabbixDataService.performZabbixLogout();
 		// re-login and load host groups

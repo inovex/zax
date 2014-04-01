@@ -1,9 +1,13 @@
 package com.inovex.zabbixmobile.adapters;
 
 import android.view.View;
+<<<<<<< HEAD
+import android.view.ViewGroup;
+=======
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
+>>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
@@ -18,7 +22,11 @@ public class ServersListSelectionAdapter extends BaseServiceAdapter<ZabbixServer
 
 	@Override
 	public long getItemId(int position) {
+<<<<<<< HEAD
+		return getItem(position).getId();
+=======
 		return position;
+>>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 	}
 
 	@Override
@@ -28,12 +36,21 @@ public class ServersListSelectionAdapter extends BaseServiceAdapter<ZabbixServer
 		if (row == null) {
 			row = getInflater().inflate(R.layout.list_item_servers_selection, parent, false);
 		}
+<<<<<<< HEAD
+
+		ZabbixServer server = getItem(position);
+
+		TextView name = (TextView)row.findViewById(R.id.server_name);
+		name.setText(server.getName());
+
+=======
 		
 		ZabbixServer server = getItem(position);
 		
 		TextView name = (TextView)row.findViewById(R.id.server_name);
 		name.setText(server.getName());
 		
+>>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 		row.setTag(position);
 		return row;
 	}

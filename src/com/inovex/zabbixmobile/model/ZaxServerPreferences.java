@@ -23,12 +23,16 @@ public class ZaxServerPreferences {
 	private void loadPrefs() {
 		Editor edit = mPref.edit();
 		edit.putString("zabbix_url", getZabbixUrl());
+		edit.putString("zabbix_username", getUsername());
+		edit.putString("zabbix_password", getPassword());
 		edit.commit();
 	}
 
 	public void savePrefs() {
 		Editor edit = mPref.edit();
 		edit.putString(serverId+"zabbix_url", mPref.getString("zabbix_url", null));
+		edit.putString(serverId+"zabbix_username", mPref.getString("zabbix_username", null));
+		edit.putString(serverId+"zabbix_password", mPref.getString("zabbix_password", null));
 		edit.commit();
 	}
 
@@ -38,11 +42,11 @@ public class ZaxServerPreferences {
 	}
 
 	public String getUsername() {
-		return mPref.getString("zabbix_username", "");
+		return mPref.getString(serverId+"zabbix_username", "");
 	}
 
 	public String getPassword() {
-		return mPref.getString("zabbix_password", "");
+		return mPref.getString(serverId+"zabbix_password", "");
 	}
 
 	public boolean isTrustAllSSLCA() {

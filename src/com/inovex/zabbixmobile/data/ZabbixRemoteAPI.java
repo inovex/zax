@@ -83,14 +83,14 @@ import com.inovex.zabbixmobile.model.ScreenItem;
 import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.inovex.zabbixmobile.model.ZaxPreferences;
+import com.inovex.zabbixmobile.model.ZaxServerPreferences;
 import com.inovex.zabbixmobile.util.HttpClientWrapper;
 import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
 
 /**
  * This class encapsulates all calls to the Zabbix API.
- * 
+ *
  */
 public class ZabbixRemoteAPI {
 	private static final String API_PHP = "api_jsonrpc.php";
@@ -169,7 +169,7 @@ public class ZabbixRemoteAPI {
 
 	private HttpClientWrapper httpClient;
 	private final DatabaseHelper databaseHelper;
-	private final ZaxPreferences mPreferences;
+	private final ZaxServerPreferences mPreferences;
 	private String zabbixUrl;
 	private final Context mContext;
 	/**
@@ -178,22 +178,25 @@ public class ZabbixRemoteAPI {
 	 * matches the program version.
 	 */
 	private String apiVersion = "";
+	private final long mCurrentZabbixServerId;
 
 	/**
 	 * init
-	 * 
+	 *
 	 * @param context
 	 *            android context
 	 * @param databaseHelper
 	 *            OrmLite database helper
 	 */
-	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper,
-			HttpClientWrapper httpClientMock, ZaxPreferences prefsMock) {
+	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper, long zabbixServerId,
+			HttpClientWrapper httpClientMock, ZaxServerPreferences prefsMock) {
+
+		mCurrentZabbixServerId = zabbixServerId;
 
 		if (prefsMock != null) {
 			mPreferences = prefsMock;
 		} else {
-			mPreferences = ZaxPreferences.getInstance(context);
+			mPreferences = new ZaxServerPreferences(context, zabbixServerId);
 		}
 
 		if (httpClientMock != null) {
@@ -268,7 +271,7 @@ public class ZabbixRemoteAPI {
 	/**
 	 * zabbix api call. data will be parsed as json object on-the-fly. Caution:
 	 * use this only for api calls with a small return data.
-	 * 
+	 *
 	 * @param method
 	 * @param params
 	 * @return
@@ -354,7 +357,7 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * zabbix api call as stream.
-	 * 
+	 *
 	 * @param method
 	 * @param params
 	 * @return stream im json array wrapper
@@ -452,7 +455,7 @@ public class ZabbixRemoteAPI {
 	/**
 	 * Checks the status code of an HTTP response and throws the appropriate
 	 * exception if an error occurs.
-	 * 
+	 *
 	 * @param resp
 	 *            the HttpResponse to check
 	 * @throws FatalException
@@ -480,7 +483,7 @@ public class ZabbixRemoteAPI {
 	/**
 	 * acknowledge zabbix event. Sets ack-flag with comment. Caution: This is
 	 * supported only for Zabbix version >= 1.8.4
-	 * 
+	 *
 	 * @param eventid
 	 * @param comment
 	 * @return true, success.
@@ -521,7 +524,7 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * zabbix auth. user and pwd from app preferences
-	 * 
+	 *
 	 * @return true success
 	 * @throws ZabbixLoginRequiredException
 	 * @throws FatalException
@@ -533,6 +536,8 @@ public class ZabbixRemoteAPI {
 		// String url = "http://10.10.0.21/zabbix";
 		// String user = "admin";
 		// String password = "zabbix";
+
+		Log.d(TAG, "u:"+user+"/"+password);
 
 		String token = null;
 		try {
@@ -583,7 +588,7 @@ public class ZabbixRemoteAPI {
 	/**
 	 * Imports all applications for a particular host from Zabbix. This does not
 	 * include any items; they have to be imported separately.
-	 * 
+	 *
 	 * @param hostId
 	 *            host ID to filter the applications by; null: no filtering
 	 * @param task
@@ -640,7 +645,7 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * Imports applications from a JSON stream.
-	 * 
+	 *
 	 * @param jsonReader
 	 *            JSON stream reader
 	 * @param task
@@ -729,7 +734,7 @@ public class ZabbixRemoteAPI {
 	/**
 	 * Imports applications from a JSON stream containing an array of IDs. The
 	 * applications are queried from the database.
-	 * 
+	 *
 	 * @param jsonReader
 	 *            JSON stream reader
 	 * @throws JsonParseException
@@ -766,10 +771,10 @@ public class ZabbixRemoteAPI {
 	/**
 	 * Import the newest events if they are not cached in the local database
 	 * already.
-	 * 
+	 *
 	 * @param task
 	 *            task to notify about progress
-	 * 
+	 *
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 */
@@ -835,7 +840,7 @@ public class ZabbixRemoteAPI {
 	 * Returns the number of objects returned by an API call using countOutput.
 	 * Usually, the numer is returned directly, but in Zabbix 1.8, the parameter
 	 * "rowscount" may be used (e.g. event.get).
-	 * 
+	 *
 	 * @param result
 	 *            result of the API call
 	 * @return number of objects
@@ -859,13 +864,13 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * Imports events from a JSON stream.
-	 * 
+	 *
 	 * This method calls
 	 * {@link ZabbixRemoteAPI#importTriggersByIds(Collection, boolean)} to
 	 * import the triggers referred to by the events. The usage of
 	 * triggers.extend in the event.get method does not suffice because we need
 	 * the host groups associated with the triggers for the hostgroup filter.
-	 * 
+	 *
 	 * @param jsonReader
 	 *            JSON stream reader
 	 * @param task
@@ -959,7 +964,7 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * Imports history details for an item.
-	 * 
+	 *
 	 * @param itemId
 	 * @param task
 	 *            task to be notified about the progress; may be null if no task
@@ -1093,7 +1098,7 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * Imports host groups from a JSON stream.
-	 * 
+	 *
 	 * @param jsonReader
 	 *            JSON stream reader
 	 * @param insertHostGroups
@@ -1109,6 +1114,7 @@ public class ZabbixRemoteAPI {
 		JsonObjectReader hostReader;
 		while ((hostReader = jsonReader.next()) != null) {
 			HostGroup h = new HostGroup();
+			h.setZabbixServerId(mCurrentZabbixServerId);
 			while (hostReader.nextValueToken()) {
 				String propName = hostReader.getCurrentName();
 				if (propName.equals(HostGroup.COLUMN_GROUPID)) {
@@ -1141,10 +1147,10 @@ public class ZabbixRemoteAPI {
 	/**
 	 * Imports hosts from a JSON stream and returns a string of comma-separated
 	 * host names.
-	 * 
+	 *
 	 * This method also fills the host to host group relation if a host's groups
 	 * have been selected.
-	 * 
+	 *
 	 * @param jsonReader
 	 *            JSON stream reader
 	 * @param insertHosts
@@ -1211,9 +1217,9 @@ public class ZabbixRemoteAPI {
 	/**
 	 * Imports all hosts and their host groups. This also fills the host to host
 	 * group relation table ({@link HostHostGroupRelation}.
-	 * 
+	 *
 	 * ATTENTION: empty host groups are not imported!
-	 * 
+	 *
 	 * @throws ZabbixLoginRequiredException
 	 * @throws FatalException
 	 */
@@ -1253,7 +1259,7 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * import items from stream.
-	 * 
+	 *
 	 * @param jsonReader
 	 *            stream
 	 * @param task
@@ -1382,7 +1388,7 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * Imports all items for a particular host from Zabbix.
-	 * 
+	 *
 	 * @param hostId
 	 *            host ID to filter the applications by; null: no filtering
 	 * @param task
@@ -1473,7 +1479,7 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * Imports screens from Zabbix.
-	 * 
+	 *
 	 * @throws ZabbixLoginRequiredException
 	 * @throws FatalException
 	 */
@@ -1498,6 +1504,7 @@ public class ZabbixRemoteAPI {
 			ArrayList<Screen> screensComplete = new ArrayList<Screen>();
 			while ((screenReader = jsonReader.next()) != null) {
 				Screen screen = new Screen();
+				screen.setZabbixServerId(mCurrentZabbixServerId);
 				while (screenReader.nextValueToken()) {
 					String propName = screenReader.getCurrentName();
 					if (propName.equals(Screen.COLUMN_SCREENID)) {
@@ -1532,7 +1539,7 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * import graph items
-	 * 
+	 *
 	 * @param graphItems
 	 * @return true, if graphid column has to be updated from -1 to the correct
 	 *         graphid later.
@@ -1572,7 +1579,7 @@ public class ZabbixRemoteAPI {
 	/**
 	 * Imports all graphs for a particular screen from Zabbix. This includes
 	 * graph items and the corresponding items.
-	 * 
+	 *
 	 * @param screen
 	 * @throws ZabbixLoginRequiredException
 	 * @throws FatalException
@@ -1664,10 +1671,10 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * Imports active triggers.
-	 * 
+	 *
 	 * @param task
 	 *            task to be notified of progress
-	 * 
+	 *
 	 * @throws ZabbixLoginRequiredException
 	 * @throws FatalException
 	 */
@@ -1681,20 +1688,20 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * Imports the triggers with matching IDs.
-	 * 
+	 *
 	 * We do not need to take care of caching here, because this method is
 	 * called in two situations:
-	 * 
+	 *
 	 * 1. Import of events. If events (and the corresponding triggers) are
 	 * cached, the method {@link ZabbixRemoteAPI#importEvents()} does not call
 	 * this method at all. Hence the caching of the corresponding triggers is
 	 * directly linked to caching of the events (just like triggers are linked
 	 * to events in the data model).
-	 * 
+	 *
 	 * 2. Import of all active triggers. The method
 	 * {@link ZabbixRemoteAPI#importActiveTriggers()} takes care of caching by
 	 * itself.
-	 * 
+	 *
 	 * @param triggerIds
 	 *            collection of trigger ids to be matched; null: import all
 	 *            triggers
@@ -1768,10 +1775,10 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * Imports triggers from a JSON stream.
-	 * 
+	 *
 	 * If groups are selected, the trigger to hostgroup relation (
 	 * {@link TriggerHostGroupRelation} is filled.
-	 * 
+	 *
 	 * @param jsonReader
 	 *            JSON stream reader
 	 * @param numTriggers
@@ -1893,7 +1900,7 @@ public class ZabbixRemoteAPI {
 	/**
 	 * Creates a comma-separated string containing the names of all hosts in the
 	 * given list.
-	 * 
+	 *
 	 * @param hosts
 	 *            list of hosts
 	 * @return comma-separated host names
@@ -1922,7 +1929,7 @@ public class ZabbixRemoteAPI {
 
 	/**
 	 * Validates the Zabbix URL.
-	 * 
+	 *
 	 * @throws FatalException
 	 *             type SERVER_NOT_FOUND, if the URL is null or equal to the
 	 *             default example URL

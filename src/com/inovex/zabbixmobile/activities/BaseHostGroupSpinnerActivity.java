@@ -128,7 +128,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	}
 
 	@Override
-	protected void refreshData() {
+	public void refreshData() {
 		mFirstCall = true;
 		super.refreshData();
 	}

@@ -1,6 +1,7 @@
 package com.inovex.zabbixmobile.activities.fragments;
 
 import android.app.Activity;
+<<<<<<< HEAD
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -14,6 +15,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.inovex.zabbixmobile.R;
+=======
+import android.view.View;
+import android.widget.ListView;
+
+>>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.listeners.OnServerSelectedListener;
 import com.inovex.zabbixmobile.model.ZabbixServer;
@@ -34,6 +40,7 @@ public class ServersListFragment extends BaseServiceConnectedListFragment {
 					+ " must implement OnServerSelectedListener.");
 		}
 	}
+<<<<<<< HEAD
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -54,6 +61,9 @@ public class ServersListFragment extends BaseServiceConnectedListFragment {
 		inflater.inflate(R.menu.zabbix_servers_list_context, menu);
 	}
 
+=======
+	
+>>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
@@ -67,6 +77,7 @@ public class ServersListFragment extends BaseServiceConnectedListFragment {
 		setListAdapter(mServersListAdapter);
 	}
 
+<<<<<<< HEAD
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
@@ -139,4 +150,6 @@ public class ServersListFragment extends BaseServiceConnectedListFragment {
 
 		alert.show();
 	}
+=======
+>>>>>>> ed6f38d3ab663b2f3aa357cbc858f0d24717f20b
 }

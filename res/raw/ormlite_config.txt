@@ -1,25 +1,23 @@
 #
-# generated on 2014/02/13 03:31:20
+# generated on 2014/03/31 05:29:59
 #
 # --table-start--
-dataClass=com.inovex.zabbixmobile.model.Application
-tableName=applications
+dataClass=com.inovex.zabbixmobile.model.ScreenItem
+tableName=screenitems
 # --table-fields-start--
 # --field-start--
 fieldName=id
-columnName=applicationid
+columnName=screenitemid
 id=true
 # --field-end--
 # --field-start--
-fieldName=host
-columnName=hostid
-foreign=true
-indexName=applications_hostid_idx
-foreignAutoRefresh=true
+fieldName=screenId
+columnName=screenid
+indexName=screenitems_screenid_idx
 # --field-end--
 # --field-start--
-fieldName=name
-columnName=name
+fieldName=resourceId
+columnName=resourceid
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -54,119 +52,6 @@ foreignAutoRefresh=true
 # --table-end--
 #################################
 # --table-start--
-dataClass=com.inovex.zabbixmobile.model.Cache
-tableName=cache
-# --table-fields-start--
-# --field-start--
-fieldName=id
-generatedId=true
-# --field-end--
-# --field-start--
-fieldName=type
-columnName=type
-uniqueIndexName=cache_idx
-# --field-end--
-# --field-start--
-fieldName=itemId
-columnName=item_id
-uniqueIndexName=cache_idx
-# --field-end--
-# --field-start--
-fieldName=expireTime
-# --field-end--
-# --table-fields-end--
-# --table-end--
-#################################
-# --table-start--
-dataClass=com.inovex.zabbixmobile.model.Event
-tableName=events
-# --table-fields-start--
-# --field-start--
-fieldName=id
-columnName=eventid
-id=true
-# --field-end--
-# --field-start--
-fieldName=objectId
-columnName=objectid
-# --field-end--
-# --field-start--
-fieldName=trigger
-columnName=triggerid
-foreign=true
-foreignAutoRefresh=true
-foreignAutoCreate=true
-# --field-end--
-# --field-start--
-fieldName=clock
-columnName=clock
-# --field-end--
-# --field-start--
-fieldName=value
-columnName=value
-# --field-end--
-# --field-start--
-fieldName=acknowledged
-columnName=acknowledged
-# --field-end--
-# --field-start--
-fieldName=hostNames
-# --field-end--
-# --table-fields-end--
-# --table-end--
-#################################
-# --table-start--
-dataClass=com.inovex.zabbixmobile.model.Graph
-tableName=graphs
-# --table-fields-start--
-# --field-start--
-fieldName=id
-columnName=graphid
-id=true
-# --field-end--
-# --field-start--
-fieldName=name
-columnName=name
-# --field-end--
-# --field-start--
-fieldName=graphItems
-columnName=graphitems
-foreignCollection=true
-foreignCollectionEager=true
-foreignCollectionColumnName=graphitems
-# --field-end--
-# --table-fields-end--
-# --table-end--
-#################################
-# --table-start--
-dataClass=com.inovex.zabbixmobile.model.GraphItem
-tableName=graphitems
-# --table-fields-start--
-# --field-start--
-fieldName=id
-columnName=graphitemid
-id=true
-unique=true
-# --field-end--
-# --field-start--
-fieldName=item
-columnName=itemid
-foreign=true
-foreignAutoRefresh=true
-# --field-end--
-# --field-start--
-fieldName=graph
-columnName=graphid
-foreign=true
-# --field-end--
-# --field-start--
-fieldName=color
-columnName=color
-# --field-end--
-# --table-fields-end--
-# --table-end--
-#################################
-# --table-start--
 dataClass=com.inovex.zabbixmobile.model.HistoryDetail
 tableName=historydetails
 # --table-fields-start--
@@ -187,65 +72,6 @@ columnName=clock
 # --field-start--
 fieldName=value
 columnName=value
-# --field-end--
-# --table-fields-end--
-# --table-end--
-#################################
-# --table-start--
-dataClass=com.inovex.zabbixmobile.model.Host
-tableName=hosts
-# --table-fields-start--
-# --field-start--
-fieldName=id
-columnName=hostid
-id=true
-# --field-end--
-# --field-start--
-fieldName=name
-columnName=host
-# --field-end--
-# --field-start--
-fieldName=status
-columnName=status
-# --field-end--
-# --table-fields-end--
-# --table-end--
-#################################
-# --table-start--
-dataClass=com.inovex.zabbixmobile.model.HostGroup
-tableName=hostgroups
-# --table-fields-start--
-# --field-start--
-fieldName=groupId
-columnName=groupid
-id=true
-# --field-end--
-# --field-start--
-fieldName=name
-columnName=name
-# --field-end--
-# --table-fields-end--
-# --table-end--
-#################################
-# --table-start--
-dataClass=com.inovex.zabbixmobile.model.HostHostGroupRelation
-tableName=host_hostgroup_relation
-# --table-fields-start--
-# --field-start--
-fieldName=id
-generatedId=true
-# --field-end--
-# --field-start--
-fieldName=host
-columnName=hostid
-foreign=true
-uniqueIndexName=host_group_idx
-# --field-end--
-# --field-start--
-fieldName=group
-columnName=groupid
-foreign=true
-uniqueIndexName=host_group_idx
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -293,6 +119,104 @@ columnName=status
 # --table-end--
 #################################
 # --table-start--
+dataClass=com.inovex.zabbixmobile.model.Graph
+tableName=graphs
+# --table-fields-start--
+# --field-start--
+fieldName=id
+columnName=graphid
+id=true
+# --field-end--
+# --field-start--
+fieldName=name
+columnName=name
+# --field-end--
+# --field-start--
+fieldName=graphItems
+columnName=graphitems
+foreignCollection=true
+foreignCollectionEager=true
+foreignCollectionColumnName=graphitems
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.Application
+tableName=applications
+# --table-fields-start--
+# --field-start--
+fieldName=id
+columnName=applicationid
+id=true
+# --field-end--
+# --field-start--
+fieldName=host
+columnName=hostid
+foreign=true
+indexName=applications_hostid_idx
+foreignAutoRefresh=true
+# --field-end--
+# --field-start--
+fieldName=name
+columnName=name
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.Cache
+tableName=cache
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=type
+columnName=type
+uniqueIndexName=cache_idx
+# --field-end--
+# --field-start--
+fieldName=itemId
+columnName=item_id
+uniqueIndexName=cache_idx
+# --field-end--
+# --field-start--
+fieldName=expireTime
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.GraphItem
+tableName=graphitems
+# --table-fields-start--
+# --field-start--
+fieldName=id
+columnName=graphitemid
+id=true
+unique=true
+# --field-end--
+# --field-start--
+fieldName=item
+columnName=itemid
+foreign=true
+foreignAutoRefresh=true
+# --field-end--
+# --field-start--
+fieldName=graph
+columnName=graphid
+foreign=true
+# --field-end--
+# --field-start--
+fieldName=color
+columnName=color
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
 dataClass=com.inovex.zabbixmobile.model.Screen
 tableName=screens
 # --table-fields-start--
@@ -305,26 +229,106 @@ id=true
 fieldName=name
 columnName=name
 # --field-end--
+# --field-start--
+fieldName=zabbixServerId
+columnName=zabbixserverid
+# --field-end--
 # --table-fields-end--
 # --table-end--
 #################################
 # --table-start--
-dataClass=com.inovex.zabbixmobile.model.ScreenItem
-tableName=screenitems
+dataClass=com.inovex.zabbixmobile.model.ZabbixServer
+tableName=zabbixservers
 # --table-fields-start--
 # --field-start--
 fieldName=id
-columnName=screenitemid
+columnName=zabbixserverid
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=name
+columnName=name
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.TriggerHostGroupRelation
+tableName=trigger_hostgroup_relation
+# --table-fields-start--
+# --field-start--
+fieldName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=trigger
+columnName=triggerid
+foreign=true
+uniqueIndexName=trigger_group_idx
+# --field-end--
+# --field-start--
+fieldName=group
+columnName=groupid
+foreign=true
+uniqueIndexName=trigger_group_idx
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.HostGroup
+tableName=hostgroups
+# --table-fields-start--
+# --field-start--
+fieldName=groupId
+columnName=groupid
 id=true
 # --field-end--
 # --field-start--
-fieldName=screenId
-columnName=screenid
-indexName=screenitems_screenid_idx
+fieldName=name
+columnName=name
 # --field-end--
 # --field-start--
-fieldName=resourceId
-columnName=resourceid
+fieldName=zabbixServerId
+columnName=zabbixserverid
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.Event
+tableName=events
+# --table-fields-start--
+# --field-start--
+fieldName=id
+columnName=eventid
+id=true
+# --field-end--
+# --field-start--
+fieldName=objectId
+columnName=objectid
+# --field-end--
+# --field-start--
+fieldName=trigger
+columnName=triggerid
+foreign=true
+foreignAutoRefresh=true
+foreignAutoCreate=true
+# --field-end--
+# --field-start--
+fieldName=clock
+columnName=clock
+# --field-end--
+# --field-start--
+fieldName=value
+columnName=value
+# --field-end--
+# --field-start--
+fieldName=acknowledged
+columnName=acknowledged
+# --field-end--
+# --field-start--
+fieldName=hostNames
 # --field-end--
 # --table-fields-end--
 # --table-end--
@@ -388,24 +392,44 @@ fieldName=hostNames
 # --table-end--
 #################################
 # --table-start--
-dataClass=com.inovex.zabbixmobile.model.TriggerHostGroupRelation
-tableName=trigger_hostgroup_relation
+dataClass=com.inovex.zabbixmobile.model.Host
+tableName=hosts
+# --table-fields-start--
+# --field-start--
+fieldName=id
+columnName=hostid
+id=true
+# --field-end--
+# --field-start--
+fieldName=name
+columnName=host
+# --field-end--
+# --field-start--
+fieldName=status
+columnName=status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.inovex.zabbixmobile.model.HostHostGroupRelation
+tableName=host_hostgroup_relation
 # --table-fields-start--
 # --field-start--
 fieldName=id
 generatedId=true
 # --field-end--
 # --field-start--
-fieldName=trigger
-columnName=triggerid
+fieldName=host
+columnName=hostid
 foreign=true
-uniqueIndexName=trigger_group_idx
+uniqueIndexName=host_group_idx
 # --field-end--
 # --field-start--
 fieldName=group
 columnName=groupid
 foreign=true
-uniqueIndexName=trigger_group_idx
+uniqueIndexName=host_group_idx
 # --field-end--
 # --table-fields-end--
 # --table-end--
