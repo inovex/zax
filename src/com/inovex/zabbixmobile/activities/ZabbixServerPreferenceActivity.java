@@ -64,7 +64,7 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 				activityResult);
 
 		long zabbixServer = getIntent().getLongExtra(ARG_ZABBIX_SERVER_ID, -1);
-		mPrefs = new ZaxServerPreferences(getApplicationContext(), zabbixServer);
+		mPrefs = new ZaxServerPreferences(getApplicationContext(), zabbixServer, false);
 
 		addPreferencesFromResource(R.xml.preferences);
 	}

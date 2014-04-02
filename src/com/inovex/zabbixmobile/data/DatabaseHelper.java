@@ -125,9 +125,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			srv.setName("Default server");
 			insertZabbixServer(srv);
 
-			ZaxPreferences.getInstance(mContext).migrateServerPreferences(srv.getId());
-
-			//TODO select new server
+			ZaxPreferences.getInstance(mContext).migrateServerPreferences(mContext, srv.getId());
+			ZaxPreferences.getInstance(mContext).setServerSelection(srv.getId());
 		}
 	}
 

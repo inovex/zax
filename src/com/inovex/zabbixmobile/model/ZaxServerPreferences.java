@@ -11,13 +11,13 @@ public class ZaxServerPreferences {
 	private final SharedPreferences mPref;
 	private final long serverId;
 
-	public ZaxServerPreferences(Context context, long serverId) {
+	public ZaxServerPreferences(Context context, long serverId, boolean notLoadPrefs) {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		mPref = pref;
 		this.serverId = serverId;
 
-		loadPrefs();
+		if (!notLoadPrefs) loadPrefs();
 	}
 
 	private void loadPrefs() {
@@ -25,14 +25,31 @@ public class ZaxServerPreferences {
 		edit.putString("zabbix_url", getZabbixUrl());
 		edit.putString("zabbix_username", getUsername());
 		edit.putString("zabbix_password", getPassword());
+		edit.putBoolean("zabbix_trust_all_ssl_ca", isTrustAllSSLCA());
+		edit.putBoolean("http_auth_enabled", isHttpAuthEnabled());
+		edit.putString("http_auth_username", getHttpAuthUsername());
+		edit.putString("http_auth_password", getHttpAuthPassword());
+		edit.putBoolean("zabbix_push_enabled", isPushEnabled());
+		edit.putString("zabbix_push_ringtone", getPushRingtone());
+		edit.putString("zabbix_push_subscribe_key", getPushSubscribeKey());
 		edit.commit();
 	}
 
 	public void savePrefs() {
 		Editor edit = mPref.edit();
-		edit.putString(serverId+"zabbix_url", mPref.getString("zabbix_url", null));
-		edit.putString(serverId+"zabbix_username", mPref.getString("zabbix_username", null));
-		edit.putString(serverId+"zabbix_password", mPref.getString("zabbix_password", null));
+		edit.putString(serverId+"zabbix_url", mPref.getString("zabbix_url", ""));
+		edit.putString(serverId+"zabbix_username", mPref.getString("zabbix_username", ""));
+		edit.putString(serverId+"zabbix_password", mPref.getString("zabbix_password", ""));
+		edit.putBoolean(serverId+"zabbix_trust_all_ssl_ca", mPref.getBoolean("zabbix_trust_all_ssl_ca", false));
+		edit.putBoolean(serverId+"http_auth_enabled", mPref.getBoolean("http_auth_enabled", false));
+		edit.putString(serverId+"http_auth_username", mPref.getString("http_auth_username", ""));
+		edit.putString(serverId+"http_auth_password", mPref.getString("http_auth_password", ""));
+		edit.putBoolean(serverId+"zabbix_push_enabled", mPref.getBoolean("zabbix_push_enabled", false));
+		edit.putString(serverId+"zabbix_push_ringtone", mPref.getString("zabbix_push_ringtone", null));
+		edit.putString(serverId+"zabbix_push_subscribe_key", mPref.getString("zabbix_push_subscribe_key", ""));
+
+		edit.putString("zabbix_url", null);
+
 		edit.commit();
 	}
 
@@ -50,19 +67,19 @@ public class ZaxServerPreferences {
 	}
 
 	public boolean isTrustAllSSLCA() {
-		return mPref.getBoolean("zabbix_trust_all_ssl_ca", false);
+		return mPref.getBoolean(serverId+"zabbix_trust_all_ssl_ca", false);
 	}
 
 	public boolean isHttpAuthEnabled() {
-		return mPref.getBoolean("http_auth_enabled", false);
+		return mPref.getBoolean(serverId+"http_auth_enabled", false);
 	}
 
 	public String getHttpAuthUsername() {
-		return mPref.getString("http_auth_username", "");
+		return mPref.getString(serverId+"http_auth_username", "");
 	}
 
 	public String getHttpAuthPassword() {
-		return mPref.getString("http_auth_password", "");
+		return mPref.getString(serverId+"http_auth_password", "");
 	}
 
 	public String getZabbixUrl() {
@@ -70,15 +87,15 @@ public class ZaxServerPreferences {
 	}
 
 	public boolean isPushEnabled() {
-		return mPref.getBoolean("zabbix_push_enabled", false);
+		return mPref.getBoolean(serverId+"zabbix_push_enabled", false);
 	}
 
 	public String getPushRingtone() {
-		return mPref.getString("zabbix_push_ringtone", null);
+		return mPref.getString(serverId+"zabbix_push_ringtone", null);
 	}
 
 	public String getPushSubscribeKey() {
-		return mPref.getString("zabbix_push_subscribe_key", "").trim();
+		return mPref.getString(serverId+"zabbix_push_subscribe_key", "").trim();
 	}
 
 	/**

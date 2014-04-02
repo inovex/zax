@@ -196,7 +196,7 @@ public class ZabbixRemoteAPI {
 		if (prefsMock != null) {
 			mPreferences = prefsMock;
 		} else {
-			mPreferences = new ZaxServerPreferences(context, zabbixServerId);
+			mPreferences = new ZaxServerPreferences(context, zabbixServerId, true);
 		}
 
 		if (httpClientMock != null) {

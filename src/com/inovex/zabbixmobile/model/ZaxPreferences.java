@@ -67,17 +67,14 @@ public class ZaxPreferences {
 
 	public boolean hasOldServerPreferences() {
 		if (mPref.getString("zabbix_url", null) != null) {
-			Editor edit = mPref.edit();
-			edit.putString("zabbix_url", null);
-			edit.commit();
 			return true;
 		}
 		return false;
 	}
 
-	public void migrateServerPreferences(long id) {
-		// TODO Auto-generated method stub
-
+	public void migrateServerPreferences(Context context, long id) {
+		ZaxServerPreferences p = new ZaxServerPreferences(context, id, true);
+		p.savePrefs();
 	}
 
 }
