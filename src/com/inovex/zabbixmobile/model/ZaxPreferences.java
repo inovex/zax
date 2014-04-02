@@ -75,4 +75,9 @@ public class ZaxPreferences {
 		return false;
 	}
 
+	public void migrateServerPreferences(long id) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

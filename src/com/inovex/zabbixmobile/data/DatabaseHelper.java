@@ -120,7 +120,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 		// migrate old zabbix server preferences
 		if (getZabbixServers().isEmpty() && ZaxPreferences.getInstance(mContext).hasOldServerPreferences()) {
-			Log.d(TAG, "hhhhhhhh");
+			Log.d(TAG, "Migrate server preferences");
+			ZabbixServer srv = new ZabbixServer();
+			srv.setName("Default server");
+			insertZabbixServer(srv);
+
+			ZaxPreferences.getInstance(mContext).migrateServerPreferences(srv.getId());
+
+			//TODO select new server
 		}
 	}
 
