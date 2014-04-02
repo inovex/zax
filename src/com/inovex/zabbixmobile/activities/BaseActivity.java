@@ -118,7 +118,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		mZabbixDataService.loadZabbixServers(); // sync
 
 		ZaxPreferences preferences = ZaxPreferences.getInstance(this);
-		// TODO no server config
+		// TODO multiple servers - no server config
 		if (false) {
 			new DialogFragment() {
 

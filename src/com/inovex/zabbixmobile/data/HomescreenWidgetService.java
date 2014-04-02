@@ -53,7 +53,7 @@ public class HomescreenWidgetService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
-		// TODO
+		// TODO multiple servers
 		/*
 		Log.d(TAG, "onStart");
 		final int widgetId = intent.getIntExtra(WIDGET_ID, -1);

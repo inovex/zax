@@ -415,7 +415,7 @@ public class PushService extends Service {
 	 * @param context
 	 */
 	public static void startOrStopPushService(Context context, boolean ignoreAlarm) {
-		//TODO
+		//TODO multiple servers
 /*
 		// start the push receiver, if it is enabled
 		ZaxPreferences preferences = ZaxPreferences.getInstance(context);

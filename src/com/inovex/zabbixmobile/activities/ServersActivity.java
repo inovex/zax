@@ -12,14 +12,12 @@ import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.widget.EditText;
-import android.widget.ViewFlipper;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.activities.fragments.ServersDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ServersListFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
@@ -31,8 +29,6 @@ public class ServersActivity extends SherlockFragmentActivity implements OnServe
 
 	private static final String TAG = "ServersActivity";
 	private ActionBar mActionBar;
-	private ViewFlipper mFlipper;
-	private ServersDetailsFragment mDetailsFragment;
 	private ServersListFragment mListFragment;
 	private FragmentManager mFragmentManager;
 
@@ -77,9 +73,6 @@ public class ServersActivity extends SherlockFragmentActivity implements OnServe
 		}
 
 		mFragmentManager = getSupportFragmentManager();
-		mFlipper = (ViewFlipper) findViewById(R.id.servers_flipper);
-		mDetailsFragment = (ServersDetailsFragment) mFragmentManager
-				.findFragmentById(R.id.servers_details);
 		mListFragment = (ServersListFragment) mFragmentManager
 				.findFragmentById(R.id.servers_list);
 	}
