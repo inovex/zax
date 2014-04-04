@@ -92,6 +92,18 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 	}
 
 	@Override
+	protected void onDestroy() {
+		if (recursion) {
+			return;
+		}
+		recursion = true;
+		mPrefs.savePrefs();
+		recursion = false;
+
+		super.onDestroy();
+	}
+
+	@Override
 	protected void onResume() {
 		super.onResume();
 		mPrefs.registerOnSharedPreferenceChangeListener(this);

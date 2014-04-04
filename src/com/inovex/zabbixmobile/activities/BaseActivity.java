@@ -40,6 +40,7 @@ import com.inovex.zabbixmobile.activities.fragments.NavigationDrawerFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
+import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.PushService;
 import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
@@ -117,9 +118,8 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 		mZabbixDataService.loadZabbixServers(); // sync
 
-		ZaxPreferences preferences = ZaxPreferences.getInstance(this);
-		// TODO multiple servers - no server config
-		if (false) {
+		// if there are no servers configurated
+		if (mZabbixDataService.getServersListManagementAdapter().isEmpty()) {
 			new DialogFragment() {
 
 				@Override
@@ -140,9 +140,14 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 								@Override
 								public void onClick(DialogInterface dialog,
 										int id) {
+									// create default zabbix server
+									ZabbixServer srv = mZabbixDataService.createNewZabbixServer("default");
+									ZaxPreferences.getInstance(getApplicationContext()).setServerSelection(srv.getId());
+
 									Intent intent = new Intent(
 											getApplicationContext(),
-											ZaxPreferenceActivity.class);
+											ZabbixServerPreferenceActivity.class);
+									intent.putExtra(ZabbixServerPreferenceActivity.ARG_ZABBIX_SERVER_ID, srv.getId());
 									getActivity().startActivityForResult(
 											intent, REQUEST_CODE_PREFERENCES);
 								}

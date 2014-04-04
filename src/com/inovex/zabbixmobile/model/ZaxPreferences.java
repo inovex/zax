@@ -75,6 +75,9 @@ public class ZaxPreferences {
 	public void migrateServerPreferences(Context context, long id) {
 		ZaxServerPreferences p = new ZaxServerPreferences(context, id, true);
 		p.savePrefs();
+
+		refresh(context);
+		mPref.edit().remove("zabbix_url").commit();
 	}
 
 }

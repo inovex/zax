@@ -47,9 +47,6 @@ public class ZaxServerPreferences {
 		edit.putBoolean(serverId+"zabbix_push_enabled", mPref.getBoolean("zabbix_push_enabled", false));
 		edit.putString(serverId+"zabbix_push_ringtone", mPref.getString("zabbix_push_ringtone", null));
 		edit.putString(serverId+"zabbix_push_subscribe_key", mPref.getString("zabbix_push_subscribe_key", ""));
-
-		edit.putString("zabbix_url", null);
-
 		edit.commit();
 	}
 
