@@ -11,7 +11,7 @@ public class BootCompletedIntentReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		PushService.startOrStopPushService(context, false, false);
+		PushService.startOrStopPushService(context);
 	}
 
 }

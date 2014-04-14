@@ -170,7 +170,7 @@ public class ServersActivity extends SherlockFragmentActivity implements OnServe
 		if (request == 1) {
 			if (result == ZabbixServerPreferenceActivity.PREFERENCES_CHANGED_SERVER ||
 					result == ZabbixServerPreferenceActivity.PREFERENCES_CHANGED_PUSH) {
-				PushService.startOrStopPushService(getApplicationContext(), true, true);
+				PushService.startOrStopPushService(getApplicationContext());
 			}
 		}
 	}

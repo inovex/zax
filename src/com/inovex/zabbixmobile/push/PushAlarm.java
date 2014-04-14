@@ -21,13 +21,8 @@ public class PushAlarm extends BroadcastReceiver {
 				.getDefaultSharedPreferences(context);
 		boolean push = prefs.getBoolean("zabbix_push_enabled", false);
 		if (push) {
-			PushService.startOrStopPushService(context, true, false);
-			// we wait a few seconds to ensure that wifi was activated
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			Intent myIntent = new Intent(context, PushService.class);
+			context.startService(myIntent);
 		}
 	}
 }

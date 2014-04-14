@@ -1,8 +1,11 @@
 package com.inovex.zabbixmobile.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -10,6 +13,8 @@ import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
+import com.inovex.zabbixmobile.push.PushService;
+import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
 
 /**
  * The preference activity.
@@ -94,6 +99,53 @@ public class ZaxPreferenceActivity extends SherlockPreferenceActivity implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
+		if (key.equals("zabbix_push_enabled")
+				|| key.equals("zabbix_push_subscribe_key")
+				|| key.equals("zabbix_push_ringtone")
+				|| key.equals("zabbix_push_old_icons")) {
+			activityResult |= PREFERENCES_CHANGED_PUSH;
+			if (!mPrefs.isPushEnabled()
+					|| mPrefs.getPushSubscribeKey().length() > 0) {
+				PushService.startOrStopPushService(getApplicationContext());
+			}
+		}
+		// show hint for pubsub configuration
+		if (key.equals("zabbix_push_enabled") && mPrefs.isPushEnabled()) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(
+					"To use Push Notifications, you have to configure your Zabbix server. Please read the Howto at http://inovex.github.io/zax/#howto_push")
+					.setCancelable(false)
+					.setPositiveButton("View Howto in Browser",
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int id) {
+									Intent viewIntent = new Intent(
+											"android.intent.action.VIEW",
+											Uri.parse("http://inovex.github.io/zax/#howto_push"));
+									startActivity(viewIntent);
+								}
+							})
+					.setNegativeButton("Ok",
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+			AlertDialog alert = builder.create();
+			alert.show();
+		}
+
+		if (key.equals("widget_refresh_interval_mins")) {
+			activityResult |= PREFERENCES_CHANGED_WIDGET;
+			Intent intent = new Intent(getApplicationContext(),
+					WidgetUpdateBroadcastReceiver.class);
+			intent.putExtra(WidgetUpdateBroadcastReceiver.REFRESH_RATE_CHANGED,
+					true);
+			this.sendBroadcast(intent);
+		}
 		if (key.equals("dark_theme")) {
 			activityResult |= PREFERENCES_CHANGED_THEME;
 			// we start a new preference activity with changed theme
