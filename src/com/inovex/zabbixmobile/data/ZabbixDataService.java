@@ -65,6 +65,7 @@ import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
+import com.inovex.zabbixmobile.push.PushService;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 /**
@@ -1287,6 +1288,12 @@ public class ZabbixDataService extends Service {
 	}
 
 	public void removeZabbixServer(ZabbixServer item) {
+		// kill push connection
+		Intent intent = new Intent(getApplicationContext(), PushService.class);
+		intent.putExtra(PushService.ZABBIXSERVER_ID, item.getId());
+		intent.putExtra(PushService.STOP_PUSH_CONNECTION, true);
+		startService(intent);
+
 		mDatabaseHelper.deleteZabbixServer(item);
 		loadZabbixServers();
 		mServersListManagementAdapter.notifyDataSetChanged();

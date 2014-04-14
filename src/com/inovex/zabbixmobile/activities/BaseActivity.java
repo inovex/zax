@@ -219,7 +219,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			}
 			mPreferencesClosed = false;
 		} else {
-			PushService.startOrStopPushService(getApplicationContext(), false);
+			PushService.startOrStopPushService(getApplicationContext(), false, false);
 		}
 
 	}

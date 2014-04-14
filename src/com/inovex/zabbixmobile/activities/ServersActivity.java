@@ -24,6 +24,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.listeners.OnServerSelectedListener;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
+import com.inovex.zabbixmobile.push.PushService;
 
 public class ServersActivity extends SherlockFragmentActivity implements OnServerSelectedListener, ServiceConnection {
 
@@ -160,9 +161,17 @@ public class ServersActivity extends SherlockFragmentActivity implements OnServe
 	public void onServerSelected(ZabbixServer server) {
 		//mDetailsFragment.setServer(server);
 		Intent intent = new Intent(this, ZabbixServerPreferenceActivity.class);
-		Log.d(TAG, "bbb="+server.getId());
 		intent.putExtra(ZabbixServerPreferenceActivity.ARG_ZABBIX_SERVER_ID, server.getId());
-		startActivity(intent);
+		startActivityForResult(intent, 1);
 	}
 
+	@Override
+	protected void onActivityResult(int request, int result, Intent arg2) {
+		if (request == 1) {
+			if (result == ZabbixServerPreferenceActivity.PREFERENCES_CHANGED_SERVER ||
+					result == ZabbixServerPreferenceActivity.PREFERENCES_CHANGED_PUSH) {
+				PushService.startOrStopPushService(getApplicationContext(), true, true);
+			}
+		}
+	}
 }

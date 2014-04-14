@@ -1,9 +1,8 @@
 package com.inovex.zabbixmobile.push;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -16,7 +15,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -26,9 +24,13 @@ import android.widget.Toast;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.ProblemsActivity;
-import com.pubnub.api.Callback;
+import com.inovex.zabbixmobile.data.DatabaseHelper;
+import com.inovex.zabbixmobile.model.ZabbixServer;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
+import com.inovex.zabbixmobile.model.ZaxServerPreferences;
+import com.inovex.zabbixmobile.push.PubnubConnection.PushListener;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.pubnub.api.Pubnub;
-import com.pubnub.api.PubnubError;
 
 /**
  * Push service maintaining the connection to Pubnub and showing notifications
@@ -40,11 +42,12 @@ public class PushService extends Service {
 	public static final String PUBNUB_SUBSCRIBE_KEY = "PUBNUB_SUBSCRIBE_KEY";
 	public static final String OLD_NOTIFICATION_ICONS = "OLD_NOTIFICATION_ICONS";
 
-	String PUSHCHANNEL = "zabbixmobile";
 	protected static final int NUM_STACKED_NOTIFICATIONS = 5;
 	public static final String ACTION_ZABBIX_NOTIFICATION = "com.inovex.zabbixmobile.push.PushService.ACTION_ZABBIX_NOTIFICATION";
 	public static final String ACTION_ZABBIX_NOTIFICATION_DELETE = "com.inovex.zabbixmobile.push.PushService.ACTION_ZABBIX_NOTIFICATION_DELETE";
 	private static final String TAG = PushService.class.getSimpleName();
+	public static final String ZABBIXSERVER_ID = "ZABBIXSERVER_ID";
+	public static final String STOP_PUSH_CONNECTION = "STOP_PUSH_CONNECTION";
 	private static int lastRequestCode = 0;
 	private static AlarmManager am;
 	Pubnub pubnub;
@@ -54,239 +57,12 @@ public class PushService extends Service {
 	private Handler handler;
 
 	int numNotifications = 0;
-	boolean initialConnect = true;
 	ArrayBlockingQueue<CharSequence> previousMessages = new ArrayBlockingQueue<CharSequence>(
 			NUM_STACKED_NOTIFICATIONS);
-	protected boolean oldNotificationIcons;
-	private String subscribeKey;
-	private String ringtone;
 
-	class PushListener extends AsyncTask<String, Void, Boolean> {
-		@Override
-		protected Boolean doInBackground(String... params) {
-			try {
-				pubnub.subscribe(params[0], new Callback() {
+	private Map<Long, PubnubConnection> pubnubConnections;
+	private boolean mOldNotificationIcons;
 
-					@Override
-					public void successCallback(String channel, Object input) {
-						Log.i("PushService", "execute");
-						try {
-							if (input instanceof JSONObject) {
-								JSONObject jsonObj = (JSONObject) input;
-								String status = null, message = null;
-								Long triggerid = null;
-
-								try {
-									status = jsonObj.getString("status");
-								} catch (JSONException e) {
-									e.printStackTrace();
-								}
-								try {
-									message = jsonObj.getString("message");
-								} catch (JSONException e) {
-									e.printStackTrace();
-								}
-								try {
-									triggerid = jsonObj.getLong("triggerid");
-								} catch (JSONException e) {
-									e.printStackTrace();
-								}
-
-								int notIcon;
-								if (status != null && status.equals("OK")) {
-									notIcon = R.drawable.ok;
-								} else if (status != null
-										&& status.equals("PROBLEM")) {
-									notIcon = R.drawable.problem;
-								} else {
-									notIcon = R.drawable.icon;
-								}
-								String notMessage;
-								if (message != null && message.length() > 0) {
-									notMessage = message;
-								} else {
-									notMessage = jsonObj.toString();
-								}
-
-								NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
-										PushService.this);
-								notificationBuilder.setTicker(notMessage);
-								notificationBuilder.setWhen(System
-										.currentTimeMillis());
-
-								if (oldNotificationIcons) {
-									notificationBuilder
-											.setLargeIcon(BitmapFactory
-													.decodeResource(
-															getResources(),
-															R.drawable.icon));
-									notificationBuilder.setSmallIcon(notIcon);
-								} else {
-									notificationBuilder
-											.setLargeIcon(BitmapFactory
-													.decodeResource(
-															getResources(),
-															notIcon));
-									notificationBuilder
-											.setSmallIcon(R.drawable.icon);
-								}
-
-								// we do not start MainActivity directly, but
-								// send a
-								// broadcast which will be received by a
-								// NotificationBroadcastReceiver which resets
-								// the
-								// notification status and starts MainActivity.
-								Intent notificationIntent = new Intent();
-								notificationIntent
-										.setAction(ACTION_ZABBIX_NOTIFICATION);
-								PendingIntent pendingIntent = PendingIntent
-										.getBroadcast(
-												PushService.this,
-												uniqueRequestCode(),
-												notificationIntent,
-												PendingIntent.FLAG_CANCEL_CURRENT);
-								notificationBuilder
-										.setContentTitle(getResources()
-												.getString(
-														R.string.notification_title));
-								notificationBuilder.setContentText(message);
-								notificationBuilder
-										.setContentIntent(pendingIntent);
-								notificationBuilder
-										.setNumber(++numNotifications);
-
-								notificationBuilder.setAutoCancel(true);
-								notificationBuilder.setOnlyAlertOnce(false);
-
-								if (previousMessages.size() == NUM_STACKED_NOTIFICATIONS)
-									previousMessages.poll();
-								previousMessages.offer(message);
-								// if there are several notifications, we stack
-								// them in the
-								// extended view
-								if (numNotifications > 1) {
-									NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-									// Sets a title for the Inbox style big view
-									inboxStyle
-											.setBigContentTitle(getResources()
-													.getString(
-															R.string.notification_title));
-									// Moves events into the big view
-									for (CharSequence prevMessage : previousMessages) {
-										inboxStyle.addLine(prevMessage);
-									}
-									if (numNotifications > NUM_STACKED_NOTIFICATIONS) {
-										inboxStyle
-												.setSummaryText((numNotifications - NUM_STACKED_NOTIFICATIONS)
-														+ " more");
-									}
-									// Moves the big view style object into the
-									// notification
-									// object.
-									notificationBuilder.setStyle(inboxStyle);
-								}
-
-								if (ringtone != null) {
-									notificationBuilder.setSound(Uri
-											.parse(ringtone));
-								}
-
-								Notification notification = notificationBuilder
-										.build();
-
-								Intent notificationDeleteIntent = new Intent();
-								notificationDeleteIntent
-										.setAction(ACTION_ZABBIX_NOTIFICATION_DELETE);
-								notification.deleteIntent = PendingIntent
-										.getBroadcast(PushService.this, 0,
-												notificationDeleteIntent, 0);
-
-								NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-								// We use the same ID because we want to stack
-								// the notifications and we don't really care
-								// about the trigger ID anyway (clicking the
-								// notification just starts the main activity).
-								mNotificationManager.notify(0, notification);
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-
-					@Override
-					public void connectCallback(String channel, Object message) {
-						Log.i(TAG,
-								"connect to " + channel + ": "
-										+ message.toString());
-						if (initialConnect) {
-							handler.post(new Runnable() {
-
-								@Override
-								public void run() {
-									Toast.makeText(
-											PushService.this,
-											PushService.this
-													.getResources()
-													.getString(
-															R.string.push_connection_success),
-											Toast.LENGTH_SHORT).show();
-									initialConnect = false;
-								}
-
-							});
-						}
-					}
-
-					@Override
-					public void disconnectCallback(String channel,
-							Object message) {
-						Log.i(TAG,
-								"disconnect to " + channel + ": "
-										+ message.toString());
-					}
-
-					@Override
-					public void errorCallback(String channel, PubnubError error) {
-						Log.i(TAG,
-								"error (" + channel + "): "
-										+ error.getErrorString());
-						if (initialConnect) {
-							handler.post(new Runnable() {
-
-								@Override
-								public void run() {
-									Toast.makeText(
-											PushService.this,
-											PushService.this
-													.getResources()
-													.getString(
-															R.string.push_connection_error),
-											Toast.LENGTH_SHORT).show();
-									initialConnect = false;
-								}
-
-							});
-
-						}
-					}
-
-					@Override
-					public void reconnectCallback(String channel, Object message) {
-						Log.i(TAG,
-								"reconnect to " + channel + ": "
-										+ message.toString());
-					}
-
-				});
-				Log.i(TAG, "subscribe");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			return Boolean.TRUE; // Return your real result here
-		}
-	}
 
 	/**
 	 * This broadcast receiver reacts on a click on a notification by performing
@@ -349,8 +125,6 @@ public class PushService extends Service {
 
 		Log.i(TAG, "onCreate");
 		this.handler = new Handler();
-		if (mPushListener == null)
-			mPushListener = new PushListener();
 
 		// Register the notification broadcast receiver.
 		IntentFilter filter = new IntentFilter();
@@ -361,6 +135,43 @@ public class PushService extends Service {
 		filter.addAction(ACTION_ZABBIX_NOTIFICATION_DELETE);
 		mNotificationDeleteBroadcastReceiver = new NotificationDeleteReceiver();
 		registerReceiver(mNotificationDeleteBroadcastReceiver, filter);
+
+		pubnubConnections = new HashMap<Long, PubnubConnection>();
+	}
+
+	public void showConnectionError() {
+		handler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				Toast.makeText(
+						PushService.this,
+						PushService.this
+								.getResources()
+								.getString(
+										R.string.push_connection_error),
+						Toast.LENGTH_SHORT).show();
+			}
+
+		});
+	}
+
+	public void showConnectionSuccess() {
+		handler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				Toast.makeText(
+						PushService.this,
+						PushService.this
+								.getResources()
+								.getString(
+										R.string.push_connection_success),
+						Toast.LENGTH_SHORT).show();
+			}
+
+		});
+
 	}
 
 	@Override
@@ -368,29 +179,25 @@ public class PushService extends Service {
 		super.onStartCommand(intent, flags, startId);
 		Log.d(TAG, "onStartCommand");
 
-		subscribeKey = intent.getStringExtra(PUBNUB_SUBSCRIBE_KEY);
-		if (subscribeKey == null)
-			subscribeKey = "";
-		ringtone = intent.getStringExtra(RINGTONE);
-		oldNotificationIcons = intent.getBooleanExtra(OLD_NOTIFICATION_ICONS,
-				false);
+		mOldNotificationIcons = ZaxPreferences.getInstance(getApplicationContext()).isOldNotificationIcons();
 
-		if (pubnub != null) {
-			// continue / reconnect
-			pubnub.disconnectAndResubscribe();
-		} else {
-			pubnub = new Pubnub("", // PUBLISH_KEY
-					subscribeKey, // SUBSCRIBE_KEY
-					"", // SECRET_KEY
-					"", // CIPHER_KEY
-					false // SSL_ON?
-			);
+		long zabbixServerId = intent.getLongExtra(ZABBIXSERVER_ID, -1);
+
+		// clean old connections if zabbix server gets removed
+		if (intent.getBooleanExtra(STOP_PUSH_CONNECTION, false)) {
+			if (pubnubConnections.containsKey(zabbixServerId)) {
+				PubnubConnection p = pubnubConnections.get(zabbixServerId);
+				p.disconnect();
+				pubnubConnections.remove(p);
+			}
+			return START_REDELIVER_INTENT;
 		}
 
-		if (mPushListener.getStatus() != AsyncTask.Status.RUNNING
-				&& mPushListener.getStatus() != AsyncTask.Status.FINISHED) {
-			mPushListener.execute(PUSHCHANNEL);
-			Log.i("PushListener", "start");
+		if (pubnubConnections.containsKey(zabbixServerId)) {
+			pubnubConnections.get(zabbixServerId).refresh();
+		} else {
+			PubnubConnection con = new PubnubConnection(this, zabbixServerId);
+			pubnubConnections.put(zabbixServerId, con);
 		}
 
 		return START_REDELIVER_INTENT;
@@ -399,8 +206,6 @@ public class PushService extends Service {
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy");
-		mPushListener.cancel(true);
-		pubnub.unsubscribe(PUSHCHANNEL);
 		unregisterReceiver(mNotificationBroadcastReceiver);
 		unregisterReceiver(mNotificationDeleteBroadcastReceiver);
 	}
@@ -414,36 +219,52 @@ public class PushService extends Service {
 	 *
 	 * @param context
 	 */
-	public static void startOrStopPushService(Context context, boolean ignoreAlarm) {
-		//TODO multiple servers
-/*
-		// start the push receiver, if it is enabled
-		ZaxPreferences preferences = ZaxPreferences.getInstance(context);
-		boolean push = preferences.isPushEnabled();
-		Intent intent = new Intent(context, PushService.class);
-
-		intent.putExtra(PUBNUB_SUBSCRIBE_KEY, preferences.getPushSubscribeKey());
-		intent.putExtra(RINGTONE, preferences.getPushRingtone());
-		intent.putExtra(OLD_NOTIFICATION_ICONS,
-				preferences.isOldNotificationIcons());
-
-		// alarm manager
-		if (am == null)
-			am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-		Intent alarmIntent = new Intent(context, PushAlarm.class);
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
-
-		if (push) {
-			Log.d(TAG, "starting service");
-			if (!ignoreAlarm) setRepeatingAlarm(pendingIntent);
-			context.startService(intent);
-		} else {
-			Log.d(TAG, "stopping service");
-			if (!ignoreAlarm) stopRepeatingAlarm(pendingIntent);
-			context.stopService(intent);
+	public static void startOrStopPushService(Context context, boolean ignoreAlarm, boolean reconnectAll) {
+		// multiple servers
+		DatabaseHelper databaseHelper = OpenHelperManager.getHelper(context,
+				DatabaseHelper.class);
+		if (reconnectAll) {
+			for (ZabbixServer srv : databaseHelper.getZabbixServers()) {
+				Intent intent = new Intent(context, PushService.class);
+				intent.putExtra(ZABBIXSERVER_ID, srv.getId());
+				intent.putExtra(STOP_PUSH_CONNECTION, true);
+				context.startService(intent);
+			}
 		}
-*/
+
+		boolean anyPush = false;
+		for (ZabbixServer srv : databaseHelper.getZabbixServers()) {
+			ZaxServerPreferences preferences = new ZaxServerPreferences(context, srv.getId(), true);
+
+			// start the push receiver, if it is enabled
+			boolean push = preferences.isPushEnabled();
+			anyPush |= push;
+
+			Intent intent = new Intent(context, PushService.class);
+			intent.putExtra(ZABBIXSERVER_ID, srv.getId());
+
+			// alarm manager
+			if (am == null)
+				am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+			Intent alarmIntent = new Intent(context, PushAlarm.class);
+			PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+
+			if (push) {
+				Log.d(TAG, "starting service");
+				if (!ignoreAlarm) setRepeatingAlarm(pendingIntent);
+				context.startService(intent);
+			} else {
+				Log.d(TAG, "stopping repeating alarm");
+				if (!ignoreAlarm) stopRepeatingAlarm(pendingIntent);
+				intent.putExtra(STOP_PUSH_CONNECTION, true);
+				context.startService(intent);
+			}
+		}
+		if (!anyPush) {
+			Log.d(TAG, "stopping push service");
+			context.stopService(new Intent(context, PushService.class));
+		}
 	}
 
 	public static void killPushService(Context context) {
@@ -471,6 +292,109 @@ public class PushService extends Service {
 	private static void stopRepeatingAlarm(PendingIntent pendingIntent) {
 		Log.d("PushServiceAlarm", "stopRepeatingAlarm");
 		am.cancel(pendingIntent);
+	}
+
+	public void showNotification(String message, String ringtone, String notMessage, int notIcon) {
+		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
+				this);
+		notificationBuilder.setTicker(notMessage);
+		notificationBuilder.setWhen(System
+				.currentTimeMillis());
+
+		if (mOldNotificationIcons) {
+			notificationBuilder
+					.setLargeIcon(BitmapFactory
+							.decodeResource(
+									getResources(),
+									R.drawable.icon));
+			notificationBuilder.setSmallIcon(notIcon);
+		} else {
+			notificationBuilder
+					.setLargeIcon(BitmapFactory
+							.decodeResource(
+									getResources(),
+									notIcon));
+			notificationBuilder
+					.setSmallIcon(R.drawable.icon);
+		}
+
+		// we do not start MainActivity directly, but
+		// send a
+		// broadcast which will be received by a
+		// NotificationBroadcastReceiver which resets
+		// the
+		// notification status and starts MainActivity.
+		Intent notificationIntent = new Intent();
+		notificationIntent
+				.setAction(ACTION_ZABBIX_NOTIFICATION);
+		PendingIntent pendingIntent = PendingIntent
+				.getBroadcast(
+						this,
+						uniqueRequestCode(),
+						notificationIntent,
+						PendingIntent.FLAG_CANCEL_CURRENT);
+		notificationBuilder
+				.setContentTitle(getResources()
+						.getString(
+								R.string.notification_title));
+		notificationBuilder.setContentText(message);
+		notificationBuilder
+				.setContentIntent(pendingIntent);
+		notificationBuilder
+				.setNumber(++numNotifications);
+
+		notificationBuilder.setAutoCancel(true);
+		notificationBuilder.setOnlyAlertOnce(false);
+
+		if (previousMessages.size() == NUM_STACKED_NOTIFICATIONS)
+			previousMessages.poll();
+		previousMessages.offer(message);
+		// if there are several notifications, we stack
+		// them in the
+		// extended view
+		if (numNotifications > 1) {
+			NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+			// Sets a title for the Inbox style big view
+			inboxStyle
+					.setBigContentTitle(getResources()
+							.getString(
+									R.string.notification_title));
+			// Moves events into the big view
+			for (CharSequence prevMessage : previousMessages) {
+				inboxStyle.addLine(prevMessage);
+			}
+			if (numNotifications > NUM_STACKED_NOTIFICATIONS) {
+				inboxStyle
+						.setSummaryText((numNotifications - NUM_STACKED_NOTIFICATIONS)
+								+ " more");
+			}
+			// Moves the big view style object into the
+			// notification
+			// object.
+			notificationBuilder.setStyle(inboxStyle);
+		}
+
+		if (ringtone != null) {
+			notificationBuilder.setSound(Uri
+					.parse(ringtone));
+		}
+
+		Notification notification = notificationBuilder
+				.build();
+
+		Intent notificationDeleteIntent = new Intent();
+		notificationDeleteIntent
+				.setAction(ACTION_ZABBIX_NOTIFICATION_DELETE);
+		notification.deleteIntent = PendingIntent
+				.getBroadcast(this, 0,
+						notificationDeleteIntent, 0);
+
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		// We use the same ID because we want to stack
+		// the notifications and we don't really care
+		// about the trigger ID anyway (clicking the
+		// notification just starts the main activity).
+		mNotificationManager.notify(0, notification);
 	}
 
 }

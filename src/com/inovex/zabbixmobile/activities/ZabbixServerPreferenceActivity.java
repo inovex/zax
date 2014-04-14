@@ -66,7 +66,7 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 		long zabbixServer = getIntent().getLongExtra(ARG_ZABBIX_SERVER_ID, -1);
 		mPrefs = new ZaxServerPreferences(getApplicationContext(), zabbixServer, false);
 
-		addPreferencesFromResource(R.xml.preferences);
+		addPreferencesFromResource(R.xml.server_preferences);
 	}
 
 	@Override
@@ -138,10 +138,9 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 				|| key.equals("zabbix_push_ringtone")
 				|| key.equals("zabbix_push_old_icons")) {
 			activityResult |= PREFERENCES_CHANGED_PUSH;
-			PushService.killPushService(getApplicationContext());
 			if (!mPrefs.isPushEnabled()
 					|| mPrefs.getPushSubscribeKey().length() > 0) {
-				PushService.startOrStopPushService(getApplicationContext(), false);
+				PushService.startOrStopPushService(getApplicationContext(), false, false);
 			}
 		}
 		// show hint for pubsub configuration

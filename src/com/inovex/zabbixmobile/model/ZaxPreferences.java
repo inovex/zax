@@ -80,4 +80,7 @@ public class ZaxPreferences {
 		mPref.edit().remove("zabbix_url").commit();
 	}
 
+	public boolean isOldNotificationIcons() {
+		return mPref.getBoolean("zabbix_push_old_icons", false);
+	}
 }
