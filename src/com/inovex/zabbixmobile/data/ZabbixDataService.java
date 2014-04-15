@@ -433,6 +433,9 @@ public class ZabbixDataService extends Service {
 			if (remoteAPIMock != null) {
 				mRemoteAPI = remoteAPIMock;
 			} else {
+				// in case there was a preferences migration
+				mPreferences.refresh(getApplicationContext());
+				mCurrentZabbixServerId = mPreferences.getServerSelection();
 				mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
 						mDatabaseHelper, mCurrentZabbixServerId, null, null);
 			}
