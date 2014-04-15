@@ -357,11 +357,17 @@ public class PushService extends Service {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(ACTION_ZABBIX_NOTIFICATION);
 		mNotificationBroadcastReceiver = new NotificationBroadcastReceiver();
-		registerReceiver(mNotificationBroadcastReceiver, filter);
+		try {
+			registerReceiver(mNotificationBroadcastReceiver, filter);
+		} catch (Exception e) {
+		}
 		filter = new IntentFilter();
 		filter.addAction(ACTION_ZABBIX_NOTIFICATION_DELETE);
 		mNotificationDeleteBroadcastReceiver = new NotificationDeleteReceiver();
-		registerReceiver(mNotificationDeleteBroadcastReceiver, filter);
+		try {
+			registerReceiver(mNotificationDeleteBroadcastReceiver, filter);
+		} catch (Exception e) {
+		}
 	}
 
 	@Override
