@@ -4,7 +4,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 
@@ -27,11 +26,10 @@ public class ServersListManagementAdapter extends
 		ViewHolder viewHolder;
 
 		if (row == null) {
-			row = getInflater().inflate(R.layout.list_item_servers_management,
+			row = getInflater().inflate(android.R.layout.simple_list_item_1,
 					parent, false);
 			viewHolder = new ViewHolder();
-			viewHolder.name = (TextView) row.findViewById(R.id.server_name);
-			viewHolder.url = (TextView) row.findViewById(R.id.server_url);
+			viewHolder.name = (TextView) row.findViewById(android.R.id.text1);
 			row.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) row.getTag();
@@ -46,7 +44,6 @@ public class ServersListManagementAdapter extends
 
 	static class ViewHolder {
 		TextView name;
-		TextView url;
 	}
 
 }
