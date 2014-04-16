@@ -60,6 +60,7 @@
         </service>
 
         <receiver android:name="com.inovex.zabbixmobile.push.PushAlarm" android:enabled="true" />
+        <receiver android:name="com.inovex.zabbixmobile.OnSettingsMigratedReceiver" android:enabled="true" />
         
         <receiver
             android:name="com.inovex.zabbixmobile.ExceptionBroadcastReceiver"
