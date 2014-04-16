@@ -254,7 +254,12 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		finishReceiver = new FinishReceiver();
 		registerReceiver(finishReceiver, new IntentFilter(ACTION_FINISH));
 
-		mOnSettingsMigratedReceiver = new OnSettingsMigratedReceiver();
+		mOnSettingsMigratedReceiver = new OnSettingsMigratedReceiver(new Runnable() {
+			@Override
+			public void run() {
+				if (mDrawerFragment != null) mDrawerFragment.selectMenuItem(0);
+			}
+		});
 		registerReceiver(mOnSettingsMigratedReceiver, new IntentFilter(OnSettingsMigratedReceiver.ACTION));
 
 		bindService();
