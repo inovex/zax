@@ -99,8 +99,8 @@ public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 		mServerList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		mServerList.setItemsCanFocus(false);
 
+		Log.d(TAG, "on service connected - restore server selection");
 		restoreServerSelection();
-
 	}
 
 	private void restoreServerSelection() {
