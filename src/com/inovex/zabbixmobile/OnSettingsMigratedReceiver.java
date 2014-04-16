@@ -8,7 +8,10 @@ import android.util.Log;
 public class OnSettingsMigratedReceiver extends BroadcastReceiver {
 
 	public static final String ACTION = "OnSettingsMigratedReceiver";
-	private final Runnable mOnreceive;
+	private Runnable mOnreceive;
+
+	public OnSettingsMigratedReceiver() {
+	}
 
 	public OnSettingsMigratedReceiver(Runnable onreceive) {
 		mOnreceive = onreceive;

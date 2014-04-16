@@ -103,7 +103,7 @@ public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 		restoreServerSelection();
 	}
 
-	private void restoreServerSelection() {
+	public void restoreServerSelection() {
 		long persistedSelection = ZaxPreferences.getInstance(
 				getActivity().getApplicationContext()).getServerSelection();
 		selectServerItem(persistedSelection);
