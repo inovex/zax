@@ -35,6 +35,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.inovex.zabbixmobile.OnSettingsMigratedReceiver;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.NavigationDrawerFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
@@ -91,6 +92,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	public static final int ACTIVITY_EVENTS = 1;
 	public static final int ACTIVITY_PROBLEMS = 0;
 	private static final String ACTION_FINISH = "com.inovex.zabbixmobile.BaseActivity.ACTION_FINISH";
+	private OnSettingsMigratedReceiver mOnSettingsMigratedReceiver;
 
 	/**
 	 * Broadcast receiver that finishes an activity.
@@ -252,6 +254,9 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		finishReceiver = new FinishReceiver();
 		registerReceiver(finishReceiver, new IntentFilter(ACTION_FINISH));
 
+		mOnSettingsMigratedReceiver = new OnSettingsMigratedReceiver();
+		registerReceiver(mOnSettingsMigratedReceiver, new IntentFilter(OnSettingsMigratedReceiver.ACTION));
+
 		bindService();
 
 		mActionBar = getSupportActionBar();
@@ -349,6 +354,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		Log.d(TAG, "onDestroy");
 
 		unregisterReceiver(finishReceiver);
+		unregisterReceiver(mOnSettingsMigratedReceiver);
 
 		if (isFinishing()) {
 			Log.d(TAG, "unbindService");

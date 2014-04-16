@@ -15,6 +15,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
 import com.inovex.zabbixmobile.ExceptionBroadcastReceiver;
+import com.inovex.zabbixmobile.OnSettingsMigratedReceiver;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
@@ -127,6 +128,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			ZaxPreferences.getInstance(mContext).migrateServerPreferences(mContext, srv.getId());
 			ZaxPreferences.getInstance(mContext).setServerSelection(srv.getId());
+
+			Intent intent = new Intent(mContext, OnSettingsMigratedReceiver.class);
+			intent.setAction(OnSettingsMigratedReceiver.ACTION);
+			mContext.sendBroadcast(intent);
 		}
 	}
 
