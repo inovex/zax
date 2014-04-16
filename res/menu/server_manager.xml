@@ -2,7 +2,7 @@
 
     <item
         android:id="@+id/menuitem_add_server"
-        android:icon="@drawable/menu_refresh"
+        android:icon="@drawable/ic_action_new"
         android:showAsAction="ifRoom"
         android:title="@string/add_server"
         android:orderInCategory="30">
