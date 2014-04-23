@@ -56,6 +56,12 @@
         <activity android:name=".activities.GraphFullscreenActivity" >
         </activity><activity android:name=".activities.ZabbixServerPreferenceActivity"></activity>
 
+        <activity android:name="com.inovex.zabbixmobile.activities.HomeScreenWidgetConfiguration">
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+		    </intent-filter>
+		</activity>
+
         <service android:name="com.inovex.zabbixmobile.data.ZabbixDataService" >
         </service>
 

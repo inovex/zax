@@ -179,6 +179,7 @@ public class ZabbixRemoteAPI {
 	 */
 	private String apiVersion = "";
 	private final long mCurrentZabbixServerId;
+	private String mZabbixAuthToken;
 
 	/**
 	 * init
@@ -289,9 +290,9 @@ public class ZabbixRemoteAPI {
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
 
 		String auth = "null";
-		if (mPreferences.getZabbixAuthToken() != null
+		if (mZabbixAuthToken != null
 				&& method != "user.authenticate")
-			auth = "\"" + mPreferences.getZabbixAuthToken() + "\"";
+			auth = "\"" + mZabbixAuthToken + "\"";
 
 		Log.d(TAG, "queryBuffer: " + zabbixUrl);
 		String json = "{" + "	\"jsonrpc\" : \"2.0\"," + "	\"method\" : \""
@@ -378,7 +379,7 @@ public class ZabbixRemoteAPI {
 
 		JSONObject json = new JSONObject().put("jsonrpc", "2.0")
 				.put("method", method).put("params", params)
-				.put("auth", mPreferences.getZabbixAuthToken()).put("id", 0);
+				.put("auth", mZabbixAuthToken).put("id", 0);
 
 		Log.d(TAG, "_queryStream: " + zabbixUrl);
 		Log.d(TAG, "_queryStream: " + json.toString());
@@ -558,7 +559,8 @@ public class ZabbixRemoteAPI {
 		}
 		if (token != null) {
 			// persist token
-			mPreferences.setZabbixAuthToken(token);
+			mZabbixAuthToken = token;
+
 			// get API version
 			JSONObject result;
 			try {
@@ -1945,12 +1947,15 @@ public class ZabbixRemoteAPI {
 	}
 
 	public boolean isLoggedIn() {
-		return (mPreferences.getZabbixAuthToken() != null);
+		return mZabbixAuthToken != null;
 	}
 
 	public void logout() {
-		mPreferences.setZabbixAuthToken(null);
-		// TODO: perform actual logout
+		mZabbixAuthToken = null;
+	}
+
+	public long getZabbixSeverId() {
+		return mCurrentZabbixServerId;
 	}
 
 }

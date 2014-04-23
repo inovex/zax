@@ -16,8 +16,16 @@ import android.widget.RemoteViews;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.ProblemsActivity;
+import com.inovex.zabbixmobile.exceptions.FatalException;
+import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
+import com.inovex.zabbixmobile.model.Cache.CacheDataType;
+import com.inovex.zabbixmobile.model.HostGroup;
+import com.inovex.zabbixmobile.model.Trigger;
+import com.inovex.zabbixmobile.model.TriggerSeverity;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProvider;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProviderList;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 /**
  * Started service providing the homescreen widget with functionality to
@@ -47,27 +55,40 @@ public class HomescreenWidgetService extends Service {
 	private static final String TAG = HomescreenWidgetService.class
 			.getSimpleName();
 
-	private ZabbixRemoteAPI mRemoteAPI;
 	private DatabaseHelper mDatabaseHelper;
 
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
-		// TODO multiple servers
-		/*
 		Log.d(TAG, "onStart");
 		final int widgetId = intent.getIntExtra(WIDGET_ID, -1);
+		if (widgetId == -1) {
+			stopSelf();
+			return;
+		}
+		long zabbixServerId = ZaxPreferences.getInstance(getApplicationContext()).getWidgetServer(widgetId);
+
 		updateView(null, getResources().getString(R.string.widget_loading),
 				true, widgetId);
+		if (zabbixServerId == -1) {
+			updateView(
+					DisplayStatus.ZAX_ERROR.getDrawable(),
+					getResources().getString(
+							R.string.widget_connection_error), false,
+					widgetId);
+			stopSelf();
+			return;
+		}
 		if (mDatabaseHelper == null) {
 			// set up SQLite connection using OrmLite
 			mDatabaseHelper = OpenHelperManager.getHelper(this,
 					DatabaseHelper.class);
 		}
-		if (mRemoteAPI == null) {
+		final ZabbixRemoteAPI mRemoteAPI;
+		//if (mRemoteAPI == null || mRemoteAPI.getZabbixSeverId() != zabbixServerId) {
 			mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
-					mDatabaseHelper, null, null);
-		}
+					mDatabaseHelper, zabbixServerId, null, null);
+		//}
 
 		RemoteAPITask importProblemsTask = new RemoteAPITask(mRemoteAPI) {
 
@@ -100,7 +121,7 @@ public class HomescreenWidgetService extends Service {
 				} finally {
 					problems = mDatabaseHelper
 							.getProblemsBySeverityAndHostGroupId(
-									TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL);
+									TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL); // TODO multiple server
 				}
 			}
 
@@ -150,14 +171,12 @@ public class HomescreenWidgetService extends Service {
 
 					}
 					updateView(icon, status, false, widgetId);
+					stopSelf();
 				}
 			}
 
 		};
 		importProblemsTask.execute();
-
-		stopSelf();
-		*/
 	}
 
 	@Override
@@ -194,19 +213,8 @@ public class HomescreenWidgetService extends Service {
 		}
 
 		if (widgetIds1x1.contains(widgetId)) {
-			widgetIds1x1.clear();
-			widgetIds1x1.add(widgetId);
-			widgetIdsList.clear();
-		}
-		if (widgetIdsList.contains(widgetId)) {
-			widgetIdsList.clear();
-			widgetIdsList.add(widgetId);
-			widgetIds1x1.clear();
-		}
-
-		for (int id : widgetIds1x1) {
-			Log.d(TAG, "updating widget. ID: " + id + ", Provider: "
-					+ appWidgetManager.getAppWidgetInfo(id).provider.toString());
+			Log.d(TAG, "updating widget. ID: " + widgetId + ", Provider: "
+					+ appWidgetManager.getAppWidgetInfo(widgetId).provider.toString());
 
 			RemoteViews remoteViews = new RemoteViews(getApplicationContext()
 					.getPackageName(), R.layout.homescreen_widget_1x1);
@@ -244,21 +252,21 @@ public class HomescreenWidgetService extends Service {
 					this.getApplicationContext(), ZaxWidgetProvider.class);
 			refreshClickIntent
 					.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-			int[] ids = { id };
+			int[] ids = { widgetId };
 			refreshClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
 					ids);
 			PendingIntent pendingIntent2 = PendingIntent.getBroadcast(
-					getApplicationContext(), 1, refreshClickIntent,
+					getApplicationContext(), widgetId, refreshClickIntent,
 					PendingIntent.FLAG_CANCEL_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.refresh_button,
 					pendingIntent2);
 
-			appWidgetManager.updateAppWidget(id, remoteViews);
+			appWidgetManager.updateAppWidget(widgetId, remoteViews);
 		}
 
-		for (int id : widgetIdsList) {
-			Log.d(TAG, "updating widget. ID: " + id + ", Provider: "
-					+ appWidgetManager.getAppWidgetInfo(id).provider.toString());
+		if (widgetIdsList.contains(widgetId)) {
+			Log.d(TAG, "updating widget. ID: " + widgetId + ", Provider: "
+					+ appWidgetManager.getAppWidgetInfo(widgetId).provider.toString());
 			// appWidgetManager.notifyAppWidgetViewDataChanged(id,
 			// R.id.list_view);
 			RemoteViews remoteViews = new RemoteViews(getApplicationContext()
@@ -290,11 +298,11 @@ public class HomescreenWidgetService extends Service {
 					this.getApplicationContext(), ZaxWidgetProvider.class);
 			refreshClickIntent
 					.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-			int[] ids = { id };
+			int[] ids = { widgetId };
 			refreshClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
 					ids);
 			PendingIntent pendingIntent2 = PendingIntent.getBroadcast(
-					getApplicationContext(), 2, refreshClickIntent,
+					getApplicationContext(), widgetId, refreshClickIntent,
 					PendingIntent.FLAG_CANCEL_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.refresh_button,
 					pendingIntent2);
@@ -323,13 +331,13 @@ public class HomescreenWidgetService extends Service {
 				// fill list
 				Intent intent = new Intent(getApplicationContext(),
 						HomescreenCollectionWidgetService.class);
-				intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
-				remoteViews.setRemoteAdapter(id, R.id.list_view, intent);
+				intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
+				remoteViews.setRemoteAdapter(widgetId, R.id.list_view, intent);
 
-				appWidgetManager.notifyAppWidgetViewDataChanged(id,
+				appWidgetManager.notifyAppWidgetViewDataChanged(widgetId,
 						R.id.list_view);
 			}
-			appWidgetManager.updateAppWidget(id, remoteViews);
+			appWidgetManager.updateAppWidget(widgetId, remoteViews);
 		}
 	}
 

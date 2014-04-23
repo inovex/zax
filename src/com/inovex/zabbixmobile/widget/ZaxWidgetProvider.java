@@ -14,7 +14,7 @@ import com.inovex.zabbixmobile.model.ZaxPreferences;
 
 /**
  * This class provides the Zax homescreen widget.
- * 
+ *
  */
 public class ZaxWidgetProvider extends AppWidgetProvider {
 	private static final String TAG = ZaxWidgetProvider.class.getSimpleName();
@@ -24,12 +24,17 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 			int[] appWidgetIds) {
 		Log.d(TAG, "onUpdate");
 		// start service
+		for (int wid : appWidgetIds) {
+			updateView(context, appWidgetManager, wid);
+		}
+		super.onUpdate(context, appWidgetManager, appWidgetIds);
+	}
+
+	public static void updateView(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 		Intent serviceIntent = new Intent(context,
 				HomescreenWidgetService.class);
-		if(appWidgetIds.length > 0)
-			serviceIntent.putExtra(HomescreenWidgetService.WIDGET_ID, appWidgetIds[0]);
+		serviceIntent.putExtra(HomescreenWidgetService.WIDGET_ID, appWidgetId);
 		context.startService(serviceIntent);
-		super.onUpdate(context, appWidgetManager, appWidgetIds);
 	}
 
 	@Override
@@ -51,7 +56,6 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 		long interval = minutes * 60 * 1000;
 		setAlarm(context, interval);
 		Log.d(TAG, "alarm set, interval: " + interval + " ms");
-
 	}
 
 	public static void setAlarm(Context context, long updateRate) {
@@ -70,7 +74,7 @@ public class ZaxWidgetProvider extends AppWidgetProvider {
 			alarms.cancel(newPending);
 		}
 	}
-	
+
 	public static void stopAlarm(Context context) {
 		setAlarm(context, -1);
 	}

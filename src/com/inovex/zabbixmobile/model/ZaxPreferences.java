@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 /**
  * Singleton providing an interface to the application's shared preferences.
@@ -14,11 +15,7 @@ public class ZaxPreferences {
 
 	private SharedPreferences mPref;
 
-	private static ZaxPreferences instance;
-
 	public static ZaxPreferences getInstance(Context context) {
-		if (instance != null)
-			return instance;
 		return (new ZaxPreferences(context));
 	}
 
@@ -94,6 +91,19 @@ public class ZaxPreferences {
 
 	public String getPushSubscribeKey() {
 		return mPref.getString("zabbix_push_subscribe_key", "").trim();
+	}
+
+	public void setWidgetServer(int mAppWidgetId, long id) {
+		Editor edit = mPref.edit();
+		edit.putLong("widget_server_"+mAppWidgetId, id);
+		edit.commit();
+		Log.d("ZaxPreferences", "widget server="+mAppWidgetId+"="+id);
+	}
+
+	public long getWidgetServer(int mAppWidgetId) {
+		Log.d("ZaxPreferences", "get widget server from "+mAppWidgetId+"="+mPref.getLong("widget_server_"+mAppWidgetId, -1));
+
+		return mPref.getLong("widget_server_"+mAppWidgetId, -1);
 	}
 
 }

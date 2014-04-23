@@ -1,6 +1,8 @@
 package com.inovex.zabbixmobile.widget;
 
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -30,9 +32,25 @@ public class WidgetUpdateBroadcastReceiver extends BroadcastReceiver {
 						widgetRefreshInterval * 60 * 1000);
 		}
 
-		Intent serviceIntent = new Intent(context,
-				HomescreenWidgetService.class);
-		context.startService(serviceIntent);
+		// update all widgets
+		AppWidgetManager appWidgetManager = AppWidgetManager
+				.getInstance(context);
+		ComponentName widget1x1 = new ComponentName(context,
+				ZaxWidgetProvider.class);
+		ComponentName widgetList = new ComponentName(context,
+				ZaxWidgetProviderList.class);
+		for (int id : appWidgetManager.getAppWidgetIds(widget1x1)) {
+			Intent serviceIntent = new Intent(context,
+					HomescreenWidgetService.class);
+			serviceIntent.putExtra(HomescreenWidgetService.WIDGET_ID, id);
+			context.startService(serviceIntent);
+		}
+		for (int id : appWidgetManager.getAppWidgetIds(widgetList)) {
+			Intent serviceIntent = new Intent(context,
+					HomescreenWidgetService.class);
+			serviceIntent.putExtra(HomescreenWidgetService.WIDGET_ID, id);
+			context.startService(serviceIntent);
+		}
 	}
 
 }

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class ZaxServerPreferences {
 
@@ -50,6 +51,7 @@ public class ZaxServerPreferences {
 	}
 
 	public String getUsername() {
+		Log.d("ZaxServerPreferences", "aaa="+serverId);
 		return mPref.getString(serverId+"zabbix_username", "");
 	}
 
@@ -96,16 +98,6 @@ public class ZaxServerPreferences {
 	public void unregisterOnSharedPreferenceChangeListener(
 			OnSharedPreferenceChangeListener listener) {
 		mPref.unregisterOnSharedPreferenceChangeListener(listener);
-	}
-
-	public String getZabbixAuthToken() {
-		return mPref.getString("zabbix_auth_token", null);
-	}
-
-	public void setZabbixAuthToken(String token) {
-		Editor edit = mPref.edit();
-		edit.putString("zabbix_auth_token", token);
-		edit.commit();
 	}
 
 	public void setZabbixVersion2(boolean version2) {

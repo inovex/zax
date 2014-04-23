@@ -7,6 +7,7 @@
     android:previewImage="@drawable/widget_preview_1x1"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="30000"
-    android:widgetCategory="home_screen|keyguard" >
+    android:widgetCategory="home_screen|keyguard"
+    android:configure="com.inovex.zabbixmobile.activities.HomeScreenWidgetConfiguration" >
 
 </appwidget-provider>
