@@ -4,15 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.ProblemsActivity;
@@ -56,6 +60,7 @@ public class HomescreenWidgetService extends Service {
 			.getSimpleName();
 
 	private DatabaseHelper mDatabaseHelper;
+	private RemoteAPITask importProblemsTask;
 
 	@Override
 	public void onStart(Intent intent, int startId) {
@@ -84,13 +89,18 @@ public class HomescreenWidgetService extends Service {
 			mDatabaseHelper = OpenHelperManager.getHelper(this,
 					DatabaseHelper.class);
 		}
-		final ZabbixRemoteAPI mRemoteAPI;
-		//if (mRemoteAPI == null || mRemoteAPI.getZabbixSeverId() != zabbixServerId) {
-			mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
-					mDatabaseHelper, zabbixServerId, null, null);
-		//}
 
-		RemoteAPITask importProblemsTask = new RemoteAPITask(mRemoteAPI) {
+		final ZabbixRemoteAPI mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
+					mDatabaseHelper, zabbixServerId, null, null);
+
+		if (importProblemsTask != null && importProblemsTask.getStatus() == AsyncTask.Status.RUNNING && Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			// your android version is too old
+			Toast.makeText(getApplicationContext(), R.string.android_version_too_old_for_parallel, Toast.LENGTH_LONG).show();
+			stopSelf();
+			return;
+		}
+
+		importProblemsTask = new RemoteAPITask(mRemoteAPI) {
 
 			private List<Trigger> problems;
 			private boolean error;
@@ -134,6 +144,7 @@ public class HomescreenWidgetService extends Service {
 							getResources().getString(
 									R.string.widget_connection_error), false,
 							widgetId);
+					importProblemsTask = null;
 					stopSelf();
 					return;
 				}
@@ -171,12 +182,21 @@ public class HomescreenWidgetService extends Service {
 
 					}
 					updateView(icon, status, false, widgetId);
+					importProblemsTask = null;
 					stopSelf();
 				}
 			}
-
 		};
-		importProblemsTask.execute();
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			importProblemsTask.execute();
+		} else {
+			executeTask();
+		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	private void executeTask() {
+		importProblemsTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
 	}
 
 	@Override
