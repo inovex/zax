@@ -538,7 +538,7 @@ public class ZabbixRemoteAPI {
 		// String user = "admin";
 		// String password = "zabbix";
 
-		Log.d(TAG, "u:"+user+"/"+password);
+		//Log.d(TAG, "u:"+user+"/"+password);
 
 		String token = null;
 		try {
