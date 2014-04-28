@@ -131,7 +131,7 @@ public class HomescreenWidgetService extends Service {
 				} finally {
 					problems = mDatabaseHelper
 							.getProblemsBySeverityAndHostGroupId(
-									TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL); // TODO multiple server
+									TriggerSeverity.ALL, HostGroup.GROUP_ID_ALL);
 				}
 			}
 
