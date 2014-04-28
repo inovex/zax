@@ -71,7 +71,13 @@ public class HomescreenWidgetService extends Service {
 			stopSelf();
 			return;
 		}
+
 		long zabbixServerId = ZaxPreferences.getInstance(getApplicationContext()).getWidgetServer(widgetId);
+		if (zabbixServerId == -1) {
+			// migrate from old version
+			zabbixServerId = ZaxPreferences.getInstance(getApplicationContext()).getServerSelection();
+			ZaxPreferences.getInstance(getApplicationContext()).setWidgetServer(widgetId, zabbixServerId);
+		}
 
 		updateView(null, getResources().getString(R.string.widget_loading),
 				true, widgetId);
