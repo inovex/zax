@@ -291,7 +291,7 @@ public class ZabbixRemoteAPI {
 
 		String auth = "null";
 		if (mZabbixAuthToken != null
-				&& method != "user.authenticate")
+				&& method != "user.login")
 			auth = "\"" + mZabbixAuthToken + "\"";
 
 		Log.d(TAG, "queryBuffer: " + zabbixUrl);
@@ -542,7 +542,7 @@ public class ZabbixRemoteAPI {
 
 		String token = null;
 		try {
-			JSONObject result = _queryBuffer("user.authenticate",
+			JSONObject result = _queryBuffer("user.login",
 					new JSONObject().put("user", user)
 							.put("password", password));
 			token = result.getString("result");
