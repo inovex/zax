@@ -1,6 +1,12 @@
 /bin
 /gen
-/build.gradle
 /assets
 /doc
 /javadoc.xml
+.idea/
+.project
+local.properties
+*.iml
+/build/
+.classpath
+.gradle/

@@ -1181,7 +1181,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	/**
 	 * Deletes history details which are older than the specified time.
 	 *
-	 * @param threshold
+	 * @param graphIds
 	 *            all items with a clock smaller than this threshold will be
 	 *            deleted
 	 */

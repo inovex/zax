@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.12.2'
+        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
+    }
+}
+
+apply plugin: 'android-sdk-manager'
+apply plugin: 'com.android.application'
+apply plugin: 'idea'
+
+repositories {
+    maven { url "http://dl.bintray.com/populov/maven" }
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:20.0.0'
+    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    compile 'com.viewpagerindicator:library:2.4.1@aar'
+    compile 'com.nineoldandroids:library:2.2.0'
+    compile 'com.j256.ormlite:ormlite-android:4.48'
+    compile 'com.j256.ormlite:ormlite-core:4.48'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.4.0'
+    compile 'com.pubnub:pubnub:3.5.6'
+    compile 'com.jjoe64:graphview:3.1.3'
+}
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.1.0"
+    defaultConfig {
+        applicationId "com.inovex.zabbixmobile"
+        minSdkVersion 8
+        targetSdkVersion 19
+        versionCode 34
+        versionName "2.4.1"
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
+        }
+    }
+    android {
+	    lintOptions {
+		    abortOnError false
+	    }
+    }
+}
