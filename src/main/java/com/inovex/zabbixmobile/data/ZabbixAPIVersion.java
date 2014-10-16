@@ -7,6 +7,9 @@ package com.inovex.zabbixmobile.data;
  * Zabbix 2.0   - API 1.4
  * Zabbix 2.0.4 - API 2.0.4
  * ...
+ * Zabbix 2.3.2 - API 2.4
+ * Zabbix 2.4 - API 2.4
+ * ...
  */
 
 public enum ZabbixAPIVersion {

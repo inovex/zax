@@ -826,8 +826,6 @@ public class ZabbixRemoteAPI {
 					.put("limit", ZabbixConfig.EVENTS_GET_LIMIT)
 					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectHosts"
 							: "select_hosts", "refer")
-					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectTriggers"
-							: "select_triggers", "extend")
 					.put("source", 0)
 					// sorting by clock is not possible, hence we sort by event
 					// ID to get the newest events
@@ -836,7 +834,11 @@ public class ZabbixRemoteAPI {
 					.put("time_from",
 							(new Date().getTime() / 1000)
 									- ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT);
-
+            if(!mPreferences.getZabbixAPIVersion().isGreater2_3()){
+                // in Zabbix version >= 2.4 select_triggers is deprecated
+                params.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectTriggers"
+                    : "select_triggers", "extend");
+            }
 			if (!mPreferences.getZabbixAPIVersion().isGreater1_4()) {
 				// in Zabbix version <2.0, this is not default
 				params.put("sortfield", "clock").put("sortorder", "DESC");
@@ -1761,6 +1763,7 @@ public class ZabbixRemoteAPI {
 			params.put("output", "extend")
 					.put("sortfield", "lastchange")
 					.put("sortorder", "desc")
+                    // TODO: selectHosts is deprecated since 2.4
 					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectHosts"
 							: "select_hosts", "refer")
 					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectGroups"
