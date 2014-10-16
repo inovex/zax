@@ -102,7 +102,14 @@ public class ZabbixRemoteAPI {
 	private static final String TAG = ZabbixRemoteAPI.class.getSimpleName();
 	private static final String ZABBIX_ACCOUNT_BLOCKED = "Account is blocked for (.*)";
 
-	class CustomSSLSocketFactory extends SSLSocketFactory {
+    public String getAuthenticationMethod() {
+        if(mPreferences.getZabbixAPIVersion().isGreater2_3()){
+            return "user.login";
+        }
+        return "user.authenticate";
+    }
+
+    class CustomSSLSocketFactory extends SSLSocketFactory {
 		SSLContext sslContext = SSLContext.getInstance("TLS");
 
 		public CustomSSLSocketFactory(KeyStore truststore)
@@ -289,15 +296,17 @@ public class ZabbixRemoteAPI {
 		HttpPost post = new HttpPost(zabbixUrl);
 		post.addHeader("Content-Type", "application/json; charset=utf-8");
 
-		String auth = "null";
-		if (mZabbixAuthToken != null
-				&& method != "user.authenticate")
-			auth = "\"" + mZabbixAuthToken + "\"";
+		String auth = "";
+		if (    mZabbixAuthToken != null
+				&& !method.equals(getAuthenticationMethod())
+                && !method.equals("apiinfo.version")) {
+            auth =" \"auth\" : " + "\"" + mZabbixAuthToken + "\"" + ", ";
+        }
 
 		Log.d(TAG, "queryBuffer: " + zabbixUrl);
 		String json = "{" + "	\"jsonrpc\" : \"2.0\"," + "	\"method\" : \""
 				+ method + "\"," + "	\"params\" : " + params.toString() + ","
-				+ "	\"auth\" : " + auth + "," + "	\"id\" : 0" + "}";
+				+ auth + "	\"id\" : 0" + "}";
 		Log.d(TAG, "queryBuffer: " + json);
 
 		post.setEntity(new StringEntity(json, "UTF-8"));
@@ -408,8 +417,7 @@ public class ZabbixRemoteAPI {
 					} else if (errortxt.contains(ZABBIX_ERROR_NOT_AUTHORIZED)) {
 						throw new ZabbixLoginRequiredException();
 					} else {
-						throw new FatalException(Type.INTERNAL_ERROR,
-								errortxt.toString());
+						throw new FatalException(Type.INTERNAL_ERROR,errortxt);
 					}
 				}
 			} while (!jp.getCurrentName().equals("result"));
@@ -540,9 +548,37 @@ public class ZabbixRemoteAPI {
 
 		//Log.d(TAG, "u:"+user+"/"+password);
 
+        // get API version
+        JSONObject result;
+        try {
+            result = _queryBuffer("apiinfo.version", new JSONObject());
+            if (result == null) {
+                mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_1_3);
+            } else {
+                apiVersion = result.getString("result");
+                if(apiVersion.equals("1.4")){
+                    mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_1_4);
+                }else if(apiVersion.startsWith("2.4")){
+                    mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_GT_2_4);
+                }else if(apiVersion.startsWith("2")){
+                    mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_2_0_TO_2_3);
+                }else{
+                    mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_1_3);
+                }
+            }
+            Log.i(TAG, "Zabbix API Version: " + apiVersion);
+        } catch (ClientProtocolException e) {
+            throw new FatalException(Type.INTERNAL_ERROR, e);
+        } catch (IOException e) {
+            throw new FatalException(Type.INTERNAL_ERROR, e);
+        } catch (JSONException e) {
+            throw new FatalException(Type.INTERNAL_ERROR, e);
+        }
+
 		String token = null;
 		try {
-			JSONObject result = _queryBuffer("user.authenticate",
+            String method = getAuthenticationMethod();
+            result = _queryBuffer(method,
 					new JSONObject().put("user", user)
 							.put("password", password));
 			token = result.getString("result");
@@ -558,29 +594,8 @@ public class ZabbixRemoteAPI {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
 		if (token != null) {
-			// persist token
-			mZabbixAuthToken = token;
-
-			// get API version
-			JSONObject result;
-			try {
-				result = _queryBuffer("apiinfo.version", new JSONObject());
-				if (result == null) {
-					mPreferences.setZabbixVersion2(false);
-				} else {
-					apiVersion = result.getString("result");
-					boolean isVersion2 = (apiVersion.equals("1.4") || apiVersion
-							.startsWith("2"));
-					mPreferences.setZabbixVersion2(isVersion2);
-				}
-				Log.i(TAG, "Zabbix API Version: " + apiVersion);
-			} catch (ClientProtocolException e) {
-				throw new FatalException(Type.INTERNAL_ERROR, e);
-			} catch (IOException e) {
-				throw new FatalException(Type.INTERNAL_ERROR, e);
-			} catch (JSONException e) {
-				throw new FatalException(Type.INTERNAL_ERROR, e);
-			}
+            // persist token
+            mZabbixAuthToken = token;
 		} else {
 			throw new ZabbixLoginRequiredException();
 		}
@@ -624,9 +639,9 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject();
 			params.put("output", "extend")
 					.put("limit", ZabbixConfig.APPLICATION_GET_LIMIT)
-					.put(mPreferences.isZabbixVersion2() ? "selectHosts"
+					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectHosts"
 							: "select_hosts", "refer").put("source", 0);
-			if (!mPreferences.isZabbixVersion2()) {
+			if (!mPreferences.getZabbixAPIVersion().isGreater1_4()) {
 				// in Zabbix version <2.0, this is not default
 				params.put("sortfield", "clock").put("sortorder", "DESC");
 			}
@@ -809,9 +824,9 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject()
 					.put("output", "extend")
 					.put("limit", ZabbixConfig.EVENTS_GET_LIMIT)
-					.put(mPreferences.isZabbixVersion2() ? "selectHosts"
+					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectHosts"
 							: "select_hosts", "refer")
-					.put(mPreferences.isZabbixVersion2() ? "selectTriggers"
+					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectTriggers"
 							: "select_triggers", "extend")
 					.put("source", 0)
 					// sorting by clock is not possible, hence we sort by event
@@ -822,7 +837,7 @@ public class ZabbixRemoteAPI {
 							(new Date().getTime() / 1000)
 									- ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT);
 
-			if (!mPreferences.isZabbixVersion2()) {
+			if (!mPreferences.getZabbixAPIVersion().isGreater1_4()) {
 				// in Zabbix version <2.0, this is not default
 				params.put("sortfield", "clock").put("sortorder", "DESC");
 			}
@@ -868,7 +883,7 @@ public class ZabbixRemoteAPI {
 	 * Imports events from a JSON stream.
 	 *
 	 * This method calls
-	 * {@link ZabbixRemoteAPI#importTriggersByIds(Collection, boolean)} to
+	 * {@link ZabbixRemoteAPI#importTriggersByIds(java.util.Collection, boolean, RemoteAPITask)} to
 	 * import the triggers referred to by the events. The usage of
 	 * triggers.extend in the event.get method does not suffice because we need
 	 * the host groups associated with the triggers for the hostgroup filter.
@@ -1240,7 +1255,7 @@ public class ZabbixRemoteAPI {
 						"host.get",
 						new JSONObject()
 								.put("output", "extend")
-								.put(mPreferences.isZabbixVersion2() ? "selectGroups"
+								.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectGroups"
 										: "select_groups", "extend"));
 				importHostsFromStream(hosts, true);
 				hosts.close();
@@ -1304,10 +1319,10 @@ public class ZabbixRemoteAPI {
 						|| propName.equals(Item.COLUMN_DESCRIPTION_V2)) {
 					// since zabbix 2.x is the name of the item "name"
 					// before zabbix 2.x the name field was "description"
-					if (mPreferences.isZabbixVersion2()
+					if (mPreferences.getZabbixAPIVersion().isGreater1_4()
 							&& propName.equals(Item.COLUMN_DESCRIPTION_V2)) {
 						item.setDescription(itemReader.getText());
-					} else if (!mPreferences.isZabbixVersion2()) {
+					} else if (!mPreferences.getZabbixAPIVersion().isGreater1_4()) {
 						item.setDescription(itemReader.getText());
 					}
 				} else if (propName.equals(Item.COLUMN_LASTCLOCK)) {
@@ -1420,7 +1435,7 @@ public class ZabbixRemoteAPI {
 			params = new JSONObject();
 			params.put("output", "extend")
 					.put("limit", ZabbixConfig.ITEM_GET_LIMIT)
-					.put(mPreferences.isZabbixVersion2() ? "selectApplications"
+					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectApplications"
 							: "select_applications", "refer");
 			if (hostId != null)
 				params.put("hostids", new JSONArray().put(hostId));
@@ -1495,9 +1510,9 @@ public class ZabbixRemoteAPI {
 			databaseHelper.clearScreens();
 			JSONObject params = new JSONObject();
 			params.put("output", "extend");
-			params.put(mPreferences.isZabbixVersion2() ? "selectScreenItems"
+			params.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectScreenItems"
 					: "select_screenitems", "extend");
-			jsonReader = _queryStream((mPreferences.isZabbixVersion2() ? "s"
+			jsonReader = _queryStream((mPreferences.getZabbixAPIVersion().isGreater1_4() ? "s"
 					: "S") + "creen.get", params);
 
 			JsonObjectReader screenReader;
@@ -1605,9 +1620,9 @@ public class ZabbixRemoteAPI {
 			graphs = _queryStream(
 					"graph.get",
 					new JSONObject()
-							.put(mPreferences.isZabbixVersion2() ? "selectGraphItems"
+							.put(mPreferences.getZabbixAPIVersion().isGreater1_4()? "selectGraphItems"
 									: "select_graph_items", "extend")
-							.put(mPreferences.isZabbixVersion2() ? "selectItems"
+							.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectItems"
 									: "select_items", "extend")
 							.put("output", "extend")
 							.put("graphids", new JSONArray(graphIds)));
@@ -1695,13 +1710,13 @@ public class ZabbixRemoteAPI {
 	 * called in two situations:
 	 *
 	 * 1. Import of events. If events (and the corresponding triggers) are
-	 * cached, the method {@link ZabbixRemoteAPI#importEvents()} does not call
+	 * cached, the method {@link ZabbixRemoteAPI#importEvents(RemoteAPITask)}} does not call
 	 * this method at all. Hence the caching of the corresponding triggers is
 	 * directly linked to caching of the events (just like triggers are linked
 	 * to events in the data model).
 	 *
 	 * 2. Import of all active triggers. The method
-	 * {@link ZabbixRemoteAPI#importActiveTriggers()} takes care of caching by
+	 * {@link ZabbixRemoteAPI#importActiveTriggers(RemoteAPITask)} takes care of caching by
 	 * itself.
 	 *
 	 * @param triggerIds
@@ -1746,11 +1761,11 @@ public class ZabbixRemoteAPI {
 			params.put("output", "extend")
 					.put("sortfield", "lastchange")
 					.put("sortorder", "desc")
-					.put(mPreferences.isZabbixVersion2() ? "selectHosts"
+					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectHosts"
 							: "select_hosts", "refer")
-					.put(mPreferences.isZabbixVersion2() ? "selectGroups"
+					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectGroups"
 							: "select_groups", "refer")
-					.put(mPreferences.isZabbixVersion2() ? "selectItems"
+					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectItems"
 							: "select_items", "extend")
 					.put("lastChangeSince", min)
 					.put("limit", ZabbixConfig.TRIGGER_GET_LIMIT)
