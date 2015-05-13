@@ -54,6 +54,10 @@
             android:name=".activities.ServersActivity"
             android:label="@string/activity_servers" >
         </activity>
+        <activity
+            android:name=".activities.InfoAcitivtiy"
+            android:label="Info">
+        </activity>
         <activity android:name=".activities.GraphFullscreenActivity" >
         </activity><activity android:name=".activities.ZabbixServerPreferenceActivity"></activity>
 

@@ -443,6 +443,10 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		case R.id.menuitem_clear:
 			refreshData();
 			return true;
+		case R.id.menuitem_info:
+			Intent i = new Intent(getApplicationContext(), InfoAcitivtiy.class);
+			startActivity(i);
+				return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
