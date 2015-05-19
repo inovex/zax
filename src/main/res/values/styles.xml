@@ -40,7 +40,7 @@ This file is part of ZAX.
         <item name="defaultTextColor">@color/black</item>
         <item name="backgroundDrawer">@color/dark_grey</item>
         <item name="spinnerTextColor">@color/white</item>
-        <item name="actionMenuColor">@color/white</item>
+        <item name="actionMenuColor">@color/dark_grey</item>
         <item name="graphTextColor">@color/black</item>
         <item name="backgroundFragment">@color/white</item>
         <item name="backgroundFragmentAlternate">@color/light_grey</item>
