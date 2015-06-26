@@ -31,6 +31,9 @@ print $log Dumper(\@lines);
 my %msg = ();
 for my $l (@lines) {
 	my ($key, $val) = split(/=/, $l, 2);
+	# the message from zabbix contains carriage returns, which caused problems in the url.
+	# the following line removes any carriage returns.
+	$val =~ s/\r|\n//g;
 	$msg{$key} = $val;
 }
 
