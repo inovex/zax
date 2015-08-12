@@ -1979,8 +1979,8 @@ public class ZabbixRemoteAPI {
 						.endsWith("/") ? "" : '/') + API_PHP;
 		if(!Patterns.WEB_URL.matcher(zabbixUrl).matches()
 				|| zabbixUrl.equals(exampleUrl)
-				|| zabbixUrl.startsWith("https:///")
-				|| zabbixUrl.startsWith("http:///"))
+				|| zabbixUrl.startsWith("https:///") //for default url which is build together
+				|| zabbixUrl.startsWith("http:///")) //for default url which is build together
 		{
 			throw new FatalException(Type.SERVER_NOT_FOUND);
 		}

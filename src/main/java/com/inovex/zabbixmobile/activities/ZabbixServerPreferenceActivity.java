@@ -48,6 +48,14 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 	private static final String TAG = "ZabbixServerPreferenceActivity";
 	public static final String ARG_ZABBIX_SERVER_ID = "ZABBIX_SERVER_ID";
 
+	private static final String ZABBIX_URL_KEY  = "zabbix_url";
+	private static final String ZABBIX_USER_KEY = "zabbix_username";
+	private static final String ZABBIX_PASSWORD_KEY = "zabbix_password";
+	private static final String ZABBIX_TRUST_ALL_SSL_CA_KEY = "zabbix_trust_all_ssl_ca";
+	private static final String ZABBIX_HTTP_AUTH_ENABLED_KEY = "http_auth_enabled";
+	private static final String ZABBIX_HTTP_AUTH_USER_KEY = "http_auth_username";
+	private static final String ZABBIX_HTTP_AUTH_PASSWORD_KEY = "http_auth_password";
+
 	private ZaxServerPreferences mPrefs;
 	private int activityResult = 0;
 	private ActionBar mActionBar;
@@ -84,7 +92,7 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 		addPreferencesFromResource(R.xml.server_preferences);
 
 		//Set onPreferenceChangeListener to serverUrl preference
-		Preference serverUrl = getPreferenceScreen().findPreference("zabbix_url");
+		Preference serverUrl = getPreferenceScreen().findPreference(ZABBIX_URL_KEY);
 		serverUrl.setOnPreferenceChangeListener(this);
 	}
 
@@ -145,12 +153,12 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 		mPrefs.savePrefs();
 		recursion = false;
 
-		if (key.equals("zabbix_url") || key.equals("zabbix_username")
-				|| key.equals("zabbix_password")
-				|| key.equals("zabbix_trust_all_ssl_ca")
-				|| key.equals("http_auth_enabled")
-				|| key.equals("http_auth_username")
-				|| key.equals("http_auth_password")) {
+		if (key.equals(ZABBIX_URL_KEY) || key.equals(ZABBIX_USER_KEY)
+				|| key.equals(ZABBIX_PASSWORD_KEY)
+				|| key.equals(ZABBIX_TRUST_ALL_SSL_CA_KEY)
+				|| key.equals(ZABBIX_HTTP_AUTH_ENABLED_KEY)
+				|| key.equals(ZABBIX_HTTP_AUTH_USER_KEY)
+				|| key.equals(ZABBIX_HTTP_AUTH_PASSWORD_KEY)) {
 			activityResult |= PREFERENCES_CHANGED_SERVER;
 		}
 	}
@@ -177,7 +185,7 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 	@Override
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		//Only handle zabbix_url preference
-		if(!preference.getKey().equals("zabbix_url")) {
+		if(!preference.getKey().equals(ZABBIX_URL_KEY)) {
 			return true;
 		}
 		if(!Patterns.WEB_URL.matcher((String) newValue).matches()) {
