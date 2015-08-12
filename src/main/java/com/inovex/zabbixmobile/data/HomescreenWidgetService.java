@@ -83,6 +83,17 @@ public class HomescreenWidgetService extends Service {
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
 		Log.d(TAG, "onStart");
+
+		/**
+		 * Intent can be null
+		 * http://developer.android.com/reference/android/app/Service.html#onStart%28android.content.Intent,%20int%29
+		 */
+		if(intent == null) {
+			Log.d(TAG, "intent is null, stopSelf will be called");
+			stopSelf();
+			return;
+		}
+
 		final int widgetId = intent.getIntExtra(WIDGET_ID, -1);
 		if (widgetId == -1) {
 			stopSelf();
