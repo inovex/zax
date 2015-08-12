@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.+'
+        classpath 'com.android.tools.build:gradle:1.2.3'
         classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.12.0'
     }
 }
@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:20.0.0'
+    compile 'com.android.support:support-v4:22.2.1'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     compile 'com.viewpagerindicator:library:2.4.1@aar'
     compile 'com.nineoldandroids:library:2.2.0'
@@ -30,23 +30,21 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 22
+    buildToolsVersion "23.0.0-rc3"
     defaultConfig {
         applicationId "com.inovex.zabbixmobile"
         minSdkVersion 8
-        targetSdkVersion 21
+        targetSdkVersion 22
         versionCode 34
         versionName "2.4.1"
+    }
+    lintOptions {
+        abortOnError false
     }
     buildTypes {
         release {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-project.txt'
         }
-    }
-    android {
-	    lintOptions {
-		    abortOnError false
-	    }
     }
 }
