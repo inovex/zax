@@ -75,6 +75,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
+import android.util.Patterns;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -1976,8 +1977,10 @@ public class ZabbixRemoteAPI {
 				R.string.url_example)
 				+ (mContext.getResources().getString(R.string.url_example)
 						.endsWith("/") ? "" : '/') + API_PHP;
-		if (zabbixUrl == null || zabbixUrl.length() == 0 || zabbixUrl.equals(exampleUrl) || zabbixUrl.startsWith("https:///") ||
-				zabbixUrl.startsWith("http:///") || zabbixUrl.contains("\\") || zabbixUrl.contains(" "))
+		if(!Patterns.WEB_URL.matcher(zabbixUrl).matches()
+				|| zabbixUrl.equals(exampleUrl)
+				|| zabbixUrl.startsWith("https:///")
+				|| zabbixUrl.startsWith("http:///"))
 		{
 			throw new FatalException(Type.SERVER_NOT_FOUND);
 		}
