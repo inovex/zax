@@ -1976,8 +1976,8 @@ public class ZabbixRemoteAPI {
 				R.string.url_example)
 				+ (mContext.getResources().getString(R.string.url_example)
 						.endsWith("/") ? "" : '/') + API_PHP;
-		if (zabbixUrl == null || zabbixUrl.equals(exampleUrl) || zabbixUrl.startsWith("https:///")
-				|| zabbixUrl.contains("\\") || zabbixUrl.contains(" "))
+		if (zabbixUrl == null || zabbixUrl.length() == 0 || zabbixUrl.equals(exampleUrl) || zabbixUrl.startsWith("https:///") ||
+				zabbixUrl.startsWith("http:///") || zabbixUrl.contains("\\") || zabbixUrl.contains(" "))
 		{
 			throw new FatalException(Type.SERVER_NOT_FOUND);
 		}

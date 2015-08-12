@@ -21,6 +21,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.util.Patterns;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
@@ -34,7 +37,7 @@ import com.inovex.zabbixmobile.model.ZaxServerPreferences;
  *
  */
 public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity implements
-		OnSharedPreferenceChangeListener {
+		OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener {
 
 	private static final int REQUEST_CODE_PREFERENCES_THEMED = 958723;
 	private static final String ARG_ACTIVITY_RESULT = "ACTIVITY_RESULT";
@@ -79,6 +82,10 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 		mPrefs = new ZaxServerPreferences(getApplicationContext(), zabbixServer, false);
 
 		addPreferencesFromResource(R.xml.server_preferences);
+
+		//Set onPreferenceChangeListener to serverUrl preference
+		Preference serverUrl = getPreferenceScreen().findPreference("zabbix_url");
+		serverUrl.setOnPreferenceChangeListener(this);
 	}
 
 	@Override
@@ -133,6 +140,7 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 		if (recursion) {
 			return;
 		}
+
 		recursion = true;
 		mPrefs.savePrefs();
 		recursion = false;
@@ -157,5 +165,25 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 			setResult(resultCode, new Intent());
 			finish();
 		}
+	}
+
+	/**
+	 * Validate settings
+	 * @param preference
+	 * @param newValue
+	 * @return if validation is ok: return true, so the data will be saved
+	 * if false is returned, the data won't be saved
+	 */
+	@Override
+	public boolean onPreferenceChange(Preference preference, Object newValue) {
+		//Only handle zabbix_url preference
+		if(!preference.getKey().equals("zabbix_url")) {
+			return true;
+		}
+		if(!Patterns.WEB_URL.matcher((String) newValue).matches()) {
+			Toast.makeText(getApplicationContext(), R.string.serverpreferences_url_validation_invalid_url, Toast.LENGTH_LONG).show();
+			return false;
+		}
+		return true;
 	}
 }
