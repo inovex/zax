@@ -135,4 +135,5 @@ This file is part of ZAX.
     
     <string name="android_version_too_old_for_parallel">Your Android version is too old for using multiple zabbix servers on homescreen widgets.</string>
     <string name="info">Info</string>
+    <string name="serverpreferences_url_validation_invalid_url">The entered URL is not valid and was not saved. (Did you use backslashes instead of slashes?)</string>
 </resources>
