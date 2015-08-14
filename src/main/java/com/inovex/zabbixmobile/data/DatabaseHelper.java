@@ -186,7 +186,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			// eventQuery.orderBy(Event.COLUMN_CLOCK, false);
 
-			eventQuery.join(triggerQuery);
+			eventQuery.leftJoin(triggerQuery);
 			return eventQuery.query();
 		} catch (SQLException e) {
 			handleException(new FatalException(Type.INTERNAL_ERROR, e));
