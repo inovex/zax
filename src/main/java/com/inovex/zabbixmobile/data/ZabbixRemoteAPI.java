@@ -17,64 +17,10 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.data;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.NoHttpResponseException;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.params.HttpClientParams;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.HTTP;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
+import android.util.Patterns;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -104,6 +50,61 @@ import com.inovex.zabbixmobile.model.ZaxServerPreferences;
 import com.inovex.zabbixmobile.util.HttpClientWrapper;
 import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.NoHttpResponseException;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * This class encapsulates all calls to the Zabbix API.
@@ -969,7 +970,21 @@ public class ZabbixRemoteAPI {
 					// milliseconds
 					e.setClock(Long.parseLong(eventReader.getText()) * 1000);
 				} else if (propName.equals(Event.COLUMN_OBJECT_ID)) {
-					e.setObjectId(Long.parseLong(eventReader.getText()));
+                    long objectId = Long.parseLong(eventReader.getText());
+                    e.setObjectId(objectId);
+                    // in API version 2.4 triggers are no longer sent with the event
+                    // -> the trigger ID (if available) is given in the field object ID, so we use
+                    // that one
+                    // Note: we should actually check the field object for the type of referenced
+                    // object (https://www.zabbix.com/documentation/2.4/manual/api/reference/event/object),
+                    // but since the IDs are unique and this would be a major inconvenience using
+                    // the currently used method of JSON parsing, we keep it simple for now.
+                    if(mPreferences.getZabbixAPIVersion().isGreater2_3()){
+                        Trigger t = new Trigger();
+                        t.setId(objectId);
+                        e.setTrigger(t);
+                        triggerIds.add(objectId);
+                    }
 				} else if (propName.equals(Event.COLUMN_ACK)) {
 					e.setAcknowledged(Integer.parseInt(eventReader.getText()) == 1);
 				} else if (propName.equals(Event.COLUMN_VALUE)) {
@@ -1976,7 +1991,11 @@ public class ZabbixRemoteAPI {
 				R.string.url_example)
 				+ (mContext.getResources().getString(R.string.url_example)
 						.endsWith("/") ? "" : '/') + API_PHP;
-		if (zabbixUrl == null || zabbixUrl.equals(exampleUrl) || zabbixUrl.startsWith("https:///")) {
+		if(!Patterns.WEB_URL.matcher(zabbixUrl).matches()
+				|| zabbixUrl.equals(exampleUrl)
+				|| zabbixUrl.startsWith("https:///") //for default url which is build together
+				|| zabbixUrl.startsWith("http:///")) //for default url which is build together
+		{
 			throw new FatalException(Type.SERVER_NOT_FOUND);
 		}
 	}
