@@ -84,6 +84,7 @@ public class HomescreenWidgetService extends Service {
 		super.onStart(intent, startId);
 		Log.d(TAG, "onStart");
 
+		 /**
 		 * Given Intent can be null
 		 * http://developer.android.com/reference/android/app/Service.html#onStart%28android.content.Intent,%20int%29
 		 */
