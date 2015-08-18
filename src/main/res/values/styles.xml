@@ -21,7 +21,7 @@ This file is part of ZAX.
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
-    <style name="AppBaseTheme" parent="Theme.Sherlock.Light.DarkActionBar">
+    <style name="AppBaseTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
@@ -30,7 +30,7 @@ This file is part of ZAX.
     </style>
 
     <!-- Application theme. -->
-    <style name="AppTheme" parent="Theme.Sherlock.Light.DarkActionBar">
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="vpiTabPageIndicatorStyle">@style/TabPageIndicatorDefault</item>
         <item name="vpiTitlePageIndicatorStyle">@style/TitlePageIndicatorDefault</item>
         <item name="android:textViewStyle">@style/TextViewStyleDefault</item>
@@ -52,7 +52,7 @@ This file is part of ZAX.
         <item name="android:radioButtonStyle">@style/RadioButton</item>
     </style>
 
-    <style name="AppThemeDark" parent="Theme.Sherlock">
+    <style name="AppThemeDark" parent="@style/Theme.AppCompat">
         <item name="vpiTabPageIndicatorStyle">@style/TabPageIndicatorDefault</item>
         <item name="vpiTitlePageIndicatorStyle">@style/TitlePageIndicatorDefault</item>
         <item name="android:textViewStyle">@style/TextViewStyleDefault</item>
@@ -188,11 +188,11 @@ This file is part of ZAX.
         <item name="android:button">@drawable/button_radio</item>
     </style>
 
-    <style name="ManageServersButton" parent="@style/Widget.Sherlock.Button.Small">
+    <style name="ManageServersButton" parent="android:style/Widget.Button.Small">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="ServerDetailsLabel" parent="@style/TextAppearance.Sherlock">
+    <style name="ServerDetailsLabel" parent="android:style/TextAppearance.Large">
         <item name="android:textSize">@dimen/text_size_big</item>
     </style>
 
