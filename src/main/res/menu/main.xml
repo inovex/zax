@@ -15,28 +15,26 @@ This file is part of ZAX.
     along with ZAX.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menuitem_clear"
         android:icon="@drawable/menu_refresh"
-        android:showAsAction="ifRoom"
+        android:orderInCategory="30"
         android:title="@string/refresh_all_data"
-        android:orderInCategory="30">
-    </item>
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/menuitem_preferences"
         android:icon="@android:drawable/ic_menu_preferences"
-        android:showAsAction="never"
+        android:orderInCategory="40"
         android:title="@string/preferences"
-        android:orderInCategory="40">
-    </item>
+        app:showAsAction="never"/>
     <item
         android:id="@+id/menuitem_info"
         android:icon="@android:drawable/ic_dialog_info"
-        android:showAsAction="never"
+        android:orderInCategory="50"
         android:title="@string/info"
-        android:orderInCategory="50">
-    </item>
+        app:showAsAction="never"/>
 
 </menu>

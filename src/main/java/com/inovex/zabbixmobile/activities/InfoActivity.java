@@ -1,6 +1,7 @@
 package com.inovex.zabbixmobile.activities;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.webkit.WebView;
 
@@ -10,8 +11,7 @@ import com.inovex.zabbixmobile.R;
 /**
  * Created by felix on 13/05/15.
  */
-public class InfoAcitivtiy extends SherlockActivity {
-
+public class InfoActivity extends AppCompatActivity {
 
 	private WebView wv;
 

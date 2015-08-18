@@ -15,13 +15,14 @@ This file is part of ZAX.
     along with ZAX.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menuitem_share"
-        android:actionProviderClass="com.actionbarsherlock.widget.ShareActionProvider"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
         android:orderInCategory="20"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@string/share"/>
 
 </menu>

@@ -15,14 +15,14 @@ This file is part of ZAX.
     along with ZAX.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menuitem_add_server"
         android:icon="@drawable/ic_action_new"
-        android:showAsAction="ifRoom"
+        android:orderInCategory="30"
         android:title="@string/add_server"
-        android:orderInCategory="30">
-    </item>
+        app:showAsAction="ifRoom"/>
 
 </menu>
