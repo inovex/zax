@@ -27,13 +27,13 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.EditText;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ServersListFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
@@ -43,10 +43,10 @@ import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.PushService;
 
-public class ServersActivity extends SherlockFragmentActivity implements OnServerSelectedListener, ServiceConnection {
+public class ServersActivity extends AppCompatActivity implements OnServerSelectedListener, ServiceConnection {
 
 	private static final String TAG = "ServersActivity";
-	private ActionBar mActionBar;
+	private Toolbar mToolbar;
 	private ServersListFragment mListFragment;
 	private FragmentManager mFragmentManager;
 
@@ -82,13 +82,14 @@ public class ServersActivity extends SherlockFragmentActivity implements OnServe
 
 		bindService();
 
-		mActionBar = getSupportActionBar();
+		mToolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(mToolbar);
 
-		if (mActionBar != null) {
+/*		if (mActionBar != null) {
 			mActionBar.setHomeButtonEnabled(true);
 			mActionBar.setDisplayHomeAsUpEnabled(true);
 			mActionBar.setDisplayShowTitleEnabled(true);
-		}
+		}*/
 
 		mFragmentManager = getSupportFragmentManager();
 		mListFragment = (ServersListFragment) mFragmentManager
@@ -170,7 +171,7 @@ public class ServersActivity extends SherlockFragmentActivity implements OnServe
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.server_manager, menu);
+		getMenuInflater().inflate(R.menu.server_manager, menu);
 		return true;
 	}
 

@@ -21,18 +21,18 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.ShareActionProvider;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
@@ -63,8 +63,7 @@ public class EventsDetailsFragment extends
 		mMenuItemAcknowledge = menu.findItem(R.id.menuitem_acknowledge_event);
 
 		mMenuItemShare = menu.findItem(R.id.menuitem_share);
-		mShareActionProvider = (ShareActionProvider) mMenuItemShare
-				.getActionProvider();
+		mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(mMenuItemShare);
 		updateShareIntent();
 	}
 

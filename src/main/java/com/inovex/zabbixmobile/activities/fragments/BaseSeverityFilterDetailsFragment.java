@@ -22,17 +22,18 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.ShareActionProvider;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
@@ -72,8 +73,6 @@ public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
 	 * 
 	 * @param position
 	 *            list position
-	 * @param severity
-	 *            severity (this is used to retrieve the correct pager adapter
 	 */
 	public void selectItem(int position) {
 		Log.d(TAG, "selectItem(" + position + ")");
@@ -314,8 +313,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
 		inflater.inflate(R.menu.severity_details_fragment, menu);
 
 		mMenuItemShare = menu.findItem(R.id.menuitem_share);
-		mShareActionProvider = (ShareActionProvider) mMenuItemShare
-				.getActionProvider();
+		mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(mMenuItemShare);
 		updateShareIntent();
 	}
 

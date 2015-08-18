@@ -21,7 +21,7 @@ This file is part of ZAX.
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
-    <style name="AppBaseTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppBaseTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
@@ -30,7 +30,7 @@ This file is part of ZAX.
     </style>
 
     <!-- Application theme. -->
-    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="vpiTabPageIndicatorStyle">@style/TabPageIndicatorDefault</item>
         <item name="vpiTitlePageIndicatorStyle">@style/TitlePageIndicatorDefault</item>
         <item name="android:textViewStyle">@style/TextViewStyleDefault</item>
@@ -52,7 +52,7 @@ This file is part of ZAX.
         <item name="android:radioButtonStyle">@style/RadioButton</item>
     </style>
 
-    <style name="AppThemeDark" parent="@style/Theme.AppCompat">
+    <style name="AppThemeDark" parent="@style/Theme.AppCompat.NoActionBar">
         <item name="vpiTabPageIndicatorStyle">@style/TabPageIndicatorDefault</item>
         <item name="vpiTitlePageIndicatorStyle">@style/TitlePageIndicatorDefault</item>
         <item name="android:textViewStyle">@style/TextViewStyleDefault</item>
@@ -74,9 +74,9 @@ This file is part of ZAX.
     </style>
 
     <!--This attribute will occur an error while compiling with sdk build tools 1.3.0-->
-    <style name="android:textAppearanceLargePopupMenu">
+<!--    <style name="android:textAppearanceLargePopupMenu">
         <item name="android:textColor">@color/white</item>
-    </style>
+    </style>-->
 
     <style name="Fragment">
         <item name="android:background">?attr/backgroundFragment</item>

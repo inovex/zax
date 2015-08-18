@@ -17,27 +17,28 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.activities.fragments;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.ShareActionProvider;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.model.Item;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Fragment which displays event details using a ViewPager (adapter:
@@ -65,7 +66,7 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 	@Override
 	public void setHasOptionsMenu(boolean hasMenu) {
 		super.setHasOptionsMenu(hasMenu);
-		if (hasMenu == false)
+		if (!hasMenu)
 			return;
 		updateMenu();
 	}
@@ -102,8 +103,7 @@ public class ChecksItemsFragment extends BaseDetailsPage {
 		inflater.inflate(R.menu.severity_details_fragment, menu);
 
 		mMenuItemShare = menu.findItem(R.id.menuitem_share);
-		mShareActionProvider = (ShareActionProvider) mMenuItemShare
-				.getActionProvider();
+		mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(mMenuItemShare);
 		updateShareIntent();
 	}
 

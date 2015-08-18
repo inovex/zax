@@ -22,12 +22,11 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceActivity;
 import android.util.Patterns;
+import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.model.ZaxServerPreferences;
@@ -36,7 +35,7 @@ import com.inovex.zabbixmobile.model.ZaxServerPreferences;
  * The preference activity.
  *
  */
-public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity implements
+public class ZabbixServerPreferenceActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener {
 
 	private static final int REQUEST_CODE_PREFERENCES_THEMED = 958723;
@@ -58,7 +57,6 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 
 	private ZaxServerPreferences mPrefs;
 	private int activityResult = 0;
-	private ActionBar mActionBar;
 	private boolean recursion;
 
 	// We use the deprecated method because it is compatible to old Android
@@ -73,13 +71,14 @@ public class ZabbixServerPreferenceActivity extends SherlockPreferenceActivity i
 			setTheme(R.style.AppTheme);
 		super.onCreate(savedInstanceState);
 
-		mActionBar = getSupportActionBar();
+		//// TODO: 18.08.15 prüfen nötig? 
+/*		mActionBar = getSupportActionBar();
 
 		if (mActionBar != null) {
 			mActionBar.setHomeButtonEnabled(true);
 			mActionBar.setDisplayHomeAsUpEnabled(true);
 			mActionBar.setDisplayShowTitleEnabled(true);
-		}
+		}*/
 
 		// the activity might have been started with a result code which we need
 		// to adopt

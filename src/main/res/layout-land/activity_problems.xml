@@ -25,7 +25,9 @@ This file is part of ZAX.
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin" >
-
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar_main"/>
     <fragment
         android:id="@+id/problems_list"
         android:layout_width="0dp"

@@ -100,7 +100,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 					getActivity(), graph);
 			if (graphView == null)
 				return false;
-			LinearLayout graphLayout = new LinearLayout(getSherlockActivity());
+			LinearLayout graphLayout = new LinearLayout(getActivity());
 			graphLayout.addView(graphView);
 
 			layout.addView(graphLayout, new LayoutParams(
@@ -132,7 +132,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 		if (!graphsDisplayed) {
 			// no graphs have been shown (due to missing history data)
 			layout.removeAllViews();
-			TextView noGraphDataView = new TextView(getSherlockActivity());
+			TextView noGraphDataView = new TextView(getActivity());
 			noGraphDataView.setText(R.string.no_items_to_display);
 			layout.addView(noGraphDataView);
 		}

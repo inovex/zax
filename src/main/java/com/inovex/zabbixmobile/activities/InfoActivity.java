@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.webkit.WebView;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.inovex.zabbixmobile.R;
 
 /**

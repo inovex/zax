@@ -22,9 +22,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.support.v4.app.Fragment;
 import android.util.Log;
-
-import com.actionbarsherlock.app.SherlockFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 
@@ -34,7 +33,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
  * This class takes care of binding the service.
  * 
  */
-public abstract class BaseServiceConnectedFragment extends SherlockFragment
+public abstract class BaseServiceConnectedFragment extends Fragment
 		implements ServiceConnection {
 
 	private static final String TAG = BaseServiceConnectedFragment.class
@@ -47,16 +46,16 @@ public abstract class BaseServiceConnectedFragment extends SherlockFragment
 		super.onStart();
 		Log.d(TAG, "onStart");
 		// we need to do this after the view was created!!
-		Intent intent = new Intent(getSherlockActivity(),
+		Intent intent = new Intent(getActivity(),
 				ZabbixDataService.class);
-		getSherlockActivity().getApplicationContext().bindService(intent, this,
+		getActivity().getApplicationContext().bindService(intent, this,
 				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-		getSherlockActivity().getApplicationContext().unbindService(this);
+		getActivity().getApplicationContext().unbindService(this);
 	}
 
 	@Override

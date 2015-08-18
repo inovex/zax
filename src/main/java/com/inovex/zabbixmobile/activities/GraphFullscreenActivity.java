@@ -27,14 +27,15 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
@@ -49,7 +50,7 @@ import com.jjoe64.graphview.LineGraphView;
 /**
  * Activity showing a graph in fullscreen landscape mode.
  */
-public class GraphFullscreenActivity extends SherlockFragmentActivity implements
+public class GraphFullscreenActivity extends AppCompatActivity implements
 		ServiceConnection {
 	private LinearLayout mLayout;
 	private long mItemId;
@@ -187,6 +188,7 @@ public class GraphFullscreenActivity extends SherlockFragmentActivity implements
 		public static final String TAG = LoadingDialogFragment.class
 				.getSimpleName();
 
+		@NonNull
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			ProgressDialog mLoadingDlg = new ProgressDialog(getActivity());

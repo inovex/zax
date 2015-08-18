@@ -1,34 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.inovex.zabbixmobile"
-    android:versionCode="34"
-    android:versionName="2.4.1"
     android:installLocation="auto">
-
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="19" />
 
     <supports-screens
         android:largeScreens="true"
         android:normalScreens="true"
-        android:smallScreens="true" >
-    </supports-screens>
+        android:smallScreens="true"/>
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" >
-    </uses-permission>
-    <uses-permission android:name="android.permission.INTERNET" >
-    </uses-permission>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@drawable/icon"
-        android:label="@string/app_name" >
+        android:label="@string/app_name">
         <activity
             android:name=".activities.ProblemsActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,57 +28,53 @@
         </activity>
         <activity
             android:name=".activities.EventsActivity"
-            android:label="@string/activity_events" >
-        </activity>
+            android:label="@string/activity_events"/>
         <activity
             android:name=".activities.ChecksActivity"
-            android:label="@string/activity_checks" >
-        </activity>
+            android:label="@string/activity_checks"/>
         <activity
             android:name=".activities.ScreensActivity"
-            android:label="@string/activity_screens" >
-        </activity>
+            android:label="@string/activity_screens"/>
         <activity
             android:name=".activities.ZaxPreferenceActivity"
-            android:label="@string/activity_preferences" >
-        </activity>
+            android:label="@string/activity_preferences"/>
         <activity
             android:name=".activities.ServersActivity"
-            android:label="@string/activity_servers" >
-        </activity>
+            android:label="@string/activity_servers"/>
         <activity
-            android:name=".activities.InfoAcitivtiy"
-            android:label="Info">
-        </activity>
-        <activity android:name=".activities.GraphFullscreenActivity" >
-        </activity><activity android:name=".activities.ZabbixServerPreferenceActivity"></activity>
+            android:name=".activities.InfoActivity"
+            android:label="Info"/>
+        <activity android:name=".activities.GraphFullscreenActivity"/>
+        <activity android:name=".activities.ZabbixServerPreferenceActivity" />
 
         <activity android:name="com.inovex.zabbixmobile.activities.HomeScreenWidgetConfiguration">
-		    <intent-filter>
-		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
-		    </intent-filter>
-		</activity>
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
 
-        <service android:name="com.inovex.zabbixmobile.data.ZabbixDataService" >
-        </service>
+        <service android:name="com.inovex.zabbixmobile.data.ZabbixDataService"/>
 
-        <receiver android:name="com.inovex.zabbixmobile.push.PushAlarm" android:enabled="true" />
-        <receiver android:name="com.inovex.zabbixmobile.OnSettingsMigratedReceiver" android:enabled="true" />
-        
+        <receiver
+            android:name="com.inovex.zabbixmobile.push.PushAlarm"
+            android:enabled="true" />
+        <receiver
+            android:name="com.inovex.zabbixmobile.OnSettingsMigratedReceiver"
+            android:enabled="true" />
+
         <receiver
             android:name="com.inovex.zabbixmobile.ExceptionBroadcastReceiver"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.inovex.zabbixmobile.EXCEPTION" >
-                </action>
+                <action android:name="com.inovex.zabbixmobile.EXCEPTION"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".push.BootCompletedIntentReceiver" >
+        <receiver android:name=".push.BootCompletedIntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".widget.PackageReplacedReceiver" >
+        <receiver android:name=".widget.PackageReplacedReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
 
@@ -99,7 +87,7 @@
         <!-- Homescreen Widget -->
         <receiver
             android:name=".widget.ZaxWidgetProvider"
-            android:label="@string/widget_label_1x1" >
+            android:label="@string/widget_label_1x1">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -111,7 +99,7 @@
         <receiver
             android:name=".widget.ZaxWidgetProviderList"
             android:enabled="@bool/honeycomb_or_later"
-            android:label="@string/widget_label_list" >
+            android:label="@string/widget_label_list">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -121,7 +109,7 @@
                 android:resource="@xml/widget_info_list" />
         </receiver>
         <receiver android:name=".widget.WidgetUpdateBroadcastReceiver" />
-        <receiver android:name=".OnUpgradeReceiver" >
+        <receiver android:name=".OnUpgradeReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
 
@@ -131,17 +119,14 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".data.HomescreenWidgetService" >
-        </service>
+        <service android:name=".data.HomescreenWidgetService"/>
         <service
             android:name=".data.HomescreenCollectionWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" >
-        </service>
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
         <service
             android:name=".push.PushService"
-            android:process=":pushservice" >
-        </service>
-        
+            android:process=":pushservice"/>
+
     </application>
 
 </manifest>

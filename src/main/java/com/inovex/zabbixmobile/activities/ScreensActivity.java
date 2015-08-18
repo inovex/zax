@@ -21,6 +21,7 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
+import android.view.MenuItem;
 import android.widget.ViewFlipper;
 
 import com.actionbarsherlock.view.MenuItem;
@@ -88,7 +89,7 @@ public class ScreensActivity extends BaseActivity implements
 
 	@Override
 	public void onScreenSelected(Screen screen) {
-		mActionBar.setSubtitle(screen.getName());
+		mToolbar.setSubtitle(screen.getName());
 		mDetailsFragment.setScreen(screen);
 		showDetailsFragment();
 	}

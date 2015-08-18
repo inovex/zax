@@ -51,11 +51,6 @@ public class ProblemsDetailsPage extends BaseDetailsPage {
 	private long mTriggerId;
 
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.page_problems_details, null);

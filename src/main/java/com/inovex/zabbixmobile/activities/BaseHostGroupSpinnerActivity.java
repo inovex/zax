@@ -21,6 +21,7 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toolbar;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
@@ -40,7 +41,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 	private boolean mFirstCall = true;
 
-	private ActionBar.OnNavigationListener mOnNavigationListener;
+	private Toolbar. mOnNavigationListener;
 
 	protected class SpinnerNavigationListener implements
 			ActionBar.OnNavigationListener {

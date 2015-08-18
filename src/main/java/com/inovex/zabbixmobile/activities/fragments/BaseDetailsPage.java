@@ -94,14 +94,14 @@ public abstract class BaseDetailsPage extends BaseServiceConnectedFragment
 		if (item != null && item.getHistoryDetails() != null) {
 			// create graph and add it to the layout
 			final LineGraphView graph = GraphUtil.createItemGraphPreview(
-					getSherlockActivity(), item);
+					getActivity(), item);
 			if (graph != null) {
 				layout.removeAllViews();
 				layout.addView(graph);
 			} else {
 				// no history data available
 				layout.removeAllViews();
-				TextView noGraphDataView = new TextView(getSherlockActivity());
+				TextView noGraphDataView = new TextView(getActivity());
 				noGraphDataView.setText(R.string.no_history_data_found);
 				layout.addView(noGraphDataView);
 			}

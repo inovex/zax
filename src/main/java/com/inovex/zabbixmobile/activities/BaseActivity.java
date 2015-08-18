@@ -33,25 +33,28 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceActivity;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.GravityCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.OnSettingsMigratedReceiver;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.NavigationDrawerFragment;
@@ -74,7 +77,7 @@ import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
  *
  *
  */
-public abstract class BaseActivity extends SherlockFragmentActivity implements
+public abstract class BaseActivity extends AppCompatActivity implements
 		ServiceConnection, OnLoginProgressListener,
 		ListView.OnItemClickListener {
 
@@ -89,7 +92,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	private FrameLayout mDrawerFrame;
 	protected NavigationDrawerFragment mDrawerFragment;
 	protected ActionBarDrawerToggle mDrawerToggle;
-	protected ActionBar mActionBar;
+	protected Toolbar mToolbar;
 	private LoginProgressDialogFragment mLoginProgress;
 
 	private boolean mPreferencesClosed = false;
@@ -281,13 +284,14 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 
 		bindService();
 
-		mActionBar = getSupportActionBar();
+		mToolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(mToolbar);
 
-		if (mActionBar != null) {
-			mActionBar.setHomeButtonEnabled(true);
-			mActionBar.setDisplayHomeAsUpEnabled(true);
-			mActionBar.setDisplayShowTitleEnabled(true);
-		}
+/*		if (mToolbar != null) {
+			mToolbar.set(true);
+			mToolbar.setDisplayHomeAsUpEnabled(true);
+			mToolbar.setDisplayShowTitleEnabled(true);
+		}*/
 
 		// (re-) instantiate progress dialog
 		mLoginProgress = (LoginProgressDialogFragment) getSupportFragmentManager()
@@ -321,7 +325,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 		// between the sliding drawer and the action bar app icon
 		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
 		mDrawerLayout, /* DrawerLayout object */
-		R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
+		mToolbar, /* nav drawer image to replace 'Up' caret */
 		R.string.drawer_open, /*
 							 * "open drawer" description for accessibility
 							 */
@@ -402,8 +406,9 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 				mi.setVisible(false);
 				continue;
 			}
+			//todo necessary?
 			String title = mi.getTitle().toString();
-			Spannable newTitle = new SpannableString(title);
+/*			Spannable newTitle = new SpannableString(title);
 			TypedArray a = obtainStyledAttributes(R.attr.actionMenuColor,
 					R.styleable.CustomTheme);
 
@@ -412,14 +417,15 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			a.recycle();
 			newTitle.setSpan(new ForegroundColorSpan(color), 0,
 					newTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			mi.setTitle(newTitle);
+			mi.setTitle(newTitle);*/
+			mi.setTitle(title);
 		}
 		return true;
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
@@ -444,7 +450,7 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 			refreshData();
 			return true;
 		case R.id.menuitem_info:
-			Intent i = new Intent(getApplicationContext(), InfoAcitivtiy.class);
+			Intent i = new Intent(getApplicationContext(), InfoActivity.class);
 			startActivity(i);
 				return true;
 		}
@@ -532,13 +538,13 @@ public abstract class BaseActivity extends SherlockFragmentActivity implements
 	}
 
 	protected void onNavigationDrawerClosed() {
-		getSupportActionBar().setTitle(mTitle);
+		mToolbar.setTitle(mTitle);
 		mDrawerOpened = false;
 		supportInvalidateOptionsMenu();
 	}
 
 	protected void onNavigationDrawerOpened() {
-		getSupportActionBar().setTitle(R.string.app_name);
+		mToolbar.setTitle(R.string.app_name);
 		mDrawerOpened = true;
 		supportInvalidateOptionsMenu();
 	}
