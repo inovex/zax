@@ -24,7 +24,6 @@ import android.support.v4.app.FragmentManager;
 import android.view.MenuItem;
 import android.widget.ViewFlipper;
 
-import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ScreensDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ScreensListFragment;

@@ -24,6 +24,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 

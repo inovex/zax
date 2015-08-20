@@ -21,9 +21,13 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 
-import com.actionbarsherlock.app.ActionBar;
+import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter.OnHostGroupSelectedListener;
 
@@ -41,12 +45,13 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 	private boolean mFirstCall = true;
 
-	private Toolbar. mOnNavigationListener;
+	private Spinner.OnItemSelectedListener mOnNavigationListener;
+	private Spinner mSpinner;
 
 	protected class SpinnerNavigationListener implements
-			ActionBar.OnNavigationListener {
+			Spinner.OnItemSelectedListener {
 
-		@Override
+	/*	@Override
 		public boolean onNavigationItemSelected(int position, long itemId) {
 			// This method is called when the activity is created. This
 			// means that during a configuration change, the saved state of
@@ -64,8 +69,25 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 			selectHostGroupInSpinner(position, itemId);
 			return true;
+		}*/
+
+		@Override
+		public void onItemSelected(AdapterView<?> parent, View view, int position, long itemId) {
+			Log.d(TAG, "onNavigationItemSelected(" + position + ", " + itemId
+					+ ") " + "firstCall: " + mFirstCall);
+
+			// avoid reset after orientation change / data refresh
+			if (mFirstCall) {
+				mFirstCall = false;
+				return;
+			}
+
+			selectHostGroupInSpinner(position, itemId);
 		}
 
+		@Override
+		public void onNothingSelected(AdapterView<?> parent) {
+		}
 	}
 
 	@Override
@@ -77,8 +99,17 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	protected void onResume() {
 		super.onResume();
 
-		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		mActionBar.setDisplayShowTitleEnabled(false);
+		View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner,
+				mToolbar, false);
+		android.support.v7.widget.Toolbar.LayoutParams lp = new android.support.v7.widget.Toolbar.LayoutParams(
+				ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+		mToolbar.addView(spinnerContainer, lp);
+
+
+
+
+/*		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		mActionBar.setDisplayShowTitleEnabled(false);*/
 		// refresh spinner title (necessary when we navigate here using the back
 		// button)
 		if (mSpinnerAdapter != null) {
@@ -86,6 +117,9 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 			mSpinnerAdapter.setCallback(this);
 			mSpinnerAdapter.refreshSelection();
 		}
+
+		Spinner spinner = (Spinner) spinnerContainer.findViewById(R.id.toolbar_spinner);
+		spinner.setAdapter(mSpinnerAdapter);
 
 		// reload adapter
 		if (mZabbixDataService != null && mZabbixDataService.isLoggedIn())
@@ -110,8 +144,8 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 		mOnNavigationListener = new SpinnerNavigationListener();
 
-		mActionBar.setListNavigationCallbacks(mSpinnerAdapter,
-				mOnNavigationListener);
+/*		mToolbar.setnav(mSpinnerAdapter,
+				mOnNavigationListener);*/
 
 		mSpinnerAdapter.setTitle(mTitle);
 		mSpinnerAdapter.refreshSelection();
@@ -123,7 +157,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	@Override
 	public void onHostGroupSelected(int position) {
 		try {
-			mActionBar.setSelectedNavigationItem(position);
+			//mActionBar.setSelectedNavigationItem(position);
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		}
@@ -167,15 +201,15 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 	@Override
 	protected void onNavigationDrawerClosed() {
-		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		mActionBar.setDisplayShowTitleEnabled(false);
+/*		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		mActionBar.setDisplayShowTitleEnabled(false);*/
 		super.onNavigationDrawerClosed();
 	}
 
 	@Override
 	protected void onNavigationDrawerOpened() {
-		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-		mActionBar.setDisplayShowTitleEnabled(true);
+/*		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+		mActionBar.setDisplayShowTitleEnabled(true);*/
 		// set title
 		super.onNavigationDrawerOpened();
 	}

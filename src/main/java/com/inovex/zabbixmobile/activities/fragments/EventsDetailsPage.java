@@ -17,11 +17,6 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.activities.fragments;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.os.Bundle;
@@ -37,6 +32,11 @@ import com.inovex.zabbixmobile.adapters.EventsDetailsPagerAdapter;
 import com.inovex.zabbixmobile.model.Event;
 import com.inovex.zabbixmobile.model.Item;
 import com.inovex.zabbixmobile.model.Trigger;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Represents one page of the event details view pager (see

@@ -14,8 +14,15 @@ This file is part of ZAX.
     You should have received a copy of the GNU General Public License
     along with ZAX.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
+<!---->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="Widget.Zax.HeaderBar.Spinner" parent="Widget.AppCompat.Light.Spinner.DropDown.ActionBar">
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:dropDownSelector">?android:selectableItemBackground</item>
+        <item name="android:divider">@null</item>
+        <!--<item name="android:overlapAnchor">true</item>-->
+    </style>
 
     <!--
         Base application theme, dependent on API level. This theme is replaced

@@ -24,9 +24,8 @@ import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.MenuItem;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ChecksApplicationsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ChecksHostsFragment;
@@ -60,8 +59,8 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		Log.d(TAG, "onCreate");
 		setContentView(R.layout.activity_checks);
 
-		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		mActionBar.setDisplayShowTitleEnabled(false);
+/*		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		mActionBar.setDisplayShowTitleEnabled(false);*/
 
 		mTitle = getResources().getString(R.string.activity_checks);
 
