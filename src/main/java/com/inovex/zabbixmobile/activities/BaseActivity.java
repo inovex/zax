@@ -277,9 +277,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
 		bindService();
 
-		mToolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(mToolbar);
-
 /*		if (mToolbar != null) {
 			mToolbar.set(true);
 			mToolbar.setDisplayHomeAsUpEnabled(true);

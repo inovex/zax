@@ -16,15 +16,4 @@
         android:textColor="#ff333333"
         android:textSize="16sp"/>
 
-    <TextView
-        android:id="@android:id/text2"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:drawablePadding="8dp"
-        android:gravity="center_vertical|start"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:textColor="#ff333333"
-        android:textSize="16sp"/>
-
 </LinearLayout>

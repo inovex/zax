@@ -20,6 +20,7 @@ package com.inovex.zabbixmobile.activities;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.widget.Toolbar;
 import android.widget.ViewFlipper;
 
 import com.inovex.zabbixmobile.R;
@@ -51,6 +52,9 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		setContentView(R.layout.activity_problems);
 
 		mTitle = getResources().getString(R.string.activity_problems);
+
+		mToolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(mToolbar);
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.problems_flipper);
