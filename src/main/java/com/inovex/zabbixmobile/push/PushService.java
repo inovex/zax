@@ -17,11 +17,6 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.push;
 
-import java.util.concurrent.ArrayBlockingQueue;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -32,8 +27,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -47,6 +46,14 @@ import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.pubnub.api.Callback;
 import com.pubnub.api.Pubnub;
 import com.pubnub.api.PubnubError;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.util.Calendar;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * Push service maintaining the connection to Pubnub and showing notifications
@@ -225,7 +232,55 @@ public class PushService extends Service {
 								// the notifications and we don't really care
 								// about the trigger ID anyway (clicking the
 								// notification just starts the main activity).
-								mNotificationManager.notify(0, notification);
+//								mNotificationManager.notify(0, notification);
+
+								// Logging incoming notifications for Debuggin
+								// timestamp status message triggerid network
+								try {
+									File folder = new File(Environment.getExternalStorageDirectory() + "/zax");
+									boolean var = false;
+									if (!folder.exists()) {
+										var = folder.mkdir();
+									}
+									final String filename = folder.toString() + "/" + "push_logs.csv";
+									File csv = new File(filename);
+									if(!csv.exists() || !csv.isFile()){
+										csv.createNewFile();
+									}
+									FileWriter fw = new FileWriter(csv,true);
+									String date = Calendar.getInstance().getTime().toString();
+									fw.append(date);
+									fw.append('\t');
+									fw.append(Long.toString(triggerid));
+									fw.append('\t');
+									fw.append(status);
+									fw.append('\t');
+									fw.append(message);
+									fw.append('\t');
+
+									ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+									NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+									String net = null;
+									switch (activeNetwork.getType()) {
+										case ConnectivityManager.TYPE_WIFI:
+											String ssid = ((WifiManager) getSystemService(WIFI_SERVICE)).getConnectionInfo().getSSID();
+											net = "wifi - ssid: " + ssid;
+											break;
+										case ConnectivityManager.TYPE_MOBILE:
+											net = "mobile";
+											break;
+										default:
+											net = "other network type";
+									}
+									fw.append(net);
+									fw.append("\t\n");
+									fw.flush();
+									fw.close();
+									Log.d("PushService", "writing to logfile " + date +" " + status + " " + message + " " + net);
+								}catch (Exception e){
+									e.printStackTrace();
+								}
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
