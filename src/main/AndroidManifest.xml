@@ -42,7 +42,8 @@
             android:label="@string/activity_servers"/>
         <activity
             android:name=".activities.InfoActivity"
-            android:label="Info"/>
+            android:label="Info"
+            android:theme="@style/AppTheme"/>
         <activity android:name=".activities.GraphFullscreenActivity"/>
         <activity android:name=".activities.ZabbixServerPreferenceActivity" />
 
