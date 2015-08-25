@@ -44,14 +44,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.inovex.zabbixmobile.OnSettingsMigratedReceiver;
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.activities.fragments.NavigationDrawerFragment;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
@@ -80,7 +77,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected String mTitle;
 
     private DrawerLayout mDrawerLayout;
-/*    protected NavigationDrawerFragment mDrawerFragment;*/
+    /*    protected NavigationDrawerFragment mDrawerFragment;*/
     protected ActionBarDrawerToggle mDrawerToggle;
     protected Toolbar mToolbar;
     protected NavigationView mNavigationView;
@@ -108,7 +105,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         Intent intent;
-        if(menuItem.isChecked()) menuItem.setChecked(false);
+        if (menuItem.isChecked()) menuItem.setChecked(false);
         else menuItem.setChecked(true);
 
         //Closing drawer on item click
@@ -125,6 +122,16 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 break;
             case R.id.navigation_item_screens:
                 intent = new Intent(this, ScreensActivity.class);
+                break;
+            case R.id.navigation_settings:
+                Intent i = new Intent(this, ZaxPreferenceActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivityForResult(i, REQUEST_CODE_PREFERENCES);
+                overridePendingTransition(android.R.anim.fade_in,
+                        android.R.anim.fade_out);
+                return true;
+            case R.id.navigation_info:
+                intent = new Intent(this, InfoActivity.class);
                 break;
             default:
                 return true;
@@ -232,7 +239,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         // if the preferences activity has been closed, we check which
         // preferences have been changed and perform necessary actions
         if (mPreferencesClosed) {
-            if (mPreferencesChangedServer == true && mZabbixDataService != null) {
+            if (mPreferencesChangedServer && mZabbixDataService != null) {
                 mZabbixDataService.performZabbixLogout();
                 mZabbixDataService.clearAllData();
                 mZabbixDataService.initConnection();
@@ -310,12 +317,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         bindService();
 
-/*		if (mToolbar != null) {
-            mToolbar.set(true);
-			mToolbar.setDisplayHomeAsUpEnabled(true);
-			mToolbar.setDisplayShowTitleEnabled(true);
-		}*/
-
         // (re-) instantiate progress dialog
         mLoginProgress = (LoginProgressDialogFragment) getSupportFragmentManager()
                 .findFragmentByTag(LoginProgressDialogFragment.TAG);
@@ -351,13 +352,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mNavigationView.setNavigationItemSelectedListener(this);
 
 
-            // ActionBarDrawerToggle ties together the the proper interactions
+        // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
         mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
                 mDrawerLayout, /* DrawerLayout object */
                 mToolbar, /* nav drawer image to replace 'Up' caret */
                 R.string.drawer_open, /*
-							 * "open drawer" description for accessibility
+                             * "open drawer" description for accessibility
 							 */
                 R.string.drawer_close /*
 							 * "close drawer" description for accessibility
@@ -476,24 +477,15 @@ public abstract class BaseActivity extends AppCompatActivity implements
 				mDrawerLayout.openDrawer(mDrawerFrame);
 			}
 			return true;*/
-        case R.id.menuitem_preferences:
-        Intent intent = new Intent(getApplicationContext(),
-                ZaxPreferenceActivity.class);
-        startActivityForResult(intent, REQUEST_CODE_PREFERENCES);
-        return true;
-        case R.id.menuitem_clear:
-        refreshData();
-        return true;
-        case R.id.menuitem_info:
-        Intent i = new Intent(getApplicationContext(), InfoActivity.class);
-        startActivity(i);
-        return true;
+            case R.id.menuitem_clear:
+                refreshData();
+                return true;
+        }
+
+        return super.
+
+                onOptionsItemSelected(item);
     }
-
-    return super.
-
-    onOptionsItemSelected(item);
-}
 
     /**
      * Clears all cached data and performs a fresh login.
@@ -576,41 +568,41 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     protected void onNavigationDrawerClosed() {
-        mToolbar.setTitle(mTitle);
+        //mToolbar.setTitle(mTitle);
         mDrawerOpened = false;
         supportInvalidateOptionsMenu();
     }
 
     protected void onNavigationDrawerOpened() {
-        mToolbar.setTitle(R.string.app_name);
+        //mToolbar.setTitle(R.string.app_name);
         mDrawerOpened = true;
         supportInvalidateOptionsMenu();
     }
 
-/**
- * The login progress dialog.
- */
-public static class LoginProgressDialogFragment extends DialogFragment {
+    /**
+     * The login progress dialog.
+     */
+    public static class LoginProgressDialogFragment extends DialogFragment {
 
-    public static final String TAG = LoginProgressDialogFragment.class
-            .getSimpleName();
+        public static final String TAG = LoginProgressDialogFragment.class
+                .getSimpleName();
 
-    public static LoginProgressDialogFragment getInstance() {
-        return new LoginProgressDialogFragment();
+        public static LoginProgressDialogFragment getInstance() {
+            return new LoginProgressDialogFragment();
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            setRetainInstance(true);
+            ProgressDialog loginProgress = new ProgressDialog(getActivity());
+            loginProgress.setTitle(R.string.zabbix_login);
+            loginProgress.setMessage(getResources().getString(
+                    R.string.zabbix_login_in_progress));
+            loginProgress.setIndeterminate(true);
+            return loginProgress;
+        }
+
     }
-
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        setRetainInstance(true);
-        ProgressDialog loginProgress = new ProgressDialog(getActivity());
-        loginProgress.setTitle(R.string.zabbix_login);
-        loginProgress.setMessage(getResources().getString(
-                R.string.zabbix_login_in_progress));
-        loginProgress.setIndeterminate(true);
-        return loginProgress;
-    }
-
-}
 
 /*    protected void selectDrawerItem(int index) {
         mDrawerFragment.selectMenuItem(index);
