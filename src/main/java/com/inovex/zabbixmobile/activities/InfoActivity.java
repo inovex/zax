@@ -10,7 +10,7 @@ import android.webkit.WebView;
 import com.inovex.zabbixmobile.R;
 
 /**
- * Created by felix on 13/05/15.
+ * Displays a web view for the about.html content
  */
 public class InfoActivity extends AppCompatActivity {
 
