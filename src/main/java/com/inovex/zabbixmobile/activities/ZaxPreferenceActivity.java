@@ -26,7 +26,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
@@ -63,16 +66,29 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 			setTheme(R.style.AppTheme);
 		super.onCreate(savedInstanceState);
 
-		//// TODO: 18.08.15 nötig?
-	//	mToolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
-	//	setSupportActionBar(mToolbar);
-
 		// the activity might have been started with a result code which we need
 		// to adopt
 		activityResult = getIntent().getIntExtra(ARG_ACTIVITY_RESULT,
 				activityResult);
 
 		addPreferencesFromResource(R.xml.preferences);
+	}
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+
+		LinearLayout root = (LinearLayout)findViewById(android.R.id.list).getParent().getParent().getParent();
+		Toolbar bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.toolbar_main, root, false);
+		bar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+		bar.setTitle(getString(R.string.preferences));
+		root.addView(bar, 0); // insert at top
+		bar.setNavigationOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onBackPressed();
+			}
+		});
 	}
 
 	@Override
