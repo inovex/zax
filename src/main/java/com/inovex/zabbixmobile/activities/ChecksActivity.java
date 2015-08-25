@@ -77,7 +77,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		selectDrawerItem(ACTIVITY_CHECKS);
+	//	selectDrawerItem(ACTIVITY_CHECKS);
 	}
 
 	@Override

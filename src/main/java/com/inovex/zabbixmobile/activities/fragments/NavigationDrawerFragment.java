@@ -98,12 +98,12 @@ public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 			}
 		});
 
-		mMenuList = (ListView) getView().findViewById(R.id.drawer_menu);
+/*		mMenuList = (ListView) getView().findViewById(R.id.drawer_menu);
 		// set up the drawer's list view with items and click listener
 		mMenuList.setAdapter(new ArrayAdapter<String>(this.getActivity(),
 				R.layout.list_item_main_menu, getResources().getStringArray(
 						R.array.activities)));
-		mMenuList.setOnItemClickListener(mActivity);
+		mMenuList.setOnItemClickListener(mActivity);*/
 	}
 
 	@Override
@@ -150,6 +150,6 @@ public class NavigationDrawerFragment extends BaseServiceConnectedFragment
 	}
 
 	public void selectMenuItem(int index) {
-		mMenuList.setItemChecked(index, true);
+		//todo fix me mMenuList.setItemChecked(index, true);
 	}
 }

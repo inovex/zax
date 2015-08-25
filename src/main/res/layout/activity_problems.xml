@@ -27,6 +27,9 @@ This file is part of ZAX.
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar_main"/>
+    <include
+        android:id="@+id/navigationAndToolbar"
+        layout="@layout/activity_base"/>
     <fragment
         android:id="@+id/problems_list"
         android:layout_width="match_parent"

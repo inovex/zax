@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.inovex.zabbixmobile.activities.BaseActivity">
+
+    <group android:checkableBehavior="all">
+        <item
+            android:id="@+id/navigation_item_problems"
+            android:title="@string/activity_problems"/>
+        <item
+            android:id="@+id/navigation_item_events"
+            android:title="@string/activity_events"/>
+
+        <item
+            android:id="@+id/navigation_item_checks"
+            android:title="@string/activity_checks"/>
+
+        <item
+            android:id="@+id/navigation_item_screens"
+            android:title="@string/activity_screens"/>
+    </group>
+
+</menu>

@@ -55,6 +55,8 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
+		getSupportActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.problems_flipper);
@@ -79,7 +81,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		selectDrawerItem(ACTIVITY_PROBLEMS);
+		//selectDrawerItem(ACTIVITY_PROBLEMS);
 	}
 
 	@Override

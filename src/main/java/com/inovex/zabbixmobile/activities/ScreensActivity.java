@@ -69,7 +69,7 @@ public class ScreensActivity extends BaseActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		selectDrawerItem(ACTIVITY_SCREENS);
+	//	selectDrawerItem(ACTIVITY_SCREENS);
 	}
 
 	@Override
