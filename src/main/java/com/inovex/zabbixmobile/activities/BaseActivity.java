@@ -35,7 +35,6 @@ import android.preference.PreferenceActivity;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -530,7 +529,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onLoginStarted() {
-        if (!this.isFinishing() && !mOnSaveInstanceStateCalled)
+        if (!this.isFinishing() && !mOnSaveInstanceStateCalled && !mLoginProgress.isAdded())
             mLoginProgress.show(getSupportFragmentManager(),
                     LoginProgressDialogFragment.TAG);
     }
