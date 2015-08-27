@@ -28,7 +28,6 @@ This file is part of ZAX.
 
     <Button
         android:id="@+id/drawer_manage_servers"
-        style="@style/ManageServersButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

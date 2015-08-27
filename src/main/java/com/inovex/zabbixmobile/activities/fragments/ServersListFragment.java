@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuInflater;
@@ -81,6 +82,7 @@ public class ServersListFragment extends BaseServiceConnectedListFragment {
 	protected void setupListAdapter() {
 		mServersListAdapter = mZabbixDataService
 				.getServersListManagementAdapter();
+		Log.d(TAG, "Server list size: " + mServersListAdapter.getCount());
 		setListAdapter(mServersListAdapter);
 	}
 

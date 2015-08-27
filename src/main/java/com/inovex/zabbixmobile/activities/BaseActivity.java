@@ -32,6 +32,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceActivity;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.GravityCompat;
@@ -44,11 +45,15 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.inovex.zabbixmobile.OnSettingsMigratedReceiver;
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
 import com.inovex.zabbixmobile.data.ZabbixDataService;
 import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
@@ -67,7 +72,7 @@ import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
  * * open the settings dialog
  */
 public abstract class BaseActivity extends AppCompatActivity implements
-        ServiceConnection, OnLoginProgressListener, NavigationView.OnNavigationItemSelectedListener {
+        ServiceConnection, OnLoginProgressListener, NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemSelectedListener {
 
     private static final int REQUEST_CODE_PREFERENCES = 12345;
     public static final int RESULT_PREFERENCES_CHANGED = 1;
@@ -101,6 +106,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
     public static final int ACTIVITY_PROBLEMS = 0;
     private static final String ACTION_FINISH = "com.inovex.zabbixmobile.BaseActivity.ACTION_FINISH";
     private OnSettingsMigratedReceiver mOnSettingsMigratedReceiver;
+    private Spinner mServerList;
+    private Button mManageServersButton;
+    private BaseServiceAdapter<ZabbixServer> mServersListAdapter;
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -144,6 +152,22 @@ public abstract class BaseActivity extends AppCompatActivity implements
         // update selected item and title, then close the drawer
         //mDrawerFragment.selectMenuItem(position);
         return true;
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        selectServerItem(id);
+        // persist selection
+        ZaxPreferences.getInstance(getApplicationContext())
+                .setServerSelection(id);
+        Log.d(TAG, "selected server id=" + id);
+
+        this.refreshData();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     /**
@@ -213,6 +237,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
             // return to avoid a login with incorrect credentials
             return;
         }
+
+        mServersListAdapter = mZabbixDataService.getServersSelectionAdapter();
+        mServerList.setAdapter(mServersListAdapter);
+        mServerList.setOnItemSelectedListener(this);
+
+        restoreServerSelection();
+
         mZabbixDataService.performZabbixLogin(this);
     }
 
@@ -276,6 +307,14 @@ public abstract class BaseActivity extends AppCompatActivity implements
             PushService.startOrStopPushService(getApplicationContext());
         }
 
+        mManageServersButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), ServersActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -336,6 +375,11 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 .findViewById(R.id.content_frame);
         getLayoutInflater().inflate(layoutResID, content, true);
 
+        mServerList = (Spinner) mDrawerLayout.findViewById(R.id.drawer_server_list);
+
+        mManageServersButton = (Button) mDrawerLayout.findViewById(
+                R.id.drawer_manage_servers);
+
         /*mDrawerFrame = (FrameLayout) mDrawerLayout
                 .findViewById(R.id.left_drawer);
       mDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
@@ -361,7 +405,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                              * "open drawer" description for accessibility
 							 */
                 R.string.drawer_close /*
-							 * "close drawer" description for accessibility
+                             * "close drawer" description for accessibility
 							 */
         ) {
             @Override
@@ -428,34 +472,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // this is a hack to set the text color of the overflow menu (apparently
-        // the only sane solution, according to
-        // http://www.techrepublic.com/article/style-androids-overflow-menu-using-this-sanity-saving-workaround/)
-        for (int i = 0; i < menu.size(); i++) {
-            MenuItem mi = menu.getItem(i);
-            if (mDrawerOpened) {
-                mi.setVisible(false);
-                continue;
-            }
-            //todo necessary?
-            String title = mi.getTitle().toString();
-/*			Spannable newTitle = new SpannableString(title);
-			TypedArray a = obtainStyledAttributes(R.attr.actionMenuColor,
-					R.styleable.CustomTheme);
-
-			int color = a.getColor(R.styleable.CustomTheme_actionMenuColor,
-					getResources().getColor(R.color.white));
-			a.recycle();
-			newTitle.setSpan(new ForegroundColorSpan(color), 0,
-					newTitle.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			mi.setTitle(newTitle);*/
-            mi.setTitle(title);
-        }
-        return true;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -471,7 +487,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 return true;
 
         /*
-			if (mDrawerLayout.isDrawerOpen(mDrawerFrame)) {
+            if (mDrawerLayout.isDrawerOpen(mDrawerFrame)) {
 				mDrawerLayout.closeDrawer(mDrawerFrame);
 			} else {
 				mDrawerLayout.openDrawer(mDrawerFrame);
@@ -591,6 +607,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
             return new LoginProgressDialogFragment();
         }
 
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             setRetainInstance(true);
@@ -604,39 +621,32 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     }
 
-/*    protected void selectDrawerItem(int index) {
-        mDrawerFragment.selectMenuItem(index);
-        mDrawerLayout.closeDrawers();
-        mDrawerToggle.syncState();
-    }*/
+    public void restoreServerSelection() {
+        long persistedSelection = ZaxPreferences.getInstance(getApplicationContext()).getServerSelection();
+        selectServerItem(persistedSelection);
+    }
 
-   /* @Override
+/*    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
                             long id) {
-        Intent intent = null;
-        switch (position) {
-            case BaseActivity.ACTIVITY_PROBLEMS:
-                intent = new Intent(this, ProblemsActivity.class);
-                break;
-            case BaseActivity.ACTIVITY_EVENTS:
-                intent = new Intent(this, EventsActivity.class);
-                break;
-            case BaseActivity.ACTIVITY_CHECKS:
-                intent = new Intent(this, ChecksActivity.class);
-                break;
-            case BaseActivity.ACTIVITY_SCREENS:
-                intent = new Intent(this, ScreensActivity.class);
-                break;
-            default:
-                return;
-        }
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(intent);
-        overridePendingTransition(android.R.anim.fade_in,
-                android.R.anim.fade_out);
+        selectServerItem(id);
+        // persist selection
+        ZaxPreferences.getInstance(getApplicationContext())
+                .setServerSelection(id);
+        Log.d(TAG, "selected server id=" + id);
 
-        // update selected item and title, then close the drawer
-        mDrawerFragment.selectMenuItem(position);
-        mDrawerLayout.closeDrawers();
+        this.refreshData();
     }*/
+
+    protected void selectServerItem(long zabbixServerId) {
+        for (int i = 0; i < mServersListAdapter.getCount(); i++) {
+            if (mServersListAdapter.getItemId(i) == zabbixServerId) {
+                mServersListAdapter.setCurrentPosition(i);
+                mServerList.setSelection(i);
+                mDrawerLayout.closeDrawers();
+                break;
+            }
+        }
+    }
+
 }

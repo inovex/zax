@@ -84,7 +84,8 @@ public class ServersActivity extends AppCompatActivity implements OnServerSelect
 
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
-
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
 /*		if (mActionBar != null) {
 			mActionBar.setHomeButtonEnabled(true);
 			mActionBar.setDisplayHomeAsUpEnabled(true);

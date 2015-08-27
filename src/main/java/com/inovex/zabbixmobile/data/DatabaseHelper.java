@@ -271,7 +271,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		} catch (SQLException e) {
 			handleException(new FatalException(Type.INTERNAL_ERROR, e));
 		}
-		return new ArrayList<ZabbixServer>();
+		return new ArrayList<>();
 	}
 
 	/**
