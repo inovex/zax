@@ -1489,12 +1489,11 @@ public class ZabbixRemoteAPI {
 
 	}
 
-	private void importScreenItemsFromStream(JsonArrayOrObjectReader jsonReader)
+	private ArrayList<ScreenItem> parseScreenItemsFromStream(JsonArrayOrObjectReader jsonReader)
 			throws JsonParseException, NumberFormatException, IOException {
 		JsonObjectReader screenItemReader;
 
-		ArrayList<ScreenItem> screenItemsCollection = new ArrayList<ScreenItem>(
-				RECORDS_PER_INSERT_BATCH);
+		ArrayList<ScreenItem> screenItemsCollection = new ArrayList<ScreenItem>();
 		while ((screenItemReader = jsonReader.next()) != null) {
 			ScreenItem screenItem = new ScreenItem();
 			int resourcetype = -1;
@@ -1502,12 +1501,15 @@ public class ZabbixRemoteAPI {
 				String propName = screenItemReader.getCurrentName();
 				if (propName.equals(ScreenItem.COLUMN_SCREENITEMID)) {
 					screenItem
-							.setId(Long.parseLong(screenItemReader.getText()));
+							.setScreenItemId(Long.parseLong(screenItemReader.getText()));
 				} else if (propName.equals(ScreenItem.COLUMN_SCREENID)) {
 					screenItem.setScreenId(Long.parseLong(screenItemReader
 							.getText()));
 				} else if (propName.equals(ScreenItem.COLUMN_RESOURCEID)) {
 					screenItem.setResourceId(Long.parseLong(screenItemReader
+							.getText()));
+				} else if (propName.equals(ScreenItem.COLUMN_REAL_RESOURCEID)) {
+					screenItem.setRealResourceId(Long.parseLong(screenItemReader
 							.getText()));
 				} else if (propName.equals("resourcetype")) {
 					resourcetype = Integer.parseInt(screenItemReader.getText());
@@ -1519,13 +1521,9 @@ public class ZabbixRemoteAPI {
 			if (resourcetype == 0) {
 				screenItemsCollection.add(screenItem);
 			}
-			if (screenItemsCollection.size() >= RECORDS_PER_INSERT_BATCH) {
-				databaseHelper.insertScreenItems(screenItemsCollection);
-				screenItemsCollection.clear();
-			}
 		}
 
-		databaseHelper.insertScreenItems(screenItemsCollection);
+		return screenItemsCollection;
 	}
 
 	/**
@@ -1586,16 +1584,17 @@ public class ZabbixRemoteAPI {
                 RECORDS_PER_INSERT_BATCH);
 		ArrayList<Screen> screensComplete = new ArrayList<Screen>();
 		while ((screenReader = jsonReader.next()) != null) {
+			List<ScreenItem> screenItemsCollection = null;
             Screen screen = new Screen();
             screen.setZabbixServerId(mCurrentZabbixServerId);
             while (screenReader.nextValueToken()) {
                 String propName = screenReader.getCurrentName();
                 if (propName.equals(Screen.COLUMN_SCREENID)) {
-                    screen.setScreenId(Long.parseLong(screenReader.getText()));
+					screen.setScreenId(Long.parseLong(screenReader.getText()));
                 } else if (propName.equals(Screen.COLUMN_NAME)) {
                     screen.setName(screenReader.getText());
                 } else if (propName.equals("screenitems")) {
-					importScreenItemsFromStream(screenReader
+					screenItemsCollection = parseScreenItemsFromStream(screenReader
 							.getJsonArrayOrObjectReader());
 				} else if(propName.equals("hostid")) {
 					screen.setHost(databaseHelper.getHostById(Long.parseLong(screenReader.getText())));
@@ -1603,6 +1602,14 @@ public class ZabbixRemoteAPI {
                     screenReader.nextProperty();
                 }
             }
+			if(screenItemsCollection != null) {
+				if(screen.getHost() != null) {
+					for (ScreenItem screenItem : screenItemsCollection) {
+						screenItem.setHost(screen.getHost());
+					}
+				}
+				databaseHelper.insertScreenItems(screenItemsCollection);
+			}
             screensCollection.add(screen);
             screensComplete.add(screen);
             if (screensCollection.size() >= RECORDS_PER_INSERT_BATCH) {

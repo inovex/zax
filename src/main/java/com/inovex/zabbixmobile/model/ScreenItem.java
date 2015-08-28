@@ -23,10 +23,15 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "screenitems")
 public class ScreenItem {
 
+	private static final String INDEX_SCREENITEMID_HOST = "screenitem_host_idx";
+	/** row ID */
+	public static final String COLUMN_ID = "id";
+	@DatabaseField(generatedId = true, columnName = COLUMN_ID)
+	long id;
 	/** screen Item ID */
 	public static final String COLUMN_SCREENITEMID = "screenitemid";
-	@DatabaseField(id = true, columnName = COLUMN_SCREENITEMID)
-	long id;
+	@DatabaseField(uniqueIndexName = INDEX_SCREENITEMID_HOST, columnName = COLUMN_SCREENITEMID)
+	long screenItemId;
 	/** screen ID */
 	public static final String COLUMN_SCREENID = "screenid";
 	@DatabaseField(columnName = COLUMN_SCREENID, index = true)
@@ -35,13 +40,21 @@ public class ScreenItem {
 	public static final String COLUMN_RESOURCEID = "resourceid";
 	@DatabaseField(columnName = COLUMN_RESOURCEID)
 	long resourceId;
+	/** host (used for template screens) */
+	public static final String COLUMN_HOST = "host";
+	@DatabaseField(foreign = true, foreignAutoRefresh = true, uniqueIndexName = INDEX_SCREENITEMID_HOST, columnName = COLUMN_HOST)
+	Host host;
+	/** real graph id (used for template screens) */
+	public static final String COLUMN_REAL_RESOURCEID = "real_resourceid";
+	@DatabaseField(columnName = COLUMN_REAL_RESOURCEID)
+	Long realResourceId;
 
 	public ScreenItem() {
 
 	}
 
-	public long getId() {
-		return id;
+	public long getScreenItemId() {
+		return screenItemId;
 	}
 
 	public long getScreenId() {
@@ -52,8 +65,8 @@ public class ScreenItem {
 		return resourceId;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setScreenItemId(long screenItemId) {
+		this.screenItemId = screenItemId;
 	}
 
 	public void setScreenId(long screenId) {
@@ -64,4 +77,19 @@ public class ScreenItem {
 		this.resourceId = resourceId;
 	}
 
+	public Host getHost() {
+		return host;
+	}
+
+	public void setHost(Host host) {
+		this.host = host;
+	}
+
+	public Long getRealResourceId() {
+		return realResourceId;
+	}
+
+	public void setRealResourceId(Long realResourceId) {
+		this.realResourceId = realResourceId;
+	}
 }

@@ -1,5 +1,5 @@
 #
-# generated on 2015/08/28 03:51:37
+# generated on 2015/08/28 04:26:18
 #
 # --table-start--
 dataClass=com.inovex.zabbixmobile.model.Application
@@ -334,8 +334,13 @@ tableName=screenitems
 # --table-fields-start--
 # --field-start--
 fieldName=id
+columnName=id
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=screenItemId
 columnName=screenitemid
-id=true
+uniqueIndexName=screenitem_host_idx
 # --field-end--
 # --field-start--
 fieldName=screenId
@@ -345,6 +350,17 @@ indexName=screenitems_screenid_idx
 # --field-start--
 fieldName=resourceId
 columnName=resourceid
+# --field-end--
+# --field-start--
+fieldName=host
+columnName=host
+foreign=true
+uniqueIndexName=screenitem_host_idx
+foreignAutoRefresh=true
+# --field-end--
+# --field-start--
+fieldName=realResourceId
+columnName=real_resourceid
 # --field-end--
 # --table-fields-end--
 # --table-end--
