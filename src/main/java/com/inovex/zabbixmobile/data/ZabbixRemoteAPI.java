@@ -1546,38 +1546,30 @@ public class ZabbixRemoteAPI {
 			params.put("output", "extend");
 			params.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectScreenItems"
 					: "select_screenitems", "extend");
+
+			// screens
 			jsonReader = _queryStream((mPreferences.getZabbixAPIVersion().isGreater1_4() ? "s"
 					: "S") + "creen.get", params);
+			if(jsonReader != null) {
+				importScreensFromReader(jsonReader);
+				jsonReader.close();
+			}
 
-			JsonObjectReader screenReader;
-			ArrayList<Screen> screensCollection = new ArrayList<Screen>(
-					RECORDS_PER_INSERT_BATCH);
-			ArrayList<Screen> screensComplete = new ArrayList<Screen>();
-			while ((screenReader = jsonReader.next()) != null) {
-				Screen screen = new Screen();
-				screen.setZabbixServerId(mCurrentZabbixServerId);
-				while (screenReader.nextValueToken()) {
-					String propName = screenReader.getCurrentName();
-					if (propName.equals(Screen.COLUMN_SCREENID)) {
-						screen.setId(Long.parseLong(screenReader.getText()));
-					} else if (propName.equals(Screen.COLUMN_NAME)) {
-						screen.setName(screenReader.getText());
-					} else if (propName.equals("screenitems")) {
-						importScreenItemsFromStream(screenReader
-								.getJsonArrayOrObjectReader());
-					} else {
-						screenReader.nextProperty();
-					}
+			// template screens (only possible for Zabbix 2.0 and above
+			if(mPreferences.getZabbixAPIVersion().isGreater1_4()) {
+				List<Host> hosts = databaseHelper
+						.getHostsByHostGroup(HostGroup.GROUP_ID_ALL);
+                List<Long> hostIds = new ArrayList<Long>();
+				for(Host host : hosts) {
+					hostIds.add(host.getId());
 				}
-				screensCollection.add(screen);
-				screensComplete.add(screen);
-				if (screensCollection.size() >= RECORDS_PER_INSERT_BATCH) {
-					databaseHelper.insertScreens(screensCollection);
-					screensCollection.clear();
+				params.put("hostids", new JSONArray(hostIds));
+				jsonReader = _queryStream("templatescreen.get", params);
+				if(jsonReader != null) {
+					importScreensFromReader(jsonReader);
+					jsonReader.close();
 				}
 			}
-			databaseHelper.insertScreens(screensCollection);
-			jsonReader.close();
 
 		} catch (JSONException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
@@ -1586,6 +1578,39 @@ public class ZabbixRemoteAPI {
 		}
 
 		databaseHelper.setCached(CacheDataType.SCREEN, null);
+	}
+
+	private void importScreensFromReader(JsonArrayOrObjectReader jsonReader) throws IOException {
+		JsonObjectReader screenReader;
+		ArrayList<Screen> screensCollection = new ArrayList<Screen>(
+                RECORDS_PER_INSERT_BATCH);
+		ArrayList<Screen> screensComplete = new ArrayList<Screen>();
+		while ((screenReader = jsonReader.next()) != null) {
+            Screen screen = new Screen();
+            screen.setZabbixServerId(mCurrentZabbixServerId);
+            while (screenReader.nextValueToken()) {
+                String propName = screenReader.getCurrentName();
+                if (propName.equals(Screen.COLUMN_SCREENID)) {
+                    screen.setScreenId(Long.parseLong(screenReader.getText()));
+                } else if (propName.equals(Screen.COLUMN_NAME)) {
+                    screen.setName(screenReader.getText());
+                } else if (propName.equals("screenitems")) {
+					importScreenItemsFromStream(screenReader
+							.getJsonArrayOrObjectReader());
+				} else if(propName.equals("hostid")) {
+					screen.setHost(databaseHelper.getHostById(Long.parseLong(screenReader.getText())));
+                } else {
+                    screenReader.nextProperty();
+                }
+            }
+            screensCollection.add(screen);
+            screensComplete.add(screen);
+            if (screensCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+                databaseHelper.insertScreens(screensCollection);
+                screensCollection.clear();
+            }
+        }
+		databaseHelper.insertScreens(screensCollection);
 	}
 
 	/**
@@ -1654,7 +1679,8 @@ public class ZabbixRemoteAPI {
 			graphs = _queryStream(
 					"graph.get",
 					new JSONObject()
-							.put(mPreferences.getZabbixAPIVersion().isGreater1_4()? "selectGraphItems"
+							.put(mPreferences.getZabbixAPIVersion()
+									.isGreater1_4() ? "selectGraphItems"
 									: "select_graph_items", "extend")
 							.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectItems"
 									: "select_items", "extend")

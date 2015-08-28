@@ -17,22 +17,32 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.model;
 
-import java.util.Collection;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.util.Collection;
 
 @DatabaseTable(tableName = "screens")
 public class Screen implements Comparable<Screen> {
 
+	private static final String INDEX_SCREENID_HOST = "screen_host_idx";
+	/** row ID */
+	public static final String COLUMN_ID = "id";
+	@DatabaseField(generatedId = true, columnName = COLUMN_ID)
+	long id;
 	/** Screen ID */
 	public static final String COLUMN_SCREENID = "screenid";
-	@DatabaseField(id = true, columnName = COLUMN_SCREENID)
-	long id;
+	@DatabaseField(uniqueIndexName = INDEX_SCREENID_HOST, columnName = COLUMN_SCREENID)
+	long screenId;
 	/** Screen name */
 	public static final String COLUMN_NAME = "name";
 	@DatabaseField(columnName = COLUMN_NAME)
 	String name;
+
+	/** Host (needed for templates */
+	public static final String COLUMN_HOST = "host";
+	@DatabaseField(uniqueIndexName = INDEX_SCREENID_HOST, foreign = true, foreignAutoRefresh = true, columnName = COLUMN_HOST)
+	Host host;
 
 	/** zabbix server */
 	public static final String COLUMN_ZABBIXSERVER_ID = "zabbixserverid";
@@ -48,6 +58,14 @@ public class Screen implements Comparable<Screen> {
 		return id;
 	}
 
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public long getScreenId() {
+		return screenId;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -60,8 +78,8 @@ public class Screen implements Comparable<Screen> {
 		this.graphs = graphs;
 	}
 
-	public void setId(long screenId) {
-		this.id = screenId;
+	public void setScreenId(long screenId) {
+		this.screenId = screenId;
 	}
 
 	public void setName(String name) {
@@ -70,9 +88,11 @@ public class Screen implements Comparable<Screen> {
 
 	@Override
 	public int compareTo(Screen another) {
-		if (another.getId() < id)
+		if (another.getScreenId() < screenId)
 			return 1;
-		if (another.getId() > id)
+		if (another.getScreenId() > screenId)
+			return -1;
+		if(!another.getHost().equals(host))
 			return -1;
 		return 0;
 	}
@@ -85,4 +105,11 @@ public class Screen implements Comparable<Screen> {
 		this.zabbixServerId = zabbixServerId;
 	}
 
+	public Host getHost() {
+		return host;
+	}
+
+	public void setHost(Host host) {
+		this.host = host;
+	}
 }
