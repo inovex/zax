@@ -46,7 +46,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -107,7 +106,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
     private static final String ACTION_FINISH = "com.inovex.zabbixmobile.BaseActivity.ACTION_FINISH";
     private OnSettingsMigratedReceiver mOnSettingsMigratedReceiver;
     private Spinner mServerList;
-    private Button mManageServersButton;
     private BaseServiceAdapter<ZabbixServer> mServersListAdapter;
 
     @Override
@@ -138,6 +136,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 overridePendingTransition(android.R.anim.fade_in,
                         android.R.anim.fade_out);
                 return true;
+            case R.id.navigation_manage_servers:
+                intent = new Intent(this, ServersActivity.class);
+                break;
             case R.id.navigation_info:
                 intent = new Intent(this, InfoActivity.class);
                 break;
@@ -306,15 +307,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         } else {
             PushService.startOrStopPushService(getApplicationContext());
         }
-
-        mManageServersButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), ServersActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     /**
@@ -380,9 +372,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         mServerList = (Spinner) mDrawerLayout.findViewById(R.id.drawer_server_list);
 
-        mManageServersButton = (Button) mDrawerLayout.findViewById(
-                R.id.drawer_manage_servers);
-
         /*mDrawerFrame = (FrameLayout) mDrawerLayout
                 .findViewById(R.id.left_drawer);
       mDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
@@ -399,17 +388,15 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mNavigationView.setNavigationItemSelectedListener(this);
 
 
+
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
-        mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-                mDrawerLayout, /* DrawerLayout object */
-                mToolbar, /* nav drawer image to replace 'Up' caret */
-                R.string.drawer_open, /*
-                             * "open drawer" description for accessibility
-							 */
-                R.string.drawer_close /*
-                             * "close drawer" description for accessibility
-							 */
+        mDrawerToggle = new ActionBarDrawerToggle(
+				this, /* host Activity */
+				mDrawerLayout, /* DrawerLayout object */
+				mToolbar, /* nav drawer image to replace 'Up' caret */
+				R.string.drawer_open, /* "open drawer" description for accessibility */
+				R.string.drawer_close /* "close drawer" description for accessibility */
         ) {
             @Override
             public void onDrawerClosed(View view) {
@@ -459,7 +446,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         Log.d(TAG, "onDestroy");
 
         unregisterReceiver(finishReceiver);
-        unregisterReceiver(mOnSettingsMigratedReceiver);
+// TODO commented out because registration above is commented out
+//        unregisterReceiver(mOnSettingsMigratedReceiver);
 
         if (isFinishing()) {
             Log.d(TAG, "unbindService");

@@ -101,11 +101,11 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 		View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner,
 				mToolbar, false);
-		android.support.v7.widget.Toolbar.LayoutParams lp = new android.support.v7.widget.Toolbar.LayoutParams(
-				ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+		android.support.v7.widget.Toolbar.LayoutParams lp =
+				new android.support.v7.widget.Toolbar.LayoutParams(
+						ViewGroup.LayoutParams.MATCH_PARENT,
+						ViewGroup.LayoutParams.MATCH_PARENT);
 		mToolbar.addView(spinnerContainer, lp);
-
-
 
 
 /*		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
