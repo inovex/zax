@@ -76,7 +76,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final String DATABASE_NAME = "zabbixmobile2.db";
 	// any time you make changes to your database objects, you may have to
 	// increase the database version
-	private static final int DATABASE_VERSION = 10;
+	private static final int DATABASE_VERSION = 13;
 	private static final String TAG = DatabaseHelper.class.getSimpleName();
 	private DatabaseConnection mThreadConnection;
 	private final Context mContext;
@@ -526,11 +526,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		try {
 			Dao<ScreenItem, Long> screenItemDao = getDao(ScreenItem.class);
 			List<ScreenItem> screenItems = screenItemDao.queryForEq(
-					ScreenItem.COLUMN_SCREENID, screen.getId());
+					ScreenItem.COLUMN_SCREENID, screen.getScreenId());
 
 			HashSet<Long> graphIds = new HashSet<Long>();
 			for (ScreenItem s : screenItems) {
-				graphIds.add(s.getResourceId());
+				if(s.getRealResourceId() != null) {
+					graphIds.add(s.getRealResourceId());
+				} else {
+					graphIds.add(s.getResourceId());
+				}
 			}
 			return graphIds;
 		} catch (SQLException e) {
@@ -1437,4 +1441,5 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			handleException(new FatalException(Type.INTERNAL_ERROR, e));
 		}
 	}
+
 }
