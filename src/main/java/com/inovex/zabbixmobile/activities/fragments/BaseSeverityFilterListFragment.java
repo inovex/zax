@@ -109,15 +109,12 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 		// Set up the ViewPager, attaching the adapter and setting up a listener
 		// for when the
 		// user swipes between sections.
-		mSeverityListPager = (ViewPager) getView().findViewById(
-				R.id.severity_list_viewpager);
-		mSeverityListPageIndicator = (TabPageIndicator) getView().findViewById(
-				R.id.severity_list_tabindicator);
+		mSeverityListPager = (ViewPager) getView().findViewById(R.id.severity_list_viewpager);
+		mSeverityListPageIndicator =
+				(TabPageIndicator) getView().findViewById(R.id.severity_list_tabindicator);
 		// Bind the tab indicator to the adapter
 		mSeverityListPagerAdapter = retrievePagerAdapter();
-		Log.d(TAG,
-				"current severity: "
-						+ mSeverityListPagerAdapter.getCurrentObject());
+		Log.d(TAG, "current severity: " + mSeverityListPagerAdapter.getCurrentObject());
 		mSeverityListPagerAdapter.setFragmentManager(getChildFragmentManager());
 		mSeverityListPager.setAdapter(mSeverityListPagerAdapter);
 		mSeverityListPager.setOffscreenPageLimit(1);
@@ -191,8 +188,7 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 		if (mSeverityListPager == null)
 			return;
 		BaseSeverityFilterListPage<T> currentPage = (BaseSeverityFilterListPage<T>) mSeverityListPagerAdapter
-				.instantiateItem(mSeverityListPager,
-						mSeverityListPager.getCurrentItem());
+				.instantiateItem(mSeverityListPager,mSeverityListPager.getCurrentItem());
 		if (currentPage != null)
 			currentPage.refreshItemSelection();
 	}

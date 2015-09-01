@@ -73,8 +73,8 @@ public abstract class BaseSeverityFilterListPage<T> extends
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate: " + this.toString());
 		if (savedInstanceState != null) {
-			mSeverity = TriggerSeverity.getSeverityByNumber(savedInstanceState
-					.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
+			mSeverity = TriggerSeverity.getSeverityByNumber(
+					savedInstanceState.getInt(ARG_SEVERITY, TriggerSeverity.ALL.getNumber()));
 		}
 	}
 
