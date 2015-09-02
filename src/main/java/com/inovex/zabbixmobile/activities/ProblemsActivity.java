@@ -70,6 +70,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
         mDrawerToggle.setDrawerIndicatorEnabled(true);
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();

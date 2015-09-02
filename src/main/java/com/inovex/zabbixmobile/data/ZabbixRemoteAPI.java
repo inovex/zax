@@ -1103,21 +1103,24 @@ public class ZabbixRemoteAPI {
 						HistoryDetail h = new HistoryDetail();
 						while (historydetail.nextValueToken()) {
 							String propName = historydetail.getCurrentName();
-							if (propName.equals(HistoryDetail.COLUMN_CLOCK)) {
-								// The unit of Zabbix timestamps is seconds, we
-								// need milliseconds
-								h.setClock(Long.parseLong(historydetail
-										.getText()) * 1000);
-							} else if (propName
-									.equals(HistoryDetail.COLUMN_ITEMID)) {
-								h.setItemId(Long.parseLong(historydetail
-										.getText()));
-							} else if (propName
-									.equals(HistoryDetail.COLUMN_VALUE)) {
-								h.setValue(Double.parseDouble(historydetail
-										.getText()));
-							} else {
-								historydetail.nextProperty();
+							switch (propName) {
+								case HistoryDetail.COLUMN_CLOCK:
+									// The unit of Zabbix timestamps is seconds, we
+									// need milliseconds
+									h.setClock(Long.parseLong(historydetail
+											.getText()) * 1000);
+									break;
+								case HistoryDetail.COLUMN_ITEMID:
+									h.setItemId(Long.parseLong(historydetail
+											.getText()));
+									break;
+								case HistoryDetail.COLUMN_VALUE:
+									h.setValue(Double.parseDouble(historydetail
+											.getText()));
+									break;
+								default:
+									historydetail.nextProperty();
+									break;
 							}
 						}
 						historyDetailsCollection.add(h);

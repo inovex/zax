@@ -51,9 +51,8 @@ public class ScreensActivity extends BaseActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_screens);
-
 		mTitle = getResources().getString(R.string.activity_screens);
+		setContentView(R.layout.activity_screens);
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.screens_flipper);
