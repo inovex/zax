@@ -412,6 +412,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         setContentView(mDrawerLayout);
         mDrawerToggle.syncState();
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle(mTitle);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(mTitle);
     }
 
     /**

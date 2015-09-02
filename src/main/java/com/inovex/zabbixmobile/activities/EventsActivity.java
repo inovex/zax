@@ -41,9 +41,8 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_events);
-
 		mTitle = getResources().getString(R.string.activity_events);
+		setContentView(R.layout.activity_events);
 
 		mFragmentManager = getSupportFragmentManager();
 		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);

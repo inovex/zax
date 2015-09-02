@@ -57,12 +57,11 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
+		mTitle = getResources().getString(R.string.activity_checks);
 		setContentView(R.layout.activity_checks);
 
 /*		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		mActionBar.setDisplayShowTitleEnabled(false);*/
-
-		mTitle = getResources().getString(R.string.activity_checks);
 
 		mFragmentManager = getSupportFragmentManager();
 		mHostListFragment = (ChecksHostsFragment) mFragmentManager
