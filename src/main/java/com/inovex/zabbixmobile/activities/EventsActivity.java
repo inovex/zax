@@ -18,12 +18,13 @@ This file is part of ZAX.
 package com.inovex.zabbixmobile.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.widget.ViewFlipper;
+import android.widget.FrameLayout;
 
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
-import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
+import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
+import com.inovex.zabbixmobile.activities.fragments.EventsListFragment;
 import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
 import com.inovex.zabbixmobile.model.Event;
@@ -45,18 +46,26 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		setContentView(R.layout.activity_events);
 
 		mFragmentManager = getSupportFragmentManager();
-		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
-		mDetailsFragment = (BaseSeverityFilterDetailsFragment<Event>) mFragmentManager
-				.findFragmentById(R.id.events_details);
-		mListFragment = (BaseSeverityFilterListFragment<Event>) mFragmentManager
-				.findFragmentById(R.id.events_list);
-		if (mFlipper != null)
-			Log.d(TAG, mFlipper.toString());
-		Log.d(TAG, mListFragment.toString());
-		Log.d(TAG, mDetailsFragment.toString());
+		mFragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
+		mListFragment = new EventsListFragment();
+		mDetailsFragment = new EventsDetailsFragment();
 
-		if (mFlipper != null)
+//		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
+//		mDetailsFragment = (BaseSeverityFilterDetailsFragment<Event>) mFragmentManager
+//				.findFragmentById(R.id.events_details);
+//		mListFragment = (BaseSeverityFilterListFragment<Event>) mFragmentManager
+//				.findFragmentById(R.id.events_list);
+//		if (mFlipper != null)
+//			Log.d(TAG, mFlipper.toString());
+//		Log.d(TAG, mListFragment.toString());
+//		Log.d(TAG, mDetailsFragment.toString());
+
+		if (mFragmentContainer != null) {
+			FragmentTransaction transaction = mFragmentManager.beginTransaction();
+			transaction.add(R.id.fragment_container, mListFragment, "ListFragment");
+			transaction.commit();
 			mDetailsFragment.setHasOptionsMenu(false);
+		}
 
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 

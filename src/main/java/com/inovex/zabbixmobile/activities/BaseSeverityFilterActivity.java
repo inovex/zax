@@ -21,10 +21,11 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.MenuItem;
-import android.widget.ViewFlipper;
+import android.widget.FrameLayout;
 
+import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
@@ -50,11 +51,8 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 	private static final String TAG = BaseSeverityFilterActivity.class
 			.getSimpleName();
 
-	private static final int FLIPPER_LIST_FRAGMENT = 0;
-	private static final int FLIPPER_DETAILS_FRAGMENT = 1;
-
 	protected FragmentManager mFragmentManager;
-	protected ViewFlipper mFlipper;
+	protected FrameLayout mFragmentContainer;
 	protected BaseSeverityFilterDetailsFragment<T> mDetailsFragment;
 	protected BaseSeverityFilterListFragment<T> mListFragment;
 
@@ -70,17 +68,6 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 	public void onServiceConnected(ComponentName className, IBinder binder) {
 		super.onServiceConnected(className, binder);
 		Log.d(TAG, "onServiceConnected()");
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-
-		if (item.getItemId() == android.R.id.home
-				&& mDetailsFragment.isVisible() && mFlipper != null) {
-			showListFragment();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -110,44 +97,34 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 		selectInitialItem(false);
 	}
 
-	@Override
-	public void onBackPressed() {
-		if (mDetailsFragment.isVisible() && mFlipper != null) {
-			Log.d(TAG, "DetailsFragment is visible.");
-			showListFragment();
-		} else {
-			Log.d(TAG, "DetailsFragment is not visible.");
-			super.onBackPressed();
-		}
-	}
 
 	/**
 	 * Displays the details fragment.
 	 */
 	protected void showDetailsFragment() {
-		if (mFlipper != null) {
-			if (!mDetailsFragment.isVisible()) {
-				mFlipper.setDisplayedChild(FLIPPER_DETAILS_FRAGMENT);
-			}
+		if(mFragmentContainer != null){
+			FragmentTransaction transaction = mFragmentManager.beginTransaction();
+			transaction.replace(R.id.fragment_container,mDetailsFragment,"DetailsFragment");
+			transaction.addToBackStack(null);
+			transaction.commit();
+
 			// disable drawer toggle
 			mDrawerToggle.setDrawerIndicatorEnabled(false);
+			// details fragment becomes visible -> enable menu
+			mDetailsFragment.setHasOptionsMenu(true);
 		}
-		// details fragment becomes visible -> enable menu
-		mDetailsFragment.setHasOptionsMenu(true);
 	}
 
 	/**
 	 * Displays the list fragment.
 	 */
 	protected void showListFragment() {
-		if (mFlipper != null) {
-			if (!mListFragment.isVisible()) {
-				mFlipper.setDisplayedChild(FLIPPER_LIST_FRAGMENT);
-			}
-			mDrawerToggle.setDrawerIndicatorEnabled(true);
-		}
-		// details fragment becomes invisible -> disable menu
-		if (mFlipper != null) {// portrait
+		if (mFragmentContainer != null) {
+			FragmentTransaction transaction = mFragmentManager.beginTransaction();
+			transaction.replace(R.id.fragment_container,mListFragment,"ListFragment");
+			transaction.commit();
+
+			// details fragment becomes invisible -> disable menu
 			mDetailsFragment.setHasOptionsMenu(false);
 		}
 	}

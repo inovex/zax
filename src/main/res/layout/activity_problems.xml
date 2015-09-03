@@ -15,8 +15,8 @@ This file is part of ZAX.
     along with ZAX.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/problems_flipper"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/problems_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -24,19 +24,12 @@ This file is part of ZAX.
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin" >
-   <include
+    <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar_main"/>
-    <fragment
-        android:id="@+id/problems_list"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.inovex.zabbixmobile.activities.fragments.ProblemsListFragment" />
-
-    <fragment
-        android:id="@+id/problems_details"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment" />
-
-</ViewFlipper>
+        android:layout_height="match_parent"/>
+    
+</LinearLayout>

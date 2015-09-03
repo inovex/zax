@@ -20,11 +20,12 @@ package com.inovex.zabbixmobile.activities;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.widget.ViewFlipper;
+import android.support.v4.app.FragmentTransaction;
+import android.widget.FrameLayout;
 
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
-import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
+import com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment;
+import com.inovex.zabbixmobile.activities.fragments.ProblemsListFragment;
 import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
 import com.inovex.zabbixmobile.model.HostGroup;
 import com.inovex.zabbixmobile.model.Trigger;
@@ -51,11 +52,21 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
         setContentView(R.layout.activity_problems);
 
         mFragmentManager = getSupportFragmentManager();
-        mFlipper = (ViewFlipper) findViewById(R.id.problems_flipper);
-        mDetailsFragment = (BaseSeverityFilterDetailsFragment<Trigger>) mFragmentManager
-                .findFragmentById(R.id.problems_details);
-        mListFragment = (BaseSeverityFilterListFragment<Trigger>) mFragmentManager
-                .findFragmentById(R.id.problems_list);
+        mFragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
+        mListFragment = new ProblemsListFragment();
+        mDetailsFragment = new ProblemsDetailsFragment();
+
+		if(mFragmentContainer != null){
+			FragmentTransaction ft = mFragmentManager.beginTransaction();
+			ft.add(R.id.fragment_container,mListFragment,"ListFragment");
+			ft.commit();
+		}
+
+//        mFlipper = (ViewFlipper) findViewById(R.id.problems_flipper);
+//        mDetailsFragment = (BaseSeverityFilterDetailsFragment<Trigger>) mFragmentManager
+//                .findFragmentById(R.id.problems_details);
+//        mListFragment = (BaseSeverityFilterListFragment<Trigger>) mFragmentManager
+//                .findFragmentById(R.id.problems_list);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             if (extras.getBoolean(ARG_START_FROM_NOTIFICATION, false)) {
@@ -64,14 +75,14 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
             mTriggerPosition = extras.getInt(ARG_TRIGGER_POSITION, -1);
         }
 
-        if (mFlipper != null)
-            mDetailsFragment.setHasOptionsMenu(false);
+//        if (mFlipper != null)
+//            mDetailsFragment.setHasOptionsMenu(false);
 
         mDrawerToggle.setDrawerIndicatorEnabled(true);
     }
 
 
-    @Override
+	@Override
     protected void onResume() {
         super.onResume();
         //selectDrawerItem(ACTIVITY_PROBLEMS);
@@ -84,8 +95,8 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
         // correct item.
         if (mStartFromNotification) {
             mDetailsFragment.setSeverity(TriggerSeverity.ALL);
-            BaseSeverityListPagerAdapter<Trigger> severityAdapter = mZabbixDataService
-                    .getProblemsListPagerAdapter();
+            BaseSeverityListPagerAdapter<Trigger> severityAdapter
+                    = mZabbixDataService.getProblemsListPagerAdapter();
             severityAdapter.setCurrentPosition(0);
             selectHostGroupInSpinner(0, HostGroup.GROUP_ID_ALL);
             mStartFromNotification = false;

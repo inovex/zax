@@ -15,8 +15,8 @@ This file is part of ZAX.
     along with ZAX.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/events_flipper"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/events_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -27,16 +27,9 @@ This file is part of ZAX.
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar_main"/>
-    <fragment
-        android:id="@+id/events_list"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.inovex.zabbixmobile.activities.fragments.EventsListFragment" />
+        android:layout_height="match_parent"/>
 
-    <fragment
-        android:id="@+id/events_details"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment" />
-
-</ViewFlipper>
+</LinearLayout>
