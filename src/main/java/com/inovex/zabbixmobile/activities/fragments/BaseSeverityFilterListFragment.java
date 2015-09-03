@@ -33,7 +33,6 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnSeveritySelectedListener;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.viewpagerindicator.TabPageIndicator;
 
 /**
  * Base class for a list fragment of a data type to be filtered by severity.
@@ -51,7 +50,6 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 
 	ViewPager mSeverityListPager;
 	BaseSeverityListPagerAdapter<T> mSeverityListPagerAdapter;
-	TabPageIndicator mSeverityListPageIndicator;
 
 	private OnSeveritySelectedListener mCallbackMain;
 

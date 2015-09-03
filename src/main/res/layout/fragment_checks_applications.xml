@@ -45,11 +45,6 @@ This file is part of ZAX.
 
         <include layout="@layout/fragment_checks_details_title" />
 
-        <com.viewpagerindicator.TitlePageIndicator
-            android:id="@+id/checks_page_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
         <LinearLayout
             android:id="@+id/items_progress_layout"
             android:layout_width="match_parent"

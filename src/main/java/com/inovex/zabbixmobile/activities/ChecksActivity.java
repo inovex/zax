@@ -171,7 +171,6 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		// spinner first
 		super.selectHostGroupInSpinner(position, itemId);
 		selectInitialHost(true);
-		selectInitialApplication(true);
 		if (!mHostListFragment.isVisible())
 			showHostListFragment();
 	}
@@ -256,21 +255,8 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		return h;
 	}
 
-	/**
-	 * Causes a redraw of the page indicator. This needs to be called when the
-	 * adapter's contents are updated.
-	 */
-	private void selectInitialApplication(boolean reset) {
-		if (reset)
-			mApplicationsFragment.resetSelection();
-		else
-			mApplicationsFragment.refreshSelection();
-	}
-
 	@Override
 	public void onApplicationsLoaded(boolean resetSelection) {
-		// This is ugly, but we need it to redraw the page indicator
-		selectInitialApplication(resetSelection);
 		mApplicationsFragment.dismissApplicationsProgressBar();
 		mItemDetailsFragment.dismissLoadingSpinner();
 	}
