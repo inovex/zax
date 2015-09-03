@@ -25,7 +25,8 @@ This file is part of ZAX.
     <com.inovex.zabbixmobile.view.ServiceTabPageIndicator
         android:id="@+id/severity_list_tabindicator"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        style="@style/TitlePageIndicatorDefault"/>
 
     <LinearLayout
         android:id="@+id/severity_list_progress_layout"
