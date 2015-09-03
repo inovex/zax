@@ -73,7 +73,6 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 	@Override
 	public void selectHostGroupInSpinner(int position, long itemId) {
 		super.selectHostGroupInSpinner(position, itemId);
-		mDetailsFragment.redrawPageIndicator();
 		selectInitialItem(true);
 	}
 
@@ -93,7 +92,6 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 		if (severity == null)
 			return;
 		mDetailsFragment.setSeverity(severity);
-		mDetailsFragment.redrawPageIndicator();
 		selectInitialItem(false);
 	}
 
@@ -133,7 +131,6 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 	public void onSeverityListAdapterLoaded(TriggerSeverity severity,
 			boolean hostGroupChanged) {
 		mListFragment.dismissProgressBar();
-		mDetailsFragment.redrawPageIndicator();
 		mDetailsFragment.dismissLoadingSpinner();
 	}
 

@@ -53,8 +53,6 @@ This file is part of ZAX.
 
         <item name="android:windowBackground">@color/background_material_light</item>
 
-        <item name="vpiTabPageIndicatorStyle">@style/TabPageIndicatorDefault</item>
-        <item name="vpiTitlePageIndicatorStyle">@style/TitlePageIndicatorDefault</item>
         <!--<item name="android:textViewStyle">@style/TextViewStyleDefault</item>-->
         <!--<item name="android:progressBarStyleHorizontal">@style/ProgressBarHorizontalDefault</item>-->
         <item name="borderDrawable">@drawable/list_fragment_light</item>
@@ -123,27 +121,6 @@ This file is part of ZAX.
 
     <style name="TextViewStyleDefault" parent="android:Widget.TextView">
         <!--<item name="android:textColorPrimary">?defaultTextColor</item>-->
-    </style>
-
-    <style name="TabPageIndicatorDefault" parent="Widget.TabPageIndicator">
-        <!--<item name="android:textColor">?defaultTextColor</item>-->
-        <!--<item name="selectedColor">?defaultTextColor</item>-->
-        <!--<item name="android:textStyle">bold</item>-->
-    </style>
-
-    <style name="TitlePageIndicatorSeverityDetails">
-        <!--<item name="android:background">?pageIndicatorBackground</item>-->
-        <!--<item name="android:textColor">?defaultTextColor</item>-->
-        <!--<item name="selectedColor">?pageIndicatorSelectedColor</item>-->
-        <item name="footerLineHeight">0dp</item>
-        <item name="footerIndicatorHeight">0dp</item>
-        <item name="footerIndicatorStyle">underline</item>
-        <!--<item name="android:textSize">12sp</item>-->
-    </style>
-
-    <style name="TitlePageIndicatorDefault">
-        <item name="android:textColor">?defaultTextColor</item>
-        <item name="selectedColor">?pageIndicatorSelectedColor</item>
     </style>
 
     <style name="ProgressBarHorizontalDefault" parent="android:Widget.ProgressBar.Horizontal">

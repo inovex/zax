@@ -110,42 +110,13 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 		// for when the
 		// user swipes between sections.
 		mSeverityListPager = (ViewPager) getView().findViewById(R.id.severity_list_viewpager);
-		mSeverityListPageIndicator =
-				(TabPageIndicator) getView().findViewById(R.id.severity_list_tabindicator);
 		// Bind the tab indicator to the adapter
 		mSeverityListPagerAdapter = retrievePagerAdapter();
 		Log.d(TAG, "current severity: " + mSeverityListPagerAdapter.getCurrentObject());
 		mSeverityListPagerAdapter.setFragmentManager(getChildFragmentManager());
 		mSeverityListPager.setAdapter(mSeverityListPagerAdapter);
 		mSeverityListPager.setOffscreenPageLimit(1);
-		mSeverityListPageIndicator.setViewPager(mSeverityListPager);
 
-		mSeverityListPageIndicator.setCurrentItem(mSeverityListPagerAdapter
-				.getCurrentPosition());
-		// mCallbackMain.onSeveritySelected(mSeverityListPagerAdapter.getCurrentObject());
-
-		mSeverityListPageIndicator
-				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-					@Override
-					public void onPageSelected(int position) {
-						Log.d(TAG, "EventCategoryFragment:onPageSelected("
-								+ position + ")");
-						mSeverityListPagerAdapter.setCurrentPosition(position);
-
-						mCallbackMain
-								.onSeveritySelected(mSeverityListPagerAdapter
-										.getCurrentObject());
-
-					}
-
-					@Override
-					public void onPageScrollStateChanged(int position) {
-					}
-
-					@Override
-					public void onPageScrolled(int arg0, float arg1, int arg2) {
-					}
-				});
 
 	}
 
@@ -237,10 +208,4 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 			listProgress.setProgress(progress);
 		}
 	}
-
-	public void refreshTabTitles() {
-		if (mSeverityListPageIndicator != null)
-			mSeverityListPageIndicator.notifyDataSetChanged();
-	}
-
 }

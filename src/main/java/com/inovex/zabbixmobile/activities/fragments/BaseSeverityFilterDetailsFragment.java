@@ -39,7 +39,6 @@ import com.inovex.zabbixmobile.adapters.BaseSeverityPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnListItemSelectedListener;
 import com.inovex.zabbixmobile.model.Sharable;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
-import com.viewpagerindicator.TitlePageIndicator;
 
 /**
  * Base class for a details fragment of a data type to be filtered by severity.
@@ -58,7 +57,6 @@ public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
 
 	protected ViewPager mDetailsPager;
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
-	protected TitlePageIndicator mDetailsPageIndicator;
 	private OnListItemSelectedListener mCallbackMain;
 	protected BaseSeverityPagerAdapter<T> mDetailsPagerAdapter;
 
@@ -105,11 +103,8 @@ public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
 	 * @param position
 	 */
 	private void setPosition(int position) {
-		if (mDetailsPageIndicator != null) {
-			mDetailsPageIndicator.setCurrentItem(position);
-			mDetailsPager.setCurrentItem(position);
-			mDetailsPagerAdapter.setCurrentPosition(position);
-		}
+		mDetailsPager.setCurrentItem(position);
+		mDetailsPagerAdapter.setCurrentPosition(position);
 	}
 
 	/**
@@ -220,56 +215,11 @@ public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
 				R.id.severity_view_pager);
 		mDetailsPager.setAdapter(mDetailsPagerAdapter);
 
-		// Initialize the page indicator
-		mDetailsPageIndicator = (TitlePageIndicator) getView().findViewById(
-				R.id.severity_page_indicator);
-		mDetailsPageIndicator.setViewPager(mDetailsPager);
-
 		Log.d(TAG,
 				"current position: "
 						+ mDetailsPagerAdapter.getCurrentPosition());
 		// mDetailsPagerAdapter.setCurrentPosition(mPosition);
 		// mDetailsPageIndicator.setCurrentItem(mPosition);
-
-		mDetailsPageIndicator.setCurrentItem(mDetailsPagerAdapter
-				.getCurrentPosition());
-
-		mDetailsPageIndicator
-				.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-					@Override
-					public void onPageScrollStateChanged(int arg0) {
-
-					}
-
-					@Override
-					public void onPageScrolled(int arg0, float arg1, int arg2) {
-
-					}
-
-					@Override
-					public void onPageSelected(int position) {
-						Log.d(TAG, "detail page selected: " + position);
-
-						// propagate page change only if there actually was a
-						// change -> prevent infinite propagation
-						int oldPosition = mDetailsPagerAdapter
-								.getCurrentPosition();
-						mDetailsPagerAdapter.setCurrentPosition(position);
-						if (position != oldPosition)
-							mCallbackMain.onListItemSelected(position,
-									mDetailsPagerAdapter.getItemId(position));
-					}
-				});
-	}
-
-	/**
-	 * Redraws the page indicator. This might be necessary when the adapter data
-	 * is changed.
-	 */
-	public void redrawPageIndicator() {
-		if (mDetailsPageIndicator != null)
-			mDetailsPageIndicator.invalidate();
 	}
 
 	/**

@@ -62,10 +62,6 @@ public abstract class BaseSeverityPagerAdapter<T> extends
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		if (position == mCurrentPosition - 1)
-			return "Newer";
-		else if (position == mCurrentPosition + 1)
-			return "Older";
 		return (position + 1) + " of " + getCount();
 	}
 

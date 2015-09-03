@@ -42,13 +42,12 @@ This file is part of ZAX.
         android:layout_height="0px"
         android:layout_weight="1"
         android:padding="@dimen/default_content_padding" >
-    </android.support.v4.view.ViewPager>
 
-    <com.viewpagerindicator.TitlePageIndicator
-        android:id="@+id/severity_page_indicator"
-        style="@style/TitlePageIndicatorSeverityDetails"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/default_content_padding" />
+        <android.support.v4.view.PagerTitleStrip
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            />
+    </android.support.v4.view.ViewPager>
 
 </LinearLayout>

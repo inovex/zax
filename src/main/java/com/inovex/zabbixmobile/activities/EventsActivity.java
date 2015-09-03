@@ -123,7 +123,6 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 				.getEventsListPagerAdapter();
 		pagerAdapter.updateTitle(severity.getPosition(), mZabbixDataService
 				.getEventsListAdapter(severity).getCount());
-		mListFragment.refreshTabTitles();
 
 		if (severity == mZabbixDataService.getEventsListPagerAdapter()
 				.getCurrentObject()) {

@@ -35,7 +35,6 @@ import com.inovex.zabbixmobile.adapters.ChecksApplicationsPagerAdapter;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
 import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 import com.inovex.zabbixmobile.model.Host;
-import com.viewpagerindicator.TitlePageIndicator;
 
 /**
  * Fragment showing the applications of a particular host.
@@ -60,7 +59,6 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	private TextView mTitleView;
 
 	protected ViewPager mApplicationsPager;
-	protected TitlePageIndicator mApplicationsPageIndicator;
 	protected ChecksApplicationsPagerAdapter mApplicationsPagerAdapter;
 
 	private OnChecksItemSelectedListener mCallbackMain;
@@ -151,44 +149,6 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 			mApplicationsPager = (ViewPager) getView().findViewById(
 					R.id.checks_view_pager);
 			mApplicationsPager.setAdapter(mApplicationsPagerAdapter);
-
-			// Initialize the page indicator
-			mApplicationsPageIndicator = (TitlePageIndicator) getView()
-					.findViewById(R.id.checks_page_indicator);
-			mApplicationsPageIndicator.setViewPager(mApplicationsPager);
-			mApplicationsPageIndicator.setCurrentItem(0);
-			mApplicationsPageIndicator
-					.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-						@Override
-						public void onPageScrollStateChanged(int arg0) {
-
-						}
-
-						@Override
-						public void onPageScrolled(int arg0, float arg1,
-								int arg2) {
-
-						}
-
-						@Override
-						public void onPageSelected(int position) {
-							Log.d(TAG, "detail page selected: " + position);
-
-							selectApplication(position);
-
-							// mDetailsPagerAdapter.getCurrentPage().selectItem(0);
-							mCallbackMain.onApplicationSelected(position);
-
-							showItemsLoadingSpinner();
-							mZabbixDataService.loadItemsByApplicationId(
-									mApplicationsPagerAdapter
-											.getCurrentObject().getId(),
-									ChecksApplicationsFragment.this);
-
-						}
-
-					});
 		}
 	}
 
@@ -288,24 +248,14 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 		if (mApplicationsPagerAdapter != null) {
 			mApplicationsPagerAdapter.setCurrentPosition(position);
 			mApplicationsPager.setCurrentItem(position);
-			mApplicationsPageIndicator.setCurrentItem(position);
 		}
 	}
 
-	public void resetSelection() {
-		if (mApplicationsPagerAdapter.getCount() > 0)
-			mApplicationsPageIndicator.onPageSelected(0);
-	}
-
 	public void refreshSelection() {
-		if (mApplicationsPagerAdapter == null
-				|| mApplicationsPageIndicator == null)
+		if (mApplicationsPagerAdapter == null)
 			return;
 		// mDetailsPageIndicator.invalidate();
 		int position = mApplicationsPagerAdapter.getCurrentPosition();
-		if (mApplicationsPageIndicator != null
-				&& mApplicationsPagerAdapter.getCount() > position)
-			mApplicationsPageIndicator.onPageSelected(position);
 	}
 
 	/**
