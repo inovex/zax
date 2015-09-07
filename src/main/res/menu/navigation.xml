@@ -5,9 +5,11 @@
     <group android:checkableBehavior="all">
         <item
             android:id="@+id/navigation_item_problems"
+            android:icon="@android:drawable/ic_dialog_alert"
             android:title="@string/activity_problems"/>
         <item
             android:id="@+id/navigation_item_events"
+
             android:title="@string/activity_events"/>
 
         <item
@@ -17,6 +19,7 @@
         <item
             android:id="@+id/navigation_item_screens"
             android:title="@string/activity_screens"/>
+            <!--android:icon="@android:drawable/"-->
     </group>
 
     <group android:id="@+id/grp2">
@@ -25,9 +28,11 @@
             android:title="@string/manage_servers"/>
         <item
             android:id="@+id/navigation_settings"
+            android:icon="@android:drawable/ic_menu_manage"
             android:title="@string/preferences" />
         <item
             android:id="@+id/navigation_info"
+            android:icon="@android:drawable/ic_dialog_info"
             android:title="@string/info" />
     </group>
 

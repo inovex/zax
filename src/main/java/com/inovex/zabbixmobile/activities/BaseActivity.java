@@ -47,7 +47,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.inovex.zabbixmobile.OnSettingsMigratedReceiver;
@@ -71,7 +73,9 @@ import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
  * * open the settings dialog
  */
 public abstract class BaseActivity extends AppCompatActivity implements
-        ServiceConnection, OnLoginProgressListener, NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemSelectedListener {
+        ServiceConnection, OnLoginProgressListener,
+        NavigationView.OnNavigationItemSelectedListener,
+        AdapterView.OnItemSelectedListener, View.OnClickListener {
 
     private static final int REQUEST_CODE_PREFERENCES = 12345;
     public static final int RESULT_PREFERENCES_CHANGED = 1;
@@ -107,6 +111,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
     private OnSettingsMigratedReceiver mOnSettingsMigratedReceiver;
     private Spinner mServerList;
     private BaseServiceAdapter<ZabbixServer> mServersListAdapter;
+    private TextView mServerNameView;
+    private TextView mServerSubtitleView;
+    private ImageButton mServerSelectButton;
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -169,6 +176,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        Log.d(TAG, "Server-switch button pressed");
+        // TODO implement loading of Serverlist in navigationbar
     }
 
     /**
@@ -240,8 +253,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
 
         mServersListAdapter = mZabbixDataService.getServersSelectionAdapter();
-        mServerList.setAdapter(mServersListAdapter);
-        mServerList.setOnItemSelectedListener(this);
+        ZabbixServer server = mServersListAdapter.getItem(mServersListAdapter.getCurrentPosition());
+        setServerViews(server.getName(),"");
+        mServerSelectButton.setOnClickListener(this);
 
         restoreServerSelection();
 
@@ -370,12 +384,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 .findViewById(R.id.content_frame);
         getLayoutInflater().inflate(layoutResID, content, true);
 
-        mServerList = (Spinner) mDrawerLayout.findViewById(R.id.drawer_server_list);
-
-        /*mDrawerFrame = (FrameLayout) mDrawerLayout
-                .findViewById(R.id.left_drawer);
-      mDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.navigation_drawer);*/
+        mServerNameView = (TextView) mDrawerLayout.findViewById(R.id.navigation_text_servername);
+        mServerSubtitleView = (TextView) mDrawerLayout.findViewById(R.id.navigation_text_serversubtitle);
+        mServerSelectButton = (ImageButton) mDrawerLayout.findViewById(R.id.navigation_button_serverselect);
 
         // set a custom shadow that overlays the main content when the drawer
         // opens
@@ -624,27 +635,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
         selectServerItem(persistedSelection);
     }
 
-/*    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position,
-                            long id) {
-        selectServerItem(id);
-        // persist selection
-        ZaxPreferences.getInstance(getApplicationContext())
-                .setServerSelection(id);
-        Log.d(TAG, "selected server id=" + id);
-
-        this.refreshData();
-    }*/
-
     protected void selectServerItem(long zabbixServerId) {
         for (int i = 0; i < mServersListAdapter.getCount(); i++) {
             if (mServersListAdapter.getItemId(i) == zabbixServerId) {
                 mServersListAdapter.setCurrentPosition(i);
-                mServerList.setSelection(i);
-                mDrawerLayout.closeDrawers();
+                setServerViews(mServersListAdapter.getItem(i).getName(),"");
                 break;
             }
         }
+    }
+
+    protected void setServerViews(String name,String subtitle){
+        this.mServerNameView.setText(name);
+        this.mServerSubtitleView.setText(subtitle);
     }
 
 }
