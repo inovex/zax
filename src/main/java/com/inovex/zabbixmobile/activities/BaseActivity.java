@@ -425,7 +425,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mDrawerToggle.syncState();
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle(mTitle);
+//        mToolbar.setTitle(mTitle);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

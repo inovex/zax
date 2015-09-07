@@ -21,13 +21,10 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
-import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter.OnHostGroupSelectedListener;
 
@@ -99,13 +96,13 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	protected void onResume() {
 		super.onResume();
 
-		View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner,
-				mToolbar, false);
-		android.support.v7.widget.Toolbar.LayoutParams lp =
-				new android.support.v7.widget.Toolbar.LayoutParams(
-						ViewGroup.LayoutParams.MATCH_PARENT,
-						ViewGroup.LayoutParams.MATCH_PARENT);
-		mToolbar.addView(spinnerContainer, lp);
+//		View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner,
+//				mToolbar, false);
+//		android.support.v7.widget.Toolbar.LayoutParams lp =
+//				new android.support.v7.widget.Toolbar.LayoutParams(
+//						ViewGroup.LayoutParams.MATCH_PARENT,
+//						ViewGroup.LayoutParams.MATCH_PARENT);
+//		mToolbar.addView(spinnerContainer, lp);
 
 
 /*		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -118,8 +115,8 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 			mSpinnerAdapter.refreshSelection();
 		}
 
-		Spinner spinner = (Spinner) spinnerContainer.findViewById(R.id.toolbar_spinner);
-		spinner.setAdapter(mSpinnerAdapter);
+//		Spinner spinner = (Spinner) spinnerContainer.findViewById(R.id.toolbar_spinner);
+//		spinner.setAdapter(mSpinnerAdapter);
 
 		// reload adapter
 		if (mZabbixDataService != null && mZabbixDataService.isLoggedIn())
