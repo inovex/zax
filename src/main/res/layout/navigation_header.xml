@@ -22,6 +22,7 @@
         />
 
     <LinearLayout
+        android:id="@+id/server_name_layout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -64,5 +65,4 @@
             android:background="@android:color/transparent"
             android:contentDescription="@string/open_server_selection_list"/>
     </LinearLayout>
-
 </RelativeLayout>

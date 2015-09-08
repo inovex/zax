@@ -48,7 +48,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -95,12 +94,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
     private boolean mPreferencesChangedServer = false;
     private boolean mPreferencesChangedPush = false;
     private boolean mPreferencesChangedWidget = false;
+    private boolean mServerSelectMode = false;
+
     private boolean mPreferencesChangedTheme = false;
 
     private boolean mOnSaveInstanceStateCalled = false;
 
     private static final String TAG = BaseActivity.class.getSimpleName();
-
     private FinishReceiver finishReceiver;
     private boolean mDrawerOpened = false;
     public static final int ACTIVITY_SCREENS = 3;
@@ -109,17 +109,23 @@ public abstract class BaseActivity extends AppCompatActivity implements
     public static final int ACTIVITY_PROBLEMS = 0;
     private static final String ACTION_FINISH = "com.inovex.zabbixmobile.BaseActivity.ACTION_FINISH";
     private OnSettingsMigratedReceiver mOnSettingsMigratedReceiver;
-    private Spinner mServerList;
     private BaseServiceAdapter<ZabbixServer> mServersListAdapter;
     private TextView mServerNameView;
     private TextView mServerSubtitleView;
     private ImageButton mServerSelectButton;
+    private View mServerNameLayout;
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         Intent intent;
         if (menuItem.isChecked()) menuItem.setChecked(false);
         else menuItem.setChecked(true);
+
+        if(mServerSelectMode){
+            selectServerItem(menuItem.getItemId());
+            toggleServerSelectionMode();
+            return true;
+        }
 
         //Closing drawer on item click
         mDrawerLayout.closeDrawers();
@@ -180,8 +186,38 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(View v) {
-        Log.d(TAG, "Server-switch button pressed");
         // TODO implement loading of Serverlist in navigationbar
+        switch (v.getId()){
+            case R.id.navigation_button_serverselect:
+            case R.id.server_name_layout:
+                toggleServerSelectionMode();
+                break;
+        }
+    }
+
+    private void toggleServerSelectionMode() {
+        Menu menu = mNavigationView.getMenu();
+        if(mServerSelectMode){
+			// show normal menu
+			menu.setGroupVisible(R.id.grp1, true);
+			menu.setGroupVisible(R.id.grp2, true);
+			menu.removeGroup(R.id.grp0_server);
+            mServerSelectButton.setImageDrawable(
+                    getResources().getDrawable(R.drawable.spinner_triangle));
+
+		} else {
+			// show server selection list
+			menu.setGroupVisible(R.id.grp1, false);
+			menu.setGroupVisible(R.id.grp2, false);
+			for(int i = 0; i < mServersListAdapter.getCount(); i++){
+				ZabbixServer server = mServersListAdapter.getItem(i);
+				menu.add(R.id.grp0_server, (int) server.getId(), Menu.NONE, server.getName())
+                        .setIcon(android.R.drawable.ic_menu_gallery);
+			}
+            mServerSelectButton.setImageDrawable(
+                    getResources().getDrawable(R.drawable.spinner_triangle_flipped));
+        }
+        mServerSelectMode = !mServerSelectMode;
     }
 
     /**
@@ -253,9 +289,11 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
 
         mServersListAdapter = mZabbixDataService.getServersSelectionAdapter();
+//        mServerList.setAdapter(mServersListAdapter);
         ZabbixServer server = mServersListAdapter.getItem(mServersListAdapter.getCurrentPosition());
-        setServerViews(server.getName(),"");
+        setServerViews(server.getName(), "");
         mServerSelectButton.setOnClickListener(this);
+        mServerNameLayout.setOnClickListener(this);
 
         restoreServerSelection();
 
@@ -387,6 +425,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mServerNameView = (TextView) mDrawerLayout.findViewById(R.id.navigation_text_servername);
         mServerSubtitleView = (TextView) mDrawerLayout.findViewById(R.id.navigation_text_serversubtitle);
         mServerSelectButton = (ImageButton) mDrawerLayout.findViewById(R.id.navigation_button_serverselect);
+        mServerNameLayout = mDrawerLayout.findViewById(R.id.server_name_layout);
 
         // set a custom shadow that overlays the main content when the drawer
         // opens

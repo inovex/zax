@@ -2,29 +2,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.inovex.zabbixmobile.activities.BaseActivity">
 
-    <group android:checkableBehavior="all">
+    <group android:id="@+id/grp0_server"/>
+
+    <group android:id="@+id/grp1"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/navigation_item_problems"
             android:icon="@android:drawable/ic_dialog_alert"
             android:title="@string/activity_problems"/>
         <item
             android:id="@+id/navigation_item_events"
-
+            android:icon="@android:drawable/ic_dialog_info"
             android:title="@string/activity_events"/>
 
         <item
             android:id="@+id/navigation_item_checks"
+            android:icon="@android:drawable/ic_dialog_info"
             android:title="@string/activity_checks"/>
 
         <item
             android:id="@+id/navigation_item_screens"
+            android:icon="@android:drawable/ic_dialog_info"
             android:title="@string/activity_screens"/>
-            <!--android:icon="@android:drawable/"-->
     </group>
 
     <group android:id="@+id/grp2">
         <item
             android:id="@+id/navigation_manage_servers"
+            android:icon="@android:drawable/ic_dialog_info"
             android:title="@string/manage_servers"/>
         <item
             android:id="@+id/navigation_settings"
