@@ -18,12 +18,15 @@ This file is part of ZAX.
 package com.inovex.zabbixmobile.activities;
 
 import android.content.ComponentName;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.FrameLayout;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
+import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsListFragment;
 import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
@@ -53,20 +56,24 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
         mFragmentManager = getSupportFragmentManager();
         mFragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
-        mListFragment = new ProblemsListFragment();
-        mDetailsFragment = new ProblemsDetailsFragment();
 
-		if(mFragmentContainer != null){
-			FragmentTransaction ft = mFragmentManager.beginTransaction();
-			ft.add(R.id.fragment_container,mListFragment,"ListFragment");
-			ft.commit();
-		}
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
 
-//        mFlipper = (ViewFlipper) findViewById(R.id.problems_flipper);
-//        mDetailsFragment = (BaseSeverityFilterDetailsFragment<Trigger>) mFragmentManager
-//                .findFragmentById(R.id.problems_details);
-//        mListFragment = (BaseSeverityFilterListFragment<Trigger>) mFragmentManager
-//                .findFragmentById(R.id.problems_list);
+            mListFragment = new ProblemsListFragment();
+            mDetailsFragment = new ProblemsDetailsFragment();
+
+            if(mFragmentContainer != null){
+                FragmentTransaction ft = mFragmentManager.beginTransaction();
+                ft.add(R.id.fragment_container,mListFragment,"ListFragment");
+                ft.commit();
+            }
+        } else {
+            mListFragment = (BaseSeverityFilterListFragment<Trigger>) mFragmentManager
+                    .findFragmentById(R.id.problems_list);
+            mDetailsFragment = (BaseSeverityFilterDetailsFragment<Trigger>) mFragmentManager
+                    .findFragmentById(R.id.problems_details);
+        }
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             if (extras.getBoolean(ARG_START_FROM_NOTIFICATION, false)) {
@@ -75,8 +82,6 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
             mTriggerPosition = extras.getInt(ARG_TRIGGER_POSITION, -1);
         }
 
-//        if (mFlipper != null)
-//            mDetailsFragment.setHasOptionsMenu(false);
 
         mDrawerToggle.setDrawerIndicatorEnabled(true);
     }

@@ -17,6 +17,7 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.activities;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -47,24 +48,21 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 
 		mFragmentManager = getSupportFragmentManager();
 		mFragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
-		mListFragment = new EventsListFragment();
-		mDetailsFragment = new EventsDetailsFragment();
 
-//		mFlipper = (ViewFlipper) findViewById(R.id.events_flipper);
-//		mDetailsFragment = (BaseSeverityFilterDetailsFragment<Event>) mFragmentManager
-//				.findFragmentById(R.id.events_details);
-//		mListFragment = (BaseSeverityFilterListFragment<Event>) mFragmentManager
-//				.findFragmentById(R.id.events_list);
-//		if (mFlipper != null)
-//			Log.d(TAG, mFlipper.toString());
-//		Log.d(TAG, mListFragment.toString());
-//		Log.d(TAG, mDetailsFragment.toString());
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
 
-		if (mFragmentContainer != null) {
-			FragmentTransaction transaction = mFragmentManager.beginTransaction();
-			transaction.add(R.id.fragment_container, mListFragment, "ListFragment");
-			transaction.commit();
-			mDetailsFragment.setHasOptionsMenu(false);
+			mListFragment = new EventsListFragment();
+			mDetailsFragment = new EventsDetailsFragment();
+
+			if (mFragmentContainer != null) {
+				FragmentTransaction transaction = mFragmentManager.beginTransaction();
+				transaction.add(R.id.fragment_container, mListFragment, "ListFragment");
+				transaction.commit();
+				mDetailsFragment.setHasOptionsMenu(false);
+			}
+		} else {
+			mListFragment = (EventsListFragment) mFragmentManager.findFragmentById(R.id.events_list);
+			mDetailsFragment = (EventsDetailsFragment) mFragmentManager.findFragmentById(R.id.events_details);
 		}
 
 		mDrawerToggle.setDrawerIndicatorEnabled(true);

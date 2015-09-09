@@ -132,15 +132,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
         switch (menuItem.getItemId()) {
             case R.id.navigation_item_problems:
                 intent = new Intent(this, ProblemsActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 break;
             case R.id.navigation_item_events:
                 intent = new Intent(this, EventsActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 break;
             case R.id.navigation_item_checks:
                 intent = new Intent(this, ChecksActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 break;
             case R.id.navigation_item_screens:
                 intent = new Intent(this, ScreensActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 break;
             case R.id.navigation_settings:
                 Intent i = new Intent(this, ZaxPreferenceActivity.class);
@@ -158,7 +162,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
             default:
                 return true;
         }
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(intent);
         overridePendingTransition(android.R.anim.fade_in,
                 android.R.anim.fade_out);
@@ -514,9 +517,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        finish();
+//        finish();
         overridePendingTransition(android.R.anim.fade_in,
                 android.R.anim.fade_out);
+        super.onBackPressed();
     }
 
     @Override
@@ -533,22 +537,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
-
-        /*
-            if (mDrawerLayout.isDrawerOpen(mDrawerFrame)) {
-				mDrawerLayout.closeDrawer(mDrawerFrame);
-			} else {
-				mDrawerLayout.openDrawer(mDrawerFrame);
-			}
-			return true;*/
             case R.id.menuitem_clear:
                 refreshData();
                 return true;
         }
 
-        return super.
-
-                onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item);
     }
 
     /**

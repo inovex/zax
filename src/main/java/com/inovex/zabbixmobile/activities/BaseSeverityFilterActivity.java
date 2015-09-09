@@ -24,6 +24,7 @@ import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.inovex.zabbixmobile.R;
@@ -57,6 +58,12 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 	protected BaseSeverityFilterDetailsFragment<T> mDetailsFragment;
 	protected BaseSeverityFilterListFragment<T> mListFragment;
 
+	public int getmCurrentItem() {
+		return mCurrentItem;
+	}
+
+	private int mCurrentItem;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -84,8 +91,27 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 		// Caution: details fragment must be shown before selectItem() is
 		// called! Otherwise the "acknowledge event" button might be displayed
 		// erroneously
-		showDetailsFragment();
-		selectItem(position);
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+			//switch to details fragment
+			if(mFragmentContainer != null){
+				FragmentTransaction transaction = mFragmentManager.beginTransaction();
+				transaction.replace(R.id.fragment_container, mDetailsFragment, "DetailsFragment");
+				transaction.addToBackStack(null);
+				transaction.commit();
+
+				// disable drawer toggle
+				mDrawerToggle.setDrawerIndicatorEnabled(false);
+				// details fragment becomes visible -> enable menu
+//				mDetailsFragment.setHasOptionsMenu(true);
+			}
+		} else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+			// switch to current item in detail view
+
+		}
+		mCurrentItem = position;
+		mDetailsFragment.selectItem(position);
+//		showDetailsFragment();
+//		selectItem(position);
 	}
 
 	@Override
@@ -102,17 +128,7 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 	 */
 	protected void showDetailsFragment() {
 		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-			if(mFragmentContainer != null){
-				FragmentTransaction transaction = mFragmentManager.beginTransaction();
-				transaction.replace(R.id.fragment_container,mDetailsFragment,"DetailsFragment");
-				transaction.addToBackStack(null);
-				transaction.commit();
 
-				// disable drawer toggle
-				mDrawerToggle.setDrawerIndicatorEnabled(false);
-				// details fragment becomes visible -> enable menu
-				mDetailsFragment.setHasOptionsMenu(true);
-			}
 		} else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
 
 		}
@@ -129,6 +145,7 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 
 			// details fragment becomes invisible -> disable menu
 			mDetailsFragment.setHasOptionsMenu(false);
+			mDrawerToggle.setDrawerIndicatorEnabled(true);
 		}
 	}
 
@@ -179,4 +196,23 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 		loadAdapterContent(false);
 	}
 
+	@Override
+	public void onBackPressed() {
+		if (mDetailsFragment.isVisible() && !mListFragment.isVisible()) {
+			mDrawerToggle.setDrawerIndicatorEnabled(true);
+		}
+		super.onBackPressed();
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()){
+			case android.R.id.home:
+				if(mDetailsFragment.isVisible() && !mListFragment.isVisible()){
+					showListFragment();
+					return true;
+				}
+		}
+		return super.onOptionsItemSelected(item);
+	}
 }

@@ -65,6 +65,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
 	protected ShareActionProvider mShareActionProvider;
 
 	protected MenuItem mMenuItemShare;
+	private int mCurrentPosition;
 
 	/**
 	 * Selects an item which shall be displayed in the view pager.
@@ -73,6 +74,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
 	 *            list position
 	 */
 	public void selectItem(int position) {
+		mCurrentPosition = position;
 		Log.d(TAG, "selectItem(" + position + ")");
 		if (mDetailsPagerAdapter == null
 				|| mDetailsPagerAdapter.getCount() == 0) {
@@ -82,7 +84,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
 		if (position > mDetailsPagerAdapter.getCount() - 1)
 			position = 0;
 		setPosition(position);
-		updateMenu();
+//		updateMenu();
 	}
 
 	/**
@@ -99,12 +101,16 @@ public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
 	/**
 	 * This sets the current position and updates the pager, pager adapter and
 	 * page indicator.
-	 * 
+	 *
 	 * @param position
 	 */
 	private void setPosition(int position) {
+		mCurrentPosition = position;
 		mDetailsPager.setCurrentItem(position);
-		mDetailsPagerAdapter.setCurrentPosition(position);
+//		mDetailsPagerAdapter.setCurrentPosition(position);
+//		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+//			mCallbackMain.onListItemSelected(position,0);
+//		}
 	}
 
 	/**
@@ -214,6 +220,7 @@ public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
 		mDetailsPager = (ViewPager) getView().findViewById(
 				R.id.severity_view_pager);
 		mDetailsPager.setAdapter(mDetailsPagerAdapter);
+		mDetailsPager.setCurrentItem(mCurrentPosition);
 
 		Log.d(TAG,
 				"current position: "
@@ -308,5 +315,4 @@ public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
 			return;
 		updateMenu();
 	}
-
 }
