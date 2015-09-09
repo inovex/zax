@@ -30,9 +30,8 @@ This file is part of ZAX.
         layout="@layout/toolbar_main"/>
     <fragment
         android:id="@+id/servers_list"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         class="com.inovex.zabbixmobile.activities.fragments.ServersListFragment" />
 
 </LinearLayout>
