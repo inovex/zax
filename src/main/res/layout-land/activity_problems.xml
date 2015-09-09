@@ -16,11 +16,12 @@ This file is part of ZAX.
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/problems_layout"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/problems_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:baselineAligned="false"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -28,20 +29,27 @@ This file is part of ZAX.
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar_main"/>
-    <fragment
-        android:id="@+id/problems_list"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        class="com.inovex.zabbixmobile.activities.fragments.ProblemsListFragment"
-        android:orientation="vertical" />
 
-    <fragment
-        android:id="@+id/problems_details"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        class="com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment"
-        android:orientation="vertical" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <fragment
+            android:id="@+id/problems_list"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            class="com.inovex.zabbixmobile.activities.fragments.ProblemsListFragment"
+            android:orientation="vertical"/>
+
+        <fragment
+            android:id="@+id/problems_details"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            class="com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment"
+            android:orientation="vertical"/>
+    </LinearLayout>
 
 </LinearLayout>

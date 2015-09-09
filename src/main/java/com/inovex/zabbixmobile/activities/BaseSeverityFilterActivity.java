@@ -18,6 +18,7 @@ This file is part of ZAX.
 package com.inovex.zabbixmobile.activities;
 
 import android.content.ComponentName;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
@@ -100,16 +101,20 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 	 * Displays the details fragment.
 	 */
 	protected void showDetailsFragment() {
-		if(mFragmentContainer != null){
-			FragmentTransaction transaction = mFragmentManager.beginTransaction();
-			transaction.replace(R.id.fragment_container,mDetailsFragment,"DetailsFragment");
-			transaction.addToBackStack(null);
-			transaction.commit();
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+			if(mFragmentContainer != null){
+				FragmentTransaction transaction = mFragmentManager.beginTransaction();
+				transaction.replace(R.id.fragment_container,mDetailsFragment,"DetailsFragment");
+				transaction.addToBackStack(null);
+				transaction.commit();
 
-			// disable drawer toggle
-			mDrawerToggle.setDrawerIndicatorEnabled(false);
-			// details fragment becomes visible -> enable menu
-			mDetailsFragment.setHasOptionsMenu(true);
+				// disable drawer toggle
+				mDrawerToggle.setDrawerIndicatorEnabled(false);
+				// details fragment becomes visible -> enable menu
+				mDetailsFragment.setHasOptionsMenu(true);
+			}
+		} else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+
 		}
 	}
 
