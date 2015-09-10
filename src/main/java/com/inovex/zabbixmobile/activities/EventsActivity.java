@@ -17,13 +17,13 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.activities;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.widget.FrameLayout;
 
 import com.inovex.zabbixmobile.R;
+import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
+import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.EventsListFragment;
 import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
@@ -44,29 +44,18 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mTitle = getResources().getString(R.string.activity_events);
-		setContentView(R.layout.activity_events);
-
-		mFragmentManager = getSupportFragmentManager();
-		mFragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
-
-		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-
+		FragmentManager fm = getSupportFragmentManager();
+		mListFragment =
+				(BaseSeverityFilterListFragment<Event>)
+						fm.findFragmentByTag(BaseSeverityFilterActivity.LIST_FRAGMENT);
+		mDetailsFragment =
+				(BaseSeverityFilterDetailsFragment<Event>)
+						fm.findFragmentByTag(BaseSeverityFilterActivity.DETAILS_FRAGMENT);
+		if(mListFragment == null)
 			mListFragment = new EventsListFragment();
+		if(mDetailsFragment == null)
 			mDetailsFragment = new EventsDetailsFragment();
-
-			if (mFragmentContainer != null) {
-				FragmentTransaction transaction = mFragmentManager.beginTransaction();
-				transaction.add(R.id.fragment_container, mListFragment, "ListFragment");
-				transaction.commit();
-				mDetailsFragment.setHasOptionsMenu(false);
-			}
-		} else {
-			mListFragment = (EventsListFragment) mFragmentManager.findFragmentById(R.id.events_list);
-			mDetailsFragment = (EventsDetailsFragment) mFragmentManager.findFragmentById(R.id.events_details);
-		}
-
-		mDrawerToggle.setDrawerIndicatorEnabled(true);
-
+		setContentView(R.layout.activity_base_severity_filter);
 	}
 
 	@Override
@@ -100,8 +89,8 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	@Override
 	public void selectHostGroupInSpinner(int position, long itemId) {
 		super.selectHostGroupInSpinner(position, itemId);
-		if (!mListFragment.isVisible())
-			showListFragment();
+//		if (!mListFragment.isVisible())
+//			showListFragment();
 	}
 
 	@Override

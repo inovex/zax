@@ -33,28 +33,22 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_marginLeft="16dp"
             android:layout_weight="1"
             android:paddingTop="8dp"
-            android:paddingBottom="8dp">
+            android:paddingBottom="8dp"
+            android:layout_gravity="center_vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/navigation_text_servername"
                 style="@style/TextAppearance.AppCompat.Medium.Inverse"
-                />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/navigation_text_serversubtitle"
-                style="@style/TextAppearance.AppCompat.Inverse"
-                android:layout_alignParentBottom="true"
+                android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                />
+                android:layout_alignParentStart="true"/>
+
         </RelativeLayout>
 
         <ImageButton

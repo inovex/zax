@@ -18,15 +18,10 @@ This file is part of ZAX.
 package com.inovex.zabbixmobile.activities;
 
 import android.content.ComponentName;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.FragmentTransaction;
-import android.widget.FrameLayout;
 
 import com.inovex.zabbixmobile.R;
-import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
-import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterListFragment;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsDetailsFragment;
 import com.inovex.zabbixmobile.activities.fragments.ProblemsListFragment;
 import com.inovex.zabbixmobile.adapters.BaseSeverityListPagerAdapter;
@@ -52,27 +47,9 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mTitle = getResources().getString(R.string.activity_problems);
-		setContentView(R.layout.activity_problems);
-
-		mFragmentManager = getSupportFragmentManager();
-		mFragmentContainer = (FrameLayout) findViewById(R.id.fragment_container);
-
-		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-
-			mListFragment = new ProblemsListFragment();
-			mDetailsFragment = new ProblemsDetailsFragment();
-
-			if(mFragmentContainer != null){
-				FragmentTransaction ft = mFragmentManager.beginTransaction();
-				ft.add(R.id.fragment_container,mListFragment,"ListFragment");
-				ft.commit();
-			}
-		} else {
-			mListFragment = (BaseSeverityFilterListFragment<Trigger>) mFragmentManager
-					.findFragmentById(R.id.problems_list);
-			mDetailsFragment = (BaseSeverityFilterDetailsFragment<Trigger>) mFragmentManager
-					.findFragmentById(R.id.problems_details);
-		}
+		mListFragment = new ProblemsListFragment();
+		mDetailsFragment = new ProblemsDetailsFragment();
+		setContentView(R.layout.activity_base_severity_filter);
 
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
@@ -81,8 +58,6 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 			}
 			mTriggerPosition = extras.getInt(ARG_TRIGGER_POSITION, -1);
 		}
-
-		mDrawerToggle.setDrawerIndicatorEnabled(true);
 	}
 
 
@@ -146,7 +121,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
 		if (severity == TriggerSeverity.ALL && mTriggerPosition != -1) {
 			selectItem(mTriggerPosition);
-			showDetailsFragment();
+//			showDetailsFragment();
 			mTriggerPosition = -1;
 			return;
 		}

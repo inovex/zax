@@ -25,7 +25,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
+import android.view.ViewGroup;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
@@ -52,9 +52,11 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 
 	private static final String TAG = BaseSeverityFilterActivity.class
 			.getSimpleName();
+	protected static final String DETAILS_FRAGMENT = "DetailsFragment";
+	protected static final String LIST_FRAGMENT = "ListFragment";
 
 	protected FragmentManager mFragmentManager;
-	protected FrameLayout mFragmentContainer;
+	protected ViewGroup mFragmentContainer;
 	protected BaseSeverityFilterDetailsFragment<T> mDetailsFragment;
 	protected BaseSeverityFilterListFragment<T> mListFragment;
 
@@ -63,6 +65,25 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 	}
 
 	private int mCurrentItem;
+
+	@Override
+	public void setContentView(int layoutResID) {
+		super.setContentView(layoutResID);
+		mFragmentManager = getSupportFragmentManager();
+		mFragmentContainer = (ViewGroup) findViewById(R.id.fragment_container);
+
+		FragmentTransaction ft = mFragmentManager.beginTransaction();
+//		ft.remove(mFragmentManager.findFragmentByTag(LIST_FRAGMENT));
+//		ft.remove(mFragmentManager.findFragmentByTag(DETAILS_FRAGMENT));
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+			ft.replace(R.id.fragment_container, mListFragment, LIST_FRAGMENT);
+		} else {
+			ft.replace(R.id.fragment_container, mListFragment, LIST_FRAGMENT);
+			ft.add(R.id.fragment_container,mDetailsFragment, DETAILS_FRAGMENT);
+		}
+		ft.commit();
+		mDrawerToggle.setDrawerIndicatorEnabled(true);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -91,23 +112,24 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 		// Caution: details fragment must be shown before selectItem() is
 		// called! Otherwise the "acknowledge event" button might be displayed
 		// erroneously
+		FragmentTransaction transaction = mFragmentManager.beginTransaction();
 		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
 			//switch to details fragment
-			if(mFragmentContainer != null){
-				FragmentTransaction transaction = mFragmentManager.beginTransaction();
-				transaction.replace(R.id.fragment_container, mDetailsFragment, "DetailsFragment");
-				transaction.addToBackStack(null);
-				transaction.commit();
+			transaction.replace(R.id.fragment_container, mDetailsFragment, "DetailsFragment");
+			transaction.addToBackStack(null);
 
-				// disable drawer toggle
-				mDrawerToggle.setDrawerIndicatorEnabled(false);
-				// details fragment becomes visible -> enable menu
-//				mDetailsFragment.setHasOptionsMenu(true);
-			}
-		} else if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+			// disable drawer toggle
+			mDrawerToggle.setDrawerIndicatorEnabled(false);
+			// details fragment becomes visible -> enable menu
+//			mDetailsFragment.setHasOptionsMenu(true);
+
+		} else {
 			// switch to current item in detail view
-
+			mDetailsFragment.selectItem(position);
 		}
+		transaction.addToBackStack(null);
+		transaction.commit();
+
 		mCurrentItem = position;
 		mDetailsFragment.selectItem(position);
 //		showDetailsFragment();
@@ -120,18 +142,6 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 			return;
 		mDetailsFragment.setSeverity(severity);
 		selectInitialItem(false);
-	}
-
-
-	/**
-	 * Displays the details fragment.
-	 */
-	protected void showDetailsFragment() {
-		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-
-		} else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-
-		}
 	}
 
 	/**
