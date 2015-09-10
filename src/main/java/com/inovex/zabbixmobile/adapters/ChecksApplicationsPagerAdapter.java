@@ -34,7 +34,12 @@ public class ChecksApplicationsPagerAdapter extends
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-		return getObject(position).getName();
+		Application application = getObject(position);
+		if(application != null){
+			return application.getName();
+		} else {
+			return  "";
+		}
 	}
 
 	@Override
