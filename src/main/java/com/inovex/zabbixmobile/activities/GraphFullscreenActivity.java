@@ -66,9 +66,9 @@ public class GraphFullscreenActivity extends AppCompatActivity implements
 			setTheme(R.style.AppThemeDark);
 		else
 			setTheme(R.style.AppTheme);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
