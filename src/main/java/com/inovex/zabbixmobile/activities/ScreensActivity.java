@@ -62,13 +62,12 @@ public class ScreensActivity extends BaseActivity implements
 				.findFragmentById(R.id.screens_details);
 		showListFragment();
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
-
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-	//	selectDrawerItem(ACTIVITY_SCREENS);
+		mNavigationView.getMenu().findItem(R.id.navigation_item_screens).setChecked(true);
 	}
 
 	@Override

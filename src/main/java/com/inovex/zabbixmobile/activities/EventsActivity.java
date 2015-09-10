@@ -72,7 +72,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		//selectDrawerItem(ACTIVITY_EVENTS);
+		mNavigationView.getMenu().findItem(R.id.navigation_item_events).setChecked(true);
 	}
 
 	@Override

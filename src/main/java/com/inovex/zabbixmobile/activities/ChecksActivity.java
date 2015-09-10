@@ -76,7 +76,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-	//	selectDrawerItem(ACTIVITY_CHECKS);
+		mNavigationView.getMenu().findItem(R.id.navigation_item_checks).setChecked(true);
 	}
 
 	@Override
