@@ -110,7 +110,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	private OnSettingsMigratedReceiver mOnSettingsMigratedReceiver;
 	private BaseServiceAdapter<ZabbixServer> mServersListAdapter;
 	private TextView mServerNameView;
-	private TextView mServerSubtitleView;
 	private ImageButton mServerSelectButton;
 	private View mServerNameLayout;
 
@@ -295,7 +294,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 		mServersListAdapter = mZabbixDataService.getServersSelectionAdapter();
 //        mServerList.setAdapter(mServersListAdapter);
 		ZabbixServer server = mServersListAdapter.getItem(mServersListAdapter.getCurrentPosition());
-		setServerViews(server.getName(), "");
+		setServerViews(server.getName());
 		mServerSelectButton.setOnClickListener(this);
 		mServerNameLayout.setOnClickListener(this);
 
@@ -418,7 +417,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 		getLayoutInflater().inflate(layoutResID, content, true);
 
 		mServerNameView = (TextView) mDrawerLayout.findViewById(R.id.navigation_text_servername);
-		mServerSubtitleView = (TextView) mDrawerLayout.findViewById(R.id.navigation_text_serversubtitle);
 		mServerSelectButton = (ImageButton) mDrawerLayout.findViewById(R.id.navigation_button_serverselect);
 		mServerNameLayout = mDrawerLayout.findViewById(R.id.server_name_layout);
 
@@ -664,15 +662,14 @@ public abstract class BaseActivity extends AppCompatActivity implements
 		for (int i = 0; i < mServersListAdapter.getCount(); i++) {
 			if (mServersListAdapter.getItemId(i) == zabbixServerId) {
 				mServersListAdapter.setCurrentPosition(i);
-				setServerViews(mServersListAdapter.getItem(i).getName(),"");
+				setServerViews(mServersListAdapter.getItem(i).getName());
 				break;
 			}
 		}
 	}
 
-	protected void setServerViews(String name,String subtitle){
+	protected void setServerViews(String name){
 		this.mServerNameView.setText(name);
-		this.mServerSubtitleView.setText(subtitle);
 	}
 
 }
