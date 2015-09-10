@@ -21,8 +21,9 @@ import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
-import android.widget.ViewFlipper;
+import android.view.ViewGroup;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.ScreensDetailsFragment;
@@ -42,8 +43,10 @@ public class ScreensActivity extends BaseActivity implements
 
 	private static final int FLIPPER_LIST_FRAGMENT = 0;
 	private static final int FLIPPER_DETAILS_FRAGMENT = 1;
+	public static final String LIST_FRAGMENT = "ListFragment";
+	public static final String DETAILS_FRAGMENT = "DetailsFragment";
 
-	protected ViewFlipper mFlipper;
+	protected ViewGroup mFragmentContainer;
 	protected FragmentManager mFragmentManager;
 	protected ScreensListFragment mListFragment;
 	protected ScreensDetailsFragment mDetailsFragment;
@@ -55,11 +58,15 @@ public class ScreensActivity extends BaseActivity implements
 		setContentView(R.layout.activity_screens);
 
 		mFragmentManager = getSupportFragmentManager();
-		mFlipper = (ViewFlipper) findViewById(R.id.screens_flipper);
+		mFragmentContainer = (ViewGroup) findViewById(R.id.fragment_container);
 		mListFragment = (ScreensListFragment) mFragmentManager
-				.findFragmentById(R.id.screens_list);
+				.findFragmentByTag(LIST_FRAGMENT);
 		mDetailsFragment = (ScreensDetailsFragment) mFragmentManager
-				.findFragmentById(R.id.screens_details);
+				.findFragmentByTag(DETAILS_FRAGMENT);
+		if(mListFragment == null)
+			mListFragment = new ScreensListFragment();
+		if(mDetailsFragment == null)
+			mDetailsFragment = new ScreensDetailsFragment();
 		showListFragment();
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 	}
@@ -86,7 +93,7 @@ public class ScreensActivity extends BaseActivity implements
 
 	@Override
 	public void onScreenSelected(Screen screen) {
-		mToolbar.setSubtitle(screen.getName());
+//		mToolbar.setSubtitle(screen.getName());
 		mDetailsFragment.setScreen(screen);
 		showDetailsFragment();
 	}
@@ -95,7 +102,7 @@ public class ScreensActivity extends BaseActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			if (mFlipper != null && mDetailsFragment.isVisible()) {
+			if (mFragmentContainer != null && mDetailsFragment.isVisible()) {
 				showListFragment();
 				return true;
 			}
@@ -106,26 +113,28 @@ public class ScreensActivity extends BaseActivity implements
 
 	@Override
 	public void onBackPressed() {
-		if (mFlipper != null && mDetailsFragment.isVisible()) {
-			showListFragment();
-			return;
-		}
+//		if (mFragmentContainer != null && mDetailsFragment.isVisible()) {
+//			showListFragment();
+//			return;
+//		}
 		super.onBackPressed();
 	}
 
 	protected void showListFragment() {
-		if (mFlipper != null) {
-			if (!mListFragment.isVisible()) {
-				mFlipper.setDisplayedChild(FLIPPER_LIST_FRAGMENT);
-			}
+		if (mFragmentContainer != null) {
+			FragmentTransaction ft = mFragmentManager.beginTransaction();
+			ft.replace(R.id.fragment_container,mListFragment, LIST_FRAGMENT);
+			ft.commit();
 			mDrawerToggle.setDrawerIndicatorEnabled(true);
 		}
 	}
 
 	protected void showDetailsFragment() {
-		if (mFlipper != null) {
-			if (!mDetailsFragment.isVisible())
-				mFlipper.setDisplayedChild(FLIPPER_DETAILS_FRAGMENT);
+		if (mFragmentContainer != null) {
+			FragmentTransaction ft = mFragmentManager.beginTransaction();
+			ft.replace(R.id.fragment_container,mDetailsFragment, DETAILS_FRAGMENT);
+			ft.addToBackStack(null);
+			ft.commit();
 			mDrawerToggle.setDrawerIndicatorEnabled(false);
 		}
 	}

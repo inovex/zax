@@ -48,7 +48,6 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	private static final String TAG = ChecksActivity.class.getSimpleName();
 
 	protected FragmentManager mFragmentManager;
-	// protected ViewFlipper mFlipper;
 	protected ChecksHostsFragment mHostListFragment;
 	protected ChecksApplicationsFragment mApplicationsFragment;
 	protected ChecksItemsFragment mItemDetailsFragment;

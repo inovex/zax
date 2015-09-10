@@ -15,8 +15,8 @@ This file is part of ZAX.
     along with ZAX.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/screens_flipper"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -29,16 +29,10 @@ This file is part of ZAX.
         android:id="@+id/toolbar"
         layout="@layout/toolbar_main"/>
 
-    <fragment
-        android:id="@+id/screens_list"
+    <LinearLayout
+        android:id="@+id/fragment_container"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.inovex.zabbixmobile.activities.fragments.ScreensListFragment" />
+        android:layout_height="match_parent"/>
 
-    <fragment
-        android:id="@+id/screens_details"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.inovex.zabbixmobile.activities.fragments.ScreensDetailsFragment" />
-    
-</ViewFlipper>
+</LinearLayout>
