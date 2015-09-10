@@ -14,34 +14,24 @@ This file is part of ZAX.
     You should have received a copy of the GNU General Public License
     along with ZAX.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/servers_layout"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:baselineAligned="false"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/activity_vertical_margin"
+              android:paddingLeft="@dimen/activity_horizontal_margin"
+              android:paddingRight="@dimen/activity_horizontal_margin"
+              android:paddingTop="@dimen/activity_vertical_margin" >
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar_main" />
-
-    <ViewFlipper
-        android:id="@+id/servers_flipper"
+        layout="@layout/toolbar_main"/>
+    <fragment
+        android:id="@+id/servers_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:minHeight="100dp"
-        android:minWidth="100dp"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin">
+        class="com.inovex.zabbixmobile.activities.fragments.ServersListFragment" />
 
-        <fragment
-            android:id="@+id/list"
-            class="com.inovex.zabbixmobile.activities.fragments.ServersListFragment"
-            android:layout_width="fill_parent"
-            android:minHeight="100dp"
-            android:minWidth="100dp"
-            android:layout_height="fill_parent" />
-
-    </ViewFlipper>
 </LinearLayout>
