@@ -14,42 +14,42 @@ import com.inovex.zabbixmobile.R;
  */
 public class InfoActivity extends AppCompatActivity {
 
-    private WebView wv;
+	private WebView wv;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.setContentView(R.layout.info);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		this.setContentView(R.layout.info);
 
-        Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(tb);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        wv = (WebView) findViewById(R.id.webVabout);
-        wv.loadUrl("file:///android_asset/about.html");
-    }
+		Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(tb);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
+		wv = (WebView) findViewById(R.id.webVabout);
+		wv.loadUrl("file:///android_asset/about.html");
+	}
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem menuItem) {
-        if (menuItem.getItemId() == android.R.id.home) {
-            finish();
-        }
-        return super.onOptionsItemSelected(menuItem);
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem menuItem) {
+		if (menuItem.getItemId() == android.R.id.home) {
+			finish();
+		}
+		return super.onOptionsItemSelected(menuItem);
+	}
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-                    if (wv.canGoBack()) {
-                        wv.goBack();
-                    } else {
-                        finish();
-                    }
-                    return true;
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (event.getAction() == KeyEvent.ACTION_DOWN) {
+			switch (keyCode) {
+				case KeyEvent.KEYCODE_BACK:
+					if (wv.canGoBack()) {
+						wv.goBack();
+					} else {
+						finish();
+					}
+					return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }

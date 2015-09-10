@@ -30,38 +30,38 @@ package com.inovex.zabbixmobile.data;
  */
 
 public enum ZabbixAPIVersion {
-    API_1_3(0), API_1_4(1), API_2_0_TO_2_3(2), API_GT_2_4(3);
+	API_1_3(0), API_1_4(1), API_2_0_TO_2_3(2), API_GT_2_4(3);
 
-    private final int value;
+	private final int value;
 
-    ZabbixAPIVersion(int value) {
-        this.value = value;
-    }
+	ZabbixAPIVersion(int value) {
+		this.value = value;
+	}
 
-    public int getValue() {
-        return value;
-    }
+	public int getValue() {
+		return value;
+	}
 
-    public static ZabbixAPIVersion get(int value) {
-        switch (value) {
-            case 0:
-                return API_1_3;
-            case 1:
-                return API_1_4;
-            case 2:
-                return API_2_0_TO_2_3;
-            case 3:
-                return API_GT_2_4;
-            default:
-                return API_1_3;
-        }
-    }
+	public static ZabbixAPIVersion get(int value) {
+		switch (value) {
+			case 0:
+				return API_1_3;
+			case 1:
+				return API_1_4;
+			case 2:
+				return API_2_0_TO_2_3;
+			case 3:
+				return API_GT_2_4;
+			default:
+				return API_1_3;
+		}
+	}
 
-    public boolean isGreater1_4() {
-        return value > 0;
-    }
+	public boolean isGreater1_4() {
+		return value > 0;
+	}
 
-    public boolean isGreater2_3() {
-        return value > 2;
-    }
+	public boolean isGreater2_3() {
+		return value > 2;
+	}
 }
