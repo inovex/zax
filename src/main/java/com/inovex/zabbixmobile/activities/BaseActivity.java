@@ -127,23 +127,26 @@ public abstract class BaseActivity extends AppCompatActivity implements
 		}
 
 		//Closing drawer on item click
-		mDrawerLayout.closeDrawers();
 		switch (menuItem.getItemId()) {
 			case R.id.navigation_item_problems:
 				intent = new Intent(this, ProblemsActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+				mDrawerLayout.closeDrawers();
 				break;
 			case R.id.navigation_item_events:
 				intent = new Intent(this, EventsActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+				mDrawerLayout.closeDrawers();
 				break;
 			case R.id.navigation_item_checks:
 				intent = new Intent(this, ChecksActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+				mDrawerLayout.closeDrawers();
 				break;
 			case R.id.navigation_item_screens:
 				intent = new Intent(this, ScreensActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+				mDrawerLayout.closeDrawers();
 				break;
 			case R.id.navigation_settings:
 				Intent i = new Intent(this, ZaxPreferenceActivity.class);

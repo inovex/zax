@@ -8,7 +8,7 @@
         android:checkableBehavior="single">
         <item
             android:id="@+id/navigation_item_problems"
-            android:icon="@android:drawable/ic_dialog_alert"
+            android:icon="@drawable/problem"
             android:title="@string/activity_problems"/>
         <item
             android:id="@+id/navigation_item_events"
@@ -17,7 +17,7 @@
 
         <item
             android:id="@+id/navigation_item_checks"
-            android:icon="@android:drawable/ic_dialog_info"
+            android:icon="@drawable/ok"
             android:title="@string/activity_checks"/>
 
         <item
