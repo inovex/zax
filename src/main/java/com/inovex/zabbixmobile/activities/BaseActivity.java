@@ -86,19 +86,20 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	private DrawerLayout mDrawerLayout;
 	protected ActionBarDrawerToggle mDrawerToggle;
 	protected Toolbar mToolbar;
+	protected Toolbar mHostgroupToolbar;
 	protected NavigationView mNavigationView;
-	private LoginProgressDialogFragment mLoginProgress;
 
+	private LoginProgressDialogFragment mLoginProgress;
 	private boolean mPreferencesClosed = false;
 	private boolean mPreferencesChangedServer = false;
 	private boolean mPreferencesChangedPush = false;
 	private boolean mPreferencesChangedWidget = false;
+
 	private boolean mServerSelectMode = false;
 
 	private boolean mPreferencesChangedTheme = false;
 
 	private boolean mOnSaveInstanceStateCalled = false;
-
 	private static final String TAG = BaseActivity.class.getSimpleName();
 	private FinishReceiver finishReceiver;
 	private boolean mDrawerOpened = false;
@@ -457,6 +458,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 		mDrawerToggle.syncState();
 
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
+		mHostgroupToolbar = (Toolbar) findViewById(R.id.toolbar_hostgroup);
 //        mToolbar.setTitle(mTitle);
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setHomeButtonEnabled(true);

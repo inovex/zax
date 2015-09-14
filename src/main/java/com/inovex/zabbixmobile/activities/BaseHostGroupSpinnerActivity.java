@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
+import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter;
 import com.inovex.zabbixmobile.adapters.HostGroupsSpinnerAdapter.OnHostGroupSelectedListener;
 
@@ -96,27 +97,14 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	protected void onResume() {
 		super.onResume();
 
-//		View spinnerContainer = LayoutInflater.from(this).inflate(R.layout.toolbar_spinner,
-//				mToolbar, false);
-//		android.support.v7.widget.Toolbar.LayoutParams lp =
-//				new android.support.v7.widget.Toolbar.LayoutParams(
-//						ViewGroup.LayoutParams.MATCH_PARENT,
-//						ViewGroup.LayoutParams.MATCH_PARENT);
-//		mToolbar.addView(spinnerContainer, lp);
-
-
-/*		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		mActionBar.setDisplayShowTitleEnabled(false);*/
-		// refresh spinner title (necessary when we navigate here using the back
-		// button)
 		if (mSpinnerAdapter != null) {
 			mSpinnerAdapter.setTitle(mTitle);
 			mSpinnerAdapter.setCallback(this);
 			mSpinnerAdapter.refreshSelection();
 		}
-
-//		Spinner spinner = (Spinner) spinnerContainer.findViewById(R.id.toolbar_spinner);
-//		spinner.setAdapter(mSpinnerAdapter);
+		if(mHostgroupToolbar != null){
+			mSpinner = (Spinner) mHostgroupToolbar.findViewById(R.id.hostgroup_select_spinner);
+		}
 
 		// reload adapter
 		if (mZabbixDataService != null && mZabbixDataService.isLoggedIn())
@@ -141,8 +129,8 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 		mOnNavigationListener = new SpinnerNavigationListener();
 
-/*		mToolbar.setnav(mSpinnerAdapter,
-				mOnNavigationListener);*/
+//		mToolbar.setnav(mSpinnerAdapter,
+//				mOnNavigationListener);
 
 		mSpinnerAdapter.setTitle(mTitle);
 		mSpinnerAdapter.refreshSelection();
