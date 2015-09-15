@@ -13,7 +13,6 @@
         android:gravity="center_vertical|start"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:textColor="#ff333333"
-        android:textSize="16sp"/>
+        android:background="@drawable/list_fragment_light"/>
 
 </LinearLayout>

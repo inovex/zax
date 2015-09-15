@@ -20,7 +20,9 @@ This file is part of ZAX.
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin"><!-- 16dp -->0dp</dimen>
     <dimen name="activity_vertical_margin"><!-- 16dp -->0dp</dimen>
-    
+
+    <dimen name="actionbar_subtitle_height">48dp</dimen>
+
     <dimen name="default_content_padding">4dp</dimen>
     
     <dimen name="list_item_padding">4dp</dimen>

@@ -98,12 +98,12 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		super.onResume();
 
 		if (mSpinnerAdapter != null) {
-			mSpinnerAdapter.setTitle(mTitle);
 			mSpinnerAdapter.setCallback(this);
 			mSpinnerAdapter.refreshSelection();
 		}
 		if(mHostgroupToolbar != null){
 			mSpinner = (Spinner) mHostgroupToolbar.findViewById(R.id.hostgroup_select_spinner);
+			mSpinner.setAdapter(mSpinnerAdapter);
 		}
 
 		// reload adapter
@@ -132,8 +132,10 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 //		mToolbar.setnav(mSpinnerAdapter,
 //				mOnNavigationListener);
 
-		mSpinnerAdapter.setTitle(mTitle);
 		mSpinnerAdapter.refreshSelection();
+		if(mSpinner != null){
+			mSpinner.setAdapter(mSpinnerAdapter);
+		}
 
 		if (mZabbixDataService.isLoggedIn())
 			loadAdapterContent(false);
@@ -183,20 +185,4 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 		if (mSpinnerAdapter.getCurrentPosition() != 0)
 			mFirstCall = true;
 	}
-
-	@Override
-	protected void onNavigationDrawerClosed() {
-/*		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-		mActionBar.setDisplayShowTitleEnabled(false);*/
-		super.onNavigationDrawerClosed();
-	}
-
-	@Override
-	protected void onNavigationDrawerOpened() {
-/*		mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-		mActionBar.setDisplayShowTitleEnabled(true);*/
-		// set title
-		super.onNavigationDrawerOpened();
-	}
-
 }

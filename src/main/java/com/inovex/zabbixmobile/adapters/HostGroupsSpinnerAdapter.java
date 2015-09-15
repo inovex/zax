@@ -54,9 +54,6 @@ public class HostGroupsSpinnerAdapter extends BaseServiceAdapter<HostGroup> {
 
 		View actionBarView = getInflater().inflate(
 				R.layout.toolbar_spinner_item_actionbar, null);
-		TextView title = (TextView) actionBarView
-				.findViewById(android.R.id.text1);
-		title.setText(mTitle);
 		TextView subtitle = (TextView) actionBarView
 				.findViewById(android.R.id.text2);
 		subtitle.setText(getItem(position).getName());
