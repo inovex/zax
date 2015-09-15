@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,6 +54,7 @@ public abstract class BaseSeverityFilterListPage<T> extends
 	protected TriggerSeverity mSeverity = TriggerSeverity.ALL;
 
 	protected BaseServiceAdapter<T> mListAdapter;
+	private SwipeRefreshLayout swipeRefreshLayout;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -83,6 +85,14 @@ public abstract class BaseSeverityFilterListPage<T> extends
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.page_severity_filter_list,
 				null);
+		swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
+		swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				//TODO actually update data
+				swipeRefreshLayout.setRefreshing(false);
+			}
+		});
 		return rootView;
 	}
 
