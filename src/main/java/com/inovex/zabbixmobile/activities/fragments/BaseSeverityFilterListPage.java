@@ -93,6 +93,7 @@ public abstract class BaseSeverityFilterListPage<T> extends
 				swipeRefreshLayout.setRefreshing(false);
 			}
 		});
+		//TODO hide subtitle-toolbar on scroll
 		return rootView;
 	}
 
