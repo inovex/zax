@@ -44,7 +44,7 @@ This file is part of ZAX.
         android:layout_weight="1"
         android:padding="@dimen/default_content_padding" >
 
-        <android.support.v4.view.PagerTitleStrip
+        <android.support.v4.view.PagerTabStrip
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
