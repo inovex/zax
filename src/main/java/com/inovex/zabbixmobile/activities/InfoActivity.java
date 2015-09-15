@@ -19,7 +19,7 @@ public class InfoActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.setContentView(R.layout.info);
+		this.setContentView(R.layout.activity_info);
 
 		Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(tb);
