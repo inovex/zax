@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -82,6 +83,7 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 			ft.add(R.id.fragment_container,mDetailsFragment, DETAILS_FRAGMENT);
 		}
 		ft.commit();
+		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 	}
 
@@ -119,6 +121,7 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 			transaction.addToBackStack(null);
 
 			// disable drawer toggle
+			mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 			mDrawerToggle.setDrawerIndicatorEnabled(false);
 			// details fragment becomes visible -> enable menu
 //			mDetailsFragment.setHasOptionsMenu(true);
@@ -155,6 +158,7 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 
 			// details fragment becomes invisible -> disable menu
 			mDetailsFragment.setHasOptionsMenu(false);
+			mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 			mDrawerToggle.setDrawerIndicatorEnabled(true);
 		}
 	}
@@ -211,6 +215,7 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 	@Override
 	public void onBackPressed() {
 		if (mDetailsFragment.isVisible() && !mListFragment.isVisible()) {
+			mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 			mDrawerToggle.setDrawerIndicatorEnabled(true);
 		}
 		super.onBackPressed();

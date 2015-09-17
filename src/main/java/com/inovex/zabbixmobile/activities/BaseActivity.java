@@ -83,7 +83,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
 	protected String mTitle;
 
-	private DrawerLayout mDrawerLayout;
+	protected DrawerLayout mDrawerLayout;
 	protected ActionBarDrawerToggle mDrawerToggle;
 	protected Toolbar mToolbar;
 	protected Toolbar mHostgroupToolbar;
@@ -453,6 +453,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 		setContentView(mDrawerLayout);
 		mDrawerToggle.syncState();

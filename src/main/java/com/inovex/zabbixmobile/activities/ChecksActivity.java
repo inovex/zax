@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -199,6 +200,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		// Uncheck the currently selected list item because the item fragment is
 		// no longer visible.
 		mApplicationsFragment.uncheckCurrentListItem();
+		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 		mItemDetailsFragment.setHasOptionsMenu(false);
 	}
@@ -210,6 +212,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 			ft.hide(mHostListFragment);
 			ft.show(mApplicationsFragment);
 			ft.commit();
+			mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 			mDrawerToggle.setDrawerIndicatorEnabled(false);
 			// details fragment becomes visible -> enable menu
 			mItemDetailsFragment.setHasOptionsMenu(false);
@@ -218,22 +221,19 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	}
 
 	protected void showItemDetailsFragment() {
+		FragmentTransaction ft = mFragmentManager.beginTransaction();
+		ft.hide(mHostListFragment);
+		ft.show(mItemDetailsFragment);
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			// portrait
-			FragmentTransaction ft = mFragmentManager.beginTransaction();
-			ft.hide(mHostListFragment);
 			ft.hide(mApplicationsFragment);
-			ft.show(mItemDetailsFragment);
-			ft.commit();
-			mDrawerToggle.setDrawerIndicatorEnabled(false);
 		} else {
 			// landscape
-			FragmentTransaction ft = mFragmentManager.beginTransaction();
-			ft.hide(mHostListFragment);
 			ft.show(mItemDetailsFragment);
-			ft.commit();
-			mDrawerToggle.setDrawerIndicatorEnabled(false);
 		}
+		ft.commit();
+		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+		mDrawerToggle.setDrawerIndicatorEnabled(false);
 		// details fragment becomes visible -> enable menu
 		mItemDetailsFragment.setHasOptionsMenu(true);
 	}

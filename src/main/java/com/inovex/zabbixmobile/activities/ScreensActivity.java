@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
@@ -68,6 +69,7 @@ public class ScreensActivity extends BaseActivity implements
 		if(mDetailsFragment == null)
 			mDetailsFragment = new ScreensDetailsFragment();
 		showListFragment();
+		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 	}
 
@@ -125,6 +127,7 @@ public class ScreensActivity extends BaseActivity implements
 			FragmentTransaction ft = mFragmentManager.beginTransaction();
 			ft.replace(R.id.fragment_container,mListFragment, LIST_FRAGMENT);
 			ft.commit();
+			mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 			mDrawerToggle.setDrawerIndicatorEnabled(true);
 		}
 	}
@@ -135,6 +138,7 @@ public class ScreensActivity extends BaseActivity implements
 			ft.replace(R.id.fragment_container,mDetailsFragment, DETAILS_FRAGMENT);
 			ft.addToBackStack(null);
 			ft.commit();
+			mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 			mDrawerToggle.setDrawerIndicatorEnabled(false);
 		}
 	}
