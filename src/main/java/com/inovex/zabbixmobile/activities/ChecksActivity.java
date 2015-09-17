@@ -179,6 +179,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		if (mZabbixDataService != null)
 			mZabbixDataService.loadHostsByHostGroup(
 					mSpinnerAdapter.getCurrentItemId(), hostGroupChanged, this);
+		mHostListFragment.showLoadingSpinner();
 	}
 
 	protected void showHostListFragment() {
