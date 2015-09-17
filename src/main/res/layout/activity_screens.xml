@@ -29,9 +29,8 @@ This file is part of ZAX.
         android:id="@+id/toolbar"
         layout="@layout/toolbar_main"/>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/fragment_container"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

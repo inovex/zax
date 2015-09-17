@@ -19,7 +19,8 @@ This file is part of ZAX.
     style="@style/Fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:gravity="center">
 
     <include layout="@layout/inc_list_with_loading_spinner" />
 
