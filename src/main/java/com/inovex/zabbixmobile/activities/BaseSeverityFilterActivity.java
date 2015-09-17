@@ -189,8 +189,10 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 		if (reset) {
 			selectItem(0);
 		} else {
-			mDetailsFragment.refreshItemSelection();
-			mListFragment.refreshItemSelection();
+			if(mDetailsFragment.isVisible())
+				mDetailsFragment.refreshItemSelection();
+			if(mListFragment.isVisible())
+				mListFragment.refreshItemSelection();
 		}
 	}
 
