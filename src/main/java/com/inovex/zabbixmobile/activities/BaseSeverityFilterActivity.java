@@ -164,6 +164,7 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 			boolean hostGroupChanged) {
 		mListFragment.dismissProgressBar();
 		mDetailsFragment.dismissLoadingSpinner();
+		mListFragment.refreshPagerTabStrip();
 	}
 
 	@Override
@@ -198,6 +199,7 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 	protected void loadAdapterContent(boolean hostGroupChanged) {
 		mListFragment.showProgressBar();
 		mDetailsFragment.showLoadingSpinner();
+		mListFragment.refreshPagerTabStrip();
 	}
 
 	@Override

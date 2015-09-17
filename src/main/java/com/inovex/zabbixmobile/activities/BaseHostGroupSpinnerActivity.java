@@ -44,7 +44,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	private boolean mFirstCall = true;
 
 	private Spinner.OnItemSelectedListener mOnNavigationListener;
-	private Spinner mSpinner;
+	private Spinner mHostgroupSpinner;
 
 	protected class SpinnerNavigationListener implements
 			Spinner.OnItemSelectedListener {
@@ -102,8 +102,8 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 			mSpinnerAdapter.refreshSelection();
 		}
 		if(mHostgroupToolbar != null){
-			mSpinner = (Spinner) mHostgroupToolbar.findViewById(R.id.hostgroup_select_spinner);
-			mSpinner.setAdapter(mSpinnerAdapter);
+			mHostgroupSpinner = (Spinner) mHostgroupToolbar.findViewById(R.id.hostgroup_select_spinner);
+			mHostgroupSpinner.setAdapter(mSpinnerAdapter);
 		}
 
 		// reload adapter
@@ -129,11 +129,11 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 		mOnNavigationListener = new SpinnerNavigationListener();
 
-		mSpinner.setOnItemSelectedListener(mOnNavigationListener);
+		mHostgroupSpinner.setOnItemSelectedListener(mOnNavigationListener);
 
 		mSpinnerAdapter.refreshSelection();
-		if(mSpinner != null){
-			mSpinner.setAdapter(mSpinnerAdapter);
+		if(mHostgroupSpinner != null){
+			mHostgroupSpinner.setAdapter(mSpinnerAdapter);
 		}
 
 		if (mZabbixDataService.isLoggedIn())
@@ -143,7 +143,7 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	@Override
 	public void onHostGroupSelected(int position) {
 		try {
-			mSpinner.setSelection(position);
+			mHostgroupSpinner.setSelection(position);
 			//mActionBar.setSelectedNavigationItem(position);
 		} catch (IllegalStateException e) {
 			e.printStackTrace();

@@ -206,4 +206,10 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 			listProgress.setProgress(progress);
 		}
 	}
+
+	public void refreshPagerTabStrip(){
+		if(mSeverityListPagerAdapter != null) {
+			mSeverityListPagerAdapter.notifyDataSetChanged();
+		}
+	}
 }
