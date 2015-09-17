@@ -384,10 +384,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		ZaxPreferences prefs = ZaxPreferences
 				.getInstance(getApplicationContext());
-//        if (prefs.isDarkTheme())
-//            setTheme(R.style.AppThemeDark);
-//        else
-//            setTheme(R.style.AppTheme);
+		if (prefs.isDarkTheme())
+			setTheme(R.style.AppThemeDark);
+		else
+			setTheme(R.style.AppTheme);
 		super.onCreate(savedInstanceState);
 
 		finishReceiver = new FinishReceiver();

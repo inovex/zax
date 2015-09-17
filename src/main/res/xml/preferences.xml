@@ -54,11 +54,13 @@ This file is part of ZAX.
             android:summary="Set this to 0 to disable automatic refresh"
             android:title="Refresh interval (min)" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/theme" >
-        <CheckBoxPreference
-            android:key="dark_theme"
-            android:summary="@string/theme_dark_desc"
-            android:title="@string/theme_dark" />
-    </PreferenceCategory>
+    <!-- Option is disabled as long as AppThemeDark is empty, -->
+    <!-- but code that switches themes is still active -->
+    <!--<PreferenceCategory android:title="@string/theme" >-->
+        <!--<CheckBoxPreference-->
+            <!--android:key="dark_theme"-->
+            <!--android:summary="@string/theme_dark_desc"-->
+            <!--android:title="@string/theme_dark" />-->
+    <!--</PreferenceCategory>-->
     
 </PreferenceScreen>
