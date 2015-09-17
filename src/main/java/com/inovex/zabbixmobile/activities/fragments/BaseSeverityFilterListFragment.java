@@ -115,7 +115,23 @@ public abstract class BaseSeverityFilterListFragment<T> extends
 		mSeverityListPager.setAdapter(mSeverityListPagerAdapter);
 		mSeverityListPager.setOffscreenPageLimit(1);
 
+		mSeverityListPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+			}
+
+			@Override
+			public void onPageSelected(int position) {
+				mSeverityListPagerAdapter.setCurrentPosition(position);
+				mCallbackMain.onSeveritySelected(mSeverityListPagerAdapter.getCurrentObject());
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state) {
+
+			}
+		});
 	}
 
 	protected abstract BaseSeverityListPagerAdapter<T> retrievePagerAdapter();
