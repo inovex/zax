@@ -149,9 +149,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
 				mDrawerLayout.closeDrawers();
 				break;
 			case R.id.navigation_settings:
-				Intent i = new Intent(this, ZaxPreferenceActivity.class);
-				i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-				startActivityForResult(i, REQUEST_CODE_PREFERENCES);
+				intent = new Intent(this, ZaxPreferenceActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+				startActivityForResult(intent, REQUEST_CODE_PREFERENCES);
 				overridePendingTransition(android.R.anim.fade_in,
 						android.R.anim.fade_out);
 				return true;
