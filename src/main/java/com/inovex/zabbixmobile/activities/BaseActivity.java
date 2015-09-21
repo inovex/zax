@@ -332,11 +332,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
 				mZabbixDataService.clearAllData();
 				mZabbixDataService.initConnection();
 				// update widget because server data has changed
+				mServersListAdapter = mZabbixDataService.getServersSelectionAdapter();
 				Intent intent = new Intent(getApplicationContext(),
 						WidgetUpdateBroadcastReceiver.class);
 				this.sendBroadcast(intent);
 				mZabbixDataService.performZabbixLogin(this);
 				mPreferencesChangedServer = false;
+				restoreServerSelection();
 			}
 			if (mPreferencesChangedTheme) {
 				mPreferencesChangedTheme = false;
