@@ -12,7 +12,7 @@
             android:title="@string/activity_problems"/>
         <item
             android:id="@+id/navigation_item_events"
-            android:icon="@android:drawable/ic_dialog_info"
+            android:icon="@drawable/ic_format_list_bulleted_grey600_18dp"
             android:title="@string/activity_events"/>
 
         <item
@@ -22,22 +22,22 @@
 
         <item
             android:id="@+id/navigation_item_screens"
-            android:icon="@android:drawable/ic_dialog_info"
+            android:icon="@drawable/ic_monitor_multiple_grey600_18dp"
             android:title="@string/activity_screens"/>
     </group>
 
     <group android:id="@+id/grp2">
         <item
             android:id="@+id/navigation_manage_servers"
-            android:icon="@android:drawable/ic_dialog_info"
+            android:icon="@drawable/ic_server_grey600_18dp"
             android:title="@string/manage_servers"/>
         <item
             android:id="@+id/navigation_settings"
-            android:icon="@android:drawable/ic_menu_manage"
+            android:icon="@drawable/ic_settings_grey600_18dp"
             android:title="@string/preferences" />
         <item
             android:id="@+id/navigation_info"
-            android:icon="@android:drawable/ic_dialog_info"
+            android:icon="@drawable/ic_information_outline_grey600_18dp"
             android:title="@string/info" />
     </group>
 

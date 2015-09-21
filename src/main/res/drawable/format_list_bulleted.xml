@@ -1,0 +1,8 @@
+<!-- drawable/format-list-bulleted.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="24dp"
+    android:width="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="#000" android:pathData="M7,5V7H21V5M7,13H21V11H7M7,19H21V17H7M4,16.67C3.26,16.67 2.67,17.27 2.67,18C2.67,18.73 3.27,19.33 4,19.33C4.73,19.33 5.33,18.73 5.33,18C5.33,17.27 4.74,16.67 4,16.67M4,4.5A1.5,1.5 0 0,0 2.5,6A1.5,1.5 0 0,0 4,7.5A1.5,1.5 0 0,0 5.5,6A1.5,1.5 0 0,0 4,4.5M4,10.5A1.5,1.5 0 0,0 2.5,12A1.5,1.5 0 0,0 4,13.5A1.5,1.5 0 0,0 5.5,12A1.5,1.5 0 0,0 4,10.5Z" />
+</vector>
