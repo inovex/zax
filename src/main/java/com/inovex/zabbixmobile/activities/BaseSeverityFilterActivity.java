@@ -131,7 +131,7 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 			mDetailsFragment.selectItem(position);
 		}
 		transaction.addToBackStack(null);
-		transaction.commit();
+		transaction.commitAllowingStateLoss();
 
 		mCurrentItem = position;
 		mDetailsFragment.selectItem(position);

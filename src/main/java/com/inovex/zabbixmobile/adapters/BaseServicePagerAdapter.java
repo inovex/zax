@@ -17,9 +17,6 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.adapters;
 
-import java.util.Collection;
-import java.util.TreeSet;
-
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -29,6 +26,9 @@ import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.Collection;
+import java.util.TreeSet;
 
 /**
  * Base class for a pager adapter maintained by a service. The base
@@ -130,8 +130,11 @@ public abstract class BaseServicePagerAdapter<T> extends PagerAdapter {
 			try {
 				mCurTransaction.commitAllowingStateLoss();
 				mCurTransaction = null;
-				if (mFragmentManager != null)
-					mFragmentManager.executePendingTransactions();
+				// Commenting out the following two lines fixes a
+				// "Recursive entry to executePendingTransactions" exception
+				// I don't know why and hope this doesn't break anything
+//				if (mFragmentManager != null)
+//					mFragmentManager.executePendingTransactions();
 			} catch (IllegalStateException e) {
 				// this exception is thrown if the activity has been destroyed
 				// which unfortunately happens from time to time
