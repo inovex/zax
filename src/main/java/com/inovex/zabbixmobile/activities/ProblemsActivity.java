@@ -18,6 +18,7 @@ This file is part of ZAX.
 package com.inovex.zabbixmobile.activities;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 
@@ -49,7 +50,7 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		mTitle = getResources().getString(R.string.activity_problems);
 		mListFragment = new ProblemsListFragment();
 		mDetailsFragment = new ProblemsDetailsFragment();
-		setContentView(R.layout.activity_base_severity_filter);
+		setContentView(R.layout.activity_problems);
 
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
@@ -98,6 +99,11 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		// problem, we do not want to show the list fragment on startup
 		if (!mListFragment.isVisible())
 			showListFragment();
+	}
+
+	@Override
+	protected Intent getDetailsIntent() {
+		return new Intent(this,ProblemDetailsActivity.class);
 	}
 
 	@Override

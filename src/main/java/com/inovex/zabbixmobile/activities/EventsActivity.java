@@ -17,6 +17,7 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -55,7 +56,7 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 			mListFragment = new EventsListFragment();
 		if(mDetailsFragment == null)
 			mDetailsFragment = new EventsDetailsFragment();
-		setContentView(R.layout.activity_base_severity_filter);
+		setContentView(R.layout.activity_events);
 	}
 
 	@Override
@@ -91,6 +92,11 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 		super.selectHostGroupInSpinner(position, itemId);
 //		if (!mListFragment.isVisible())
 //			showListFragment();
+	}
+
+	@Override
+	protected Intent getDetailsIntent() {
+		return new Intent(this, EventDetailsActivity.class);
 	}
 
 	@Override

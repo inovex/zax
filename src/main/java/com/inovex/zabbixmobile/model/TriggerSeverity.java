@@ -22,15 +22,13 @@ import android.util.SparseArray;
 import com.inovex.zabbixmobile.R;
 
 public enum TriggerSeverity {
-	ALL(R.string.severity_all, -1, 0, R.drawable.severity_not_classified), DISASTER(
-			R.string.severity_disaster, 5, 1, R.drawable.severity_disaster), HIGH(
-			R.string.severity_high, 4, 2, R.drawable.severity_high), AVERAGE(
-			R.string.severity_average, 3, 3, R.drawable.severity_average), WARNING(
-			R.string.severity_warning, 2, 4, R.drawable.severity_warning), INFORMATION(
-			R.string.severity_information, 1, 5,
-			R.drawable.severity_information), NOT_CLASSIFIED(
-			R.string.severity_not_classified, 0, 6,
-			R.drawable.severity_not_classified);
+	ALL(R.string.severity_all, -1, 0, R.drawable.severity_not_classified),
+	DISASTER(R.string.severity_disaster, 5, 1, R.drawable.severity_disaster),
+	HIGH(R.string.severity_high, 4, 2, R.drawable.severity_high),
+	AVERAGE(R.string.severity_average, 3, 3, R.drawable.severity_average),
+	WARNING(R.string.severity_warning, 2, 4, R.drawable.severity_warning),
+	INFORMATION(R.string.severity_information, 1, 5, R.drawable.severity_information),
+	NOT_CLASSIFIED(R.string.severity_not_classified, 0, 6, R.drawable.severity_not_classified);
 
 	private final int nameResourceId;
 	private final int number;

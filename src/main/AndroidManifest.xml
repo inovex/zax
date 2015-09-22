@@ -47,6 +47,8 @@
             android:theme="@style/AppTheme"/>
         <activity android:name=".activities.GraphFullscreenActivity"/>
         <activity android:name=".activities.ZabbixServerPreferenceActivity" />
+        <activity android:name=".activities.ProblemDetailsActivity"/>
+        <activity android:name=".activities.EventDetailsActivity"/>
 
         <activity android:name="com.inovex.zabbixmobile.activities.HomeScreenWidgetConfiguration">
             <intent-filter>

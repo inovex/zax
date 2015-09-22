@@ -169,9 +169,13 @@ public abstract class BaseSeverityFilterListPage<T> extends
 		if (mListAdapter == null)
 			return;
 		int position = mListAdapter.getCurrentPosition();
-		if (getListView() != null) {
-			getListView().setItemChecked(position, true);
-			getListView().setSelection(position);
+		try{
+			if (getListView() != null) {
+				getListView().setItemChecked(position, true);
+				getListView().setSelection(position);
+			}
+		} catch (IllegalStateException e){
+			e.printStackTrace();
 		}
 
 	}
