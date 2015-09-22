@@ -291,17 +291,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			// return to avoid a login with incorrect credentials
 			return;
 		}
-
+		mZabbixDataService.performZabbixLogin(this);
 		mServersListAdapter = mZabbixDataService.getServersSelectionAdapter();
-//        mServerList.setAdapter(mServersListAdapter);
 		ZabbixServer server = mServersListAdapter.getItem(mServersListAdapter.getCurrentPosition());
 		setServerViews(server.getName());
 		mServerSelectButton.setOnClickListener(this);
 		mServerNameLayout.setOnClickListener(this);
-
 		restoreServerSelection();
-
-		mZabbixDataService.performZabbixLogin(this);
 	}
 
 	@Override
