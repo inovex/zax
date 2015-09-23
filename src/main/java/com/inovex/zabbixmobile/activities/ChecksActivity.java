@@ -184,19 +184,16 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	}
 
 	protected void showHostListFragment() {
+		FragmentTransaction ft = mFragmentManager.beginTransaction();
+		ft.show(mHostListFragment);
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			// portrait
-			FragmentTransaction ft = mFragmentManager.beginTransaction();
-			ft.show(mHostListFragment);
 			ft.show(mApplicationsFragment);
-			ft.commit();
 		} else {
 			// landscape
-			FragmentTransaction ft = mFragmentManager.beginTransaction();
-			ft.show(mHostListFragment);
 			ft.hide(mItemDetailsFragment);
-			ft.commit();
 		}
+		ft.commit();
 		// Uncheck the currently selected list item because the item fragment is
 		// no longer visible.
 		mApplicationsFragment.uncheckCurrentListItem();
