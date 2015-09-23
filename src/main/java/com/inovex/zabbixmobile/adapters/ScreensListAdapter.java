@@ -39,7 +39,6 @@ public class ScreensListAdapter extends BaseServiceAdapter<Screen> {
 	 * Constructor.
 	 * 
 	 * @param service
-	 * @param textViewResourceId
 	 */
 	public ScreensListAdapter(ZabbixDataService service) {
 		super(service);
@@ -58,7 +57,12 @@ public class ScreensListAdapter extends BaseServiceAdapter<Screen> {
 
 		Screen s = getItem(position);
 
-		title.setText(s.getName());
+		StringBuilder titleBuilder = new StringBuilder();
+		if(s.getHost() != null) {
+			titleBuilder.append(s.getHost().getName() + " - ");
+		}
+		titleBuilder.append(s.getName());
+		title.setText(titleBuilder.toString());
 
 		return row;
 	}
@@ -67,7 +71,7 @@ public class ScreensListAdapter extends BaseServiceAdapter<Screen> {
 	public long getItemId(int position) {
 		Screen item = getItem(position); 
 		if (item != null)
-			return item.getId();
+			return item.getScreenId();
 		return 0;
 	}
 
