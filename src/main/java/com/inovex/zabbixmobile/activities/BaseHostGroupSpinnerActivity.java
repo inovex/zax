@@ -129,10 +129,9 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 
 		mOnNavigationListener = new SpinnerNavigationListener();
 
-		mHostgroupSpinner.setOnItemSelectedListener(mOnNavigationListener);
-
 		mSpinnerAdapter.refreshSelection();
 		if(mHostgroupSpinner != null){
+			mHostgroupSpinner.setOnItemSelectedListener(mOnNavigationListener);
 			mHostgroupSpinner.setAdapter(mSpinnerAdapter);
 		}
 
@@ -143,7 +142,9 @@ public abstract class BaseHostGroupSpinnerActivity extends BaseActivity
 	@Override
 	public void onHostGroupSelected(int position) {
 		try {
-			mHostgroupSpinner.setSelection(position);
+			if(mHostgroupSpinner != null){
+				mHostgroupSpinner.setSelection(position);
+			}
 			//mActionBar.setSelectedNavigationItem(position);
 		} catch (IllegalStateException e) {
 			e.printStackTrace();

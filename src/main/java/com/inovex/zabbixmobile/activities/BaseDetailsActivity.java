@@ -17,8 +17,10 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.activities;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.view.MenuItem;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
@@ -31,6 +33,14 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
 public class BaseDetailsActivity extends BaseHostGroupSpinnerActivity implements OnListItemSelectedListener {
 
 	private BaseSeverityFilterDetailsFragment mDetailsFragment;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+			finish();
+		}
+	}
 
 	@Override
 	public void setContentView(int layoutResID) {
@@ -48,14 +58,17 @@ public class BaseDetailsActivity extends BaseHostGroupSpinnerActivity implements
 	}
 
 	@Override
-	protected void onPause() {
-		super.onPause();
-		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-		mDrawerToggle.setDrawerIndicatorEnabled(true);
+	public void onListItemSelected(int position, long id) {
+
 	}
 
 	@Override
-	public void onListItemSelected(int position, long id) {
-
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case android.R.id.home:
+				finish();
+				return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

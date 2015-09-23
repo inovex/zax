@@ -104,7 +104,7 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 	public void onListItemSelected(int position, long id) {
 		Log.d(TAG, "item selected: " + id + ", position: " + position);
 
-		if(mDetailsFragment == null){
+		if(mDetailsFragment == null || !mDetailsFragment.isVisible()){
 			//start DetailsActivity
 			Intent i = getDetailsIntent();
 			Bundle extras = new Bundle();

@@ -28,9 +28,6 @@ This file is part of ZAX.
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar_main"/>
-    <include
-        android:id="@+id/toolbar_hostgroup"
-        layout="@layout/toolbar_hostgroup_select"/>
 
     <fragment
         android:id="@+id/details_fragment"
