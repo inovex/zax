@@ -123,6 +123,9 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 		} else {
 			// switch to current item in detail view
 			mDetailsFragment.selectItem(position);
+			if(mListFragment != null){
+				mListFragment.selectItem(position);
+			}
 		}
 
 		mCurrentItem = position;

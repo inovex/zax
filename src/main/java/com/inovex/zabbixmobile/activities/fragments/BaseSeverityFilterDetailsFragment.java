@@ -227,6 +227,22 @@ public abstract class BaseSeverityFilterDetailsFragment<T extends Sharable>
 						+ mDetailsPagerAdapter.getCurrentPosition());
 		// mDetailsPagerAdapter.setCurrentPosition(mPosition);
 		// mDetailsPageIndicator.setCurrentItem(mPosition);
+		mDetailsPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+			}
+
+			@Override
+			public void onPageSelected(int position) {
+				mCallbackMain.onListItemSelected(position,mDetailsPagerAdapter.getItemId(position));
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state) {
+
+			}
+		});
 	}
 
 	/**
