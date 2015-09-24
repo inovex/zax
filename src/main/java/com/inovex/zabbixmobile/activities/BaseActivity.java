@@ -216,7 +216,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			for(int i = 0; i < mServersListAdapter.getCount(); i++){
 				ZabbixServer server = mServersListAdapter.getItem(i);
 				menu.add(R.id.grp0_server, (int) server.getId(), Menu.NONE, server.getName())
-						.setIcon(android.R.drawable.ic_menu_gallery);
+						.setIcon(R.drawable.ic_monitor_grey600_24dp);
 			}
 			mServerSelectButton.setImageDrawable(
 					getResources().getDrawable(R.drawable.spinner_triangle_flipped));
