@@ -149,6 +149,39 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 			mApplicationsPager = (ViewPager) getView().findViewById(
 					R.id.checks_view_pager);
 			mApplicationsPager.setAdapter(mApplicationsPagerAdapter);
+
+			mApplicationsPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+				@Override
+				public void onPageScrollStateChanged(int arg0) {
+				}
+
+				@Override
+				public void onPageScrolled(int arg0, float arg1,
+										   int arg2) {
+
+				}
+
+				@Override
+				public void onPageSelected(int position) {
+					Log.d(TAG, "detail page selected: " + position);
+
+					selectApplication(position);
+
+					// mDetailsPagerAdapter.getCurrentPage().selectItem(0);
+					mCallbackMain.onApplicationSelected(position);
+
+					showItemsLoadingSpinner();
+					mZabbixDataService.loadItemsByApplicationId(
+							mApplicationsPagerAdapter
+									.getCurrentObject().getId(),
+							ChecksApplicationsFragment.this);
+				}
+			});
+			mZabbixDataService.loadItemsByApplicationId(
+					mApplicationsPagerAdapter.getItemPosition(
+							mApplicationsPagerAdapter.getItemId(0)),
+					ChecksApplicationsFragment.this);
 		}
 	}
 
@@ -249,13 +282,6 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 			mApplicationsPagerAdapter.setCurrentPosition(position);
 			mApplicationsPager.setCurrentItem(position);
 		}
-	}
-
-	public void refreshSelection() {
-		if (mApplicationsPagerAdapter == null)
-			return;
-		// mDetailsPageIndicator.invalidate();
-		int position = mApplicationsPagerAdapter.getCurrentPosition();
 	}
 
 	/**
