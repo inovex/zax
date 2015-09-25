@@ -26,7 +26,6 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-core:2.4.0'
     compile 'com.pubnub:pubnub:3.5.6'
     compile 'com.jjoe64:graphview:3.1.3'
-    compile 'com.facebook.stetho:stetho:1.1.1'
 }
 
 android {
