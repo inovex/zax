@@ -29,13 +29,14 @@ import android.widget.TextView;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.ChecksItemsListAdapter;
 import com.inovex.zabbixmobile.listeners.OnChecksItemSelectedListener;
+import com.inovex.zabbixmobile.listeners.OnItemsLoadedListener;
 
 /**
  * A page representing one particular application and thus containing a list of
  * all items in this application.
  * 
  */
-public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
+public class ChecksApplicationsPage extends BaseServiceConnectedListFragment implements OnItemsLoadedListener {
 
 	private String mTitle = "";
 
@@ -43,6 +44,7 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 
 	private OnChecksItemSelectedListener mCallbackMain;
 	private ChecksItemsListAdapter mListAdapter;
+	private long mApplicationID;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -60,6 +62,7 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate: " + this.toString());
+		mApplicationID = getArguments().getLong("applicationID");
 	}
 
 	@Override
@@ -114,8 +117,10 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 
 	@Override
 	protected void setupListAdapter() {
-		this.mListAdapter = mZabbixDataService.getChecksItemsListAdapter();
-		setListAdapter(mListAdapter);
+		if(mListAdapter == null){
+			mZabbixDataService.loadItemsByApplicationId(
+					mApplicationID, this);
+		}
 	}
 
 	@Override
@@ -138,4 +143,11 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment {
 					false);
 	}
 
+	@Override
+	public void onItemsLoaded() {
+		this.mListAdapter = mZabbixDataService.getChecksItemsListAdapter(mApplicationID);
+		setListAdapter(mListAdapter);
+		((ChecksApplicationsFragment)getParentFragment()).dismissItemsLoadingSpinner();
+		mListAdapter.notifyDataSetChanged();
+	}
 }

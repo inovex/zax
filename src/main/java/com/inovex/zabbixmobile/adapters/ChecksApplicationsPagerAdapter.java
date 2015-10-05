@@ -17,6 +17,7 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.adapters;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.inovex.zabbixmobile.activities.fragments.ChecksApplicationsPage;
@@ -52,6 +53,9 @@ public class ChecksApplicationsPagerAdapter extends
 	@Override
 	protected Fragment getItem(int position) {
 		ChecksApplicationsPage p = new ChecksApplicationsPage();
+		Bundle args = new Bundle();
+		args.putLong("applicationID",getObject(position).getId());
+		p.setArguments(args);
 		return p;
 	}
 

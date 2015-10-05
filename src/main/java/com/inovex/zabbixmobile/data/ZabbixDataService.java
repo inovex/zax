@@ -136,7 +136,7 @@ public class ZabbixDataService extends Service {
 	// Checks
 	private HostsListAdapter mHostsListAdapter;
 	private ChecksApplicationsPagerAdapter mChecksApplicationsPagerAdapter;
-	private ChecksItemsListAdapter mChecksItemsListAdapter;
+	private HashMap<String, ChecksItemsListAdapter> mChecksItemsListAdapters;
 
 	// Screens
 	private ScreensListAdapter mScreensListAdapter;
@@ -192,7 +192,7 @@ public class ZabbixDataService extends Service {
 		listAdapters.addAll(mProblemsListAdapters.values());
 		listAdapters.add(mProblemsMainListAdapter);
 		listAdapters.add(mHostsListAdapter);
-		listAdapters.add(mChecksItemsListAdapter);
+		listAdapters.addAll(mChecksItemsListAdapters.values());
 		listAdapters.add(mScreensListAdapter);
 
 		for (BaseServiceAdapter<?> adapter : listAdapters) {
@@ -366,8 +366,8 @@ public class ZabbixDataService extends Service {
 	 *
 	 * @return
 	 */
-	public ChecksItemsListAdapter getChecksItemsListAdapter() {
-		return mChecksItemsListAdapter;
+	public ChecksItemsListAdapter getChecksItemsListAdapter(long applicationID) {
+		return mChecksItemsListAdapters.get(mDatabaseHelper.getApplicationById(applicationID).toString());
 	}
 
 	/**
@@ -557,7 +557,7 @@ public class ZabbixDataService extends Service {
 
 		mHostsListAdapter = new HostsListAdapter(this);
 		mChecksApplicationsPagerAdapter = new ChecksApplicationsPagerAdapter();
-		mChecksItemsListAdapter = new ChecksItemsListAdapter(this);
+		mChecksItemsListAdapters = new HashMap<String,ChecksItemsListAdapter>();
 
 		mScreensListAdapter = new ScreensListAdapter(this);
 
@@ -923,16 +923,15 @@ public class ZabbixDataService extends Service {
 
 			List<Item> items;
 
-			@Override
-			protected void onPreExecute() {
-				super.onPreExecute();
+//			@Override
+//			protected void onPreExecute() {
+//				super.onPreExecute();
 				// clear adapters first to avoid display of old items
-				if (mChecksItemsListAdapter != null) {
-					mChecksItemsListAdapter.clear();
-					mChecksItemsListAdapter.notifyDataSetChanged();
-				}
-
-			}
+//				if (mChecksItemsListAdapters != null) {
+//					mChecksItemsListAdapters.clear();
+//					mChecksItemsListAdapters.notifyDataSetChanged();
+//				}
+//			}
 
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
@@ -945,11 +944,18 @@ public class ZabbixDataService extends Service {
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
 				// fill adapters
-				if (mChecksItemsListAdapter != null) {
-					mChecksItemsListAdapter.clear();
-					mChecksItemsListAdapter.addAll(items);
-					mChecksItemsListAdapter.notifyDataSetChanged();
+				Application application = mDatabaseHelper.getApplicationById(applicationId);
+				ChecksItemsListAdapter checksItemsListAdapter
+						= mChecksItemsListAdapters.get(application);
+
+				if (checksItemsListAdapter == null){
+					checksItemsListAdapter = new ChecksItemsListAdapter(ZabbixDataService.this);
 				}
+
+				checksItemsListAdapter.clear();
+				checksItemsListAdapter.addAll(items);
+				checksItemsListAdapter.notifyDataSetChanged();
+				mChecksItemsListAdapters.put(application.toString(),checksItemsListAdapter);
 
 				if (callback != null)
 					callback.onItemsLoaded();

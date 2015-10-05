@@ -166,7 +166,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 				public void onPageSelected(int position) {
 					Log.d(TAG, "detail page selected: " + position);
 
-					selectApplication(position);
+//					selectApplication(position);
 
 					// mDetailsPagerAdapter.getCurrentPage().selectItem(0);
 					mCallbackMain.onApplicationSelected(position);
@@ -178,10 +178,6 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 							ChecksApplicationsFragment.this);
 				}
 			});
-			mZabbixDataService.loadItemsByApplicationId(
-					mApplicationsPagerAdapter.getItemPosition(
-							mApplicationsPagerAdapter.getItemId(0)),
-					ChecksApplicationsFragment.this);
 		}
 	}
 
