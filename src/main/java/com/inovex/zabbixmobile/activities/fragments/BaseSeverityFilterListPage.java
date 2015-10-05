@@ -57,6 +57,8 @@ public abstract class BaseSeverityFilterListPage<T> extends
 
 	protected BaseServiceAdapter<T> mListAdapter;
 	private SwipeRefreshLayout swipeRefreshLayout;
+	private int mLastFirstVisibleItem;
+	private boolean mIsScrollingUp;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -95,13 +97,27 @@ public abstract class BaseSeverityFilterListPage<T> extends
 				swipeRefreshLayout.setRefreshing(false);
 			}
 		});
-		//TODO hide subtitle-toolbar on scroll
 
 		final ListView listView = (ListView) rootView.findViewById(android.R.id.list);
 		listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				final ListView lw = getListView();
 
+					if (view.getId() == lw.getId()) {
+						final int currentFirstVisibleItem = lw.getFirstVisiblePosition();
+
+						if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+							mIsScrollingUp = false;
+						} else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+							mIsScrollingUp = true;
+						}
+
+					mLastFirstVisibleItem = currentFirstVisibleItem;
+					}
+				if(mIsScrollingUp){
+					//TODO hide subtitle-toolbar on scroll
+				}
 			}
 
 			@Override
