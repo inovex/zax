@@ -137,4 +137,11 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		}
 	}
 
+	@Override
+	public void refreshData() {
+		if (mZabbixDataService != null) {
+			mZabbixDataService.loadProblemsByHostGroup(
+					mSpinnerAdapter.getCurrentItemId(), false, this);
+		}
+	}
 }
