@@ -119,6 +119,7 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 		mApplicationsFragment.setHost(h);
 		mApplicationsFragment.showApplicationsProgressBar();
 		showApplicationsFragment();
+		mApplicationsFragment.selectApplication(0);
 		mZabbixDataService.loadApplicationsByHostId(id, this, true);
 
 	}
@@ -238,8 +239,10 @@ public class ChecksActivity extends BaseHostGroupSpinnerActivity implements
 	@Override
 	public void onHostsLoaded() {
 		Host h = selectInitialHost(false);
-		mZabbixDataService.loadApplicationsByHostId(h.getId(), this, false);
-		mHostListFragment.dismissLoadingSpinner();
+		if(h != null){
+			mZabbixDataService.loadApplicationsByHostId(h.getId(), this, false);
+			mHostListFragment.dismissLoadingSpinner();
+		}
 	}
 
 	private Host selectInitialHost(boolean reset) {

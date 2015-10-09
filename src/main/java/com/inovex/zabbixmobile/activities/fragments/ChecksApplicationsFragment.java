@@ -171,11 +171,11 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 					// mDetailsPagerAdapter.getCurrentPage().selectItem(0);
 					mCallbackMain.onApplicationSelected(position);
 
-					showItemsLoadingSpinner();
-					mZabbixDataService.loadItemsByApplicationId(
-							mApplicationsPagerAdapter
-									.getCurrentObject().getId(),
-							ChecksApplicationsFragment.this);
+//					showItemsLoadingSpinner();
+//					mZabbixDataService.loadItemsByApplicationId(
+//							mApplicationsPagerAdapter
+//									.getCurrentObject().getId(),
+//							ChecksApplicationsFragment.this);
 				}
 			});
 		}
@@ -265,7 +265,7 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	@Override
 	public void onItemsLoaded() {
 		restoreItemSelection();
-		dismissItemsLoadingSpinner();
+//		dismissItemsLoadingSpinner();
 	}
 
 	/**
@@ -287,15 +287,16 @@ public class ChecksApplicationsFragment extends BaseServiceConnectedFragment
 	 *            item position
 	 */
 	public void selectItem(int position) {
-		if (mApplicationsPagerAdapter == null
-				|| mApplicationsPagerAdapter.getCount() == 0)
-			return;
-		ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mApplicationsPagerAdapter
-				.instantiateItem(mApplicationsPager,
-						mApplicationsPager.getCurrentItem());
-		Log.d(TAG, "selectItem(" + position + ")");
-		if (currentPage != null)
-			currentPage.selectItem(position);
+		if (mApplicationsPagerAdapter != null
+				&& mApplicationsPagerAdapter.getCount() != 0){
+			ChecksApplicationsPage currentPage = (ChecksApplicationsPage) mApplicationsPagerAdapter
+					.instantiateItem(mApplicationsPager,
+							mApplicationsPager.getCurrentItem());
+			Log.d(TAG, "selectItem(" + position + ")");
+			if (currentPage != null) {
+				currentPage.selectItem(position);
+			}
+		}
 	}
 
 	/**

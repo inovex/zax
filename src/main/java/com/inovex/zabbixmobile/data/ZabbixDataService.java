@@ -918,10 +918,11 @@ public class ZabbixDataService extends Service {
 	 */
 	public void loadItemsByApplicationId(final long applicationId,
 			final OnItemsLoadedListener callback) {
-		cancelTask(mCurrentLoadItemsTask);
+//		cancelTask(mCurrentLoadItemsTask);
 		mCurrentLoadItemsTask = new RemoteAPITask(mRemoteAPI) {
 
 			List<Item> items;
+			Application application;
 
 //			@Override
 //			protected void onPreExecute() {
@@ -937,29 +938,31 @@ public class ZabbixDataService extends Service {
 			protected void executeTask() throws ZabbixLoginRequiredException,
 					FatalException {
 				items = mDatabaseHelper.getItemsByApplicationId(applicationId);
-
+				application = mDatabaseHelper.getApplicationById(applicationId);
 			}
 
 			@Override
 			protected void onPostExecute(Void result) {
 				super.onPostExecute(result);
 				// fill adapters
-				Application application = mDatabaseHelper.getApplicationById(applicationId);
-				ChecksItemsListAdapter checksItemsListAdapter
-						= mChecksItemsListAdapters.get(application);
+				if(application != null){
 
-				if (checksItemsListAdapter == null){
-					checksItemsListAdapter = new ChecksItemsListAdapter(ZabbixDataService.this);
+					ChecksItemsListAdapter checksItemsListAdapter
+							= mChecksItemsListAdapters.get(application);
+
+					if (checksItemsListAdapter == null){
+						checksItemsListAdapter = new ChecksItemsListAdapter(ZabbixDataService.this);
+					}
+
+					checksItemsListAdapter.clear();
+					checksItemsListAdapter.addAll(items);
+					checksItemsListAdapter.notifyDataSetChanged();
+					mChecksItemsListAdapters.put(application.toString(), checksItemsListAdapter);
+
+					if (callback != null) {
+						callback.onItemsLoaded();
+					}
 				}
-
-				checksItemsListAdapter.clear();
-				checksItemsListAdapter.addAll(items);
-				checksItemsListAdapter.notifyDataSetChanged();
-				mChecksItemsListAdapters.put(application.toString(),checksItemsListAdapter);
-
-				if (callback != null)
-					callback.onItemsLoaded();
-
 			}
 
 		};

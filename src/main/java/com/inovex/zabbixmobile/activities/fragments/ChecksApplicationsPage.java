@@ -23,7 +23,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
@@ -45,6 +47,7 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment imp
 	private OnChecksItemSelectedListener mCallbackMain;
 	private ChecksItemsListAdapter mListAdapter;
 	private long mApplicationID;
+	private boolean mListLoadingSpinnerVisible;
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -120,6 +123,7 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment imp
 		if(mListAdapter == null){
 			mZabbixDataService.loadItemsByApplicationId(
 					mApplicationID, this);
+			showListLoadingSpinner();
 		}
 	}
 
@@ -149,5 +153,42 @@ public class ChecksApplicationsPage extends BaseServiceConnectedListFragment imp
 		setListAdapter(mListAdapter);
 		((ChecksApplicationsFragment)getParentFragment()).dismissItemsLoadingSpinner();
 		mListAdapter.notifyDataSetChanged();
+		dismissListLoadingSpinner();
+	}
+
+	/**
+	 * Shows a loading spinner instead of this page's list view.
+	 */
+	public void showListLoadingSpinner() {
+		mListLoadingSpinnerVisible = true;
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.list_progress_layout);
+			if (progressLayout != null)
+				progressLayout.setVisibility(View.VISIBLE);
+		}
+	}
+
+	/**
+	 * Dismisses the loading spinner view.
+	 *
+	 * If the view has not yet been created, the status is saved and when the
+	 * view is created, the spinner will not be shown at all.
+	 */
+	public void dismissListLoadingSpinner() {
+		mListLoadingSpinnerVisible = false;
+		if (getView() != null) {
+			LinearLayout progressLayout = (LinearLayout) getView()
+					.findViewById(R.id.list_progress_layout);
+			if (progressLayout != null) {
+				progressLayout.setVisibility(View.GONE);
+			}
+			ProgressBar listProgress = (ProgressBar) getView().findViewById(
+					R.id.applications_progress);
+			if(listProgress != null){
+				listProgress.setProgress(0);
+			}
+		}
+
 	}
 }
