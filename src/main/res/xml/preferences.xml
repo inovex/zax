@@ -45,6 +45,16 @@ This file is part of ZAX.
             android:title="@string/old_notification_icons" >
         </CheckBoxPreference>
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/gcm_push_notifications">
+        <CheckBoxPreference
+            android:key="gcm_push_enabled"
+            android:title="GCM Push Enabled"/>
+        <EditTextPreference
+            android:key="gcm_sender_id"
+            android:title="@string/gcm_sender_id"
+            android:dependency="gcm_push_enabled"/>
+    </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/homescreen_widget" >
         <EditTextPreference
