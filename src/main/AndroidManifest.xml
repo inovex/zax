@@ -21,7 +21,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
-    <uses-permission android:name="com.inovex.zabbixmobile.permission.C2DMESSAGE"/>
+    <permission android:name="com.inovex.zabbixmobile.permission.C2DMESSAGE"/>
 
     <application
         android:allowBackup="true"
@@ -98,8 +98,7 @@
         </receiver>
 
         <!-- Homescreen Widget -->
-        <receiver
-            android:name=".widget.ZaxWidgetProvider"
+        <receiver android:name=".widget.ZaxWidgetProvider"
             android:label="@string/widget_label_1x1">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -109,8 +108,7 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info_1x1" />
         </receiver>
-        <receiver
-            android:name=".widget.ZaxWidgetProviderList"
+        <receiver android:name=".widget.ZaxWidgetProviderList"
             android:enabled="@bool/honeycomb_or_later"
             android:label="@string/widget_label_list">
             <intent-filter>
@@ -140,6 +138,23 @@
             android:name=".push.PushService"
             android:process=":pushservice"/>
 
+        <!-- GCM -->
+        <receiver android:name="com.google.android.gms.gcm.GcmReceiver"
+                  android:exported="true"
+                  android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECIEVE"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="com.inovex.zabbixmobile"/>
+            </intent-filter>
+        </receiver>
+        <service
+            android:name=".push.gcm.ListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
