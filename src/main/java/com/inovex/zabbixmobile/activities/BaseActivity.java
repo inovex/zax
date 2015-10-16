@@ -419,8 +419,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			boolean sentTokenToServer = sharedPreferences.getBoolean("sent_token_to_server", false);
 
 			if(dialog == null){
+				// SUCCESS
 				if(!sentTokenToServer){
-					// SUCCESS
 					Intent intent = new Intent(this,RegistrationIntentService.class);
 					startService(intent);
 				} else {
@@ -436,6 +436,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			if(sharedPreferences.getBoolean("sent_token_to_server",true)){
 				//TODO unregister at server
 			}
+			sharedPreferences.edit().putBoolean("sent_token_to_server",false).apply();
 		}
 	}
 

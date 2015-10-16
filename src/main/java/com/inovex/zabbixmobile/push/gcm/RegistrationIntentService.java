@@ -39,11 +39,13 @@ public class RegistrationIntentService extends IntentService{
 
 				sendRegistrationToServer(token);
 
-				sharedPreferences.edit().putBoolean("sent_token_to_server",true).apply();
-				sharedPreferences.edit().putString("gcm_token",token);
+				SharedPreferences.Editor edit = sharedPreferences.edit();
+				edit.putBoolean("sent_token_to_server", true);
+				edit.putString("gcm_token",token);
+				edit.apply();
 			} catch (IOException e) {
 				Log.d(TAG, "Registration failed", e);
-				sharedPreferences.edit().putBoolean("sent_token_to_server",false).apply();
+				sharedPreferences.edit().putBoolean("sent_token_to_server", false).apply();
 			}
 		} else {
 			// TODO handle when server sender ID is not configured
