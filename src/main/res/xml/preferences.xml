@@ -54,6 +54,10 @@ This file is part of ZAX.
             android:key="gcm_sender_id"
             android:title="@string/gcm_sender_id"
             android:dependency="gcm_push_enabled"/>
+        <EditTextPreference
+            android:key="gcm_server_url"
+            android:title="@string/gcm_push_server"
+            android:dependency="gcm_push_enabled"/>
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/homescreen_widget" >

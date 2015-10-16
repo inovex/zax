@@ -155,6 +155,9 @@
                 <action android:name="com.google.android.gms.iid.InstanceID"/>
             </intent-filter>
         </service>
+        <service android:name=".push.gcm.RegistrationIntentService"
+                 android:exported="false">
+        </service>
     </application>
 
 </manifest>

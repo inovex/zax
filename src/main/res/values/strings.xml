@@ -139,4 +139,5 @@ This file is part of ZAX.
     <string name="open_server_selection_list">open server selection list</string>
     <string name="gcm_sender_id">GCM Sender ID</string>
     <string name="gcm_push_notifications">GCM Push Notifications</string>
+    <string name="gcm_push_server">GCM Push Server</string>
 </resources>
