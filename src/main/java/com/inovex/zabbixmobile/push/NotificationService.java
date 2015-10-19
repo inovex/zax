@@ -92,6 +92,7 @@ public class NotificationService extends Service {
 			notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
 					| Intent.FLAG_ACTIVITY_NEW_TASK);
 			context.startActivity(notificationIntent);
+			NotificationService.this.stopSelf();
 		}
 
 	}
@@ -112,6 +113,7 @@ public class NotificationService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			numNotifications = 0;
 			previousMessages.clear();
+			NotificationService.this.stopSelf();
 		}
 
 	}
