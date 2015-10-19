@@ -41,7 +41,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.listeners.OnServerSelectedListener;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
-import com.inovex.zabbixmobile.push.PushService;
+import com.inovex.zabbixmobile.push.pubnub.PubnubPushService;
 
 public class ServersActivity extends AppCompatActivity implements OnServerSelectedListener, ServiceConnection {
 
@@ -184,7 +184,7 @@ public class ServersActivity extends AppCompatActivity implements OnServerSelect
 		if (request == 1) {
 			if (result == ZabbixServerPreferenceActivity.PREFERENCES_CHANGED_SERVER ||
 					result == ZabbixServerPreferenceActivity.PREFERENCES_CHANGED_PUSH) {
-				PushService.startOrStopPushService(getApplicationContext());
+				PubnubPushService.startOrStopPushService(getApplicationContext());
 			}
 		}
 	}

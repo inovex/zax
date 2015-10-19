@@ -33,7 +33,7 @@ import android.widget.LinearLayout;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
-import com.inovex.zabbixmobile.push.PushService;
+import com.inovex.zabbixmobile.push.pubnub.PubnubPushService;
 import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
 
 /**
@@ -135,7 +135,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 			activityResult |= PREFERENCES_CHANGED_PUSH;
 			if (!mPrefs.isPushEnabled()
 					|| mPrefs.getPushSubscribeKey().length() > 0) {
-				PushService.startOrStopPushService(getApplicationContext());
+				PubnubPushService.startOrStopPushService(getApplicationContext());
 			}
 		}
 		// show hint for pubsub configuration

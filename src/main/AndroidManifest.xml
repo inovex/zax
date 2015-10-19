@@ -69,8 +69,12 @@
 
         <service android:name="com.inovex.zabbixmobile.data.ZabbixDataService"/>
 
+        <service android:name=".push.NotificationService"
+            android:exported="false">
+        </service>
+
         <receiver
-            android:name="com.inovex.zabbixmobile.push.PushAlarm"
+            android:name=".push.pubnub.PushAlarm"
             android:enabled="true" />
         <receiver
             android:name="com.inovex.zabbixmobile.OnSettingsMigratedReceiver"
@@ -83,7 +87,7 @@
                 <action android:name="com.inovex.zabbixmobile.EXCEPTION"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".push.BootCompletedIntentReceiver">
+        <receiver android:name=".push.pubnub.BootCompletedIntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -136,7 +140,7 @@
             android:name=".data.HomescreenCollectionWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"/>
         <service
-            android:name=".push.PushService"
+            android:name=".push.pubnub.PubnubPushService"
             android:process=":pushservice"/>
 
         <!-- GCM -->

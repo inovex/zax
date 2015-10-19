@@ -62,7 +62,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
-import com.inovex.zabbixmobile.push.PushService;
+import com.inovex.zabbixmobile.push.pubnub.PubnubPushService;
 import com.inovex.zabbixmobile.push.gcm.RegistrationIntentService;
 import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
 
@@ -363,7 +363,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			}
 			mPreferencesClosed = false;
 		} else {
-			PushService.startOrStopPushService(getApplicationContext());
+			PubnubPushService.startOrStopPushService(getApplicationContext());
 		}
 		this.gcmPushSetup();
 	}
