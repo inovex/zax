@@ -18,32 +18,34 @@ This file is part of ZAX.
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="@string/push_notifications" >
-        <CheckBoxPreference
-            android:key="zabbix_push_enabled"
-            android:title="@string/enabled" >
-        </CheckBoxPreference>
-
-        <EditTextPreference
-            android:dependency="zabbix_push_enabled"
-            android:key="zabbix_push_subscribe_key"
-            android:title="@string/subscribe_key" >
-        </EditTextPreference>
-
+    <PreferenceCategory android:title="Push Notifications">
         <RingtonePreference
-            android:dependency="zabbix_push_enabled"
-            android:key="zabbix_push_ringtone"
+            android:key="push_ringtone"
             android:ringtoneType="notification"
             android:showDefault="true"
             android:showSilent="true"
             android:title="@string/ringtone" >
         </RingtonePreference>
-        
+    </PreferenceCategory>
+
+    <CheckBoxPreference
+        android:key="push_old_icons"
+        android:summary="@string/old_notification_icons_desc"
+        android:title="@string/old_notification_icons" >
+    </CheckBoxPreference>
+
+    <PreferenceCategory android:title="@string/push_notifications" >
         <CheckBoxPreference
-            android:key="zabbix_push_old_icons"
-            android:summary="@string/old_notification_icons_desc"
-            android:title="@string/old_notification_icons" >
+        android:key="pubnub_push_enabled"
+        android:title="@string/enabled" >
         </CheckBoxPreference>
+
+        <EditTextPreference
+        android:dependency="pubnub_push_enabled"
+        android:key="pubnub_push_subscribe_key"
+        android:title="@string/subscribe_key" >
+        </EditTextPreference>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/gcm_push_notifications">
