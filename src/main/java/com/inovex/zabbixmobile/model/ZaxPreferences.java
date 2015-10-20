@@ -106,6 +106,10 @@ public class ZaxPreferences {
 		return mPref.getString("push_ringtone", null);
 	}
 
+	public String getPushOkRingtone(){
+		return mPref.getString("push_ok_ringtone", null);
+	}
+
 	public String getPushSubscribeKey() {
 		return mPref.getString("pubnub_push_subscribe_key", "").trim();
 	}

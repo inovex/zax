@@ -27,6 +27,14 @@ This file is part of ZAX.
             android:title="@string/ringtone" >
         </RingtonePreference>
 
+        <RingtonePreference
+            android:key="push_ok_ringtone"
+            android:ringtoneType="notification"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:title="@string/ringtone_ok" >
+        </RingtonePreference>
+
         <CheckBoxPreference
             android:key="push_old_icons"
             android:summary="@string/old_notification_icons_desc"

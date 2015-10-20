@@ -64,6 +64,7 @@ public class NotificationService extends Service {
 	private boolean oldNotificationIcons;
 	private int lastRequestCode = 0;
 	private String ringtone;
+	private String okRingtone;
 
 
 	/**
@@ -139,6 +140,8 @@ public class NotificationService extends Service {
 		ZaxPreferences preferences = ZaxPreferences.getInstance(getApplicationContext());
 		oldNotificationIcons = preferences.isOldNotificationIcons();
 		ringtone = preferences.getPushRingtone();
+		okRingtone = preferences.getPushOkRingtone();
+
 
 		// Register the notification broadcast receiver.
 		IntentFilter filter = new IntentFilter();
@@ -257,9 +260,14 @@ public class NotificationService extends Service {
 			notificationBuilder.setStyle(inboxStyle);
 		}
 
-		if (ringtone != null) {
-			notificationBuilder.setSound(Uri
-					.parse(ringtone));
+		if (status != null && status.equals("OK")) {
+			if (okRingtone != null) {
+				notificationBuilder.setSound(Uri.parse(okRingtone));
+			}
+		} else {
+			if (ringtone != null) {
+				notificationBuilder.setSound(Uri.parse(ringtone));
+			}
 		}
 
 		Notification notification = notificationBuilder
