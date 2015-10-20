@@ -39,14 +39,8 @@ public class RegistrationIntentService extends IntentService{
 								gcm_sender_id,
 								GoogleCloudMessaging.INSTANCE_ID_SCOPE,
 								null);
-						Log.i(TAG, "GCM Registration Token: " + token);
-
 						sendRegistrationToServer(token);
-
-						SharedPreferences.Editor edit = sharedPreferences.edit();
-						edit.putBoolean("sent_token_to_server", true);
-//						edit.putString("gcm_token",token);
-						edit.apply();
+						sharedPreferences.edit().putBoolean("sent_token_to_server", true).apply();
 					} catch (IOException e) {
 						Log.d(TAG, "Registration failed", e);
 						sharedPreferences.edit().putBoolean("sent_token_to_server", false).apply();
@@ -69,6 +63,8 @@ public class RegistrationIntentService extends IntentService{
 	}
 
 	private void sendRegistrationToServer(String token) {
+		Log.d(TAG, "GCM-token: " + token);
+
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String gcm_server_url = sharedPreferences.getString("gcm_server_url", "");
 		if(gcm_server_url.equals("")){
