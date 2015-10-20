@@ -121,13 +121,18 @@ public class NotificationService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		String status, message;
+		String status, message, source;
 		Long triggerid;
 
 		status = intent.getStringExtra("status");
 		message = intent.getStringExtra("message");
-		triggerid = intent.getLongExtra("triggerid",0);
+		triggerid = intent.getLongExtra("triggerid", 0);
 		createNotification(status,message,triggerid);
+
+		source = intent.getStringExtra("source");
+		if ( 0 != ( getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE ) ) {
+			logNotification(status, message, triggerid, source);
+		}
 
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -286,12 +291,9 @@ public class NotificationService extends Service {
 		// about the trigger ID anyway (clicking the
 		// notification just starts the main activity).
 		mNotificationManager.notify(0, notification);
-		if ( 0 != ( getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE ) ) {
-			logNotification(status, message, triggerid);
-		}
 	}
 
-	private void logNotification(String status, String message, Long triggerid) {
+	private void logNotification(String status, String message, Long triggerid, String source) {
 		// Logging incoming notifications for Debuggin
 		// timestamp status message triggerid network
 		try {
@@ -308,6 +310,8 @@ public class NotificationService extends Service {
 			FileWriter fw = new FileWriter(csv,true);
 			String date = Calendar.getInstance().getTime().toString();
 			fw.append(date);
+			fw.append('\t');
+			fw.append(source);
 			fw.append('\t');
 			fw.append(Long.toString(triggerid));
 			fw.append('\t');

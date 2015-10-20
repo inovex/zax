@@ -175,6 +175,7 @@ public class PubnubPushService extends Service {
 			intent.putExtra("status",status);
 			intent.putExtra("message",message);
 			intent.putExtra("triggerid",triggerid);
+			intent.putExtra("source","pubnub");
 			startService(intent);
 		}
 	}

@@ -19,6 +19,7 @@ public class ZaxGcmListenerService extends GcmListenerService {
 		intent.putExtra("status",data.getString("status"));
 		intent.putExtra("message",data.getString("message"));
 		intent.putExtra("triggerid", Long.parseLong(data.getString("triggerid")));
+		intent.putExtra("source","gcm");
 		startService(intent);
 	}
 }
