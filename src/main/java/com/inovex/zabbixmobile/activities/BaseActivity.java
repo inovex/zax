@@ -28,12 +28,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
@@ -53,7 +51,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.inovex.zabbixmobile.OnSettingsMigratedReceiver;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.adapters.BaseServiceAdapter;
@@ -63,7 +60,6 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.pubnub.PubnubPushService;
-import com.inovex.zabbixmobile.push.gcm.RegistrationIntentService;
 import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
 
 /**
@@ -365,7 +361,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 		} else {
 			PubnubPushService.startOrStopPushService(getApplicationContext());
 		}
-		this.gcmPushSetup();
 	}
 
 	/**
@@ -404,39 +399,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
 		if (mLoginProgress == null) {
 			mLoginProgress = LoginProgressDialogFragment.getInstance();
-		}
-
-		this.gcmPushSetup();
-	}
-
-	private void gcmPushSetup() {
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		if(sharedPreferences.getBoolean("gcm_push_enabled",false)){
-
-			Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
-					GooglePlayServicesUtil.isGooglePlayServicesAvailable(this)
-					, this, 0);
-			boolean sentTokenToServer = sharedPreferences.getBoolean("sent_token_to_server", false);
-
-			if(dialog == null){
-				// SUCCESS
-				if(!sentTokenToServer){
-					Intent intent = new Intent(this,RegistrationIntentService.class);
-					startService(intent);
-				} else {
-					Log.d(TAG, "GCM Registration ID " + sharedPreferences.getString("gcm_token",""));
-				}
-			} else {
-				String gcm_sender_id = sharedPreferences.getString("gcm_sender_id", "");
-				if(!gcm_sender_id.equals("")){
-					dialog.show();
-				}
-			}
-		} else {
-			if(sharedPreferences.getBoolean("sent_token_to_server",true)){
-				//TODO unregister at server
-			}
-			sharedPreferences.edit().putBoolean("sent_token_to_server",false).apply();
 		}
 	}
 

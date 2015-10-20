@@ -95,19 +95,19 @@ public class ZaxPreferences {
 	}
 
 	public boolean isOldNotificationIcons() {
-		return mPref.getBoolean("zabbix_push_old_icons", false);
+		return mPref.getBoolean("push_old_icons", false);
 	}
 
 	public boolean isPushEnabled() {
-		return mPref.getBoolean("zabbix_push_enabled", false);
+		return mPref.getBoolean("pubnub_push_enabled", false);
 	}
 
 	public String getPushRingtone() {
-		return mPref.getString("zabbix_push_ringtone", null);
+		return mPref.getString("push_ringtone", null);
 	}
 
 	public String getPushSubscribeKey() {
-		return mPref.getString("zabbix_push_subscribe_key", "").trim();
+		return mPref.getString("pubnub_push_subscribe_key", "").trim();
 	}
 
 	public void setWidgetServer(int mAppWidgetId, long id) {

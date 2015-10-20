@@ -26,24 +26,25 @@ This file is part of ZAX.
             android:showSilent="true"
             android:title="@string/ringtone" >
         </RingtonePreference>
-    </PreferenceCategory>
 
-    <CheckBoxPreference
-        android:key="push_old_icons"
-        android:summary="@string/old_notification_icons_desc"
-        android:title="@string/old_notification_icons" >
-    </CheckBoxPreference>
+        <CheckBoxPreference
+            android:key="push_old_icons"
+            android:summary="@string/old_notification_icons_desc"
+            android:title="@string/old_notification_icons" >
+        </CheckBoxPreference>
+
+    </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/push_notifications" >
         <CheckBoxPreference
-        android:key="pubnub_push_enabled"
-        android:title="@string/enabled" >
+            android:key="pubnub_push_enabled"
+            android:title="@string/enabled" >
         </CheckBoxPreference>
 
         <EditTextPreference
-        android:dependency="pubnub_push_enabled"
-        android:key="pubnub_push_subscribe_key"
-        android:title="@string/subscribe_key" >
+            android:key="pubnub_push_subscribe_key"
+            android:title="@string/subscribe_key"
+            android:dependency="pubnub_push_enabled">
         </EditTextPreference>
 
     </PreferenceCategory>
@@ -51,7 +52,7 @@ This file is part of ZAX.
     <PreferenceCategory android:title="@string/gcm_push_notifications">
         <CheckBoxPreference
             android:key="gcm_push_enabled"
-            android:title="GCM Push Enabled"/>
+            android:title="Enabled"/>
         <EditTextPreference
             android:key="gcm_sender_id"
             android:title="@string/gcm_sender_id"

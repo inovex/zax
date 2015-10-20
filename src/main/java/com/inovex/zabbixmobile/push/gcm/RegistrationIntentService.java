@@ -28,31 +28,57 @@ public class RegistrationIntentService extends IntentService{
 	protected void onHandleIntent(Intent intent) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String gcm_sender_id = sharedPreferences.getString("gcm_sender_id", "");
-		if(!gcm_sender_id.equals("")){
-			try{
-				InstanceID instanceID = InstanceID.getInstance(this);
-				String token = instanceID.getToken(
-						gcm_sender_id,
-						GoogleCloudMessaging.INSTANCE_ID_SCOPE,
-						null);
-				Log.i(TAG, "GCM Registration Token: " + token);
+		InstanceID instanceID = InstanceID.getInstance(this);;
 
-				sendRegistrationToServer(token);
+		switch(intent.getAction()){
+			case "register":
 
-				SharedPreferences.Editor edit = sharedPreferences.edit();
-				edit.putBoolean("sent_token_to_server", true);
-				edit.putString("gcm_token",token);
-				edit.apply();
-			} catch (IOException e) {
-				Log.d(TAG, "Registration failed", e);
-				sharedPreferences.edit().putBoolean("sent_token_to_server", false).apply();
-			}
-		} else {
-			// TODO handle when server sender ID is not configured
+				if(!gcm_sender_id.equals("")){
+					try{
+						String token = instanceID.getToken(
+								gcm_sender_id,
+								GoogleCloudMessaging.INSTANCE_ID_SCOPE,
+								null);
+						Log.i(TAG, "GCM Registration Token: " + token);
+
+						sendRegistrationToServer(token);
+
+						SharedPreferences.Editor edit = sharedPreferences.edit();
+						edit.putBoolean("sent_token_to_server", true);
+//						edit.putString("gcm_token",token);
+						edit.apply();
+					} catch (IOException e) {
+						Log.d(TAG, "Registration failed", e);
+						sharedPreferences.edit().putBoolean("sent_token_to_server", false).apply();
+					}
+				} else {
+					handleMissingConfiguration("sender_id");
+				}
+				break;
+			case "unregister":
+				try {
+					if(gcm_sender_id != null && gcm_sender_id.length() > 0){
+						instanceID.deleteToken(gcm_sender_id, GoogleCloudMessaging.INSTANCE_ID_SCOPE);
+						sharedPreferences.edit().putBoolean("sent_token_to_server", false).apply();
+					}
+				} catch (IOException e) {
+					Log.d(TAG,"unregister failed",e);
+				}
+				break;
 		}
 	}
 
 	private void sendRegistrationToServer(String token) {
-		//TODO send token to server
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		String gcm_server_url = sharedPreferences.getString("gcm_server_url", "");
+		if(gcm_server_url.equals("")){
+			handleMissingConfiguration("server_url");
+		} else {
+			//TODO send token to server
+		}
+	}
+
+	private void handleMissingConfiguration(String cause) {
+
 	}
 }
