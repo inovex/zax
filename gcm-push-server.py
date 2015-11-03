@@ -3,6 +3,7 @@
 import json
 import sqlite3
 import copy
+import os
 
 from gcmclient import *
 from wsgiref.simple_server import make_server
@@ -11,6 +12,8 @@ from cgi import parse_qs, escape
 
 API_KEY = ""
 DRY_RUN = True
+HERE = os.path.dirname(__file__)
+DATABASE_FILE = os.path.join(HERE, "gcm.db")
 
 def application (environ, start_response):
 	try:
@@ -23,9 +26,9 @@ def application (environ, start_response):
 	request_body = environ['wsgi.input'].read(request_body_size)
 	d = json.loads(request_body)
 
-	con = sqlite3.connect('gcm.db')
+	con = sqlite3.connect(DATABASE_FILE)
 	cur = con.cursor()
-	cur.execute('CREATE TABLE IF NOT EXISTS registration_ids(registration_id TEXT) ')
+	cur.execute('CREATE TABLE IF NOT EXISTS registration_ids(registration_id TEXT UNIQUE) ')
 	con.commit()
 
 	response = {}
@@ -34,10 +37,14 @@ def application (environ, start_response):
 		if d['action'] == 'register': # register new device
 			if 'registrationID' in d.keys():
 				regid = d['registrationID']
-				cur.execute('INSERT INTO registration_ids VALUES (?)', (regid,))
-				con.commit()
-				response['regID'] = regid
-				response['status'] = 'success'
+				try:
+					cur.execute('INSERT INTO registration_ids VALUES (?)', (regid,))
+					con.commit()
+					response['regID'] = regid
+					response['status'] = 'success'
+				except sqlite3.IntegrityError, e:
+					print(e)
+					response['status'] = 'id already registered'
 
 		if d['action'] == 'send': # send message
 			cur.execute('SELECT registration_id FROM registration_ids')
