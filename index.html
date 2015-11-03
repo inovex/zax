@@ -83,9 +83,9 @@
 			</div>
 			<div id="p_howto_push">
 				<h1>Setup Push Notifications</h1>
-        <center>
-				  <img src="img/push_not.png" />
-        </center>
+					<center>
+						<img src="img/push_not.png" />
+					</center>
 				<p>
 					First, you need an account for PubNub, a realtime push service.
 					Sign up for free at <a href="http://www.pubnub.com/" target="_blank">http://www.pubnub.com/</a> if you don’t have an existing account.
@@ -94,8 +94,8 @@
 
 				<p>
 					Download <a href="pubnub.pl" target="_blank">pubnub.pl</a> and open it with an editor. Replace the <strong>$pubkey</strong> and <strong>$subkey</strong> variables with your keys from <a href="http://www.pubnub.com/account#api-keys" target="_blank">http://www.pubnub.com/account#api-keys</a>. Please use your full keys containing the "sub-c-" and "pub-c-" prefixes, respectively.<br />
-          On your Zabbix server, install the Perl package <strong>LWP:Simple</strong> using (for example):
-          <pre>perl -MCPAN -e'install "LWP::Simple"'</pre>
+					On your Zabbix server, install the Perl package <strong>LWP:Simple</strong> using (for example):
+					<pre>perl -MCPAN -e'install "LWP::Simple"'</pre>
 				</p>
 				<div class="hsplit"></div>
 
@@ -108,22 +108,22 @@
 					Open the Zabbix web frontend.<br/>
 					Go to <strong>Administration -> Media types</strong>. Create a new Media type for the script pubnub.pl.
 				</p>
-        <div class="howto_image_container">
-				  <div class="howto_image_left"><img src="img/howto/media_type_18.png" /><br /> Zabbix 1.8</div>
-          <div class="howto_image_right"><img src="img/howto/media_type_20.png" /><br /> Zabbix 2.0</div>
-          <br style="clear:both;">
-        </div>
-    
+				<div class="howto_image_container">
+					<div class="howto_image_left"><img src="img/howto/media_type_18.png" /><br /> Zabbix 1.8</div>
+					<div class="howto_image_right"><img src="img/howto/media_type_20.png" /><br /> Zabbix 2.0</div>
+					<br style="clear:both;">
+				</div>
+
 				<div class="hsplit"></div>
 
 				<p>
 					Go to <strong>Administration -> Users</strong>.  Add for your user the Media type you created before.
 				</p>
 				<div class="howto_image_container">
-				  <div class="howto_image_left"><img src="img/howto/user_18.png" /><br /> Zabbix 1.8</div>
-          <div class="howto_image_right"><img src="img/howto/user_20.png" /><br /> Zabbix 2.0</div>
-          <br style="clear:both;">
-        </div>
+					<div class="howto_image_left"><img src="img/howto/user_18.png" /><br /> Zabbix 1.8</div>
+					<div class="howto_image_right"><img src="img/howto/user_20.png" /><br /> Zabbix 2.0</div>
+					<br style="clear:both;">
+				</div>
 				<div class="hsplit"></div>
 
 				<p>
@@ -135,12 +135,12 @@
 				<strong>Default message:</strong>
 				<pre>	status={STATUS}<br/>	message={HOSTNAME}: {TRIGGER.NAME}: {STATUS}</pre>
 				<div class="howto_image_container">
-				  <div class="howto_image_left"><img src="img/howto/action_18.png" /><br /> Zabbix 1.8</div>
-          <div class="howto_image_right"><img src="img/howto/action_20_1.png" /><br /><img src="img/howto/action_20_2.png" /><br /> Zabbix 2.0</div>
-          <br style="clear:both;">
-        </div>
-        <strong>Attention:</strong>
-        <p>Apart from the Zabbix parameters (<i>{STATUS}</i> etc.), please do not use square brackets ('[',']') or curly brackets ('{','}') as they may lead to nesting issues. (see <a href="https://github.com/inovex/zax/issues/8" title="See bracket nesting issue on GitHub">https://github.com/inovex/zax/issues/8</a>)</p> 
+					<div class="howto_image_left"><img src="img/howto/action_18.png" /><br /> Zabbix 1.8</div>
+					<div class="howto_image_right"><img src="img/howto/action_20_1.png" /><br /><img src="img/howto/action_20_2.png" /><br /> Zabbix 2.0</div>
+					<br style="clear:both;">
+				</div>
+				<strong>Attention:</strong>
+				<p>Apart from the Zabbix parameters (<i>{STATUS}</i> etc.), please do not use square brackets ('[',']') or curly brackets ('{','}') as they may lead to nesting issues. (see <a href="https://github.com/inovex/zax/issues/8" title="See bracket nesting issue on GitHub">https://github.com/inovex/zax/issues/8</a>)</p>
 			</div>
 			<div id="p_feedback_impress">
 				<h1>Feedback</h1>
