@@ -76,7 +76,7 @@ def send_message(recipients,message,cursor):
 		gcm = GCM(API_KEY)
 		message = JSONMessage(recipients, message, dry_run = DRY_RUN)
 		try:
-			response = gcm.send(message)
+			res = gcm.send(message)
 			for reg_id, msg_id in res.success.items():
 				print("Successfully sent %s as %s" % (reg_id, msg_id))
 
