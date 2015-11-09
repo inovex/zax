@@ -74,7 +74,8 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 		// If the activity was started with intent extras, we have to select the
 		// correct item.
 		if (mStartFromNotification) {
-			mDetailsFragment.setSeverity(TriggerSeverity.ALL);
+			if(mDetailsFragment != null)
+				mDetailsFragment.setSeverity(TriggerSeverity.ALL);
 			BaseSeverityListPagerAdapter<Trigger> severityAdapter
 					= mZabbixDataService.getProblemsListPagerAdapter();
 			severityAdapter.setCurrentPosition(0);
