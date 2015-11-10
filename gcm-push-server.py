@@ -10,10 +10,13 @@ from wsgiref.simple_server import make_server
 
 from cgi import parse_qs, escape
 
-API_KEY = ""
-DRY_RUN = True
 HERE = os.path.dirname(__file__)
 DATABASE_FILE = os.path.join(HERE, "gcm.db")
+CONFIG_FILE = os.path.join(HERE, "gcm-push-server.config")
+CONFIG = json.load(open(CONFIG_FILE,'r'))
+
+API_KEY = CONFIG["apikey"]
+DRY_RUN = CONFIG["dryrun"]
 
 def application (environ, start_response):
 	try:
