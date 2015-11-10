@@ -9,7 +9,16 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Created by felix on 16/10/15.
@@ -70,11 +79,49 @@ public class RegistrationIntentService extends IntentService{
 		if(gcm_server_url.equals("")){
 			handleMissingConfiguration("server_url");
 		} else {
-			//TODO send token to server
+			try {
+				URL server_url = new URL(gcm_server_url);
+				HttpURLConnection connection = (HttpURLConnection) server_url.openConnection();
+				connection.setDoInput(true);
+				connection.setDoOutput(true);
+				connection.setRequestProperty("Content-Type", "application/json");
+				connection.setRequestMethod("POST");
+
+				JSONObject requestBody = new JSONObject();
+				requestBody.put("action","register");
+				requestBody.put("registrationID", token);
+
+				OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+				writer.write(requestBody.toString());
+				writer.close();
+
+				int HttpResult = connection.getResponseCode();
+				if(HttpResult == HttpURLConnection.HTTP_OK){
+					BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
+					StringBuilder responseStrBuilder = new StringBuilder();
+					String inputStr;
+					while ((inputStr = br.readLine()) != null){
+						responseStrBuilder.append(inputStr);
+					}
+					JSONObject response = new JSONObject(responseStrBuilder.toString());
+					Log.d(TAG,response.toString());
+				}
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	private void handleMissingConfiguration(String cause) {
-
+		switch (cause){
+			case "sender_id":
+				break;
+			case "server_url":
+				break;
+		}
 	}
 }
