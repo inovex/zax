@@ -43,24 +43,26 @@ def application (environ, start_response):
 				try:
 					cur.execute('INSERT INTO registration_ids VALUES (?)', (regid,))
 					con.commit()
-					response['regID'] = regid
 					response['status'] = 'success'
-					response['success'] = True
 				except sqlite3.IntegrityError, e:
 					response['status'] = 'id already registered'
+				finally:
+					response['success'] = True
+					response['regID'] = regid
 
-		if d['action'] == 'send': # send message
-			cur.execute('SELECT registration_id FROM registration_ids')
-			res = cur.fetchall()
-			recipients = [r[0] for r in res]
-			response['recp'] = recipients
-			msg = copy.deepcopy(d)
+	if 'message' in d.keys(): # send message
+		cur.execute('SELECT registration_id FROM registration_ids')
+		res = cur.fetchall()
+		recipients = [r[0] for r in res]
+		response['recp'] = recipients
+		msg = copy.deepcopy(d)
+		if 'action' in msg.keys():
 			del msg['action']
-			if 'registrationID' in d.keys():
-				del msg['registrationID']
-			response['message'] = msg
-			# TODO send message to GCM-Server
-			response['success'], response['status'] = send_message(recipients,msg,cur)
+		if 'registrationID' in d.keys():
+			del msg['registrationID']
+		response['message'] = msg
+		# TODO send message to GCM-Server
+		response['success'], response['status'] = send_message(recipients,msg,cur)
 
 	con.commit()
 	con.close()
@@ -83,6 +85,7 @@ def send_message(recipients,message,cursor):
 			res = gcm.send(message)
 			for reg_id, msg_id in res.success.items():
 				print("Successfully sent %s as %s" % (reg_id, msg_id))
+				status = "Message successfully sent"
 				success = True
 			for reg_id, new_reg_id in res.canonical.items():
 				print("Replacing %s with %s in database" % (reg_id, new_reg_id))
