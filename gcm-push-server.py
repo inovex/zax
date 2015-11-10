@@ -82,18 +82,18 @@ def send_message(recipients,message,cursor):
 
 			for reg_id, new_reg_id in res.canonical.items():
 				print("Replacing %s with %s in database" % (reg_id, new_reg_id))
-				cur.execute('DELETE FROM registration_ids WHERE (registration_id == ?)', (reg_id,))
+				cursor.execute('DELETE FROM registration_ids WHERE (registration_id == ?)', (reg_id,))
 				ur.execute('INSERT INTO registration_ids VALUES (?)', (new_reg_i,d))
 
 			for reg_id in res.not_registered:
 				print("Removing %s from database" % reg_id)
-				cur.execute('DELETE FROM registration_ids WHERE (registration_id == ?)', (regid,))
+				cursor.execute('DELETE FROM registration_ids WHERE (registration_id == ?)', (reg_id,))
 
 			# unrecoverably failed, these ID's will not be retried
 			# consult GCM manual for all error codes
 			for reg_id, err_code in res.failed.items():
 				print("Removing %s because %s" % (reg_id, err_code))
-				cur.execute('DELETE FROM registration_ids WHERE (registration_id == ?)', (regid,))
+				cursor.execute('DELETE FROM registration_ids WHERE (registration_id == ?)', (reg_id,))
 
 			# if some registration ID's have recoverably failed
 			if res.needs_retry():
