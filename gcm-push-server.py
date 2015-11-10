@@ -45,8 +45,8 @@ def application (environ, start_response):
 					con.commit()
 					response['regID'] = regid
 					response['status'] = 'success'
+					response['success'] = True
 				except sqlite3.IntegrityError, e:
-					print(e)
 					response['status'] = 'id already registered'
 
 		if d['action'] == 'send': # send message
@@ -60,7 +60,7 @@ def application (environ, start_response):
 				del msg['registrationID']
 			response['message'] = msg
 			# TODO send message to GCM-Server
-			response['status'] = send_message(recipients,msg,cur)
+			response['success'], response['status'] = send_message(recipients,msg,cur)
 
 	con.commit()
 	con.close()
@@ -75,6 +75,7 @@ def application (environ, start_response):
 
 def send_message(recipients,message,cursor):
 	status = ""
+	success = False
 	if API_KEY != "" :
 		gcm = GCM(API_KEY)
 		message = JSONMessage(recipients, message, dry_run = DRY_RUN)
@@ -82,12 +83,12 @@ def send_message(recipients,message,cursor):
 			res = gcm.send(message)
 			for reg_id, msg_id in res.success.items():
 				print("Successfully sent %s as %s" % (reg_id, msg_id))
-
+				success = True
 			for reg_id, new_reg_id in res.canonical.items():
 				print("Replacing %s with %s in database" % (reg_id, new_reg_id))
 				cursor.execute('DELETE FROM registration_ids WHERE (registration_id == ?)', (reg_id,))
 				ur.execute('INSERT INTO registration_ids VALUES (?)', (new_reg_i,d))
-
+				success = True
 			for reg_id in res.not_registered:
 				print("Removing %s from database" % reg_id)
 				cursor.execute('DELETE FROM registration_ids WHERE (registration_id == ?)', (reg_id,))
@@ -112,11 +113,13 @@ def send_message(recipients,message,cursor):
 			status = "Your Google API key is rejected"
 		except ValueError, e:
 			status = "Invalid message/option or invalid GCM response" + e.args[0]
-		except Exception:
+		except Exception, e:
 			status = "Something wrong with requests library"
+			print(e)
+
 	else:
 		status = "Google API key is required"
-	return status
+	return success, status
 
 # run locally for testing and development
 if __name__ == "__main__":
