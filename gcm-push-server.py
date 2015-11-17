@@ -24,48 +24,53 @@ def application (environ, start_response):
 	except (ValueError):
 		request_body_size = 0
 
-	print(environ.get('CONTENT_TYPE',0))
-
 	request_body = environ['wsgi.input'].read(request_body_size)
-	d = json.loads(request_body)
+	d = {}
+	try:
+		d = json.loads(request_body)
 
-	con = sqlite3.connect(DATABASE_FILE)
-	cur = con.cursor()
-	cur.execute('CREATE TABLE IF NOT EXISTS registration_ids(registration_id TEXT UNIQUE) ')
-	con.commit()
+		con = sqlite3.connect(DATABASE_FILE)
+		cur = con.cursor()
+		cur.execute('CREATE TABLE IF NOT EXISTS registration_ids(registration_id TEXT UNIQUE) ')
+		con.commit()
 
-	response = {}
+		response = {}
 
-	if 'action' in d.keys():
-		if d['action'] == 'register': # register new device
+		if 'action' in d.keys():
+			if d['action'] == 'register': # register new device
+				if 'registrationID' in d.keys():
+					regid = d['registrationID']
+					try:
+						cur.execute('INSERT INTO registration_ids VALUES (?)', (regid,))
+						con.commit()
+						response['status'] = 'success'
+					except sqlite3.IntegrityError, e:
+						response['status'] = 'id already registered'
+					finally:
+						response['success'] = True
+						response['regID'] = regid
+
+		if 'message' in d.keys(): # send message
+			cur.execute('SELECT registration_id FROM registration_ids')
+			res = cur.fetchall()
+			recipients = [r[0] for r in res]
+			response['recp'] = recipients
+			msg = copy.deepcopy(d)
+			if 'action' in msg.keys():
+				del msg['action']
 			if 'registrationID' in d.keys():
-				regid = d['registrationID']
-				try:
-					cur.execute('INSERT INTO registration_ids VALUES (?)', (regid,))
-					con.commit()
-					response['status'] = 'success'
-				except sqlite3.IntegrityError, e:
-					response['status'] = 'id already registered'
-				finally:
-					response['success'] = True
-					response['regID'] = regid
+				del msg['registrationID']
+			response['message'] = msg
+			# TODO send message to GCM-Server
+			response['success'], response['status'] = send_message(recipients,msg,cur)
 
-	if 'message' in d.keys(): # send message
-		cur.execute('SELECT registration_id FROM registration_ids')
-		res = cur.fetchall()
-		recipients = [r[0] for r in res]
-		response['recp'] = recipients
-		msg = copy.deepcopy(d)
-		if 'action' in msg.keys():
-			del msg['action']
-		if 'registrationID' in d.keys():
-			del msg['registrationID']
-		response['message'] = msg
-		# TODO send message to GCM-Server
-		response['success'], response['status'] = send_message(recipients,msg,cur)
+		con.commit()
+		con.close()
 
-	con.commit()
-	con.close()
+	except ValueError("No JSON object could be decoded"), e:
+		response['success'] = False
+		response['message'] = "Post is empty"
+		raise e
 
 	response_body = json.dumps(response)
 
@@ -80,8 +85,8 @@ def send_message(recipients,message,cursor):
 	success = False
 	if API_KEY != "" :
 		gcm = GCM(API_KEY)
-		message = JSONMessage(recipients, message, dry_run = DRY_RUN)
 		try:
+			message = JSONMessage(recipients, message, dry_run = DRY_RUN)
 			res = gcm.send(message)
 			for reg_id, msg_id in res.success.items():
 				print("Successfully sent %s as %s" % (reg_id, msg_id))
