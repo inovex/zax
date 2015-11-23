@@ -36,8 +36,8 @@ android {
         applicationId "com.inovex.zabbixmobile"
         minSdkVersion 9
         targetSdkVersion 22
-        versionCode 36
-        versionName "2.4.3"
+        versionCode 37
+        versionName "2.4.4-beta1"
     }
     lintOptions {
         abortOnError false
