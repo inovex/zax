@@ -12,7 +12,7 @@ from cgi import parse_qs, escape
 
 HERE = os.path.dirname(__file__)
 DATABASE_FILE = os.path.join(HERE, "gcm.db")
-CONFIG_FILE = os.path.join(HERE, "gcm-push-server.config")
+CONFIG_FILE = os.path.join(HERE, "gcm-server-config.json")
 CONFIG = json.load(open(CONFIG_FILE,'r'))
 
 API_KEY = CONFIG["apikey"]
