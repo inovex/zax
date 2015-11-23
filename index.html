@@ -195,8 +195,41 @@
 			</div>
 			<div id="p_gcm_server">
 				<h1>Google Cloud Messaging Server</h1>
-				<p></p>
+				<p>For more generall information on Cloud Messaging see <a href="https://developers.google.com/cloud-messaging/">Googles documentation</a></p>
 
+				<p>
+					Our server for Google Cloud Messaging consists of three files:
+					<ul>
+						<li><strong><a href="gcm-push-server.py" target="_blank">gcm-push-server.py</a></strong> - the server</li>
+						<li><strong><a href="gcm-server-config.json.example" target="_blank">gcm-server-config.json</a></strong> - config-file, contains API-key</li>
+						<li><strong>gcm.db</strong> - sqlite database file, will be created by the server if it does not already exist</li>
+					</ul>
+				</p>
+
+				<p>
+					To obtain an API-Key you need to create a project with Cloud Messaging support. You can do that via the "<strong>get a configuration file</strong>"-button on <a href="https://developers.google.com/cloud-messaging/android/start">https://developers.google.com/cloud-messaging/android/start</a>.
+				</p>
+				<p>
+					You will recieve a server-API-key and a sender-ID. The server-API-key needs to be added to your config file. The sender-ID must be entered in the App-Settings under "GCM Sender ID".
+				</p>
+
+				<p>
+					One way to deploy the server is Apache and mod_wsgi.
+				</p>
+				<p>
+					Example configuration (part of a VirtualHost-configuration):
+				</p>
+					<code>
+						WSGIScriptAlias /push-server /usr/local/wsgi-scripts/gcm-push-server.py<br>
+						&ltDirectory /usr/local/wsgi-scripts/\&gt<br>
+							Order allow,deny<br>
+							Allow from all<br>
+						&lt/Directory\&gt<br>
+					</code>
+
+				<p>
+					For more information see: <a href="http://modwsgi.readthedocs.org/">http://modwsgi.readthedocs.org/</a>
+				</p>
 			</div>
 			<div id="p_beta">
 				<h1>Beta Release</h1>
@@ -204,7 +237,7 @@
 
 				<div class="hsplit"></div>
 
-				<p>The current Beta Version has the following new Features</p>
+				<p>Besides some bugfixes, the current beta version has the following new Features:</p>
 				<ul>
 					<li>Updated Material-Style UI</li>
 					<li>Support for Push-Notifications via Google Cloude Messaging</li>
