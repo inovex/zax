@@ -7,10 +7,14 @@ use LWP::Simple;
 
 ######################
 # config
-my $pubkey = "pub-c-d3743263-0749-4b81-966e-8b0f9aa11681";
-my $subkey = "sub-c-14f8a197-2cfc-11e0-b966-7321195d4657";
-my $url = "http://pubsub.pubnub.com/publish/$pubkey/$subkey/0/zabbixmobile/0/";
+# add your own keys here:
+my $pubkey = "";
+my $subkey = "";
+my $url = "https://pubsub.pubnub.com/publish/$pubkey/$subkey/0/zabbixmobile/0/";
 
+my $debug = 1;
+my $logfile = "/var/log/zabbix/pubnub.log";
+my $csv = "/var/log/zabbix/pubnub_push.csv"; # set to 0 to disable logging events to csv
 # end config
 ######################
 
@@ -18,34 +22,50 @@ use Data::Dumper;
 use URI::Escape;
 
 
-open(my $log, ">>", "/tmp/pubnub.log");
+open(my $log, ">>", $logfile);
 flock $log, 2;
+my $datestring = localtime();
 
 
-print $log Dumper(\@ARGV);
+if($debug){
+    print $log $datestring . "\n";
+}
 
 my @lines = split(/\n/, $ARGV[2]);
 
-print $log Dumper(\@lines);
+
+if($debug){
+    #print $log Dumper(\@ARGV);
+    print $log Dumper(\@lines);
+}
 
 my %msg = ();
 for my $l (@lines) {
-	my ($key, $val) = split(/=/, $l, 2);
-	# the message from zabbix contains carriage returns, which caused problems in the url.
-	# the following line removes any carriage returns.
-	$val =~ s/\r|\n//g;
-	$msg{$key} = $val;
+    my ($key, $val) = split(/=/, $l, 2);
+    # the message from zabbix contains carriage returns, which caused problems in the url.
+    # the following line removes any carriage returns.
+    $val =~ s/\r|\n//g;
+    $msg{$key} = $val;
 }
 
-print $log Dumper(\%msg);
+#print $log Dumper(\%msg);
 
 #$url .= uri_escape("{\"triggerid\": " . $ARGV[1] . ", \"message\": \"" . $ARGV[2] . "\"}");
 $url .= "{\"triggerid\": " . $ARGV[1] . ", \"message\": \"" . $msg{"message"} . "\",\"status\": \"" . $msg{"status"} . "\"}";
 
-print $log "$url\n";
-print $log "\n";
-print $log get($url);
-print $log "\n------------------------------------\n\n";
+my $response = get($url);
+if($debug){
+    print $log "$url\n";
+    print $log $response;
+    print $log "\n";
+#    print $log "\n------------------------------------\n\n";
+}
 
 close($log);
 
+if($csv){
+    open(my $pushlog, ">>", $csvfile);
+    flock $pushlog,2;
+    print $pushlog $datestring . "\t" . $ARGV[1] . "\t" . $msg{"status"} . "\t" . $msg{"message"} . "\n";
+    close($pushlog);
+}
