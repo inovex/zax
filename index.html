@@ -214,21 +214,13 @@
 				</p>
 
 				<p>
-					One way to deploy the server is Apache and mod_wsgi.
+					You will need the python-module <tt>gcm-client</tt> to run the server. It can be installed via pip:
+					<pre># pip install gcm-client</pre>
 				</p>
-				<p>
-					Example configuration (part of a VirtualHost-configuration):
-				</p>
-					<code>
-						WSGIScriptAlias /push-server /usr/local/wsgi-scripts/gcm-push-server.py<br>
-						&ltDirectory /usr/local/wsgi-scripts/\&gt<br>
-							Order allow,deny<br>
-							Allow from all<br>
-						&lt/Directory\&gt<br>
-					</code>
 
 				<p>
-					For more information see: <a href="http://modwsgi.readthedocs.org/">http://modwsgi.readthedocs.org/</a>
+					One way to deploy the server is Apache with mod_wsgi. For an example vhost configuration see <a href="apache_vhost.example">here</a>.
+					For more information about mod_wsgi see: <a href="http://modwsgi.readthedocs.org/">http://modwsgi.readthedocs.org/</a>
 				</p>
 			</div>
 			<div id="p_beta">
