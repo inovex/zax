@@ -64,7 +64,7 @@ if($debug){
 close($log);
 
 if($csv){
-    open(my $pushlog, ">>", $csvfile);
+    open(my $pushlog, ">>", $csv);
     flock $pushlog,2;
     print $pushlog $datestring . "\t" . $ARGV[1] . "\t" . $msg{"status"} . "\t" . $msg{"message"} . "\n";
     close($pushlog);
