@@ -220,10 +220,13 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 				}
 				break;
 
-			case "gcm_sender_id":
 			case "gcm_server_url":
-				getPreferenceManager().findPreference("gcm_sender_id").setSummary(sharedPreferences.getString("gcm_sender_id",""));
-				getPreferenceManager().findPreference("gcm_server_url").setSummary(sharedPreferences.getString("gcm_server_url",""));
+				if(gcm_server_url.startsWith("https://")){
+					checkServerCertificate(gcm_server_url);
+				}
+			case "gcm_sender_id":
+				getPreferenceManager().findPreference("gcm_sender_id").setSummary(gcm_sender_id);
+				getPreferenceManager().findPreference("gcm_server_url").setSummary(gcm_server_url);
 				activityResult |= PREFERENCES_CHANGED_PUSH;
 				intent = new Intent(this,RegistrationIntentService.class);
 				intent.setAction("unregister");
@@ -237,6 +240,10 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 				}
 			break;
 		}
+	}
+
+	private void checkServerCertificate(String gcm_server_url) {
+		//TODO check certificate and if neccessary ask user to trust it
 	}
 
 	private void showSettingsIncompleteInfo() {

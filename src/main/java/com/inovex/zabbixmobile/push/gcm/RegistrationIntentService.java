@@ -20,6 +20,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.net.ssl.SSLHandshakeException;
+
 /**
  * Created by felix on 16/10/15.
  */
@@ -88,23 +90,28 @@ public class RegistrationIntentService extends IntentService{
 				connection.setRequestMethod("POST");
 
 				JSONObject requestBody = new JSONObject();
-				requestBody.put("action","register");
+				requestBody.put("action", "register");
 				requestBody.put("registrationID", token);
 
-				OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-				writer.write(requestBody.toString());
-				writer.close();
+				try{
 
-				int HttpResult = connection.getResponseCode();
-				if(HttpResult == HttpURLConnection.HTTP_OK){
-					BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
-					StringBuilder responseStrBuilder = new StringBuilder();
-					String inputStr;
-					while ((inputStr = br.readLine()) != null){
-						responseStrBuilder.append(inputStr);
+					OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+					writer.write(requestBody.toString());
+					writer.close();
+
+					int HttpResult = connection.getResponseCode();
+					if(HttpResult == HttpURLConnection.HTTP_OK){
+						BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
+						StringBuilder responseStrBuilder = new StringBuilder();
+						String inputStr;
+						while ((inputStr = br.readLine()) != null){
+							responseStrBuilder.append(inputStr);
+						}
+						JSONObject response = new JSONObject(responseStrBuilder.toString());
+						Log.d(TAG,response.toString());
 					}
-					JSONObject response = new JSONObject(responseStrBuilder.toString());
-					Log.d(TAG,response.toString());
+				} catch (SSLHandshakeException e){
+					// create notification to inform user about certificate error
 				}
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
