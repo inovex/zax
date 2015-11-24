@@ -48,6 +48,7 @@ html {
 	top: 55px;
 	margin: 0;
 	padding: 0;
+	white-space: nowrap;
 }
 
 .menu a {
