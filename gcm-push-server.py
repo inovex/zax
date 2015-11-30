@@ -61,8 +61,11 @@ def application (environ, start_response):
 			if 'registrationID' in d.keys():
 				del msg['registrationID']
 			response['message'] = msg
-			# TODO send message to GCM-Server
-			response['success'], response['status'] = send_message(recipients,msg,cur)
+			if size(recipients > 0) :
+				response['success'], response['status'] = send_message(recipients,msg,cur)
+			else:
+				response['success'] = False
+				response['status'] = "no registered recipients"
 
 		con.commit()
 		con.close()
