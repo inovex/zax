@@ -8,6 +8,9 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.inovex.zabbixmobile.exceptions.CertificateChainException;
+import com.inovex.zabbixmobile.util.LocalKeyStore;
+import com.inovex.zabbixmobile.util.TrustManagerFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,8 +22,14 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.TrustManager;
 
 /**
  * Created by felix on 16/10/15.
@@ -76,6 +85,8 @@ public class RegistrationIntentService extends IntentService{
 	private void sendRegistrationToServer(String token) {
 		Log.d(TAG, "GCM-token: " + token);
 
+		LocalKeyStore.setKeyStoreDirectory(this.getBaseContext().getDir("keystore", MODE_PRIVATE).getAbsolutePath());
+
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String gcm_server_url = sharedPreferences.getString("gcm_server_url", "");
 		if(gcm_server_url.equals("")){
@@ -92,6 +103,22 @@ public class RegistrationIntentService extends IntentService{
 				JSONObject requestBody = new JSONObject();
 				requestBody.put("action", "register");
 				requestBody.put("registrationID", token);
+
+				if(server_url.getProtocol().equals("https")){
+					int port = server_url.getPort();
+					String host = server_url.getHost();
+					TrustManager[] trustManagers = {TrustManagerFactory.get(host, port)};
+					SSLContext context = null;
+					try {
+						context = SSLContext.getInstance("TLS");
+						context.init(null, trustManagers, null);
+					} catch (NoSuchAlgorithmException e) {
+						e.printStackTrace();
+					} catch (KeyManagementException e) {
+						e.printStackTrace();
+					}
+					((HttpsURLConnection)connection).setSSLSocketFactory(context.getSocketFactory());
+				}
 
 				try{
 
@@ -111,7 +138,9 @@ public class RegistrationIntentService extends IntentService{
 						Log.d(TAG,response.toString());
 					}
 				} catch (SSLHandshakeException e){
-					// create notification to inform user about certificate error
+					X509Certificate[] chain = ((CertificateChainException) e.getCause()).getmCertChain();
+					// TODO ask user if he wants to trust the certificate
+					//TrustManagerFactory.get(server_url.getHost(),server_url.getPort()).addTrustedCertificate(chain[0]);
 				}
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
@@ -131,4 +160,6 @@ public class RegistrationIntentService extends IntentService{
 				break;
 		}
 	}
+
+
 }

@@ -24,15 +24,16 @@ public class LocalKeyStore {
 	private static final String TAG = "LocalKeyStore";
 	private static String keyStoreDirectory;
 
-	public static void setKeyStoreDirectory(String keyStoreDirectory) {
-		LocalKeyStore.keyStoreDirectory = keyStoreDirectory;
+	public static void setKeyStoreDirectory(String directory) {
+		keyStoreDirectory = directory;
+		KeystoreHolder.instance = new LocalKeyStore();
 	}
 
 	private static class KeystoreHolder{
-		static final LocalKeyStore instance = new LocalKeyStore();
+		static LocalKeyStore instance;
 	}
 
-	public static final LocalKeyStore getInstance(){
+	public static LocalKeyStore getInstance(){
 		return KeystoreHolder.instance;
 	}
 
@@ -41,32 +42,35 @@ public class LocalKeyStore {
 
 
 	private LocalKeyStore(){
-		File file = new File( keyStoreDirectory + File.separator + "keystore.bks");
+		File file = new File( keyStoreDirectory, "keystore.bks");
 		FileInputStream fis = null;
 		try {
-			fis = new FileInputStream(mKeyStoreFile);
+			fis = new FileInputStream(file);
 		} catch (FileNotFoundException e) {
-
+			// it's okay if this is null, keystore can handle that
 		}
 		try {
 			KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
 			store.load(fis,"".toCharArray());
 			mKeyStore = store;
 			mKeyStoreFile = file;
+			writeKeystoreToFile();
 		} catch (Exception e) {
 			mKeyStore = null;
 			mKeyStoreFile = null;
 		} finally {
 			try {
-				fis.close();
+				if(fis != null){
+					fis.close();
+				}
 			} catch (IOException e) {
 				// ignore
 			}
 		}
 	}
 
-	public void addCertificate(String host, String port, X509Certificate certificate) throws CertificateException {
-		if(mKeyStore != null){
+	public void addCertificate(String host, int port, X509Certificate certificate) throws CertificateException {
+		if(mKeyStore == null){
 			throw new CertificateException("Certificate can not be added, because key store is not initialized");
 		}
 		try{
@@ -78,7 +82,7 @@ public class LocalKeyStore {
 	}
 
 	@NonNull
-	private String getKeyAlias(String host, String port) {
+	private String getKeyAlias(String host, int port) {
 		return host + ":" + port;
 	}
 
@@ -105,7 +109,7 @@ public class LocalKeyStore {
 		}
 	}
 
-	public boolean checkCertificateIsValid(Certificate certificate, String host, String port){
+	public boolean checkCertificateIsValid(Certificate certificate, String host, int port){
 		if(mKeyStore == null){
 			return false;
 		}
@@ -118,7 +122,7 @@ public class LocalKeyStore {
 		}
 	}
 
-	public void deleteCertificate(String host, String port){
+	public void deleteCertificate(String host, int port){
 		if(mKeyStore == null){
 			return;
 		}
