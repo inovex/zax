@@ -1,4 +1,4 @@
-package com.inovex.zabbixmobile.util;
+package com.inovex.zabbixmobile.util.ssl;
 
 import android.util.Log;
 

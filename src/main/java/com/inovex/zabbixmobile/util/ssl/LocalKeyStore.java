@@ -1,4 +1,4 @@
-package com.inovex.zabbixmobile.util;
+package com.inovex.zabbixmobile.util.ssl;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -42,7 +42,8 @@ public class LocalKeyStore {
 
 
 	private LocalKeyStore(){
-		File file = new File( keyStoreDirectory, "keystore.bks");
+		File file;
+		file = new File( keyStoreDirectory, "keystore.bks");
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
@@ -123,17 +124,23 @@ public class LocalKeyStore {
 	}
 
 	public void deleteCertificate(String host, int port){
-		if(mKeyStore == null){
-			return;
+		if(mKeyStore != null){
+			Certificate storedCert = null;
+			try{
+				mKeyStore.deleteEntry(getKeyAlias(host, port));
+				writeKeystoreToFile();
+			} catch (KeyStoreException e) {
+				// ignore
+			} catch (CertificateException e) {
+				Log.e(TAG, "error updating key store file",e);
+			}
 		}
-		Certificate storedCert = null;
-		try{
-			mKeyStore.deleteEntry(getKeyAlias(host, port));
-			writeKeystoreToFile();
-		} catch (KeyStoreException e) {
-			// ignore
-		} catch (CertificateException e) {
-			Log.e(TAG, "error updating key store file",e);
+	}
+
+	public void deleteAllCertificates(){
+		if(mKeyStore != null){
+			mKeyStoreFile.delete();
+			KeystoreHolder.instance = new LocalKeyStore();
 		}
 	}
 }

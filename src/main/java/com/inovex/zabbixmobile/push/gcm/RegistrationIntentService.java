@@ -9,8 +9,8 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.inovex.zabbixmobile.exceptions.CertificateChainException;
-import com.inovex.zabbixmobile.util.LocalKeyStore;
-import com.inovex.zabbixmobile.util.TrustManagerFactory;
+import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
+import com.inovex.zabbixmobile.util.ssl.LocalKeyStore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,14 +22,9 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
-import javax.net.ssl.TrustManager;
 
 /**
  * Created by felix on 16/10/15.
@@ -94,7 +89,12 @@ public class RegistrationIntentService extends IntentService{
 		} else {
 			try {
 				URL server_url = new URL(gcm_server_url);
-				HttpURLConnection connection = (HttpURLConnection) server_url.openConnection();
+				HttpURLConnection connection;
+				if(server_url.getProtocol().equals("https")){
+					connection = HttpsUtil.getHttpsUrlConnection(server_url,true);
+				} else {
+					connection = (HttpURLConnection) server_url.openConnection();
+				}
 				connection.setDoInput(true);
 				connection.setDoOutput(true);
 				connection.setRequestProperty("Content-Type", "application/json");
@@ -104,24 +104,7 @@ public class RegistrationIntentService extends IntentService{
 				requestBody.put("action", "register");
 				requestBody.put("registrationID", token);
 
-				if(server_url.getProtocol().equals("https")){
-					int port = server_url.getPort();
-					String host = server_url.getHost();
-					TrustManager[] trustManagers = {TrustManagerFactory.get(host, port)};
-					SSLContext context = null;
-					try {
-						context = SSLContext.getInstance("TLS");
-						context.init(null, trustManagers, null);
-					} catch (NoSuchAlgorithmException e) {
-						e.printStackTrace();
-					} catch (KeyManagementException e) {
-						e.printStackTrace();
-					}
-					((HttpsURLConnection)connection).setSSLSocketFactory(context.getSocketFactory());
-				}
-
 				try{
-
 					OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
 					writer.write(requestBody.toString());
 					writer.close();
