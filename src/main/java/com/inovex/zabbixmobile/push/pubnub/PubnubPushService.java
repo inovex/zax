@@ -107,13 +107,11 @@ public class PubnubPushService extends Service {
 
 								@Override
 								public void run() {
-									Toast.makeText(
-											PubnubPushService.this,
-											PubnubPushService.this
-													.getResources()
-													.getString(
-															R.string.push_connection_success),
-											Toast.LENGTH_SHORT).show();
+//									String message = PubnubPushService.this.getResources()
+//											.getString(R.string.push_connection_success);
+//									// TODO replace toast with Notification
+//									Toast.makeText(PubnubPushService.this, message, Toast.LENGTH_SHORT)
+//										.show();
 									initialConnect = false;
 								}
 
@@ -139,13 +137,11 @@ public class PubnubPushService extends Service {
 
 								@Override
 								public void run() {
-									Toast.makeText(
-											PubnubPushService.this,
-											PubnubPushService.this
-													.getResources()
-													.getString(
-															R.string.push_connection_error),
-											Toast.LENGTH_SHORT).show();
+									// TODO replace toast with Notification
+									String message = PubnubPushService.this.getResources()
+											.getString(R.string.push_connection_error);
+									Toast.makeText(PubnubPushService.this,message,Toast.LENGTH_SHORT)
+											.show();
 									initialConnect = false;
 								}
 
