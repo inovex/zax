@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
@@ -39,7 +40,11 @@ import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.gcm.RegistrationIntentService;
 import com.inovex.zabbixmobile.push.pubnub.PubnubPushService;
+import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
 import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * The preference activity.
@@ -78,6 +83,17 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 				activityResult);
 
 		addPreferencesFromResource(R.xml.preferences);
+
+		Preference reset_keystore = findPreference("reset_keystore");
+		if(reset_keystore != null) {
+			reset_keystore.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+					HttpsUtil.clearLocalKeyStore();
+					return true;
+				}
+			});
+		}
 	}
 
 	@Override
@@ -149,13 +165,14 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 		switch (key){
 			case "pubnub_push_enabled":
 				// show hint for pubsub configuration
-				if (mPrefs.isPushEnabled()) {
+				if (mPrefs.isPushEnabled() && sharedPreferences.getBoolean("show_push_info",true)) {
 					showConfigInfo();
+					sharedPreferences.edit().putBoolean("show_push_info",false).apply();
 				}
 			case "pubnub_push_subscribe_key":
-				if(sharedPreferences.getString("pubnub_push_subscribe_key","").length() == 0){
-					showSettingsIncompleteInfo();
-				}
+//				if(sharedPreferences.getString("pubnub_push_subscribe_key","").length() == 0){
+//					showSettingsIncompleteInfo();
+//				}
 			case "push_ringtone":
 			case "push_old_icons":
 				activityResult |= PREFERENCES_CHANGED_PUSH;
@@ -190,7 +207,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 			case "gcm_push_enabled":
 				activityResult |= PREFERENCES_CHANGED_PUSH;
 				if(sharedPreferences.getBoolean("gcm_push_enabled",false)){
-					// TODO register if not already registered and all parameters are configured
+					sharedPreferences.edit().putBoolean("show_push_info",false).apply();
 					Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
 							GooglePlayServicesUtil.isGooglePlayServicesAvailable(this)
 							, this, 0);
@@ -212,7 +229,9 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 					} else { // show PlayServices unavailable dialog
 						dialog.show();
 					}
-					showConfigInfo();
+					if(sharedPreferences.getBoolean("show_push_info",true)){
+						showConfigInfo();
+					}
 				} else {
 					intent = new Intent(this,RegistrationIntentService.class);
 					intent.setAction("unregister");
@@ -221,7 +240,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 				break;
 
 			case "gcm_server_url":
-				if(gcm_server_url.startsWith("https://")){
+				if(gcm_server_url.startsWith("https://") && sharedPreferences.getBoolean("ask_https",false)){
 					checkServerCertificate(gcm_server_url);
 				}
 			case "gcm_sender_id":
@@ -236,14 +255,23 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 					intent.setAction("register");
 					startService(intent);
 				} else { // configuration incomplete
-					showSettingsIncompleteInfo();
+//					showSettingsIncompleteInfo();
 				}
 			break;
+			case "ask_https":
+				if(gcm_server_url.startsWith("https://") && sharedPreferences.getBoolean("ask_https",false)){
+					checkServerCertificate(gcm_server_url);
+				}
+				break;
 		}
 	}
 
 	private void checkServerCertificate(String gcm_server_url) {
-		//TODO check certificate and if neccessary ask user to trust it
+		try {
+			HttpsUtil.checkCertificate(this,new URL(gcm_server_url));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void showSettingsIncompleteInfo() {

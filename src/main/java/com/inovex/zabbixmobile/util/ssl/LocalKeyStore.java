@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -111,16 +112,20 @@ public class LocalKeyStore {
 	}
 
 	public boolean checkCertificateIsValid(Certificate certificate, String host, int port){
-		if(mKeyStore == null){
-			return false;
+		if(mKeyStore != null) {
+			Certificate storedCert;
+			try {
+				storedCert = mKeyStore.getCertificate(getKeyAlias(host, port));
+				if (storedCert != null) {
+					PublicKey storedPubKey = storedCert.getPublicKey();
+					PublicKey hostKey = certificate.getPublicKey();
+					return storedPubKey.equals(hostKey);
+				}
+			} catch (KeyStoreException e) {
+				return false;
+			}
 		}
-		Certificate storedCert = null;
-		try{
-			storedCert = mKeyStore.getCertificate(getKeyAlias(host, port));
-			return (storedCert != null && storedCert.equals(certificate));
-		} catch (KeyStoreException e) {
-			return false;
-		}
+		return false;
 	}
 
 	public void deleteCertificate(String host, int port){

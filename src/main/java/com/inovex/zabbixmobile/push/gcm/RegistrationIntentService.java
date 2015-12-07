@@ -8,7 +8,6 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
-import com.inovex.zabbixmobile.exceptions.CertificateChainException;
 import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
 import com.inovex.zabbixmobile.util.ssl.LocalKeyStore;
 
@@ -22,7 +21,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.cert.X509Certificate;
 
 import javax.net.ssl.SSLHandshakeException;
 
@@ -121,10 +119,9 @@ public class RegistrationIntentService extends IntentService{
 						Log.d(TAG,response.toString());
 					}
 				} catch (SSLHandshakeException e){
-					X509Certificate[] chain = ((CertificateChainException) e.getCause()).getmCertChain();
-					// TODO ask user if he wants to trust the certificate
-					//TrustManagerFactory.get(server_url.getHost(),server_url.getPort()).addTrustedCertificate(chain[0]);
-				}
+					// TODO create notification to inform user about allow ssl settings
+
+ 				}
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
