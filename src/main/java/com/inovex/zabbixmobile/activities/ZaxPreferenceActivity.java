@@ -34,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.inovex.zabbixmobile.R;
@@ -89,7 +90,9 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 			reset_keystore.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 				@Override
 				public boolean onPreferenceClick(Preference preference) {
-					HttpsUtil.clearLocalKeyStore();
+					if(!HttpsUtil.clearLocalKeyStore()){
+						Toast.makeText(ZaxPreferenceActivity.this,"Error resetting keystore", Toast.LENGTH_SHORT).show();
+					}
 					return true;
 				}
 			});

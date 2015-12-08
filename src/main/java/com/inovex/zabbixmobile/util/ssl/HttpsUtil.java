@@ -78,11 +78,12 @@ public class HttpsUtil {
 		return connection;
 	}
 
-	public static void clearLocalKeyStore(){
+	public static boolean clearLocalKeyStore(){
 		LocalKeyStore keyStore = LocalKeyStore.getInstance();
 		if(keyStore != null){
-			keyStore.deleteAllCertificates();
+			return keyStore.deleteAllCertificates();
 		}
+		return false;
 	}
 
 	public static void checkCertificate(final Context context, final URL url){

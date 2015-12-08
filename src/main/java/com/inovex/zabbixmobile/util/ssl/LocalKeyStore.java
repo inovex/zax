@@ -142,10 +142,13 @@ public class LocalKeyStore {
 		}
 	}
 
-	public void deleteAllCertificates(){
-		if(mKeyStore != null){
-			mKeyStoreFile.delete();
+	public boolean deleteAllCertificates(){
+		if(mKeyStoreFile != null && mKeyStoreFile.delete()){
 			KeystoreHolder.instance = new LocalKeyStore();
+			return true;
+		} else {
+			Log.d(TAG, "could not delete keystore");
+			return false;
 		}
 	}
 }
