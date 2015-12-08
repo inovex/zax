@@ -19,69 +19,87 @@ API_KEY = CONFIG["apikey"]
 DRY_RUN = CONFIG["dryrun"]
 
 def application (environ, start_response):
+	request_method = environ.get('REQUEST_METHOD')
 	try:
 		request_body_size = int(environ.get('CONTENT_LENGTH', 0))
 	except (ValueError):
 		request_body_size = 0
 
-	request_body = environ['wsgi.input'].read(request_body_size)
-	d = {}
-	try:
-		d = json.loads(request_body)
+	con = sqlite3.connect(DATABASE_FILE)
+	cur = con.cursor()
+	cur.execute('CREATE TABLE IF NOT EXISTS registration_ids(registration_id TEXT UNIQUE) ')
+	con.commit()
 
-		con = sqlite3.connect(DATABASE_FILE)
-		cur = con.cursor()
-		cur.execute('CREATE TABLE IF NOT EXISTS registration_ids(registration_id TEXT UNIQUE) ')
-		con.commit()
+	if request_method in ["POST","PUT"]:
+		request_body = environ['wsgi.input'].read(request_body_size)
+		d = {}
+		try:
+			d = json.loads(request_body)
+			response = {}
 
-		response = {}
+			if 'action' in d.keys():
+				if d['action'] == 'register': # register new device
+					if 'registrationID' in d.keys():
+						regid = d['registrationID']
+						try:
+							cur.execute('INSERT INTO registration_ids VALUES (?)', (regid,))
+							con.commit()
+							response['status'] = 'success'
+						except sqlite3.IntegrityError, e:
+							response['status'] = 'id already registered'
+						finally:
+							response['success'] = True
+							response['regID'] = regid
 
-		if 'action' in d.keys():
-			if d['action'] == 'register': # register new device
+			if 'message' in d.keys(): # send message
+				cur.execute('SELECT registration_id FROM registration_ids')
+				res = cur.fetchall()
+				recipients = [r[0] for r in res]
+				response['recp'] = recipients
+				msg = copy.deepcopy(d)
+				if 'action' in msg.keys():
+					del msg['action']
 				if 'registrationID' in d.keys():
-					regid = d['registrationID']
-					try:
-						cur.execute('INSERT INTO registration_ids VALUES (?)', (regid,))
-						con.commit()
-						response['status'] = 'success'
-					except sqlite3.IntegrityError, e:
-						response['status'] = 'id already registered'
-					finally:
-						response['success'] = True
-						response['regID'] = regid
+					del msg['registrationID']
+				response['message'] = msg
+				if len(recipients) > 0 :
+					response['success'], response['status'] = send_message(recipients,msg,cur)
+				else:
+					response['success'] = False
+					response['status'] = "no registered recipients"
 
-		if 'message' in d.keys(): # send message
-			cur.execute('SELECT registration_id FROM registration_ids')
-			res = cur.fetchall()
-			recipients = [r[0] for r in res]
-			response['recp'] = recipients
-			msg = copy.deepcopy(d)
-			if 'action' in msg.keys():
-				del msg['action']
-			if 'registrationID' in d.keys():
-				del msg['registrationID']
-			response['message'] = msg
-			if len(recipients) > 0 :
-				response['success'], response['status'] = send_message(recipients,msg,cur)
-			else:
-				response['success'] = False
-				response['status'] = "no registered recipients"
+			con.commit()
+			con.close()
 
-		con.commit()
-		con.close()
+		except ValueError("No JSON object could be decoded"), e:
+			response['success'] = False
+			response['message'] = "Post is empty"
+			raise e
 
-	except ValueError("No JSON object could be decoded"), e:
-		response['success'] = False
-		response['message'] = "Post is empty"
-		raise e
+		response_body = json.dumps(response)
 
-	response_body = json.dumps(response)
+		status = '200 OK'
+		response_headers = [('Content-Type','application/json'),
+			('Content-Length',str(len(response_body)))]
+		start_response(status,response_headers)
+		return [response_body]
 
-	status = '200 OK'
-	response_headers = [('Content-Type','application/json'),
-		('Content-Length',str(len(response_body)))]
-	start_response(status,response_headers)
-	return [response_body]
+	elif request_method in ["GET"]:
+		cur.execute('SELECT registration_id FROM registration_ids')
+		res = cur.fetchall()
+		recipients = [r[0] for r in res]
+		response = {}
+		response['recipients_number'] = len(recipients)
+		#response['recipients'] = recipients
+		response_body = json.dumps(response)
+
+
+		status = '200 OK'
+		response_headers = [('Content-Type','application/json'),
+			('Content-Length',str(len(response_body)))]
+		start_response(status,response_headers)
+		return [response_body]
+
 
 def send_message(recipients,message,cursor):
 	status = ""
