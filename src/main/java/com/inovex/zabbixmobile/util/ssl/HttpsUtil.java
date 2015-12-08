@@ -11,7 +11,9 @@ import com.inovex.zabbixmobile.exceptions.CertificateChainException;
 import java.io.IOException;
 import java.net.URL;
 import java.security.KeyManagementException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HostnameVerifier;
@@ -112,7 +114,7 @@ public class HttpsUtil {
 					new AlertDialog.Builder(context)
 							.setTitle("Certificate could not be validated")
 									// TODO add more information about the certificate
-							.setMessage(" MORE INFORMATION GOES HERE")
+							.setMessage(getChainInfo(chain))
 							.setCancelable(true)
 							.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
 								@Override
@@ -133,5 +135,46 @@ public class HttpsUtil {
 			}
 		}.execute(context);
 
+	}
+
+	private static String getChainInfo(X509Certificate[] chain) {
+		StringBuilder chainInfo = new StringBuilder();
+		MessageDigest sha1 = null;
+		try {
+			sha1 = MessageDigest.getInstance("SHA-1");
+		} catch (NoSuchAlgorithmException e) {
+			Log.e(TAG, "Error while initializing MessageDigest", e);
+		}
+
+		for (int i = 0; i < chain.length; i++) {
+			chainInfo.append("Certificate chain[").append(i).append("]:\n");
+			chainInfo.append("Subject: ").append(chain[i].getSubjectDN().toString()).append("\n");
+			chainInfo.append("Issuer: ").append(chain[i].getIssuerDN().toString()).append("\n");
+			if (sha1 != null) {
+				sha1.reset();
+				try {
+					char[] sha1sum = encodeHex(sha1.digest(chain[i].getEncoded()));
+					chainInfo.append("Fingerprint (SHA-1): ").append(new String(sha1sum)).append("\n");
+				} catch (CertificateEncodingException e) {
+					Log.e(TAG, "Error while encoding certificate", e);
+				}
+			}
+		}
+
+		return chainInfo.toString();
+	}
+
+	private static char[] encodeHex(byte[] bytes) {
+		char[] DIGITS = {
+				'0', '1', '2', '3', '4', '5', '6', '7',
+				'8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+		};
+		int l = bytes.length;
+		char[] out = new char[l << 1];
+		for (int i = 0, j = 0; i < l; i++) {
+			out[j++] = DIGITS[(0xF0 & bytes[i]) >>> 4 ];
+			out[j++] = DIGITS[ 0x0F & bytes[i] ];
+		}
+		return out;
 	}
 }

@@ -54,10 +54,11 @@ public class NotificationService extends Service {
 	protected static final int NUM_STACKED_NOTIFICATIONS = 5;
 	public static final String ACTION_ZABBIX_NOTIFICATION = "com.inovex.zabbixmobile.push.PushService.ACTION_ZABBIX_NOTIFICATION";
 	public static final String ACTION_ZABBIX_NOTIFICATION_DELETE = "com.inovex.zabbixmobile.push.PushService.ACTION_ZABBIX_NOTIFICATION_DELETE";
+	private final String TAG = "NotificationService";
 
 	private BroadcastReceiver mNotificationBroadcastReceiver;
-	private BroadcastReceiver mNotificationDeleteBroadcastReceiver;
 
+	private BroadcastReceiver mNotificationDeleteBroadcastReceiver;
 	int numNotifications = 0;
 	ArrayBlockingQueue<CharSequence> previousMessages = new ArrayBlockingQueue<CharSequence>(
 			NUM_STACKED_NOTIFICATIONS);
@@ -341,7 +342,7 @@ public class NotificationService extends Service {
 			fw.append("\t\n");
 			fw.flush();
 			fw.close();
-			Log.d("PushService", "writing to logfile " + date + " " + status + " " + message + " " + net);
+			Log.d(TAG, "writing to logfile " + date + "" + source + " " + status + " " + message + " " + net);
 		}catch (Exception e){
 			e.printStackTrace();
 		}

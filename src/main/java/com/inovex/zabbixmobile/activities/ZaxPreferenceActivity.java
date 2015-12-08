@@ -262,6 +262,9 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 				if(gcm_server_url.startsWith("https://") && sharedPreferences.getBoolean("ask_https",false)){
 					checkServerCertificate(gcm_server_url);
 				}
+				if(sharedPreferences.getBoolean("ask_https",false)){
+					HttpsUtil.clearLocalKeyStore();
+				}
 				break;
 		}
 	}
