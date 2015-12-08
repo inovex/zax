@@ -147,6 +147,7 @@ public class RegistrationIntentService extends IntentService{
 	}
 
 	private void handleMissingConfiguration(String cause) {
+		// TODO handle missing configurations
 		switch (cause){
 			case "sender_id":
 				break;
