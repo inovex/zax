@@ -14,6 +14,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
@@ -25,6 +26,11 @@ import javax.net.ssl.TrustManager;
 public class HttpsUtil {
 
 	private static final String TAG = "HttpsUtil";
+	private static final String IPADDRESS_PATTERN =
+		"^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 
 	public static HttpsURLConnection getHttpsUrlConnection(URL url) throws IOException {
 		return HttpsUtil.getHttpsUrlConnection(url,false);
@@ -51,6 +57,20 @@ public class HttpsUtil {
 			} catch (KeyManagementException e) {
 				e.printStackTrace();
 			}
+			final HostnameVerifier defaultVerifier = connection.getHostnameVerifier();
+			// unsafe workaround for https://github.com/square/okhttp/issues/1467
+//			connection.setHostnameVerifier(new HostnameVerifier()  {
+//				@Override
+//				public boolean verify(String hostname, SSLSession session) {
+//					if(!defaultVerifier.verify(hostname, session)){
+//						Log.d(TAG,"Accepting IP");
+//						Pattern p = Pattern.compile(IPADDRESS_PATTERN);
+//						Matcher m = p.matcher(hostname);
+//						return m.matches();
+//					}
+//					return true;
+//				}
+//			});
 			connection.setSSLSocketFactory(context.getSocketFactory());
 		}
 		return connection;

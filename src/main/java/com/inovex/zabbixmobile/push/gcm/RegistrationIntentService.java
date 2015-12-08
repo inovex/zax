@@ -52,8 +52,12 @@ public class RegistrationIntentService extends IntentService{
 								gcm_sender_id,
 								GoogleCloudMessaging.INSTANCE_ID_SCOPE,
 								null);
-						sendRegistrationToServer(token);
-						sharedPreferences.edit().putBoolean("sent_token_to_server", true).apply();
+						if(sendRegistrationToServer(token)){
+							sharedPreferences.edit().putBoolean("sent_token_to_server", true).apply();
+						} else {
+							// TODO retry later
+							Log.d(TAG, "Sending token to server failed");
+						}
 					} catch (IOException e) {
 						Log.d(TAG, "Registration failed", e);
 						sharedPreferences.edit().putBoolean("sent_token_to_server", false).apply();
@@ -75,7 +79,7 @@ public class RegistrationIntentService extends IntentService{
 		}
 	}
 
-	private void sendRegistrationToServer(String token) {
+	private boolean sendRegistrationToServer(String token) {
 		Log.d(TAG, "GCM-token: " + token);
 
 		LocalKeyStore.setKeyStoreDirectory(this.getBaseContext().getDir("keystore", MODE_PRIVATE).getAbsolutePath());
@@ -117,19 +121,29 @@ public class RegistrationIntentService extends IntentService{
 						}
 						JSONObject response = new JSONObject(responseStrBuilder.toString());
 						Log.d(TAG,response.toString());
+					} else {
+						return false;
 					}
 				} catch (SSLHandshakeException e){
 					// TODO create notification to inform user about allow ssl settings
-
- 				}
+					return false;
+ 				} catch (IOException e){
+					// propably caused by https://github.com/square/okhttp/issues/1467
+					e.printStackTrace();
+					return false;
+				}
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
+				return false;
 			} catch (IOException e) {
 				e.printStackTrace();
+				return false;
 			} catch (JSONException e) {
 				e.printStackTrace();
+				return false;
 			}
 		}
+		return true;
 	}
 
 	private void handleMissingConfiguration(String cause) {
