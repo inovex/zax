@@ -216,6 +216,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 
 					if(dialog == null){ // play services are available
 						if(gcm_sender_id.length() > 0 && gcm_server_url.length() > 0){
+							checkCertificateIfNecessary(sharedPreferences, gcm_server_url);
 							if(!sentTokenToServer){ // if not already registered
 								intent = new Intent(this,RegistrationIntentService.class);
 								intent.setAction("register");
@@ -259,13 +260,19 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 				}
 			break;
 			case "ask_https":
-				if(gcm_server_url.startsWith("https://") && sharedPreferences.getBoolean("ask_https",false)){
-					checkServerCertificate(gcm_server_url);
-				}
+				checkCertificateIfNecessary(sharedPreferences, gcm_server_url);
 				if(sharedPreferences.getBoolean("ask_https",false)){
 					HttpsUtil.clearLocalKeyStore();
 				}
 				break;
+		}
+	}
+
+	private void checkCertificateIfNecessary(SharedPreferences sharedPreferences, String gcm_server_url) {
+		if(gcm_server_url.startsWith("https://")
+				&& sharedPreferences.getBoolean("ask_https",false)
+				&& sharedPreferences.getBoolean("gcm_push_enabled",false)){
+			checkServerCertificate(gcm_server_url);
 		}
 	}
 
