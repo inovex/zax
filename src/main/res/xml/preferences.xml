@@ -18,6 +18,17 @@ This file is part of ZAX.
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <PreferenceCategory android:title="Security">
+        <CheckBoxPreference
+            android:key="ask_https"
+            android:title="Ask to trust SSL-Certificates"
+            android:summary="ask to manually trust SSL-Certificates that could not be verified">
+        </CheckBoxPreference>
+        <Preference android:title="Reset Keystore"
+                    android:key="reset_keystore">
+        </Preference>
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Push Notifications">
         <RingtonePreference
             android:key="push_ringtone"
@@ -51,8 +62,7 @@ This file is part of ZAX.
 
         <EditTextPreference
             android:key="pubnub_push_subscribe_key"
-            android:title="@string/subscribe_key"
-            android:dependency="pubnub_push_enabled">
+            android:title="@string/subscribe_key">
         </EditTextPreference>
 
     </PreferenceCategory>
@@ -63,12 +73,10 @@ This file is part of ZAX.
             android:title="Enabled"/>
         <EditTextPreference
             android:key="gcm_sender_id"
-            android:title="@string/gcm_sender_id"
-            android:dependency="gcm_push_enabled"/>
+            android:title="@string/gcm_sender_id"/>
         <EditTextPreference
             android:key="gcm_server_url"
-            android:title="@string/gcm_push_server"
-            android:dependency="gcm_push_enabled"/>
+            android:title="@string/gcm_push_server"/>
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/homescreen_widget" >

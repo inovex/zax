@@ -127,6 +127,7 @@ public class ZabbixRemoteAPI {
         return "user.authenticate";
     }
 
+	// TODO replace "allow all"-Trustmanager with one with custom keystore
     class CustomSSLSocketFactory extends SSLSocketFactory {
 		SSLContext sslContext = SSLContext.getInstance("TLS");
 

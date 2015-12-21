@@ -8,6 +8,8 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
+import com.inovex.zabbixmobile.util.ssl.LocalKeyStore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,6 +21,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import javax.net.ssl.SSLHandshakeException;
 
 /**
  * Created by felix on 16/10/15.
@@ -48,8 +52,12 @@ public class RegistrationIntentService extends IntentService{
 								gcm_sender_id,
 								GoogleCloudMessaging.INSTANCE_ID_SCOPE,
 								null);
-						sendRegistrationToServer(token);
-						sharedPreferences.edit().putBoolean("sent_token_to_server", true).apply();
+						if(sendRegistrationToServer(token)){
+							sharedPreferences.edit().putBoolean("sent_token_to_server", true).apply();
+						} else {
+							// TODO retry later
+							Log.d(TAG, "Sending token to server failed");
+						}
 					} catch (IOException e) {
 						Log.d(TAG, "Registration failed", e);
 						sharedPreferences.edit().putBoolean("sent_token_to_server", false).apply();
@@ -71,8 +79,10 @@ public class RegistrationIntentService extends IntentService{
 		}
 	}
 
-	private void sendRegistrationToServer(String token) {
+	private boolean sendRegistrationToServer(String token) {
 		Log.d(TAG, "GCM-token: " + token);
+
+		LocalKeyStore.setKeyStoreDirectory(this.getBaseContext().getDir("keystore", MODE_PRIVATE).getAbsolutePath());
 
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String gcm_server_url = sharedPreferences.getString("gcm_server_url", "");
@@ -81,42 +91,63 @@ public class RegistrationIntentService extends IntentService{
 		} else {
 			try {
 				URL server_url = new URL(gcm_server_url);
-				HttpURLConnection connection = (HttpURLConnection) server_url.openConnection();
+				HttpURLConnection connection;
+				if(server_url.getProtocol().equals("https")){
+					connection = HttpsUtil.getHttpsUrlConnection(server_url,true);
+				} else {
+					connection = (HttpURLConnection) server_url.openConnection();
+				}
 				connection.setDoInput(true);
 				connection.setDoOutput(true);
 				connection.setRequestProperty("Content-Type", "application/json");
 				connection.setRequestMethod("POST");
 
 				JSONObject requestBody = new JSONObject();
-				requestBody.put("action","register");
+				requestBody.put("action", "register");
 				requestBody.put("registrationID", token);
 
-				OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-				writer.write(requestBody.toString());
-				writer.close();
+				try{
+					OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+					writer.write(requestBody.toString());
+					writer.close();
 
-				int HttpResult = connection.getResponseCode();
-				if(HttpResult == HttpURLConnection.HTTP_OK){
-					BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
-					StringBuilder responseStrBuilder = new StringBuilder();
-					String inputStr;
-					while ((inputStr = br.readLine()) != null){
-						responseStrBuilder.append(inputStr);
+					int HttpResult = connection.getResponseCode();
+					if(HttpResult == HttpURLConnection.HTTP_OK){
+						BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
+						StringBuilder responseStrBuilder = new StringBuilder();
+						String inputStr;
+						while ((inputStr = br.readLine()) != null){
+							responseStrBuilder.append(inputStr);
+						}
+						JSONObject response = new JSONObject(responseStrBuilder.toString());
+						Log.d(TAG,response.toString());
+					} else {
+						return false;
 					}
-					JSONObject response = new JSONObject(responseStrBuilder.toString());
-					Log.d(TAG,response.toString());
+				} catch (SSLHandshakeException e){
+					// TODO create notification to inform user about allow ssl settings
+					return false;
+ 				} catch (IOException e){
+					// propably caused by https://github.com/square/okhttp/issues/1467
+					e.printStackTrace();
+					return false;
 				}
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
+				return false;
 			} catch (IOException e) {
 				e.printStackTrace();
+				return false;
 			} catch (JSONException e) {
 				e.printStackTrace();
+				return false;
 			}
 		}
+		return true;
 	}
 
 	private void handleMissingConfiguration(String cause) {
+		// TODO handle missing configurations
 		switch (cause){
 			case "sender_id":
 				break;
@@ -124,4 +155,6 @@ public class RegistrationIntentService extends IntentService{
 				break;
 		}
 	}
+
+
 }
