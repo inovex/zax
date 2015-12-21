@@ -212,7 +212,7 @@ public class ZabbixDataService extends Service {
 
 		mRemoteAPI.logout();
 		mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
-				mDatabaseHelper, mCurrentZabbixServerId, null, null);
+				mDatabaseHelper, mCurrentZabbixServerId, null);
 	}
 
 
@@ -454,7 +454,7 @@ public class ZabbixDataService extends Service {
 				mPreferences.refresh(getApplicationContext());
 				mCurrentZabbixServerId = mPreferences.getServerSelection();
 				mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
-						mDatabaseHelper, mCurrentZabbixServerId, null, null);
+						mDatabaseHelper, mCurrentZabbixServerId, null);
 			}
 		}
 	}

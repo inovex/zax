@@ -48,7 +48,6 @@ import com.inovex.zabbixmobile.model.Trigger;
 import com.inovex.zabbixmobile.model.TriggerHostGroupRelation;
 import com.inovex.zabbixmobile.model.TriggerSeverity;
 import com.inovex.zabbixmobile.model.ZaxServerPreferences;
-import com.inovex.zabbixmobile.util.HttpClientWrapper;
 import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
 import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
@@ -126,7 +125,6 @@ public class ZabbixRemoteAPI {
 		public static final int HTTP_SOCKET_TIMEOUT = 30000;
 	}
 
-	private HttpClientWrapper httpClient;
 	private final DatabaseHelper databaseHelper;
 	private final ZaxServerPreferences mPreferences;
 	private final Context mContext;
@@ -148,7 +146,7 @@ public class ZabbixRemoteAPI {
 	 *            OrmLite database helper
 	 */
 	public ZabbixRemoteAPI(Context context, DatabaseHelper databaseHelper, long zabbixServerId,
-			HttpClientWrapper httpClientMock, ZaxServerPreferences prefsMock) {
+			ZaxServerPreferences prefsMock) {
 
 		mCurrentZabbixServerId = zabbixServerId;
 
@@ -158,11 +156,6 @@ public class ZabbixRemoteAPI {
 			mPreferences = new ZaxServerPreferences(context, zabbixServerId, true);
 		}
 
-		if (httpClientMock != null) {
-			httpClient = httpClientMock;
-		} else {
-			initConnection();
-		}
 
 		if(mPreferences.isTrustAllSSLCA()){
 			this.useCustomKeystore = true;

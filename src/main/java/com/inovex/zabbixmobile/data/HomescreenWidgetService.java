@@ -17,9 +17,6 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
@@ -47,6 +44,9 @@ import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProvider;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProviderList;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Started service providing the homescreen widget with functionality to
@@ -125,7 +125,7 @@ public class HomescreenWidgetService extends Service {
 		}
 
 		final ZabbixRemoteAPI mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
-					mDatabaseHelper, zabbixServerId, null, null);
+					mDatabaseHelper, zabbixServerId, null);
 
 		if (importProblemsTask != null && importProblemsTask.getStatus() == AsyncTask.Status.RUNNING && Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
 			// your android version is too old
