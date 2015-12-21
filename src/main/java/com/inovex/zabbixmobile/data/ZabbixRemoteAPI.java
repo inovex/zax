@@ -93,11 +93,11 @@ public class ZabbixRemoteAPI {
 	private Authenticator httpAuthenticator = null;
 
 	public String getAuthenticationMethod() {
-        if(mPreferences.getZabbixAPIVersion().isGreater2_3()){
-            return "user.login";
-        }
-        return "user.authenticate";
-    }
+		if(mPreferences.getZabbixAPIVersion().isGreater2_3()){
+			return "user.login";
+		}
+		return "user.authenticate";
+	}
 
 
 	/**
@@ -419,35 +419,35 @@ public class ZabbixRemoteAPI {
 
 		//Log.d(TAG, "u:"+user+"/"+password);
 
-        // get API version
-        JSONObject result;
-        try {
-            result = _queryBuffer("apiinfo.version", new JSONObject());
-            if (result == null) {
-                mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_1_3);
-            } else {
-                apiVersion = result.getString("result");
-                if(apiVersion.equals("1.4")){
-                    mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_1_4);
-                }else if(apiVersion.startsWith("2.4")){
-                    mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_GT_2_4);
-                }else if(apiVersion.startsWith("2")){
-                    mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_2_0_TO_2_3);
-                }else{
-                    mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_1_3);
-                }
-            }
-            Log.i(TAG, "Zabbix API Version: " + apiVersion);
-        } catch (IOException e) {
-            throw new FatalException(Type.INTERNAL_ERROR, e);
-        } catch (JSONException e) {
-            throw new FatalException(Type.INTERNAL_ERROR, e);
-        }
+		// get API version
+		JSONObject result;
+		try {
+			result = _queryBuffer("apiinfo.version", new JSONObject());
+			if (result == null) {
+				mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_1_3);
+			} else {
+				apiVersion = result.getString("result");
+				if(apiVersion.equals("1.4")){
+					mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_1_4);
+				}else if(apiVersion.startsWith("2.4")){
+					mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_GT_2_4);
+				}else if(apiVersion.startsWith("2")){
+					mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_2_0_TO_2_3);
+				}else{
+					mPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_1_3);
+				}
+			}
+			Log.i(TAG, "Zabbix API Version: " + apiVersion);
+		} catch (IOException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		} catch (JSONException e) {
+			throw new FatalException(Type.INTERNAL_ERROR, e);
+		}
 
 		String token = null;
 		try {
-            String method = getAuthenticationMethod();
-            result = _queryBuffer(method,
+			String method = getAuthenticationMethod();
+			result = _queryBuffer(method,
 					new JSONObject().put("user", user)
 							.put("password", password));
 			token = result.getString("result");
@@ -461,8 +461,8 @@ public class ZabbixRemoteAPI {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
 		if (token != null) {
-            // persist token
-            mZabbixAuthToken = token;
+			// persist token
+			mZabbixAuthToken = token;
 		} else {
 			throw new ZabbixLoginRequiredException();
 		}
@@ -701,11 +701,11 @@ public class ZabbixRemoteAPI {
 					.put("time_from",
 							(new Date().getTime() / 1000)
 									- ZabbixConfig.EVENT_GET_TIME_FROM_SHIFT);
-            if(!mPreferences.getZabbixAPIVersion().isGreater2_3()){
-                // in Zabbix version >= 2.4 select_triggers is deprecated
-                params.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectTriggers"
-                    : "select_triggers", "extend");
-            }
+			if(!mPreferences.getZabbixAPIVersion().isGreater2_3()){
+				// in Zabbix version >= 2.4 select_triggers is deprecated
+				params.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectTriggers"
+					: "select_triggers", "extend");
+			}
 			if (!mPreferences.getZabbixAPIVersion().isGreater1_4()) {
 				// in Zabbix version <2.0, this is not default
 				params.put("sortfield", "clock").put("sortorder", "DESC");
@@ -819,21 +819,21 @@ public class ZabbixRemoteAPI {
 					// milliseconds
 					e.setClock(Long.parseLong(eventReader.getText()) * 1000);
 				} else if (propName.equals(Event.COLUMN_OBJECT_ID)) {
-                    long objectId = Long.parseLong(eventReader.getText());
-                    e.setObjectId(objectId);
-                    // in API version 2.4 triggers are no longer sent with the event
-                    // -> the trigger ID (if available) is given in the field object ID, so we use
-                    // that one
-                    // Note: we should actually check the field object for the type of referenced
-                    // object (https://www.zabbix.com/documentation/2.4/manual/api/reference/event/object),
-                    // but since the IDs are unique and this would be a major inconvenience using
-                    // the currently used method of JSON parsing, we keep it simple for now.
-                    if(mPreferences.getZabbixAPIVersion().isGreater2_3()){
-                        Trigger t = new Trigger();
-                        t.setId(objectId);
-                        e.setTrigger(t);
-                        triggerIds.add(objectId);
-                    }
+					long objectId = Long.parseLong(eventReader.getText());
+					e.setObjectId(objectId);
+					// in API version 2.4 triggers are no longer sent with the event
+					// -> the trigger ID (if available) is given in the field object ID, so we use
+					// that one
+					// Note: we should actually check the field object for the type of referenced
+					// object (https://www.zabbix.com/documentation/2.4/manual/api/reference/event/object),
+					// but since the IDs are unique and this would be a major inconvenience using
+					// the currently used method of JSON parsing, we keep it simple for now.
+					if(mPreferences.getZabbixAPIVersion().isGreater2_3()){
+						Trigger t = new Trigger();
+						t.setId(objectId);
+						e.setTrigger(t);
+						triggerIds.add(objectId);
+					}
 				} else if (propName.equals(Event.COLUMN_ACK)) {
 					e.setAcknowledged(Integer.parseInt(eventReader.getText()) == 1);
 				} else if (propName.equals(Event.COLUMN_VALUE)) {
@@ -1433,27 +1433,27 @@ public class ZabbixRemoteAPI {
 	private void importScreensFromReader(JsonArrayOrObjectReader jsonReader) throws IOException {
 		JsonObjectReader screenReader;
 		ArrayList<Screen> screensCollection = new ArrayList<Screen>(
-                RECORDS_PER_INSERT_BATCH);
+				RECORDS_PER_INSERT_BATCH);
 		ArrayList<Screen> screensComplete = new ArrayList<Screen>();
 		while ((screenReader = jsonReader.next()) != null) {
 			List<ScreenItem> screenItemsCollection = null;
-            Screen screen = new Screen();
-            screen.setZabbixServerId(mCurrentZabbixServerId);
-            while (screenReader.nextValueToken()) {
-                String propName = screenReader.getCurrentName();
-                if (propName.equals(Screen.COLUMN_SCREENID)) {
+			Screen screen = new Screen();
+			screen.setZabbixServerId(mCurrentZabbixServerId);
+			while (screenReader.nextValueToken()) {
+				String propName = screenReader.getCurrentName();
+				if (propName.equals(Screen.COLUMN_SCREENID)) {
 					screen.setScreenId(Long.parseLong(screenReader.getText()));
-                } else if (propName.equals(Screen.COLUMN_NAME)) {
-                    screen.setName(screenReader.getText());
-                } else if (propName.equals("screenitems")) {
+				} else if (propName.equals(Screen.COLUMN_NAME)) {
+					screen.setName(screenReader.getText());
+				} else if (propName.equals("screenitems")) {
 					screenItemsCollection = parseScreenItemsFromStream(screenReader
 							.getJsonArrayOrObjectReader());
 				} else if(propName.equals("hostid")) {
 					screen.setHost(databaseHelper.getHostById(Long.parseLong(screenReader.getText())));
-                } else {
-                    screenReader.nextProperty();
-                }
-            }
+				} else {
+					screenReader.nextProperty();
+				}
+			}
 			if(screenItemsCollection != null) {
 				if(screen.getHost() != null) {
 					for (ScreenItem screenItem : screenItemsCollection) {
@@ -1462,13 +1462,13 @@ public class ZabbixRemoteAPI {
 				}
 				databaseHelper.insertScreenItems(screenItemsCollection);
 			}
-            screensCollection.add(screen);
-            screensComplete.add(screen);
-            if (screensCollection.size() >= RECORDS_PER_INSERT_BATCH) {
-                databaseHelper.insertScreens(screensCollection);
-                screensCollection.clear();
-            }
-        }
+			screensCollection.add(screen);
+			screensComplete.add(screen);
+			if (screensCollection.size() >= RECORDS_PER_INSERT_BATCH) {
+				databaseHelper.insertScreens(screensCollection);
+				screensCollection.clear();
+			}
+		}
 		databaseHelper.insertScreens(screensCollection);
 	}
 
