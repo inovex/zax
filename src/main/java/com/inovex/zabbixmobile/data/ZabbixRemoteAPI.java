@@ -51,21 +51,14 @@ import com.inovex.zabbixmobile.util.HttpClientWrapper;
 import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
-import org.apache.http.NoHttpResponseException;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -80,9 +73,13 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
+import java.io.OutputStreamWriter;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.Socket;
-import java.net.SocketException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -102,7 +99,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -119,8 +115,9 @@ public class ZabbixRemoteAPI {
 	private static final int RECORDS_PER_INSERT_BATCH = 50;
 	private static final String TAG = ZabbixRemoteAPI.class.getSimpleName();
 	private static final String ZABBIX_ACCOUNT_BLOCKED = "Account is blocked for (.*)";
+	private Authenticator httpAuthenticator = null;
 
-    public String getAuthenticationMethod() {
+	public String getAuthenticationMethod() {
         if(mPreferences.getZabbixAPIVersion().isGreater2_3()){
             return "user.login";
         }
@@ -196,7 +193,6 @@ public class ZabbixRemoteAPI {
 	private HttpClientWrapper httpClient;
 	private final DatabaseHelper databaseHelper;
 	private final ZaxServerPreferences mPreferences;
-	private String zabbixUrl;
 	private final Context mContext;
 	/**
 	 * The API version. From 1.8.3 (maybe earlier) to 2.0 (excluded), this was
@@ -235,11 +231,14 @@ public class ZabbixRemoteAPI {
 		// if applicable http auth
 		try {
 			if (mPreferences.isHttpAuthEnabled()) {
-				String user = mPreferences.getHttpAuthUsername();
-				String pwd = mPreferences.getHttpAuthPassword();
-				httpClient.getCredentialsProvider().setCredentials(
-						AuthScope.ANY,
-						new UsernamePasswordCredentials(user, pwd));
+				final String user = mPreferences.getHttpAuthUsername();
+				final String password = mPreferences.getHttpAuthPassword();
+				Authenticator.setDefault(new Authenticator(){
+					@Override
+					protected PasswordAuthentication getPasswordAuthentication() {
+						return new PasswordAuthentication(user, password.toCharArray());
+					}
+				});
 			}
 		} catch (java.lang.UnsupportedOperationException e1) {
 			// for unit test
@@ -308,80 +307,72 @@ public class ZabbixRemoteAPI {
 	 * @throws ZabbixLoginRequiredException
 	 */
 	private JSONObject _queryBuffer(String method, JSONObject params)
-			throws IOException, JSONException, ZabbixLoginRequiredException,
-			FatalException {
-		buildZabbixUrl();
-		validateZabbixUrl();
-		HttpPost post = new HttpPost(zabbixUrl);
-		post.addHeader("Content-Type", "application/json; charset=utf-8");
+			throws IOException, JSONException, ZabbixLoginRequiredException, FatalException {
+		URL zabbixUrl = buildZabbixUrl();
+		validateZabbixUrl(zabbixUrl);
+		// TODO add option to use custom keystore
+		HttpURLConnection connection = (HttpURLConnection) zabbixUrl.openConnection();
+		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+		connection.setDoOutput(true);
+		connection.setDoInput(true);
 
 		String auth = "";
 		if (    mZabbixAuthToken != null
 				&& !method.equals(getAuthenticationMethod())
-                && !method.equals("apiinfo.version")) {
-            auth =" \"auth\" : " + "\"" + mZabbixAuthToken + "\"" + ", ";
-        }
+				&& !method.equals("apiinfo.version")) {
+			auth =" \"auth\" : " + "\"" + mZabbixAuthToken + "\"" + ", ";
+		}
 
-		Log.d(TAG, "queryBuffer: " + zabbixUrl);
-		String json = "{" + "	\"jsonrpc\" : \"2.0\"," + "	\"method\" : \""
-				+ method + "\"," + "	\"params\" : " + params.toString() + ","
-				+ auth + "	\"id\" : 0" + "}";
+		JSONObject json = new JSONObject()
+				.put("jsonrpc", "2.0")
+				.put("method", method)
+				.put("params", params)
+				.put("auth", mZabbixAuthToken)
+				.put("id", 0);
+
+		Log.d(TAG, "queryBuffer: " + zabbixUrl.toString());
 		Log.d(TAG, "queryBuffer: " + json);
 
-		post.setEntity(new StringEntity(json, "UTF-8"));
-		try {
-			HttpResponse resp = httpClient.execute(post);
+//		post.setEntity(new StringEntity(json, "UTF-8"));
+		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
+		outputStreamWriter.write(json.toString());
+		outputStreamWriter.close();
+//		HttpResponse resp = httpClient.execute(post);
 
-			checkHttpStatusCode(resp);
-			StringBuilder total = new StringBuilder();
-			BufferedReader rd = new BufferedReader(new InputStreamReader(resp
-					.getEntity().getContent()));
-			int chr;
-			while ((chr = rd.read()) != -1) {
-				total.append((char) chr);
-			}
-			JSONObject result = new JSONObject(total.toString());
-			try {
-				String errorData;
-				if (result.getJSONObject("error") != null) {
-					errorData = result.getJSONObject("error").getString("data");
-				} else {
-					errorData = result.getString("data");
-				}
-				if (errorData.equals(ZABBIX_ERROR_NO_API_ACCESS)) {
-					throw new FatalException(Type.NO_API_ACCESS);
-				}
-				if (errorData.matches(ZABBIX_ERROR_LOGIN_INCORRECT))
-					throw new FatalException(Type.ZABBIX_LOGIN_INCORRECT);
-				if (errorData.equals(ZABBIX_ERROR_NOT_AUTHORIZED)) {
-					// this should lead to a retry
-					throw new ZabbixLoginRequiredException();
-				}
-				if (errorData.matches(ZABBIX_ACCOUNT_BLOCKED)) {
-					// this should lead to a retry
-					throw new FatalException(Type.ACCOUNT_BLOCKED);
-				}
-				throw new FatalException(Type.INTERNAL_ERROR, errorData);
-			} catch (JSONException e) {
-				// ignore
-			}
-			return result;
-		} catch (SSLPeerUnverifiedException e) {
-			throw new FatalException(Type.HTTPS_CERTIFICATE_NOT_TRUSTED, e);
-		} catch (SocketException e) {
-			throw new FatalException(Type.NO_CONNECTION, e);
-		} catch (NoHttpResponseException e) {
-			throw new FatalException(Type.NO_HTTP_RESPONSE, e);
-		} catch (ConnectTimeoutException e) {
-			throw new FatalException(Type.CONNECTION_TIMEOUT, e);
-		} catch (UnknownHostException e) {
-			throw new FatalException(Type.SERVER_NOT_FOUND, e);
-		} catch (InterruptedIOException e) {
-			// this exception is thrown when the task querying data from Zabbix
-			// is cancelled. The interruption happens by design, so we can
-			// ignore this.
-			return null;
+		int responseCode = connection.getResponseCode();
+		checkHttpStatusCode(responseCode);
+		BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
+		StringBuilder responseStrBuilder = new StringBuilder();
+		String inputStr;
+		while ((inputStr = br.readLine()) != null){
+			responseStrBuilder.append(inputStr);
 		}
+		JSONObject result = new JSONObject(responseStrBuilder.toString());
+		try {
+			String errorData;
+			if (result.getJSONObject("error") != null) {
+				errorData = result.getJSONObject("error").getString("data");
+			} else {
+				errorData = result.getString("data");
+			}
+			if (errorData.equals(ZABBIX_ERROR_NO_API_ACCESS)) {
+				throw new FatalException(Type.NO_API_ACCESS);
+			}
+			if (errorData.matches(ZABBIX_ERROR_LOGIN_INCORRECT))
+				throw new FatalException(Type.ZABBIX_LOGIN_INCORRECT);
+			if (errorData.equals(ZABBIX_ERROR_NOT_AUTHORIZED)) {
+				// this should lead to a retry
+				throw new ZabbixLoginRequiredException();
+			}
+			if (errorData.matches(ZABBIX_ACCOUNT_BLOCKED)) {
+				// this should lead to a retry
+				throw new FatalException(Type.ACCOUNT_BLOCKED);
+			}
+			throw new FatalException(Type.INTERNAL_ERROR, errorData);
+		} catch (JSONException e) {
+			// ignore
+		}
+		return result;
 	}
 
 	/**
@@ -395,89 +386,76 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException
 	 * @throws ZabbixLoginRequiredException
 	 */
-	private JsonArrayOrObjectReader _queryStream(String method,
-			JSONObject params) throws JSONException, IOException,
-			ZabbixLoginRequiredException, FatalException {
+	private JsonArrayOrObjectReader _queryStream(String method, JSONObject params)
+			throws JSONException, IOException, ZabbixLoginRequiredException, FatalException {
 
-		buildZabbixUrl();
-		validateZabbixUrl();
-		// http request
-		HttpPost post = new HttpPost(zabbixUrl);
-		post.addHeader("Content-Type", "application/json; charset=utf-8");
+		URL zabbixUrl = buildZabbixUrl();
+		validateZabbixUrl(zabbixUrl);
+		// TODO add option to use custom keystore
+		HttpURLConnection connection = (HttpURLConnection) zabbixUrl.openConnection();
+		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+		connection.setDoOutput(true);
+		connection.setDoInput(true);
 
-		JSONObject json = new JSONObject().put("jsonrpc", "2.0")
-				.put("method", method).put("params", params)
-				.put("auth", mZabbixAuthToken).put("id", 0);
+		JSONObject json = new JSONObject()
+				.put("jsonrpc", "2.0")
+				.put("method", method)
+				.put("params", params)
+				.put("auth", mZabbixAuthToken)
+				.put("id", 0);
 
 		Log.d(TAG, "_queryStream: " + zabbixUrl);
 		Log.d(TAG, "_queryStream: " + json.toString());
 
-		post.setEntity(new StringEntity(json.toString(), "UTF-8"));
-		try {
-			HttpResponse resp = httpClient.execute(post);
-			checkHttpStatusCode(resp);
+//		post.setEntity(new StringEntity(json.toString(), "UTF-8"));
+		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
+		outputStreamWriter.write(json.toString());
+		outputStreamWriter.close();
 
-			JsonFactory jsonFac = new JsonFactory();
-			JsonParser jp = jsonFac.createParser(resp.getEntity().getContent());
-			// store the last stream to close it if an exception will be thrown
-			if (jp.nextToken() != JsonToken.START_OBJECT) {
-				throw new IOException("Expected data to start with an Object");
-			}
-			do {
-				jp.nextToken();
-				if (jp.getCurrentName().equals("error")) {
-					jp.nextToken();
-					String errortxt = "";
-					while (jp.nextToken() != JsonToken.END_OBJECT) {
-						errortxt += jp.getText();
-					}
-					if (errortxt.contains(ZABBIX_ERROR_NO_API_ACCESS)) {
-						throw new FatalException(Type.NO_API_ACCESS);
-					} else if (errortxt.contains(ZABBIX_ERROR_NOT_AUTHORIZED)) {
-						throw new ZabbixLoginRequiredException();
-					} else {
-						throw new FatalException(Type.INTERNAL_ERROR,errortxt);
-					}
-				}
-			} while (!jp.getCurrentName().equals("result"));
-
-			// result array found
-			if (jp.nextToken() != JsonToken.START_ARRAY
-					&& jp.getCurrentToken() != JsonToken.START_OBJECT) { // go
-																			// inside
-																			// the
-																			// array
-				try {
-					Log.d(TAG, "current token: " + jp.getCurrentToken());
-					Log.d(TAG, "current name: " + jp.getCurrentName());
-					Log.d(TAG, "get text: " + jp.getText());
-					Log.d(TAG, "next value: " + jp.nextValue());
-					Log.d(TAG, "next token: " + jp.nextToken());
-					Log.d(TAG, "current token: " + jp.getCurrentToken());
-					Log.d(TAG, "current name: " + jp.getCurrentName());
-					Log.d(TAG, "get text: " + jp.getText());
-				} catch (Exception e) {
-					throw new IOException(
-							"Expected data to start with an Array");
-				}
-			}
-			return new JsonArrayOrObjectReader(jp);
-		} catch (SSLPeerUnverifiedException e) {
-			throw new FatalException(Type.HTTPS_CERTIFICATE_NOT_TRUSTED, e);
-		} catch (SocketException e) {
-			throw new FatalException(Type.NO_CONNECTION, e);
-		} catch (NoHttpResponseException e) {
-			throw new FatalException(Type.NO_HTTP_RESPONSE, e);
-		} catch (ConnectTimeoutException e) {
-			throw new FatalException(Type.CONNECTION_TIMEOUT, e);
-		} catch (UnknownHostException e) {
-			throw new FatalException(Type.SERVER_NOT_FOUND, e);
-		} catch (InterruptedIOException e) {
-			// this exception is thrown when the task querying data from Zabbix
-			// is cancelled. The interruption happens by design, so we can
-			// ignore this.
-			return null;
+		int responseCode = connection.getResponseCode();
+		checkHttpStatusCode(responseCode);
+		JsonFactory jsonFac = new JsonFactory();
+		JsonParser jp = jsonFac.createParser(connection.getInputStream());
+		// store the last stream to close it if an exception will be thrown
+		if (jp.nextToken() != JsonToken.START_OBJECT) {
+			throw new IOException("Expected data to start with an Object");
 		}
+		do {
+			jp.nextToken();
+			if (jp.getCurrentName().equals("error")) {
+				jp.nextToken();
+				String errortxt = "";
+				while (jp.nextToken() != JsonToken.END_OBJECT) {
+					errortxt += jp.getText();
+				}
+				if (errortxt.contains(ZABBIX_ERROR_NO_API_ACCESS)) {
+					throw new FatalException(Type.NO_API_ACCESS);
+				} else if (errortxt.contains(ZABBIX_ERROR_NOT_AUTHORIZED)) {
+					throw new ZabbixLoginRequiredException();
+				} else {
+					throw new FatalException(Type.INTERNAL_ERROR,errortxt);
+				}
+			}
+		} while (!jp.getCurrentName().equals("result"));
+
+		// result array found
+		if (jp.nextToken() != JsonToken.START_ARRAY
+				&& jp.getCurrentToken() != JsonToken.START_OBJECT) { // go inside the array
+			try {
+				Log.d(TAG, "current token: " + jp.getCurrentToken());
+				Log.d(TAG, "current name: " + jp.getCurrentName());
+				Log.d(TAG, "get text: " + jp.getText());
+				Log.d(TAG, "next value: " + jp.nextValue());
+				Log.d(TAG, "next token: " + jp.nextToken());
+				Log.d(TAG, "current token: " + jp.getCurrentToken());
+				Log.d(TAG, "current name: " + jp.getCurrentName());
+				Log.d(TAG, "get text: " + jp.getText());
+			} catch (Exception e) {
+				throw new IOException(
+						"Expected data to start with an Array");
+			}
+		}
+		return new JsonArrayOrObjectReader(jp);
 	}
 
 	/**
@@ -489,22 +467,19 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException
 	 *             if the status code indicates an error
 	 */
-	private void checkHttpStatusCode(HttpResponse resp) throws FatalException {
-		if (resp.getStatusLine().getStatusCode() == 401) {
+	private void checkHttpStatusCode(int resp) throws FatalException {
+		if (resp == 401) {
 			// http auth failed
 			throw new FatalException(Type.HTTP_AUTHORIZATION_REQUIRED);
-		} else if (resp.getStatusLine().getStatusCode() == 412) {
+		} else if (resp == 412) {
 			// Precondition failed / Looks like Zabbix 1.8.2
 			throw new FatalException(Type.PRECONDITION_FAILED);
-		} else if (resp.getStatusLine().getStatusCode() == 404) {
+		} else if (resp == 404) {
 			// file not found
 			throw new FatalException(Type.SERVER_NOT_FOUND, resp
-					.getStatusLine().getStatusCode()
-					+ " "
-					+ resp.getStatusLine().getReasonPhrase());
+					+ " 404");
 		} else {
-			Log.d(TAG, resp.getStatusLine().getStatusCode() + " "
-					+ resp.getStatusLine().getReasonPhrase());
+			Log.d(TAG, "HTTP Errror " + resp);
 		}
 	}
 
@@ -2007,13 +1982,14 @@ public class ZabbixRemoteAPI {
 	 * Builds the Zabbix URL using the URL set in the preferences and a constant
 	 * suffix
 	 */
-	private void buildZabbixUrl() {
+	private URL buildZabbixUrl() throws MalformedURLException {
 		String url = mPreferences.getZabbixUrl().trim();
 		String prefix = "";
 		if (!url.startsWith("http"))
 			prefix = "http://";
-		this.zabbixUrl = prefix + url + (url.endsWith("/") ? "" : '/')
+		String urlString = prefix + url + (url.endsWith("/") ? "" : '/')
 				+ API_PHP;
+		return new URL(urlString);
 	}
 
 	/**
@@ -2022,16 +1998,18 @@ public class ZabbixRemoteAPI {
 	 * @throws FatalException
 	 *             type SERVER_NOT_FOUND, if the URL is null or equal to the
 	 *             default example URL
+	 * @param zabbixUrl
 	 */
-	private void validateZabbixUrl() throws FatalException {
+	private void validateZabbixUrl(URL zabbixUrl) throws FatalException {
+		String urlString = zabbixUrl.toString();
 		String exampleUrl = mContext.getResources().getString(
 				R.string.url_example)
 				+ (mContext.getResources().getString(R.string.url_example)
 						.endsWith("/") ? "" : '/') + API_PHP;
-		if(!Patterns.WEB_URL.matcher(zabbixUrl).matches()
-				|| zabbixUrl.equals(exampleUrl)
-				|| zabbixUrl.startsWith("https:///") //for default url which is build together
-				|| zabbixUrl.startsWith("http:///")) //for default url which is build together
+		if(!Patterns.WEB_URL.matcher(urlString).matches()
+				|| urlString.equals(exampleUrl)
+				|| urlString.startsWith("https:///") //for default url which is build together
+				|| urlString.startsWith("http:///")) //for default url which is build together
 		{
 			throw new FatalException(Type.SERVER_NOT_FOUND);
 		}
