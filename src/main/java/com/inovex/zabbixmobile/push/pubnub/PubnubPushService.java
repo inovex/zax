@@ -18,6 +18,7 @@ This file is part of ZAX.
 package com.inovex.zabbixmobile.push.pubnub;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -26,8 +27,8 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
@@ -107,11 +108,6 @@ public class PubnubPushService extends Service {
 
 								@Override
 								public void run() {
-//									String message = PubnubPushService.this.getResources()
-//											.getString(R.string.push_connection_success);
-//									// TODO replace toast with Notification
-//									Toast.makeText(PubnubPushService.this, message, Toast.LENGTH_SHORT)
-//										.show();
 									initialConnect = false;
 								}
 
@@ -128,7 +124,7 @@ public class PubnubPushService extends Service {
 					}
 
 					@Override
-					public void errorCallback(String channel, PubnubError error) {
+					public void errorCallback(String channel, final PubnubError error) {
 						Log.i(TAG,
 								"error (" + channel + "): "
 										+ error.getErrorString());
@@ -137,11 +133,14 @@ public class PubnubPushService extends Service {
 
 								@Override
 								public void run() {
-									// TODO replace toast with Notification
-									String message = PubnubPushService.this.getResources()
-											.getString(R.string.push_connection_error);
-									Toast.makeText(PubnubPushService.this,message,Toast.LENGTH_SHORT)
-											.show();
+									NotificationCompat.Builder builder =
+											new NotificationCompat.Builder(PubnubPushService.this);
+									builder.setSmallIcon(R.drawable.problem)
+											.setContentTitle(getResources().getString(R.string.push_connection_error))
+											.setContentText(error.toString());
+									NotificationManager mNotificationManager =
+											(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+									mNotificationManager.notify(1, builder.build());
 									initialConnect = false;
 								}
 
