@@ -19,6 +19,7 @@ package com.inovex.zabbixmobile.data;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.Patterns;
 
@@ -50,22 +51,8 @@ import com.inovex.zabbixmobile.model.ZaxServerPreferences;
 import com.inovex.zabbixmobile.util.HttpClientWrapper;
 import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
+import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
 
-import org.apache.http.HttpVersion;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.params.HttpClientParams;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,16 +65,7 @@ import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
-import java.net.Socket;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -97,10 +75,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 /**
  * This class encapsulates all calls to the Zabbix API.
@@ -115,6 +89,7 @@ public class ZabbixRemoteAPI {
 	private static final int RECORDS_PER_INSERT_BATCH = 50;
 	private static final String TAG = ZabbixRemoteAPI.class.getSimpleName();
 	private static final String ZABBIX_ACCOUNT_BLOCKED = "Account is blocked for (.*)";
+	private boolean useCustomKeystore = false;
 	private Authenticator httpAuthenticator = null;
 
 	public String getAuthenticationMethod() {
@@ -124,45 +99,6 @@ public class ZabbixRemoteAPI {
         return "user.authenticate";
     }
 
-	// TODO replace "allow all"-Trustmanager with one with custom keystore
-    class CustomSSLSocketFactory extends SSLSocketFactory {
-		SSLContext sslContext = SSLContext.getInstance("TLS");
-
-		public CustomSSLSocketFactory(KeyStore truststore)
-				throws NoSuchAlgorithmException, KeyManagementException,
-				KeyStoreException, UnrecoverableKeyException {
-			super(truststore);
-			TrustManager tm = new X509TrustManager() {
-				@Override
-				public void checkClientTrusted(X509Certificate[] chain,
-						String authType) throws CertificateException {
-				}
-
-				@Override
-				public void checkServerTrusted(X509Certificate[] chain,
-						String authType) throws CertificateException {
-				}
-
-				@Override
-				public X509Certificate[] getAcceptedIssuers() {
-					return null;
-				}
-			};
-			sslContext.init(null, new TrustManager[] { tm }, null);
-		}
-
-		@Override
-		public Socket createSocket() throws IOException {
-			return sslContext.getSocketFactory().createSocket();
-		}
-
-		@Override
-		public Socket createSocket(Socket socket, String host, int port,
-				boolean autoClose) throws IOException, UnknownHostException {
-			return sslContext.getSocketFactory().createSocket(socket, host,
-					port, autoClose);
-		}
-	}
 
 	/**
 	 * global constants
@@ -228,6 +164,9 @@ public class ZabbixRemoteAPI {
 			initConnection();
 		}
 
+		if(mPreferences.isTrustAllSSLCA()){
+			this.useCustomKeystore = true;
+		}
 		// if applicable http auth
 		try {
 			if (mPreferences.isHttpAuthEnabled()) {
@@ -249,45 +188,6 @@ public class ZabbixRemoteAPI {
 	}
 
 	protected void initConnection() {
-		ClientConnectionManager ccm = null;
-		HttpParams params = null;
-		try {
-			params = new BasicHttpParams();
-			HttpClientParams.setRedirecting(params, true); // redirecting
-			HttpConnectionParams.setConnectionTimeout(params,
-					ZabbixConfig.HTTP_CONNECTION_TIMEOUT);
-			HttpConnectionParams.setSoTimeout(params,
-					ZabbixConfig.HTTP_SOCKET_TIMEOUT);
-			// TODO: The timeouts do not work properly (neither in the emulator
-			// nor on a real device)
-			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-			SchemeRegistry registry = new SchemeRegistry();
-
-			SSLSocketFactory sf;
-			if (mPreferences.isTrustAllSSLCA()) {
-				KeyStore trustStore = KeyStore.getInstance(KeyStore
-						.getDefaultType());
-				trustStore.load(null, null);
-				sf = new CustomSSLSocketFactory(trustStore);
-				sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-			} else {
-				sf = SSLSocketFactory.getSocketFactory();
-			}
-			registry.register(new Scheme("http", PlainSocketFactory
-					.getSocketFactory(), 80));
-			registry.register(new Scheme("https", sf, 443));
-			ccm = new ThreadSafeClientConnManager(params, registry);
-		} catch (Exception e) {
-			// ignore for unit test
-		}
-
-		if (ccm == null || params == null) {
-			httpClient = new HttpClientWrapper(new DefaultHttpClient());
-		} else {
-			httpClient = new HttpClientWrapper(new DefaultHttpClient(ccm,
-					params));
-		}
 	}
 
 	public Context getContext() {
@@ -308,39 +208,8 @@ public class ZabbixRemoteAPI {
 	 */
 	private JSONObject _queryBuffer(String method, JSONObject params)
 			throws IOException, JSONException, ZabbixLoginRequiredException, FatalException {
-		URL zabbixUrl = buildZabbixUrl();
-		validateZabbixUrl(zabbixUrl);
-		// TODO add option to use custom keystore
-		HttpURLConnection connection = (HttpURLConnection) zabbixUrl.openConnection();
-		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-		connection.setDoOutput(true);
-		connection.setDoInput(true);
+		HttpURLConnection connection = init_query(method, params, "_queryBuffer: ");
 
-		String auth = "";
-		if (    mZabbixAuthToken != null
-				&& !method.equals(getAuthenticationMethod())
-				&& !method.equals("apiinfo.version")) {
-			auth =" \"auth\" : " + "\"" + mZabbixAuthToken + "\"" + ", ";
-		}
-
-		JSONObject json = new JSONObject()
-				.put("jsonrpc", "2.0")
-				.put("method", method)
-				.put("params", params)
-				.put("auth", mZabbixAuthToken)
-				.put("id", 0);
-
-		Log.d(TAG, "queryBuffer: " + zabbixUrl.toString());
-		Log.d(TAG, "queryBuffer: " + json);
-
-//		post.setEntity(new StringEntity(json, "UTF-8"));
-		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
-		outputStreamWriter.write(json.toString());
-		outputStreamWriter.close();
-//		HttpResponse resp = httpClient.execute(post);
-
-		int responseCode = connection.getResponseCode();
-		checkHttpStatusCode(responseCode);
 		BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"utf-8"));
 		StringBuilder responseStrBuilder = new StringBuilder();
 		String inputStr;
@@ -375,6 +244,40 @@ public class ZabbixRemoteAPI {
 		return result;
 	}
 
+	@NonNull
+	private HttpURLConnection init_query(String method, JSONObject params, String queryType) throws FatalException, IOException, JSONException {
+		URL zabbixUrl = buildZabbixUrl();
+		validateZabbixUrl(zabbixUrl);
+		HttpURLConnection connection;
+		if(useCustomKeystore && zabbixUrl.getProtocol().equals("https")){
+			// TODO check certificate when server is configured
+			connection = HttpsUtil.getHttpsUrlConnection(zabbixUrl, true);
+		} else {
+			connection = (HttpURLConnection) zabbixUrl.openConnection();
+		}
+		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+		connection.setDoOutput(true);
+		connection.setDoInput(true);
+
+		JSONObject json = new JSONObject()
+				.put("jsonrpc", "2.0")
+				.put("method", method)
+				.put("params", params)
+				.put("auth", mZabbixAuthToken)
+				.put("id", 0);
+
+		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
+		outputStreamWriter.write(json.toString());
+		outputStreamWriter.close();
+
+		Log.d(TAG, queryType + zabbixUrl);
+		Log.d(TAG, queryType + json);
+
+		int responseCode = connection.getResponseCode();
+		checkHttpStatusCode(responseCode);
+		return connection;
+	}
+
 	/**
 	 * zabbix api call as stream.
 	 *
@@ -388,32 +291,8 @@ public class ZabbixRemoteAPI {
 	 */
 	private JsonArrayOrObjectReader _queryStream(String method, JSONObject params)
 			throws JSONException, IOException, ZabbixLoginRequiredException, FatalException {
+		HttpURLConnection connection = init_query(method, params, "_queryStream: ");
 
-		URL zabbixUrl = buildZabbixUrl();
-		validateZabbixUrl(zabbixUrl);
-		// TODO add option to use custom keystore
-		HttpURLConnection connection = (HttpURLConnection) zabbixUrl.openConnection();
-		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-		connection.setDoOutput(true);
-		connection.setDoInput(true);
-
-		JSONObject json = new JSONObject()
-				.put("jsonrpc", "2.0")
-				.put("method", method)
-				.put("params", params)
-				.put("auth", mZabbixAuthToken)
-				.put("id", 0);
-
-		Log.d(TAG, "_queryStream: " + zabbixUrl);
-		Log.d(TAG, "_queryStream: " + json.toString());
-
-//		post.setEntity(new StringEntity(json.toString(), "UTF-8"));
-		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
-		outputStreamWriter.write(json.toString());
-		outputStreamWriter.close();
-
-		int responseCode = connection.getResponseCode();
-		checkHttpStatusCode(responseCode);
 		JsonFactory jsonFac = new JsonFactory();
 		JsonParser jp = jsonFac.createParser(connection.getInputStream());
 		// store the last stream to close it if an exception will be thrown
@@ -516,8 +395,6 @@ public class ZabbixRemoteAPI {
 			if (eventIdObject != null)
 				return (eventIdObject.length() == 1);
 			return false;
-		} catch (ClientProtocolException e) {
-			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (JSONException e) {
@@ -561,8 +438,6 @@ public class ZabbixRemoteAPI {
                 }
             }
             Log.i(TAG, "Zabbix API Version: " + apiVersion);
-        } catch (ClientProtocolException e) {
-            throw new FatalException(Type.INTERNAL_ERROR, e);
         } catch (IOException e) {
             throw new FatalException(Type.INTERNAL_ERROR, e);
         } catch (JSONException e) {
@@ -582,8 +457,6 @@ public class ZabbixRemoteAPI {
 		} catch (RuntimeException e) {
 			// wrong password. token remains null
 			e.printStackTrace();
-		} catch (ClientProtocolException e) {
-			throw new FatalException(Type.INTERNAL_ERROR, e);
 		} catch (IOException e) {
 			throw new FatalException(Type.INTERNAL_ERROR, e);
 		}
