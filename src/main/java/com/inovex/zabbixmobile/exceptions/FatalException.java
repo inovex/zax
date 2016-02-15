@@ -29,17 +29,17 @@ public class FatalException extends Exception {
 	private static final long serialVersionUID = 80056965825197156L;
 
 	public enum Type {
-		HTTP_AUTHORIZATION_REQUIRED(R.string.exc_http_auth_required), NO_API_ACCESS(
-				R.string.exc_no_api_access), PRECONDITION_FAILED(
-				R.string.exc_precondition_failed), ZABBIX_LOGIN_INCORRECT(
-				R.string.exc_login_incorrect), NO_CONNECTION(
-				R.string.exc_no_connection), CONNECTION_TIMEOUT(
-				R.string.exc_connection_timeout), SERVER_NOT_FOUND(
-				R.string.exc_not_found), INTERNAL_ERROR(
-				R.string.exc_internal_error), ACCOUNT_BLOCKED(
-				R.string.exc_account_blocked), NO_HTTP_RESPONSE(
-				R.string.exc_no_response), HTTPS_CERTIFICATE_NOT_TRUSTED(
-				R.string.exc_https_certificate_not_trusted);
+		HTTP_AUTHORIZATION_REQUIRED(R.string.exc_http_auth_required),
+		NO_API_ACCESS(R.string.exc_no_api_access),
+		PRECONDITION_FAILED(R.string.exc_precondition_failed),
+		ZABBIX_LOGIN_INCORRECT(R.string.exc_login_incorrect),
+		NO_CONNECTION(R.string.exc_no_connection),
+		CONNECTION_TIMEOUT(R.string.exc_connection_timeout),
+		SERVER_NOT_FOUND(R.string.exc_not_found),
+		INTERNAL_ERROR(R.string.exc_internal_error),
+		ACCOUNT_BLOCKED(R.string.exc_account_blocked),
+		NO_HTTP_RESPONSE(R.string.exc_no_response),
+		HTTPS_CERTIFICATE_NOT_TRUSTED(R.string.exc_https_certificate_not_trusted);
 
 		private int messageResourceId;
 
