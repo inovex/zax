@@ -34,6 +34,10 @@ import android.widget.Toast;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.model.ZaxServerPreferences;
+import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * The preference activity.
@@ -172,6 +176,20 @@ public class ZabbixServerPreferenceActivity extends PreferenceActivity implement
 				|| key.equals(ZABBIX_HTTP_AUTH_PASSWORD_KEY)) {
 			activityResult |= PREFERENCES_CHANGED_SERVER;
 		}
+
+		if (key.equals(ZABBIX_URL_KEY)){
+			URL url = null;
+			try {
+				url = new URL(sharedPreferences.getString(ZABBIX_URL_KEY, "http://localhost"));
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+			if(url.getProtocol().equals("https") && sharedPreferences.getBoolean("ask_https",false)){
+				HttpsUtil.checkCertificate(this,url);
+			}
+		}
+
+
 	}
 
 	@Override
