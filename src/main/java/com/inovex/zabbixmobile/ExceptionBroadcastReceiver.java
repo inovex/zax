@@ -34,10 +34,12 @@ public class ExceptionBroadcastReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		String message = intent.getStringExtra(EXTRA_MESSAGE);
-		if (message == null) {
-			message = context.getString(R.string.exc_internal_error);
+//		if (message == null) {
+//			message = context.getString(R.string.exc_internal_error);
+//		}
+		if(message != null){
+			Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 		}
-		Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 	}
 
 }

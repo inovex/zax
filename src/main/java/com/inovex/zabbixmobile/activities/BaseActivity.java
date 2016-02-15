@@ -49,7 +49,6 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.inovex.zabbixmobile.OnSettingsMigratedReceiver;
 import com.inovex.zabbixmobile.R;
@@ -581,9 +580,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			}
 		}
 		if (success) {
-			if (showToast)
-				Toast.makeText(this, R.string.zabbix_login_successful,
-						Toast.LENGTH_LONG).show();
+//			if (showToast)
+//				Toast.makeText(this, R.string.zabbix_login_successful,
+//						Toast.LENGTH_LONG).show();
 			loadData();
 		}
 	}
