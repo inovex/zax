@@ -1385,7 +1385,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		intent.setAction("com.inovex.zabbixmobile.EXCEPTION");
 		intent.putExtra(ExceptionBroadcastReceiver.EXTRA_MESSAGE,
 				mContext.getString(exception.getMessageResourceId()));
-		mContext.sendBroadcast(intent);
+		if(!exception.getType().equals(Type.INTERNAL_ERROR)){
+			mContext.sendBroadcast(intent);
+		}
 		// print stack trace to log
 		exception.printStackTrace();
 	}

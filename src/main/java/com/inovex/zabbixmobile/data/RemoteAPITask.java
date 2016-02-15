@@ -27,6 +27,8 @@ import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 
+import javax.net.ssl.SSLHandshakeException;
+
 /**
  * Represents an asynchronous Zabbix API call. This handles
  * {@link ZabbixLoginRequiredException} by retrying the API call and
@@ -52,10 +54,20 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 			try {
 				retry();
 			} catch (FatalException e1) {
-				handleException(e1);
+				if(e.getCause().getClass().equals(SSLHandshakeException.class)){
+					//TODO handle SSL-Error
+					e.getCause().printStackTrace();
+				} else {
+					handleException(e1);
+				}
 			}
 		} catch (FatalException e) {
-			handleException(e);
+			if(e.getCause().getClass().equals(SSLHandshakeException.class)){
+				//TODO handle SSL-Error
+				e.getCause().printStackTrace();
+			} else {
+				handleException(e);
+			}
 		}
 		return null;
 	}

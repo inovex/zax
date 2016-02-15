@@ -37,10 +37,10 @@ This file is part of ZAX.
             android:title="@string/password" >
         </EditTextPreference>
 
-        <CheckBoxPreference
-            android:key="zabbix_trust_all_ssl_ca"
-            android:summary="@string/trust_all_ssl_certificates_description"
-            android:title="@string/trust_all_ssl_certificates" />
+        <!--<CheckBoxPreference-->
+            <!--android:key="zabbix_trust_all_ssl_ca"-->
+            <!--android:summary="@string/trust_all_ssl_certificates_description"-->
+            <!--android:title="@string/trust_all_ssl_certificates" />-->
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/http_auth" >
         <CheckBoxPreference
