@@ -242,9 +242,9 @@ public class ZabbixRemoteAPI {
 		URL zabbixUrl = buildZabbixUrl();
 		validateZabbixUrl(zabbixUrl);
 		HttpURLConnection connection;
-		if(useCustomKeystore && zabbixUrl.getProtocol().equals("https")){
+		if(zabbixUrl.getProtocol().equals("https")){
 			// TODO check certificate when server is configured
-			connection = HttpsUtil.getHttpsUrlConnection(zabbixUrl, true);
+			connection = HttpsUtil.getHttpsUrlConnection(zabbixUrl, useCustomKeystore);
 		} else {
 			connection = (HttpURLConnection) zabbixUrl.openConnection();
 		}
@@ -256,8 +256,10 @@ public class ZabbixRemoteAPI {
 				.put("jsonrpc", "2.0")
 				.put("method", method)
 				.put("params", params)
-				.put("auth", mZabbixAuthToken)
 				.put("id", 0);
+		if(!method.equals("apiinfo.version")){
+			json.put("auth", mZabbixAuthToken);
+		}
 
 		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream());
 		outputStreamWriter.write(json.toString());
@@ -1673,7 +1675,7 @@ public class ZabbixRemoteAPI {
 			params.put("output", "extend")
 					.put("sortfield", "lastchange")
 					.put("sortorder", "desc")
-                    // TODO: selectHosts is deprecated since 2.4
+					// TODO: selectHosts is deprecated since 2.4
 					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectHosts"
 							: "select_hosts", "refer")
 					.put(mPreferences.getZabbixAPIVersion().isGreater1_4() ? "selectGroups"

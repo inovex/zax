@@ -28,11 +28,6 @@ import javax.net.ssl.TrustManager;
 public class HttpsUtil {
 
 	private static final String TAG = "HttpsUtil";
-	private static final String IPADDRESS_PATTERN =
-		"^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 
 	public static HttpsURLConnection getHttpsUrlConnection(URL url) throws IOException {
 		return HttpsUtil.getHttpsUrlConnection(url,false);
@@ -97,8 +92,11 @@ public class HttpsUtil {
 					connection.setRequestMethod("GET");
 					int responseCode = connection.getResponseCode();
 				} catch (SSLHandshakeException e){
-					final X509Certificate[] chain = ((CertificateChainException) e.getCause()).getmCertChain();
-					return chain;
+					if(e.getCause().getClass().equals(CertificateChainException.class)){
+						final X509Certificate[] chain = ((CertificateChainException) e.getCause()).getmCertChain();
+						return chain;
+					}
+					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (ClassCastException e){
