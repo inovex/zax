@@ -60,6 +60,7 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.pubnub.PubnubPushService;
+import com.inovex.zabbixmobile.util.ssl.LocalKeyStore;
 import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
 
 /**
@@ -400,6 +401,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 		if (mLoginProgress == null) {
 			mLoginProgress = LoginProgressDialogFragment.getInstance();
 		}
+		LocalKeyStore.setKeyStoreDirectory(this.getBaseContext().getDir("keystore", MODE_PRIVATE).getAbsolutePath());
 	}
 
 	/**

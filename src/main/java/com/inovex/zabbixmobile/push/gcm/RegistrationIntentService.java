@@ -9,7 +9,6 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
-import com.inovex.zabbixmobile.util.ssl.LocalKeyStore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,7 +81,7 @@ public class RegistrationIntentService extends IntentService{
 	private boolean sendRegistrationToServer(String token) {
 		Log.d(TAG, "GCM-token: " + token);
 
-		LocalKeyStore.setKeyStoreDirectory(this.getBaseContext().getDir("keystore", MODE_PRIVATE).getAbsolutePath());
+//		LocalKeyStore.setKeyStoreDirectory(this.getBaseContext().getDir("keystore", MODE_PRIVATE).getAbsolutePath());
 
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		String gcm_server_url = sharedPreferences.getString("gcm_server_url", "");
