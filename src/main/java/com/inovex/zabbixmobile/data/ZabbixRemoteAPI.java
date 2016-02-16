@@ -243,7 +243,6 @@ public class ZabbixRemoteAPI {
 		validateZabbixUrl(zabbixUrl);
 		HttpURLConnection connection;
 		if(zabbixUrl.getProtocol().equals("https")){
-			// TODO check certificate when server is configured
 			connection = HttpsUtil.getHttpsUrlConnection(zabbixUrl, useCustomKeystore);
 		} else {
 			connection = (HttpURLConnection) zabbixUrl.openConnection();

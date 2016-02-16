@@ -570,8 +570,6 @@ public class ZabbixDataService extends Service {
 	 * asynchronously. After loading the events, the corresponding adapters are
 	 * updated. If necessary, an import from the Zabbix API is triggered.
 	 *
-	 * @param severity
-	 *            severity of the events to be retrieved
 	 * @param hostGroupId
 	 *            host group id by which the events will be filtered
 	 * @param hostGroupChanged
@@ -909,12 +907,6 @@ public class ZabbixDataService extends Service {
 	 * import from Zabbix is not necessary, because the items have already been
 	 * loaded together with the applications.
 	 *
-	 * @param hostGroupId
-	 *            host group id by which the events will be filtered
-	 * @param hostGroupChanged
-	 *            whether the host group has changed. If this is true, the
-	 *            adapters will be cleared before being filled with entries
-	 *            matching the selected host group.
 	 */
 	public void loadItemsByApplicationId(final long applicationId,
 			final OnItemsLoadedListener callback) {

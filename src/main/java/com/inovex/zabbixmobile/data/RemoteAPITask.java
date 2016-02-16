@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.inovex.zabbixmobile.ExceptionBroadcastReceiver;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
@@ -79,16 +78,6 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 	 *            the exception
 	 */
 	private void handleException(FatalException exception) {
-		exception.printStackTrace();
-		// send broadcast with message depending on the type of exception
-		Context context = api.getContext();
-		Intent intent = new Intent();
-		intent.setAction("com.inovex.zabbixmobile.EXCEPTION");
-		intent.putExtra(ExceptionBroadcastReceiver.EXTRA_MESSAGE,
-				context.getString(exception.getMessageResourceId()));
-		context.sendBroadcast(intent);
-		// print stack trace to log
-		exception.printStackTrace();
 	}
 
 	/**

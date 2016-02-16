@@ -31,7 +31,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
-import com.inovex.zabbixmobile.ExceptionBroadcastReceiver;
 import com.inovex.zabbixmobile.OnSettingsMigratedReceiver;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.exceptions.FatalException;
@@ -1379,15 +1378,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 *            the exception
 	 */
 	private void handleException(FatalException exception) {
-		exception.printStackTrace();
-		// send broadcast with message depending on the type of exception
-		Intent intent = new Intent();
-		intent.setAction("com.inovex.zabbixmobile.EXCEPTION");
-		intent.putExtra(ExceptionBroadcastReceiver.EXTRA_MESSAGE,
-				mContext.getString(exception.getMessageResourceId()));
-		if(!exception.getType().equals(Type.INTERNAL_ERROR)){
-			mContext.sendBroadcast(intent);
-		}
+		// TODO replace ExceptionBroadcastReciever
+//		// send broadcast with message depending on the type of exception
+//		Intent intent = new Intent();
+//		intent.setAction("com.inovex.zabbixmobile.EXCEPTION");
+//		intent.putExtra(ExceptionBroadcastReceiver.EXTRA_MESSAGE,
+//				mContext.getString(exception.getMessageResourceId()));
+//		if(!exception.getType().equals(Type.INTERNAL_ERROR)){
+//			mContext.sendBroadcast(intent);
+//		}
 		// print stack trace to log
 		exception.printStackTrace();
 	}

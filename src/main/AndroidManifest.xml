@@ -80,13 +80,6 @@
             android:name="com.inovex.zabbixmobile.OnSettingsMigratedReceiver"
             android:enabled="true" />
 
-        <receiver
-            android:name="com.inovex.zabbixmobile.ExceptionBroadcastReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.inovex.zabbixmobile.EXCEPTION"/>
-            </intent-filter>
-        </receiver>
         <receiver android:name=".push.pubnub.BootCompletedIntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
