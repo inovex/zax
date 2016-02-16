@@ -125,16 +125,19 @@ public class NotificationService extends Service {
 		String status, message, source;
 		Long triggerid;
 
-		status = intent.getStringExtra("status");
-		message = intent.getStringExtra("message");
-		triggerid = intent.getLongExtra("triggerid", 0);
-		createNotification(status,message,triggerid);
+		if(intent != null){
 
-		source = intent.getStringExtra("source");
-		// only log if we are running in debug mode
-		// http://stackoverflow.com/questions/7022653/how-to-check-programmatically-whether-app-is-running-in-debug-mode-or-not
-		if ( 0 != ( getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE ) ) {
-			logNotification(status, message, triggerid, source);
+			status = intent.getStringExtra("status");
+			message = intent.getStringExtra("message");
+			triggerid = intent.getLongExtra("triggerid", 0);
+			createNotification(status,message,triggerid);
+
+			source = intent.getStringExtra("source");
+			// only log if we are running in debug mode
+			// http://stackoverflow.com/questions/7022653/how-to-check-programmatically-whether-app-is-running-in-debug-mode-or-not
+			if ( 0 != ( getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE ) ) {
+				logNotification(status, message, triggerid, source);
+			}
 		}
 
 		return super.onStartCommand(intent, flags, startId);
