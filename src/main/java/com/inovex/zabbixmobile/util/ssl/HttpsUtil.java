@@ -3,11 +3,11 @@ package com.inovex.zabbixmobile.util.ssl;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import com.inovex.zabbixmobile.exceptions.CertificateChainException;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
 
 import java.io.IOException;
 import java.net.URL;
@@ -110,8 +110,8 @@ public class HttpsUtil {
 			protected void onPostExecute(Object o) {
 				super.onPostExecute(o);
 				final X509Certificate [] chain = (X509Certificate[]) o;
-				boolean ask = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("ask_https", false);
-				if(chain != null && ask){
+				boolean ask = ZaxPreferences.getInstance(context).isAskSSL();
+								if(chain != null && ask){
 					new AlertDialog.Builder(context)
 							.setTitle("Certificate could not be validated")
 									// TODO add more information about the certificate

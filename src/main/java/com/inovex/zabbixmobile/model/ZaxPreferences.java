@@ -127,4 +127,23 @@ public class ZaxPreferences {
 		return mPref.getLong("widget_server_"+mAppWidgetId, -1);
 	}
 
+	public boolean isAskSSL(){
+		return mPref.getBoolean("ask_https", false);
+	}
+
+	public String getGCMSenderID() {
+		return mPref.getString("gcm_sender_id", "");
+	}
+
+	public void setTokenSentToServer(boolean status){
+		mPref.edit().putBoolean("sent_token_to_server",status);
+	}
+
+	public boolean isTokenSentToServer(){
+		return mPref.getBoolean("sent_token_to_server",false);
+	}
+
+	public String getGCMServerUrl() {
+		return mPref.getString("gcm_server_url", "");
+	}
 }

@@ -2,12 +2,11 @@ package com.inovex.zabbixmobile.push.gcm;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
 
 import org.json.JSONException;
@@ -28,6 +27,7 @@ import javax.net.ssl.SSLHandshakeException;
  */
 public class RegistrationIntentService extends IntentService{
 	private static final String TAG = "RegIntentService";
+	private ZaxPreferences mZaxPreferences;
 
 	/**
 	 * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -38,9 +38,9 @@ public class RegistrationIntentService extends IntentService{
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		String gcm_sender_id = sharedPreferences.getString("gcm_sender_id", "");
-		InstanceID instanceID = InstanceID.getInstance(this);;
+		mZaxPreferences = ZaxPreferences.getInstance(this);
+		String gcm_sender_id = mZaxPreferences.getGCMSenderID();
+		InstanceID instanceID = InstanceID.getInstance(this);
 
 		switch(intent.getAction()){
 			case "register":
@@ -52,14 +52,14 @@ public class RegistrationIntentService extends IntentService{
 								GoogleCloudMessaging.INSTANCE_ID_SCOPE,
 								null);
 						if(sendRegistrationToServer(token)){
-							sharedPreferences.edit().putBoolean("sent_token_to_server", true).apply();
+							mZaxPreferences.setTokenSentToServer(true);
 						} else {
 							// TODO retry later
 							Log.d(TAG, "Sending token to server failed");
 						}
 					} catch (IOException e) {
 						Log.d(TAG, "Registration failed", e);
-						sharedPreferences.edit().putBoolean("sent_token_to_server", false).apply();
+						mZaxPreferences.setTokenSentToServer(false);
 					}
 				} else {
 					handleMissingConfiguration("sender_id");
@@ -69,7 +69,7 @@ public class RegistrationIntentService extends IntentService{
 				try {
 					if(gcm_sender_id != null && gcm_sender_id.length() > 0){
 						instanceID.deleteToken(gcm_sender_id, GoogleCloudMessaging.INSTANCE_ID_SCOPE);
-						sharedPreferences.edit().putBoolean("sent_token_to_server", false).apply();
+						mZaxPreferences.setTokenSentToServer(false);
 					}
 				} catch (IOException e) {
 					Log.d(TAG,"unregister failed",e);
@@ -81,10 +81,7 @@ public class RegistrationIntentService extends IntentService{
 	private boolean sendRegistrationToServer(String token) {
 		Log.d(TAG, "GCM-token: " + token);
 
-//		LocalKeyStore.setKeyStoreDirectory(this.getBaseContext().getDir("keystore", MODE_PRIVATE).getAbsolutePath());
-
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		String gcm_server_url = sharedPreferences.getString("gcm_server_url", "");
+		String gcm_server_url = mZaxPreferences.getGCMServerUrl();
 		if(gcm_server_url.equals("")){
 			handleMissingConfiguration("server_url");
 		} else {
