@@ -3,6 +3,7 @@ package com.inovex.zabbixmobile.util.ssl;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
@@ -109,22 +110,29 @@ public class HttpsUtil {
 			protected void onPostExecute(Object o) {
 				super.onPostExecute(o);
 				final X509Certificate [] chain = (X509Certificate[]) o;
-				if(chain != null){
+				boolean ask = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("ask_https", false);
+				if(chain != null && ask){
 					new AlertDialog.Builder(context)
 							.setTitle("Certificate could not be validated")
 									// TODO add more information about the certificate
 							.setMessage(getChainInfo(chain))
 							.setCancelable(true)
-							.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+							.setPositiveButton("Trust", new DialogInterface.OnClickListener() {
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
 									TrustManagerFactory.get(url.getHost(), url.getPort()).addTrustedCertificate(chain[0]);
 								}
 							})
-							.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+							.setNeutralButton("Ignore", new DialogInterface.OnClickListener() {
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
-									// Do nothing
+									// do nothing
+								}
+							})
+							.setNegativeButton("Don't ask again", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									// TODO add to ignore list
 								}
 							})
 							.show();

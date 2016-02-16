@@ -17,14 +17,19 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.data;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 
+import com.inovex.zabbixmobile.activities.BaseActivity;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
+
+import java.net.MalformedURLException;
 
 import javax.net.ssl.SSLHandshakeException;
 
@@ -39,9 +44,11 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 
 	private static final String TAG = RemoteAPITask.class.getSimpleName();
 	private final ZabbixRemoteAPI api;
+	private Messenger messenger = null;
 
-	public RemoteAPITask(ZabbixRemoteAPI api) {
+	public RemoteAPITask(ZabbixRemoteAPI api, Messenger messenger) {
 		this.api = api;
+		this.messenger = messenger;
 	}
 
 	@Override
@@ -54,16 +61,14 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 				retry();
 			} catch (FatalException e1) {
 				if(e.getCause().getClass().equals(SSLHandshakeException.class)){
-					//TODO handle SSL-Error
-					e.getCause().printStackTrace();
+					handleException(new FatalException(Type.HTTPS_CERTIFICATE_NOT_TRUSTED, e.getCause()));
 				} else {
 					handleException(e1);
 				}
 			}
 		} catch (FatalException e) {
-			if(e.getCause().getClass().equals(SSLHandshakeException.class)){
-				//TODO handle SSL-Error
-				e.getCause().printStackTrace();
+			if(e.getCause() != null && e.getCause().getClass().equals(SSLHandshakeException.class)){
+				handleException(new FatalException(Type.HTTPS_CERTIFICATE_NOT_TRUSTED,e.getCause()));
 			} else {
 				handleException(e);
 			}
@@ -78,6 +83,30 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 	 *            the exception
 	 */
 	private void handleException(FatalException exception) {
+		if(exception.getType().equals(Type.HTTPS_CERTIFICATE_NOT_TRUSTED)){
+			if(messenger != null){
+
+				Message msg = Message.obtain(null, BaseActivity.MESSAGE_SSL_ERROR);
+				msg.obj = exception.getCause();
+				Bundle bundle = new Bundle();
+				try {
+					bundle.putString("url", api.buildZabbixUrl().toString());
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+				msg.setData(bundle);
+				try {
+					messenger.send(msg);
+				} catch (RemoteException e) {
+					// target doesn't exist anymore, TODO maybe use notification
+				}
+			} else {
+				// no messenger, TODO maybe use notification
+			}
+		} else {
+			// print stack trace to log
+			exception.printStackTrace();
+		}
 	}
 
 	/**
