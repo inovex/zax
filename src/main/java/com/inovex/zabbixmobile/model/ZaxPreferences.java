@@ -127,10 +127,6 @@ public class ZaxPreferences {
 		return mPref.getLong("widget_server_"+mAppWidgetId, -1);
 	}
 
-	public boolean isAskSSL(){
-		return mPref.getBoolean("ask_https", false);
-	}
-
 	public String getGCMSenderID() {
 		return mPref.getString("gcm_sender_id", "");
 	}

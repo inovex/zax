@@ -160,8 +160,6 @@ public class ZabbixRemoteAPI {
 
 		mZaxPreferences = ZaxPreferences.getInstance(context);
 
-		this.useCustomKeystore = mZaxPreferences.isAskSSL();
-
 		// if applicable http auth
 		try {
 			if (mServerPreferences.isHttpAuthEnabled()) {

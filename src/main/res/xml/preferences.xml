@@ -18,17 +18,6 @@ This file is part of ZAX.
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="Security">
-        <CheckBoxPreference
-            android:key="ask_https"
-            android:title="Ask to trust SSL-Certificates"
-            android:summary="ask to manually trust SSL-Certificates that could not be verified">
-        </CheckBoxPreference>
-        <Preference android:title="Reset Keystore"
-                    android:key="reset_keystore">
-        </Preference>
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="Push Notifications">
         <RingtonePreference
             android:key="push_ringtone"
