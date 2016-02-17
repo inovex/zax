@@ -349,7 +349,7 @@ public class ZabbixRemoteAPI {
 			throw new FatalException(Type.SERVER_NOT_FOUND, resp
 					+ " 404");
 		} else {
-			Log.d(TAG, "HTTP Errror " + resp);
+			Log.d(TAG, "HTTP Status " + resp);
 		}
 	}
 
