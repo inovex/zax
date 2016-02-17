@@ -894,7 +894,9 @@ public class ZabbixDataService extends Service {
 			@Override
 			protected void onProgressUpdate(Integer... values) {
 				super.onProgressUpdate(values);
-				Log.d(TAG, "progress: " + values[0]);
+				if(values[0] % 10 == 0){
+					Log.d(TAG, "progress: " + values[0]);
+				}
 				if (callback != null)
 					callback.onApplicationsProgressUpdate(values[0]);
 			}
