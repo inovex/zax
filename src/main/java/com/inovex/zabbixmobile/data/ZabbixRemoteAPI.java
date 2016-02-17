@@ -51,7 +51,6 @@ import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.model.ZaxServerPreferences;
 import com.inovex.zabbixmobile.util.JsonArrayOrObjectReader;
 import com.inovex.zabbixmobile.util.JsonObjectReader;
-import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -76,6 +75,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * This class encapsulates all calls to the Zabbix API.
@@ -242,12 +243,8 @@ public class ZabbixRemoteAPI {
 	private HttpURLConnection init_query(String method, JSONObject params, String queryType) throws FatalException, IOException, JSONException {
 		URL zabbixUrl = buildZabbixUrl();
 		validateZabbixUrl(zabbixUrl);
-		HttpURLConnection connection;
-		if(zabbixUrl.getProtocol().equals("https")){
-			connection = HttpsUtil.getHttpsUrlConnection(zabbixUrl, useCustomKeystore);
-		} else {
-			connection = (HttpURLConnection) zabbixUrl.openConnection();
-		}
+		HttpsURLConnection connection;
+		connection = (HttpsURLConnection) zabbixUrl.openConnection();
 		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
 		connection.setDoOutput(true);
 		connection.setDoInput(true);

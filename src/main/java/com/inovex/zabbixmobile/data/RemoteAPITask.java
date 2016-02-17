@@ -31,8 +31,6 @@ import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
 
 import java.net.MalformedURLException;
 
-import javax.net.ssl.SSLHandshakeException;
-
 /**
  * Represents an asynchronous Zabbix API call. This handles
  * {@link ZabbixLoginRequiredException} by retrying the API call and
@@ -46,7 +44,7 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 	private final ZabbixRemoteAPI api;
 	private Messenger messenger = null;
 
-	public RemoteAPITask(ZabbixRemoteAPI api, Messenger messenger) {
+	public RemoteAPITask(ZabbixRemoteAPI api) {
 		this.api = api;
 		this.messenger = messenger;
 	}
@@ -60,18 +58,10 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 			try {
 				retry();
 			} catch (FatalException e1) {
-				if(e.getCause().getClass().equals(SSLHandshakeException.class)){
-					handleException(new FatalException(Type.HTTPS_CERTIFICATE_NOT_TRUSTED, e.getCause()));
-				} else {
-					handleException(e1);
-				}
+				handleException(e1);
 			}
 		} catch (FatalException e) {
-			if(e.getCause() != null && e.getCause().getClass().equals(SSLHandshakeException.class)){
-				handleException(new FatalException(Type.HTTPS_CERTIFICATE_NOT_TRUSTED,e.getCause()));
-			} else {
-				handleException(e);
-			}
+			handleException(new FatalException(Type.HTTPS_CERTIFICATE_NOT_TRUSTED,e.getCause()));
 		}
 		return null;
 	}

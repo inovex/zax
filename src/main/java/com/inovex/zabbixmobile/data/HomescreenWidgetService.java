@@ -134,7 +134,7 @@ public class HomescreenWidgetService extends Service {
 			return;
 		}
 
-		importProblemsTask = new RemoteAPITask(mRemoteAPI,null) {
+		importProblemsTask = new RemoteAPITask(mRemoteAPI) {
 
 			private List<Trigger> problems;
 			private boolean error;

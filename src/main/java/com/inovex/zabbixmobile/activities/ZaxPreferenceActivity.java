@@ -25,7 +25,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
@@ -34,18 +33,13 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.gcm.RegistrationIntentService;
 import com.inovex.zabbixmobile.push.pubnub.PubnubPushService;
-import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
 import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * The preference activity.
@@ -85,18 +79,6 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 
 		addPreferencesFromResource(R.xml.preferences);
 
-		Preference reset_keystore = findPreference("reset_keystore");
-		if(reset_keystore != null) {
-			reset_keystore.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-				@Override
-				public boolean onPreferenceClick(Preference preference) {
-					if(!HttpsUtil.clearLocalKeyStore()){
-						Toast.makeText(ZaxPreferenceActivity.this,"Error resetting keystore", Toast.LENGTH_SHORT).show();
-					}
-					return true;
-				}
-			});
-		}
 	}
 
 	@Override
@@ -219,7 +201,6 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 
 					if(dialog == null){ // play services are available
 						if(gcm_sender_id.length() > 0 && gcm_server_url.length() > 0){
-							checkCertificateIfNecessary(sharedPreferences, gcm_server_url);
 							if(!sentTokenToServer){ // if not already registered
 								intent = new Intent(this,RegistrationIntentService.class);
 								intent.setAction("register");
@@ -243,10 +224,6 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 				}
 				break;
 
-			case "gcm_server_url":
-				if(gcm_server_url.startsWith("https://") && sharedPreferences.getBoolean("ask_https",false)){
-					checkServerCertificate(gcm_server_url);
-				}
 			case "gcm_sender_id":
 				getPreferenceManager().findPreference("gcm_sender_id").setSummary(gcm_sender_id);
 				getPreferenceManager().findPreference("gcm_server_url").setSummary(gcm_server_url);
@@ -262,28 +239,6 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 //					showSettingsIncompleteInfo();
 				}
 			break;
-			case "ask_https":
-				checkCertificateIfNecessary(sharedPreferences, gcm_server_url);
-				if(sharedPreferences.getBoolean("ask_https",false)){
-					HttpsUtil.clearLocalKeyStore();
-				}
-				break;
-		}
-	}
-
-	private void checkCertificateIfNecessary(SharedPreferences sharedPreferences, String gcm_server_url) {
-		if(gcm_server_url.startsWith("https://")
-				&& sharedPreferences.getBoolean("ask_https",false)
-				&& sharedPreferences.getBoolean("gcm_push_enabled",false)){
-			checkServerCertificate(gcm_server_url);
-		}
-	}
-
-	private void checkServerCertificate(String gcm_server_url) {
-		try {
-			HttpsUtil.checkCertificate(this,new URL(gcm_server_url));
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
 		}
 	}
 

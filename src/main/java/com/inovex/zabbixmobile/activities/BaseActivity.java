@@ -30,10 +30,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
 import android.preference.PreferenceActivity;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -62,12 +59,16 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
 import com.inovex.zabbixmobile.push.pubnub.PubnubPushService;
-import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
-import com.inovex.zabbixmobile.util.ssl.LocalKeyStore;
 import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.X509TrustManager;
+
+import de.duenndns.ssl.MemorizingTrustManager;
 
 /**
  * Base class for all activities. Tasks performed in this class:
@@ -122,26 +123,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	private ImageButton mServerSelectButton;
 	private View mServerNameLayout;
 
-	private Messenger mMessenger = new Messenger(new Handler(){
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what){
-				case MESSAGE_SSL_ERROR:
-					// TODO create dialog to ask user if he wants to accept certificate
-					try {
-						URL url = new URL(msg.getData().getString("url"));
-						HttpsUtil.checkCertificate(BaseActivity.this,url);
-					} catch (MalformedURLException e) {
-						e.printStackTrace();
-					}
-
-//					HttpsUtil.checkCertificate(this,);
-					break;
-				default:
-					super.handleMessage(msg);
-			}
-		}
-	});
 
 	@Override
 	public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -400,7 +381,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 		boolean useMockData = getIntent().getBooleanExtra(
 				ZabbixDataService.EXTRA_IS_TESTING, false);
 		intent.putExtra(ZabbixDataService.EXTRA_IS_TESTING, useMockData);
-		intent.putExtra("messenger",mMessenger);
 		getApplicationContext().bindService(intent, this,
 				Context.BIND_AUTO_CREATE);
 	}
@@ -430,7 +410,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
 		if (mLoginProgress == null) {
 			mLoginProgress = LoginProgressDialogFragment.getInstance();
 		}
-		LocalKeyStore.setKeyStoreDirectory(this.getBaseContext().getDir("keystore", MODE_PRIVATE).getAbsolutePath());
+
+		try {
+			SSLContext sc = SSLContext.getInstance("TLS");
+			MemorizingTrustManager mtm = new MemorizingTrustManager(this);
+			sc.init(null, new X509TrustManager[] {mtm}, new java.security.SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			HttpsURLConnection.setDefaultHostnameVerifier(
+					mtm.wrapHostnameVerifier(HttpsURLConnection.getDefaultHostnameVerifier()));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (KeyManagementException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -694,6 +686,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			if (mServersListAdapter.getItemId(i) == zabbixServerId) {
 				mServersListAdapter.setCurrentPosition(i);
 				setServerViews(mServersListAdapter.getItem(i).getName());
+				mZabbixDataService.performZabbixLogout();
+				mZabbixDataService.performZabbixLogin(this);
 				break;
 			}
 		}

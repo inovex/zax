@@ -7,7 +7,6 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
-import com.inovex.zabbixmobile.util.ssl.HttpsUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
 
 /**
@@ -87,12 +87,8 @@ public class RegistrationIntentService extends IntentService{
 		} else {
 			try {
 				URL server_url = new URL(gcm_server_url);
-				HttpURLConnection connection;
-				if(server_url.getProtocol().equals("https")){
-					connection = HttpsUtil.getHttpsUrlConnection(server_url,true);
-				} else {
-					connection = (HttpURLConnection) server_url.openConnection();
-				}
+				HttpsURLConnection connection;
+				connection = (HttpsURLConnection) server_url.openConnection();
 				connection.setDoInput(true);
 				connection.setDoOutput(true);
 				connection.setRequestProperty("Content-Type", "application/json");

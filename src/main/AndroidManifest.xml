@@ -67,6 +67,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="de.duenndns.ssl.MemorizingActivity"/>
+
         <service android:name="com.inovex.zabbixmobile.data.ZabbixDataService"/>
 
         <service android:name=".push.NotificationService"
