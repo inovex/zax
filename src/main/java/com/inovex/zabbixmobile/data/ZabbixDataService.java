@@ -95,8 +95,6 @@ import java.util.Set;
  */
 public class ZabbixDataService extends Service {
 
-//	private Messenger messenger;
-
 	public interface OnLoginProgressListener {
 
 		public void onLoginStarted();
