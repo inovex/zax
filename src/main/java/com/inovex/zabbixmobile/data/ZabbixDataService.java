@@ -141,6 +141,7 @@ public class ZabbixDataService extends Service {
 	// Screens
 	private ScreensListAdapter mScreensListAdapter;
 
+	// API-Tasks
 	private Set<RemoteAPITask> mCurrentLoadHistoryDetailsTasks;
 	private RemoteAPITask mCurrentLoadEventsTask;
 	private RemoteAPITask mCurrentLoadProblemsTask;
