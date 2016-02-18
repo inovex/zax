@@ -76,8 +76,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.net.ssl.HttpsURLConnection;
-
 /**
  * This class encapsulates all calls to the Zabbix API.
  *
@@ -241,8 +239,8 @@ public class ZabbixRemoteAPI {
 	private HttpURLConnection init_query(String method, JSONObject params, String queryType) throws FatalException, IOException, JSONException {
 		URL zabbixUrl = buildZabbixUrl();
 		validateZabbixUrl(zabbixUrl);
-		HttpsURLConnection connection;
-		connection = (HttpsURLConnection) zabbixUrl.openConnection();
+		HttpURLConnection connection;
+		connection = (HttpURLConnection) zabbixUrl.openConnection();
 		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
 		connection.setDoOutput(true);
 		connection.setDoInput(true);
