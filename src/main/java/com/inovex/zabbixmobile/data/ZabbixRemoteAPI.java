@@ -418,11 +418,13 @@ public class ZabbixRemoteAPI {
 				apiVersion = result.getString("result");
 				if(apiVersion.equals("1.4")){
 					mServerPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_1_4);
-				}else if(apiVersion.startsWith("2.4")){
-					mServerPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_GT_2_4);
-				}else if(apiVersion.startsWith("2")){
+				} else if(apiVersion.startsWith("2.4")){
+					mServerPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_2_4);
+				}else if(apiVersion.startsWith("2")) {
 					mServerPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_2_0_TO_2_3);
-				}else{
+				} else if (apiVersion.startsWith("3")){
+					mServerPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_GT_3);
+				} else{
 					mServerPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_1_3);
 				}
 			}
