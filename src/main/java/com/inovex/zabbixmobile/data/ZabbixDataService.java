@@ -215,6 +215,9 @@ public class ZabbixDataService extends Service {
 				mDatabaseHelper, mCurrentZabbixServerId, null);
 	}
 
+	public ZabbixServer getServerById(long id){
+		return mDatabaseHelper.getZabbixServerById(id);
+	}
 
 	/**
 	 * Returns the Zabbix server list adapter for the server management

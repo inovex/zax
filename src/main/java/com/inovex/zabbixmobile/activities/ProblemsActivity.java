@@ -140,9 +140,10 @@ public class ProblemsActivity extends BaseSeverityFilterActivity<Trigger> {
 
 	@Override
 	public void refreshData() {
-		if (mZabbixDataService != null) {
+		if (mZabbixDataService != null && mSpinnerAdapter != null) {
 			mZabbixDataService.loadProblemsByHostGroup(
 					mSpinnerAdapter.getCurrentItemId(), false, this);
 		}
+		super.refreshData();
 	}
 }

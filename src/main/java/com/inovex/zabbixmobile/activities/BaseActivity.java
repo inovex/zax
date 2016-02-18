@@ -123,6 +123,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	private TextView mServerNameView;
 	private ImageButton mServerSelectButton;
 	private View mServerNameLayout;
+	private long persistedServerSelection;
 
 
 	@Override
@@ -188,8 +189,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		selectServerItem(id);
 		// persist selection
-		ZaxPreferences.getInstance(getApplicationContext())
-				.setServerSelection(id);
+//		ZaxPreferences.getInstance(getApplicationContext())
+//				.setServerSelection(id);
 		Log.d(TAG, "selected server id=" + id);
 
 		this.refreshData();
@@ -320,6 +321,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	@Override
 	protected void onPause() {
 		super.onPause();
+		ZaxPreferences.getInstance(this).setServerSelection(this.persistedServerSelection);
 		Log.d(TAG, "onPause");
 	}
 
@@ -331,6 +333,11 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	protected void onResume() {
 		super.onResume();
 		Log.d(TAG, "onResume");
+		if(mZabbixDataService != null){
+			this.persistedServerSelection = ZaxPreferences.getInstance(this).getServerSelection();
+			ZabbixServer server = mZabbixDataService.getServerById(this.persistedServerSelection);
+			this.setServerViews(server.getName());
+		}
 		// if the preferences activity has been closed, we check which
 		// preferences have been changed and perform necessary actions
 		if (mPreferencesClosed) {
@@ -682,8 +689,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	}
 
 	public void restoreServerSelection() {
-		long persistedSelection = ZaxPreferences.getInstance(getApplicationContext()).getServerSelection();
-		selectServerItem(persistedSelection);
+		persistedServerSelection = ZaxPreferences.getInstance(getApplicationContext()).getServerSelection();
+		selectServerItem(persistedServerSelection);
 	}
 
 	protected void selectServerItem(long zabbixServerId) {
@@ -691,8 +698,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			if (mServersListAdapter.getItemId(i) == zabbixServerId) {
 				mServersListAdapter.setCurrentPosition(i);
 				setServerViews(mServersListAdapter.getItem(i).getName());
-				mZabbixDataService.performZabbixLogout();
-				mZabbixDataService.performZabbixLogin(this);
+				this.persistedServerSelection = mServersListAdapter.getItem(i).getId();
+				ZaxPreferences.getInstance(this).setServerSelection(persistedServerSelection);
+				this.refreshData();
 				break;
 			}
 		}

@@ -273,6 +273,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return new ArrayList<>();
 	}
 
+	public ZabbixServer getZabbixServerById(long id){
+		try {
+			Dao<ZabbixServer, Long> zbxDao = getDao(ZabbixServer.class);
+			return zbxDao.queryForId(id);
+		} catch (SQLException e) {
+			handleException(new FatalException(Type.INTERNAL_ERROR, e));
+		}
+		return null;
+	}
+
 	/**
 	 * Queries all hosts with the given IDs from the database.
 	 *

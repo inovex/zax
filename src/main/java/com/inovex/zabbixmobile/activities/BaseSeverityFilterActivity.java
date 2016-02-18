@@ -174,7 +174,8 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 
 	@Override
 	public void onSeverityListAdapterProgressUpdate(int progress) {
-		Log.d(TAG, "progress update: " + progress);
+		if(progress % 10 == 0)
+			Log.d(TAG, "progress update: " + progress);
 		mListFragment.updateProgress(progress);
 	}
 
