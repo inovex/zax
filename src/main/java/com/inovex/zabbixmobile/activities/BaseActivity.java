@@ -569,11 +569,17 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	/**
 	 * Clears all cached data and performs a fresh login.
 	 */
-	public void refreshData() {
-		mZabbixDataService.clearAllData();
-		mZabbixDataService.performZabbixLogout();
-		// re-login and load host groups
-		mZabbixDataService.performZabbixLogin(this);
+	public void refreshData(){
+		refreshData(true);
+	}
+
+	public void refreshData(boolean logout) {
+		mZabbixDataService.clearAllData(logout);
+		if(logout){
+			mZabbixDataService.performZabbixLogout();
+			// re-login and load host groups
+			mZabbixDataService.performZabbixLogin(this);
+		}
 	}
 
 	/**
@@ -695,11 +701,14 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
 	protected void selectServerItem(long zabbixServerId) {
 		for (int i = 0; i < mServersListAdapter.getCount(); i++) {
-			if (mServersListAdapter.getItemId(i) == zabbixServerId) {
+			if (mServersListAdapter.getItemId(i) == zabbixServerId
+					&& mServersListAdapter.getItemId(i) != persistedServerSelection) {
 				mServersListAdapter.setCurrentPosition(i);
 				setServerViews(mServersListAdapter.getItem(i).getName());
 				this.persistedServerSelection = mServersListAdapter.getItem(i).getId();
 				ZaxPreferences.getInstance(this).setServerSelection(persistedServerSelection);
+				mZabbixDataService.setZabbixServer(persistedServerSelection);
+//				this.mZabbixDataService.clearAllData(false);
 				this.refreshData();
 				break;
 			}

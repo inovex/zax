@@ -247,4 +247,13 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
 	}
+
+	@Override
+	public void refreshData() {
+		if(this.mListFragment != null)
+			this.mListFragment.showProgressBar();
+		if(this.mDetailsFragment != null)
+			this.mDetailsFragment.showLoadingSpinner();
+		super.refreshData();
+	}
 }

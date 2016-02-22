@@ -89,8 +89,10 @@ public class ZabbixRemoteAPI {
 	private static final int RECORDS_PER_INSERT_BATCH = 50;
 	private static final String TAG = ZabbixRemoteAPI.class.getSimpleName();
 	private static final String ZABBIX_ACCOUNT_BLOCKED = "Account is blocked for (.*)";
+
 	private boolean useCustomKeystore = false;
 	private Authenticator httpAuthenticator = null;
+
 	public String getAuthenticationMethod() {
 		if(mServerPreferences.getZabbixAPIVersion().isGreater2_3()){
 			return "user.login";
@@ -102,8 +104,6 @@ public class ZabbixRemoteAPI {
 	 * global constants
 	 */
 	public class ZabbixConfig {
-
-
 		public static final int APPLICATION_GET_LIMIT = 1000;
 		public static final int EVENTS_GET_LIMIT = 60;
 		public static final int HISTORY_GET_TIME_FROM_SHIFT = 24 * 60 * 60; // -24h

@@ -61,7 +61,7 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 				handleException(e1);
 			}
 		} catch (FatalException e) {
-			handleException(new FatalException(Type.HTTPS_CERTIFICATE_NOT_TRUSTED,e.getCause()));
+			handleException(e);
 		}
 		return null;
 	}

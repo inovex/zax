@@ -152,6 +152,7 @@ public class ZabbixDataService extends Service {
 	private Context mActivityContext;
 	private LayoutInflater mInflater;
 	private ZabbixRemoteAPI mRemoteAPI;
+	private Map<Long,ZabbixRemoteAPI> zabbixAPIs = new HashMap<>();
 	private int mBindings = 0;
 	private long mCurrentZabbixServerId;
 
@@ -175,7 +176,11 @@ public class ZabbixDataService extends Service {
 	/**
 	 * Clears all data in the database and in the adapters.
 	 */
-	public void clearAllData() {
+	public void clearAllData(){
+		this.clearAllData(true);
+	}
+
+	public void clearAllData(boolean logout) {
 
 		Log.d(TAG, "clearing all data");
 
@@ -211,9 +216,13 @@ public class ZabbixDataService extends Service {
 			adapter.notifyDataSetChanged();
 		}
 
-		mRemoteAPI.logout();
-		mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
-				mDatabaseHelper, mCurrentZabbixServerId, null);
+		if(logout){
+			mRemoteAPI.logout();
+			zabbixAPIs.remove(mRemoteAPI);
+			mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
+					mDatabaseHelper, mCurrentZabbixServerId, null);
+			zabbixAPIs.put(mRemoteAPI.getZabbixSeverId(),mRemoteAPI);
+		}
 	}
 
 	public ZabbixServer getServerById(long id){
@@ -459,6 +468,7 @@ public class ZabbixDataService extends Service {
 				mCurrentZabbixServerId = mPreferences.getServerSelection();
 				mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
 						mDatabaseHelper, mCurrentZabbixServerId, null);
+				zabbixAPIs.put(mRemoteAPI.getZabbixSeverId(),mRemoteAPI);
 			}
 		}
 	}
@@ -1320,4 +1330,19 @@ public class ZabbixDataService extends Service {
 		mServersListManagementAdapter.notifyDataSetChanged();
 	}
 
+	public void setZabbixServer(long zabbixServerID){
+		if(mRemoteAPI.getZabbixSeverId() != zabbixServerID){
+			if(zabbixAPIs.containsKey(zabbixServerID)){
+				mRemoteAPI = zabbixAPIs.get(zabbixServerID);
+				Log.d(TAG,"switching to existing API-instance");
+			} else {
+				ZabbixRemoteAPI newZabbixServer = new ZabbixRemoteAPI(this.getApplicationContext(),
+						mDatabaseHelper, mCurrentZabbixServerId, null);
+				zabbixAPIs.put(zabbixServerID,newZabbixServer);
+				mRemoteAPI = newZabbixServer;
+				this.clearAllData(false);
+				Log.d(TAG,"creating new API-instance and switching to it");
+			}
+		}
+	}
 }
