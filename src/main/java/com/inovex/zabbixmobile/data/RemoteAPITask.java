@@ -18,18 +18,11 @@ This file is part of ZAX.
 package com.inovex.zabbixmobile.data;
 
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.util.Log;
 
-import com.inovex.zabbixmobile.activities.BaseActivity;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
-
-import java.net.MalformedURLException;
 
 /**
  * Represents an asynchronous Zabbix API call. This handles
@@ -42,11 +35,9 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 
 	private static final String TAG = RemoteAPITask.class.getSimpleName();
 	private final ZabbixRemoteAPI api;
-	private Messenger messenger = null;
 
 	public RemoteAPITask(ZabbixRemoteAPI api) {
 		this.api = api;
-		this.messenger = messenger;
 	}
 
 	@Override
@@ -58,10 +49,10 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 			try {
 				retry();
 			} catch (FatalException e1) {
-				handleException(e1);
+				e.getCause().printStackTrace();
 			}
 		} catch (FatalException e) {
-			handleException(e);
+			e.getCause().printStackTrace();
 		}
 		return null;
 	}
@@ -73,30 +64,6 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 	 *            the exception
 	 */
 	private void handleException(FatalException exception) {
-		if(exception.getType().equals(Type.HTTPS_CERTIFICATE_NOT_TRUSTED)){
-			if(messenger != null){
-
-				Message msg = Message.obtain(null, BaseActivity.MESSAGE_SSL_ERROR);
-				msg.obj = exception.getCause();
-				Bundle bundle = new Bundle();
-				try {
-					bundle.putString("url", api.buildZabbixUrl().toString());
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
-				}
-				msg.setData(bundle);
-				try {
-					messenger.send(msg);
-				} catch (RemoteException e) {
-					// target doesn't exist anymore, TODO maybe use notification
-				}
-			} else {
-				// no messenger, TODO maybe use notification
-			}
-		} else {
-			// print stack trace to log
-			exception.printStackTrace();
-		}
 	}
 
 	/**
