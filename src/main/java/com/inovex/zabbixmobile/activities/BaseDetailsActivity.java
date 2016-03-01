@@ -32,7 +32,7 @@ import com.inovex.zabbixmobile.model.TriggerSeverity;
  */
 public class BaseDetailsActivity extends BaseHostGroupSpinnerActivity implements OnListItemSelectedListener {
 
-	private BaseSeverityFilterDetailsFragment mDetailsFragment;
+	protected BaseSeverityFilterDetailsFragment mDetailsFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
