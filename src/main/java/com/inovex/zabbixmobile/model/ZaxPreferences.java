@@ -63,8 +63,17 @@ public class ZaxPreferences {
 		return mPref.getBoolean("dark_theme", false);
 	}
 
+	public String getPersistedServerName(){
+		return mPref.getString("server_name", "");
+	}
+
+	public void setPersistedServerName(String name){
+		Editor edit = mPref.edit();
+		edit.putString("server_name",name);
+	}
+
 	public long getServerSelection() {
-		return mPref.getLong("server_selection", 0);
+		return mPref.getLong("server_selection", -1);
 	}
 
 	public void setServerSelection(long selection) {

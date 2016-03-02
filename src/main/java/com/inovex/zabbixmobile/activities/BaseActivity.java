@@ -309,7 +309,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
 		setServerViews(server.getName());
 		mServerSelectButton.setOnClickListener(this);
 		mServerNameLayout.setOnClickListener(this);
-		restoreServerSelection();
+		updateCurrentServerNameView();
+//		restoreServerSelection();
 	}
 
 	@Override
@@ -333,11 +334,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	protected void onResume() {
 		super.onResume();
 		Log.d(TAG, "onResume");
-		if(mZabbixDataService != null){
-			this.persistedServerSelection = ZaxPreferences.getInstance(this).getServerSelection();
-			ZabbixServer server = mZabbixDataService.getServerById(this.persistedServerSelection);
-			this.setServerViews(server.getName());
-		}
+		ZaxPreferences preferences = ZaxPreferences.getInstance(this);
+		this.persistedServerSelection = preferences.getServerSelection();
+		this.setServerViews(preferences.getPersistedServerName());
 		// if the preferences activity has been closed, we check which
 		// preferences have been changed and perform necessary actions
 		if (mPreferencesClosed) {
@@ -378,6 +377,18 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			mPreferencesClosed = false;
 		} else {
 			PubnubPushService.startOrStopPushService(getApplicationContext());
+		}
+		updateCurrentServerNameView();
+	}
+
+	private void updateCurrentServerNameView() {
+		if(mZabbixDataService != null){
+			ZabbixServer server = mZabbixDataService.getServerById(persistedServerSelection);
+			if(server != null){
+				setServerViews(server.getName());
+			} else {
+				Log.d(TAG,"Error: Persisted ServerID was not found!");
+			}
 		}
 	}
 
@@ -706,7 +717,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
 				mServersListAdapter.setCurrentPosition(i);
 				setServerViews(mServersListAdapter.getItem(i).getName());
 				this.persistedServerSelection = mServersListAdapter.getItem(i).getId();
-				ZaxPreferences.getInstance(this).setServerSelection(persistedServerSelection);
+				ZaxPreferences preferences = ZaxPreferences.getInstance(this);
+				preferences.setServerSelection(persistedServerSelection);
+				preferences.setPersistedServerName(mServersListAdapter.getItem(i).getName());
 				mZabbixDataService.setZabbixServer(persistedServerSelection);
 //				this.mZabbixDataService.clearAllData(false);
 				this.refreshData();
