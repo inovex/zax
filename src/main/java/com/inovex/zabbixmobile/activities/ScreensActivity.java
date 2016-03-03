@@ -118,7 +118,7 @@ public class ScreensActivity extends BaseActivity implements
 		if (mFragmentContainer != null && mDetailsFragment.isVisible()) {
 			showListFragment();
 		} else {
-			super.onBackPressed();
+			finish();
 		}
 	}
 
