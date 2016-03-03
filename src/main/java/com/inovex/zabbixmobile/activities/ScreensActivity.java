@@ -113,6 +113,15 @@ public class ScreensActivity extends BaseActivity implements
 		return super.onOptionsItemSelected(item);
 	}
 
+	@Override
+	public void onBackPressed() {
+		if (mFragmentContainer != null && mDetailsFragment.isVisible()) {
+			showListFragment();
+		} else {
+			super.onBackPressed();
+		}
+	}
+
 	protected void showListFragment() {
 		if (mFragmentContainer != null) {
 			FragmentTransaction ft = mFragmentManager.beginTransaction();

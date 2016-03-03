@@ -550,8 +550,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	@Override
 	public void onBackPressed() {
 //        finish();
-		overridePendingTransition(android.R.anim.fade_in,
-				android.R.anim.fade_out);
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		super.onBackPressed();
 	}
 

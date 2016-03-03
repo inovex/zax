@@ -1400,7 +1400,7 @@ public class ZabbixRemoteAPI {
 			if(mServerPreferences.getZabbixAPIVersion().isGreater1_4()) {
 				List<Host> hosts = databaseHelper
 						.getHostsByHostGroup(HostGroup.GROUP_ID_ALL);
-                List<Long> hostIds = new ArrayList<Long>();
+				List<Long> hostIds = new ArrayList<Long>();
 				for(Host host : hosts) {
 					hostIds.add(host.getId());
 				}
