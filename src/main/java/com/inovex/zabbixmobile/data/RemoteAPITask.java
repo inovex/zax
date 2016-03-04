@@ -49,7 +49,11 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 			try {
 				retry();
 			} catch (FatalException e1) {
-				e.getCause().printStackTrace();
+				if(e.getCause() != null){
+					e.getCause().printStackTrace();
+				} else {
+					e.printStackTrace();
+				}
 			}
 		} catch (FatalException e) {
 			if(e.getCause() != null){
