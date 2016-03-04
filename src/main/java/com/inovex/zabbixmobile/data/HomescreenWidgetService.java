@@ -57,9 +57,11 @@ public class HomescreenWidgetService extends Service {
 	public static final String WIDGET_ID = "WIDGET_ID";
 
 	private enum DisplayStatus {
-		ZAX_ERROR(R.drawable.severity_high), OK(R.drawable.ok), AVG(
-				R.drawable.severity_average), HIGH(R.drawable.severity_high), LOADING(
-				R.drawable.icon);
+		ZAX_ERROR(R.drawable.severity_high),
+		OK(R.drawable.ok),
+		AVG(R.drawable.severity_average),
+		HIGH(R.drawable.severity_high),
+		LOADING(R.drawable.icon);
 
 		private final int drawable;
 

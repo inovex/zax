@@ -80,12 +80,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private DatabaseConnection mThreadConnection;
 	private final Context mContext;
 
-	private final Class<?>[] mTables = { Event.class, Trigger.class,
-			Item.class, Host.class, HostGroup.class, Application.class,
-			TriggerHostGroupRelation.class, HostHostGroupRelation.class,
-			ApplicationItemRelation.class, HistoryDetail.class, Screen.class,
-			ScreenItem.class, Graph.class, GraphItem.class, Cache.class,
-			ZabbixServer.class };
+	private final Class<?>[] mTables = {
+			Event.class,
+			Trigger.class,
+			Item.class,
+			Host.class,
+			HostGroup.class,
+			Application.class,
+			TriggerHostGroupRelation.class,
+			HostHostGroupRelation.class,
+			ApplicationItemRelation.class,
+			HistoryDetail.class,
+			Screen.class,
+			ScreenItem.class,
+			Graph.class,
+			GraphItem.class,
+			Cache.class,
+			ZabbixServer.class
+	};
 
 	/**
 	 * Pass-through constructor to be used by subclasses (specifically
