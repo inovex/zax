@@ -40,19 +40,24 @@ public class Event implements Comparable<Event>, Sharable {
 	public static final String COLUMN_ID = "eventid";
 	@DatabaseField(id = true, columnName = COLUMN_ID)
 	long id;
+
 	public static final String COLUMN_OBJECT_ID = "objectid";
 	@DatabaseField(columnName = COLUMN_OBJECT_ID)
 	long objectId;
+
 	public static final String COLUMN_TRIGGER = "triggerid";
 	@DatabaseField(columnName = COLUMN_TRIGGER, canBeNull = true, foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	Trigger trigger;
+
 	// Caution: This is the timestamp in milliseconds!
 	public static final String COLUMN_CLOCK = "clock";
 	@DatabaseField(columnName = COLUMN_CLOCK)
 	long clock;
+
 	public static final String COLUMN_VALUE = "value";
 	@DatabaseField(columnName = COLUMN_VALUE)
 	int value;
+
 	public static final String COLUMN_ACK = "acknowledged";
 	@DatabaseField(columnName = COLUMN_ACK)
 	boolean acknowledged;

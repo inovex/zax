@@ -491,7 +491,7 @@ public class ZabbixDataService extends Service {
 			listener.onLoginStarted();
 
 		// authenticate
-		RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI) {
+		RemoteAPITask loginTask = new RemoteAPITask(mRemoteAPI,this) {
 
 			private boolean success = false;
 			private List<HostGroup> hostGroups;
@@ -600,7 +600,7 @@ public class ZabbixDataService extends Service {
 
 		cancelTask(mCurrentLoadEventsTask);
 
-		mCurrentLoadEventsTask = new RemoteAPITask(mRemoteAPI) {
+		mCurrentLoadEventsTask = new RemoteAPITask(mRemoteAPI,this) {
 
 			private Map<TriggerSeverity, List<Event>> events;
 
@@ -681,7 +681,7 @@ public class ZabbixDataService extends Service {
 			final OnSeverityListAdapterLoadedListener callback) {
 
 		cancelTask(mCurrentLoadProblemsTask);
-		mCurrentLoadProblemsTask = new RemoteAPITask(mRemoteAPI) {
+		mCurrentLoadProblemsTask = new RemoteAPITask(mRemoteAPI,this) {
 
 			private Map<TriggerSeverity, List<Trigger>> triggers;
 
@@ -769,7 +769,7 @@ public class ZabbixDataService extends Service {
 	 */
 	public void loadHostsByHostGroup(final long hostGroupId,
 			final boolean hostGroupChanged, final OnHostsLoadedListener callback) {
-		new RemoteAPITask(mRemoteAPI) {
+		new RemoteAPITask(mRemoteAPI,this) {
 
 			private List<Host> hosts;
 			private final BaseServiceAdapter<Host> hostsAdapter = mHostsListAdapter;
@@ -812,7 +812,7 @@ public class ZabbixDataService extends Service {
 	 *
 	 */
 	public void loadHostsAndHostGroups() {
-		new RemoteAPITask(mRemoteAPI) {
+		new RemoteAPITask(mRemoteAPI,this) {
 
 			private List<HostGroup> hostGroups;
 			private final BaseServiceAdapter<HostGroup> hostGroupsAdapter = mHostGroupsSpinnerAdapter;
@@ -869,7 +869,7 @@ public class ZabbixDataService extends Service {
 			final boolean resetSelection) {
 
 		cancelTask(mCurrentLoadApplicationsTask);
-		mCurrentLoadApplicationsTask = new RemoteAPITask(mRemoteAPI) {
+		mCurrentLoadApplicationsTask = new RemoteAPITask(mRemoteAPI,this) {
 
 			List<Application> applications;
 
@@ -928,7 +928,7 @@ public class ZabbixDataService extends Service {
 	public void loadItemsByApplicationId(final long applicationId,
 			final OnItemsLoadedListener callback) {
 //		cancelTask(mCurrentLoadItemsTask);
-		mCurrentLoadItemsTask = new RemoteAPITask(mRemoteAPI) {
+		mCurrentLoadItemsTask = new RemoteAPITask(mRemoteAPI,this) {
 
 			List<Item> items;
 			Application application;
@@ -1002,7 +1002,7 @@ public class ZabbixDataService extends Service {
 			cancelLoadHistoryDetailsTasks();
 		}
 
-		RemoteAPITask currentTask = new RemoteAPITask(mRemoteAPI) {
+		RemoteAPITask currentTask = new RemoteAPITask(mRemoteAPI,this) {
 
 			List<HistoryDetail> historyDetails;
 
@@ -1048,7 +1048,7 @@ public class ZabbixDataService extends Service {
 	 *
 	 */
 	public void loadScreens(final OnScreensLoadedListener callback) {
-		new RemoteAPITask(mRemoteAPI) {
+		new RemoteAPITask(mRemoteAPI,this) {
 
 			List<Screen> screens;
 
@@ -1089,7 +1089,7 @@ public class ZabbixDataService extends Service {
 	public void loadGraphsByScreen(final Screen screen,
 			final OnGraphsLoadedListener callback) {
 		cancelTask(mCurrentLoadGraphsTask);
-		mCurrentLoadGraphsTask = new RemoteAPITask(mRemoteAPI) {
+		mCurrentLoadGraphsTask = new RemoteAPITask(mRemoteAPI,this) {
 
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
@@ -1148,7 +1148,7 @@ public class ZabbixDataService extends Service {
 	 */
 	public void loadGraph(final Graph graph,
 			final OnGraphsLoadedListener callback) {
-		new RemoteAPITask(mRemoteAPI) {
+		new RemoteAPITask(mRemoteAPI,this) {
 
 			@Override
 			protected void executeTask() throws ZabbixLoginRequiredException,
@@ -1238,7 +1238,7 @@ public class ZabbixDataService extends Service {
 	 */
 	public void acknowledgeEvent(final Event event, final String comment,
 			final OnAcknowledgeEventListener callback) {
-		new RemoteAPITask(mRemoteAPI) {
+		new RemoteAPITask(mRemoteAPI,this) {
 
 			private boolean mSuccess = false;
 

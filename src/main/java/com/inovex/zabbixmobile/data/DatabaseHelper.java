@@ -266,6 +266,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			return hostGroupDao.queryBuilder().where().eq(HostGroup.COLUMN_ZABBIXSERVER_ID, zabbixServerId).query();
 		} catch (SQLException e) {
 			handleException(new FatalException(Type.INTERNAL_ERROR, e));
+		} catch (IllegalStateException e){
+			e.printStackTrace();
 		}
 		return new ArrayList<HostGroup>();
 	}

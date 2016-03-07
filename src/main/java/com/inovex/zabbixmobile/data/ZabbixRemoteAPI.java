@@ -422,7 +422,7 @@ public class ZabbixRemoteAPI {
 					mServerPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_2_4);
 				}else if(apiVersion.startsWith("2")) {
 					mServerPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_2_0_TO_2_3);
-				} else if (apiVersion.startsWith("3") || Integer.getInteger(apiVersion.substring(0,0)) >=3 ){
+				} else if (apiVersion.startsWith("3") || (Character.isDigit(apiVersion.charAt(0)) && Integer.parseInt(apiVersion.substring(0,1)) >=3 )){
 					mServerPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_GT_3);
 				} else{
 					mServerPreferences.setZabbixAPIVersion(ZabbixAPIVersion.API_1_3);
