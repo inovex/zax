@@ -140,4 +140,6 @@ This file is part of ZAX.
     <string name="push_dialog_info">To use Push Notifications, you have to configure your Zabbix server. Please read the Howto at http://inovex.github.io/zax/#howto_push</string>
     <string name="settings_incomplete">Some settings are missing. Push-Notifications might not work.</string>
     <string name="ringtone_ok">Ringtone for OK-Messages</string>
+    <string name="vibrate_desc">Vibrate on Notification</string>
+    <string name="vibrate">Vibrate</string>
 </resources>

@@ -41,6 +41,13 @@ This file is part of ZAX.
             android:title="@string/old_notification_icons" >
         </CheckBoxPreference>
 
+        <CheckBoxPreference
+            android:key="vibrate"
+            android:summary="@string/vibrate_desc"
+            android:title="@string/vibrate"
+            android:defaultValue="true">
+        </CheckBoxPreference>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/push_notifications" >

@@ -151,4 +151,6 @@ public class ZaxPreferences {
 	public String getGCMServerUrl() {
 		return mPref.getString("gcm_server_url", "");
 	}
+
+	public boolean isVibrate() {return mPref.getBoolean("vibrate",true);};
 }

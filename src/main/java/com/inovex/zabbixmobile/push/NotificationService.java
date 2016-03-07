@@ -66,6 +66,7 @@ public class NotificationService extends Service {
 	private int lastRequestCode = 0;
 	private String ringtone;
 	private String okRingtone;
+	private boolean vibrate;
 
 
 	/**
@@ -152,6 +153,7 @@ public class NotificationService extends Service {
 		oldNotificationIcons = preferences.isOldNotificationIcons();
 		ringtone = preferences.getPushRingtone();
 		okRingtone = preferences.getPushOkRingtone();
+		vibrate = preferences.isVibrate();
 
 
 		// Register the notification broadcast receiver.
@@ -269,6 +271,10 @@ public class NotificationService extends Service {
 			// notification
 			// object.
 			notificationBuilder.setStyle(inboxStyle);
+		}
+
+		if(vibrate){
+			notificationBuilder.setDefaults(Notification.DEFAULT_VIBRATE);
 		}
 
 		if (status != null && status.equals("OK")) {
