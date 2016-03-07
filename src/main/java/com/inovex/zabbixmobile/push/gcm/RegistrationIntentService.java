@@ -19,7 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
 
 /**
@@ -87,8 +86,8 @@ public class RegistrationIntentService extends IntentService{
 		} else {
 			try {
 				URL server_url = new URL(gcm_server_url);
-				HttpsURLConnection connection;
-				connection = (HttpsURLConnection) server_url.openConnection();
+				HttpURLConnection connection;
+				connection = (HttpURLConnection) server_url.openConnection();
 				connection.setDoInput(true);
 				connection.setDoOutput(true);
 				connection.setRequestProperty("Content-Type", "application/json");
