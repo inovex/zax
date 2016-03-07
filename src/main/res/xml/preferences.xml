@@ -38,7 +38,8 @@ This file is part of ZAX.
         <CheckBoxPreference
             android:key="push_old_icons"
             android:summary="@string/old_notification_icons_desc"
-            android:title="@string/old_notification_icons" >
+            android:title="@string/old_notification_icons"
+            android:defaultValue="true">
         </CheckBoxPreference>
 
         <CheckBoxPreference
