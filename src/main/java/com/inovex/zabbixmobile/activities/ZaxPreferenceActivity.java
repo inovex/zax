@@ -158,8 +158,8 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 //				if(sharedPreferences.getString("pubnub_push_subscribe_key","").length() == 0){
 //					showSettingsIncompleteInfo();
 //				}
-			case "push_ringtone":
-			case "push_old_icons":
+			case "zabbix_push_ringtone":
+			case "zabbix_push_old_icons":
 				activityResult |= PREFERENCES_CHANGED_PUSH;
 				getPreferenceManager().findPreference("pubnub_push_subscribe_key").setSummary(sharedPreferences.getString("pubnub_push_subscribe_key",""));
 				if (!mPrefs.isPushEnabled()

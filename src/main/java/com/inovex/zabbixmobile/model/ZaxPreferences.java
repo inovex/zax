@@ -108,7 +108,7 @@ public class ZaxPreferences {
 	}
 
 	public boolean isPushEnabled() {
-		return mPref.getBoolean("zabbix_push_enabled", false);
+		return mPref.getBoolean("pubnub_push_enabled", mPref.getBoolean("zabbix_push_enabled",false));
 	}
 
 	public String getPushRingtone() {
@@ -120,7 +120,7 @@ public class ZaxPreferences {
 	}
 
 	public String getPushSubscribeKey() {
-		return mPref.getString("zabbix_push_subscribe_key", "").trim();
+		return mPref.getString("pubnub_push_subscribe_key", mPref.getString("zabbix_push_subscribe_key", "")).trim();
 	}
 
 	public void setWidgetServer(int mAppWidgetId, long id) {
