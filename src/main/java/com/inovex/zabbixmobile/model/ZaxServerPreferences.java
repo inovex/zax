@@ -45,7 +45,6 @@ public class ZaxServerPreferences {
 		edit.putString("zabbix_url", getZabbixUrl());
 		edit.putString("zabbix_username", getUsername());
 		edit.putString("zabbix_password", getPassword());
-		edit.putBoolean("zabbix_trust_all_ssl_ca", isTrustAllSSLCA());
 		edit.putBoolean("http_auth_enabled", isHttpAuthEnabled());
 		edit.putString("http_auth_username", getHttpAuthUsername());
 		edit.putString("http_auth_password", getHttpAuthPassword());
@@ -57,7 +56,6 @@ public class ZaxServerPreferences {
 		edit.putString(serverId + "zabbix_url", mPref.getString("zabbix_url", ""));
 		edit.putString(serverId + "zabbix_username", mPref.getString("zabbix_username", ""));
 		edit.putString(serverId + "zabbix_password", mPref.getString("zabbix_password", ""));
-		edit.putBoolean(serverId + "zabbix_trust_all_ssl_ca", mPref.getBoolean("zabbix_trust_all_ssl_ca", false));
 		edit.putBoolean(serverId + "http_auth_enabled", mPref.getBoolean("http_auth_enabled", false));
 		edit.putString(serverId + "http_auth_username", mPref.getString("http_auth_username", ""));
 		edit.putString(serverId + "http_auth_password", mPref.getString("http_auth_password", ""));
@@ -76,10 +74,6 @@ public class ZaxServerPreferences {
 
 	public String getPassword() {
 		return mPref.getString(serverId + "zabbix_password", "");
-	}
-
-	public boolean isTrustAllSSLCA() {
-		return mPref.getBoolean(serverId + "zabbix_trust_all_ssl_ca", false);
 	}
 
 	public boolean isHttpAuthEnabled() {

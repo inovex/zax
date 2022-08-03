@@ -15,7 +15,7 @@ This file is part of ZAX.
 	along with ZAX.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.inovex.zabbixmobile.push;
+package com.inovex.zabbixmobile.push.pubnub;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -38,7 +38,7 @@ public class PushAlarm extends BroadcastReceiver {
 				.getDefaultSharedPreferences(context);
 		boolean push = prefs.getBoolean("zabbix_push_enabled", false);
 		if (push) {
-			Intent myIntent = new Intent(context, PushService.class);
+			Intent myIntent = new Intent(context, PubnubPushService.class);
 			context.startService(myIntent);
 		}
 	}

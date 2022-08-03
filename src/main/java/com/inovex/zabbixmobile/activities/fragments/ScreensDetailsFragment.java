@@ -17,7 +17,9 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.activities.fragments;
 
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,6 +76,7 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 		if (mProgressBarVisible)
 			showProgressBar();
 		if (mScreen != null)
+			loadGraphs();
 			showGraphs();
 
 	}
@@ -81,7 +84,8 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 	public void setScreen(Screen screen) {
 		this.mScreen = screen;
 		showProgressBar();
-		if (getView() != null) {
+		View view = getView();
+		if (view != null) {
 			loadGraphs();
 		}
 	}
@@ -189,5 +193,11 @@ public class ScreensDetailsFragment extends BaseServiceConnectedFragment
 					R.id.graphs_progress);
 			graphProgress.setProgress(progress);
 		}
+	}
+
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		super.onServiceConnected(name, service);
+		loadGraphs();
 	}
 }

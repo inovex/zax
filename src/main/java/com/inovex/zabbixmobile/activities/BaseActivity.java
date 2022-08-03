@@ -35,6 +35,7 @@ import android.preference.PreferenceActivity;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -49,7 +50,6 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.inovex.zabbixmobile.OnSettingsMigratedReceiver;
 import com.inovex.zabbixmobile.R;
@@ -59,8 +59,17 @@ import com.inovex.zabbixmobile.data.ZabbixDataService.OnLoginProgressListener;
 import com.inovex.zabbixmobile.data.ZabbixDataService.ZabbixDataBinder;
 import com.inovex.zabbixmobile.model.ZabbixServer;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
-import com.inovex.zabbixmobile.push.PushService;
+import com.inovex.zabbixmobile.push.pubnub.PubnubPushService;
 import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
+
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.X509TrustManager;
+
+import de.duenndns.ssl.MemorizingTrustManager;
 
 /**
  * Base class for all activities. Tasks performed in this class:
@@ -107,12 +116,15 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	public static final int ACTIVITY_CHECKS = 2;
 	public static final int ACTIVITY_EVENTS = 1;
 	public static final int ACTIVITY_PROBLEMS = 0;
+	public static final int MESSAGE_SSL_ERROR = 0;
 	private static final String ACTION_FINISH = "com.inovex.zabbixmobile.BaseActivity.ACTION_FINISH";
 	private OnSettingsMigratedReceiver mOnSettingsMigratedReceiver;
 	private BaseServiceAdapter<ZabbixServer> mServersListAdapter;
 	private TextView mServerNameView;
 	private ImageButton mServerSelectButton;
 	private View mServerNameLayout;
+	private long persistedServerSelection;
+
 
 	@Override
 	public boolean onNavigationItemSelected(MenuItem menuItem) {
@@ -177,8 +189,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		selectServerItem(id);
 		// persist selection
-		ZaxPreferences.getInstance(getApplicationContext())
-				.setServerSelection(id);
+//		ZaxPreferences.getInstance(getApplicationContext())
+//				.setServerSelection(id);
 		Log.d(TAG, "selected server id=" + id);
 
 		this.refreshData();
@@ -297,7 +309,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
 		setServerViews(server.getName());
 		mServerSelectButton.setOnClickListener(this);
 		mServerNameLayout.setOnClickListener(this);
-		restoreServerSelection();
+		updateCurrentServerNameView();
+//		restoreServerSelection();
 	}
 
 	@Override
@@ -309,6 +322,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	@Override
 	protected void onPause() {
 		super.onPause();
+		ZaxPreferences.getInstance(this).setServerSelection(this.persistedServerSelection);
 		Log.d(TAG, "onPause");
 	}
 
@@ -320,6 +334,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	protected void onResume() {
 		super.onResume();
 		Log.d(TAG, "onResume");
+		ZaxPreferences preferences = ZaxPreferences.getInstance(this);
+		this.persistedServerSelection = preferences.getServerSelection();
+		this.setServerViews(preferences.getPersistedServerName());
 		// if the preferences activity has been closed, we check which
 		// preferences have been changed and perform necessary actions
 		if (mPreferencesClosed) {
@@ -359,7 +376,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			}
 			mPreferencesClosed = false;
 		} else {
-			PushService.startOrStopPushService(getApplicationContext());
+			PubnubPushService.startOrStopPushService(getApplicationContext());
+		}
+		updateCurrentServerNameView();
+	}
+
+	private void updateCurrentServerNameView() {
+		if(mZabbixDataService != null){
+			ZabbixServer server = mZabbixDataService.getServerById(persistedServerSelection);
+			if(server != null){
+				setServerViews(server.getName());
+			} else {
+				Log.d(TAG,"Error: Persisted ServerID was not found!");
+			}
 		}
 	}
 
@@ -401,6 +430,18 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			mLoginProgress = LoginProgressDialogFragment.getInstance();
 		}
 
+		try {
+			SSLContext sc = SSLContext.getInstance("TLS");
+			MemorizingTrustManager mtm = new MemorizingTrustManager(this);
+			sc.init(null, new X509TrustManager[] {mtm}, new java.security.SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			HttpsURLConnection.setDefaultHostnameVerifier(
+					mtm.wrapHostnameVerifier(HttpsURLConnection.getDefaultHostnameVerifier()));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (KeyManagementException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -509,8 +550,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	@Override
 	public void onBackPressed() {
 //        finish();
-		overridePendingTransition(android.R.anim.fade_in,
-				android.R.anim.fade_out);
+		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		super.onBackPressed();
 	}
 
@@ -539,11 +579,17 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	/**
 	 * Clears all cached data and performs a fresh login.
 	 */
-	public void refreshData() {
-		mZabbixDataService.clearAllData();
-		mZabbixDataService.performZabbixLogout();
-		// re-login and load host groups
-		mZabbixDataService.performZabbixLogin(this);
+	public void refreshData(){
+		refreshData(true);
+	}
+
+	public void refreshData(boolean logout) {
+		mZabbixDataService.clearAllData(logout);
+		if(logout){
+			mZabbixDataService.performZabbixLogout();
+			// re-login and load host groups
+			mZabbixDataService.performZabbixLogin(this);
+		}
 	}
 
 	/**
@@ -559,9 +605,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
 	@Override
 	public void onLoginStarted() {
-		if (!this.isFinishing() && !mOnSaveInstanceStateCalled && !mLoginProgress.isAdded())
-			mLoginProgress.show(getSupportFragmentManager(),
-					LoginProgressDialogFragment.TAG);
+		if (!this.isFinishing() && !mOnSaveInstanceStateCalled && !mLoginProgress.isAdded()) {
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			ft.show(mLoginProgress);
+			ft.commitAllowingStateLoss();
+//			mLoginProgress.show(getSupportFragmentManager(),
+//					LoginProgressDialogFragment.TAG);
+		}
 	}
 
 	@Override
@@ -580,9 +630,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
 			}
 		}
 		if (success) {
-			if (showToast)
-				Toast.makeText(this, R.string.zabbix_login_successful,
-						Toast.LENGTH_LONG).show();
+//			if (showToast)
+//				Toast.makeText(this, R.string.zabbix_login_successful,
+//						Toast.LENGTH_LONG).show();
 			loadData();
 		}
 	}
@@ -655,15 +705,23 @@ public abstract class BaseActivity extends AppCompatActivity implements
 	}
 
 	public void restoreServerSelection() {
-		long persistedSelection = ZaxPreferences.getInstance(getApplicationContext()).getServerSelection();
-		selectServerItem(persistedSelection);
+		persistedServerSelection = ZaxPreferences.getInstance(getApplicationContext()).getServerSelection();
+		selectServerItem(persistedServerSelection);
 	}
 
 	protected void selectServerItem(long zabbixServerId) {
 		for (int i = 0; i < mServersListAdapter.getCount(); i++) {
-			if (mServersListAdapter.getItemId(i) == zabbixServerId) {
+			if (mServersListAdapter.getItemId(i) == zabbixServerId
+					&& mServersListAdapter.getItemId(i) != persistedServerSelection) {
 				mServersListAdapter.setCurrentPosition(i);
 				setServerViews(mServersListAdapter.getItem(i).getName());
+				this.persistedServerSelection = mServersListAdapter.getItem(i).getId();
+				ZaxPreferences preferences = ZaxPreferences.getInstance(this);
+				preferences.setServerSelection(persistedServerSelection);
+				preferences.setPersistedServerName(mServersListAdapter.getItem(i).getName());
+				mZabbixDataService.setZabbixServer(persistedServerSelection);
+//				this.mZabbixDataService.clearAllData(false);
+				this.refreshData();
 				break;
 			}
 		}

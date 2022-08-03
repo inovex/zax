@@ -105,7 +105,7 @@ public class ServersListFragment extends BaseServiceConnectedListFragment {
 	private void deleteServerDialog(final ZabbixServer item) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
 
-		alert.setTitle(R.string.remove);
+		alert.setTitle(R.string.delete);
 		alert.setMessage("Are you sure to remove the server?");
 
 		alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -129,7 +129,7 @@ public class ServersListFragment extends BaseServiceConnectedListFragment {
 	private void changeNameDialog(final ZabbixServer zabbixServer) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
 
-		alert.setTitle(R.string.change_name);
+		alert.setTitle(R.string.rename);
 		alert.setMessage("Type the name of the server");
 
 		// Set an EditText view to get user input

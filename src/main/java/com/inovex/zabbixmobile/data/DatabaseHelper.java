@@ -31,7 +31,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
-import com.inovex.zabbixmobile.ExceptionBroadcastReceiver;
 import com.inovex.zabbixmobile.OnSettingsMigratedReceiver;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.exceptions.FatalException;
@@ -81,12 +80,24 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private DatabaseConnection mThreadConnection;
 	private final Context mContext;
 
-	private final Class<?>[] mTables = { Event.class, Trigger.class,
-			Item.class, Host.class, HostGroup.class, Application.class,
-			TriggerHostGroupRelation.class, HostHostGroupRelation.class,
-			ApplicationItemRelation.class, HistoryDetail.class, Screen.class,
-			ScreenItem.class, Graph.class, GraphItem.class, Cache.class,
-			ZabbixServer.class };
+	private final Class<?>[] mTables = {
+			Event.class,
+			Trigger.class,
+			Item.class,
+			Host.class,
+			HostGroup.class,
+			Application.class,
+			TriggerHostGroupRelation.class,
+			HostHostGroupRelation.class,
+			ApplicationItemRelation.class,
+			HistoryDetail.class,
+			Screen.class,
+			ScreenItem.class,
+			Graph.class,
+			GraphItem.class,
+			Cache.class,
+			ZabbixServer.class
+	};
 
 	/**
 	 * Pass-through constructor to be used by subclasses (specifically
@@ -255,6 +266,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			return hostGroupDao.queryBuilder().where().eq(HostGroup.COLUMN_ZABBIXSERVER_ID, zabbixServerId).query();
 		} catch (SQLException e) {
 			handleException(new FatalException(Type.INTERNAL_ERROR, e));
+		} catch (IllegalStateException e){
+			e.printStackTrace();
 		}
 		return new ArrayList<HostGroup>();
 	}
@@ -272,6 +285,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			handleException(new FatalException(Type.INTERNAL_ERROR, e));
 		}
 		return new ArrayList<>();
+	}
+
+	public ZabbixServer getZabbixServerById(long id){
+		try {
+			Dao<ZabbixServer, Long> zbxDao = getDao(ZabbixServer.class);
+			return zbxDao.queryForId(id);
+		} catch (SQLException e) {
+			handleException(new FatalException(Type.INTERNAL_ERROR, e));
+		}
+		return null;
 	}
 
 	/**
@@ -1379,13 +1402,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 *            the exception
 	 */
 	private void handleException(FatalException exception) {
-		exception.printStackTrace();
-		// send broadcast with message depending on the type of exception
-		Intent intent = new Intent();
-		intent.setAction("com.inovex.zabbixmobile.EXCEPTION");
-		intent.putExtra(ExceptionBroadcastReceiver.EXTRA_MESSAGE,
-				mContext.getString(exception.getMessageResourceId()));
-		mContext.sendBroadcast(intent);
 		// print stack trace to log
 		exception.printStackTrace();
 	}

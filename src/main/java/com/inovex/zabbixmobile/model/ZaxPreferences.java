@@ -63,6 +63,15 @@ public class ZaxPreferences {
 		return mPref.getBoolean("dark_theme", false);
 	}
 
+	public String getPersistedServerName(){
+		return mPref.getString("server_name", "");
+	}
+
+	public void setPersistedServerName(String name){
+		Editor edit = mPref.edit();
+		edit.putString("server_name",name);
+	}
+
 	public long getServerSelection() {
 		return mPref.getLong("server_selection", 0);
 	}
@@ -99,15 +108,19 @@ public class ZaxPreferences {
 	}
 
 	public boolean isPushEnabled() {
-		return mPref.getBoolean("zabbix_push_enabled", false);
+		return mPref.getBoolean("pubnub_push_enabled", mPref.getBoolean("zabbix_push_enabled",false));
 	}
 
 	public String getPushRingtone() {
 		return mPref.getString("zabbix_push_ringtone", null);
 	}
 
+	public String getPushOkRingtone(){
+		return mPref.getString("push_ok_ringtone", null);
+	}
+
 	public String getPushSubscribeKey() {
-		return mPref.getString("zabbix_push_subscribe_key", "").trim();
+		return mPref.getString("pubnub_push_subscribe_key", mPref.getString("zabbix_push_subscribe_key", "")).trim();
 	}
 
 	public void setWidgetServer(int mAppWidgetId, long id) {
@@ -123,4 +136,21 @@ public class ZaxPreferences {
 		return mPref.getLong("widget_server_"+mAppWidgetId, -1);
 	}
 
+	public String getGCMSenderID() {
+		return mPref.getString("gcm_sender_id", "");
+	}
+
+	public void setTokenSentToServer(boolean status){
+		mPref.edit().putBoolean("sent_token_to_server",status);
+	}
+
+	public boolean isTokenSentToServer(){
+		return mPref.getBoolean("sent_token_to_server",false);
+	}
+
+	public String getGCMServerUrl() {
+		return mPref.getString("gcm_server_url", "");
+	}
+
+	public boolean isVibrate() {return mPref.getBoolean("vibrate",true);};
 }

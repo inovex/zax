@@ -15,7 +15,7 @@ This file is part of ZAX.
 	along with ZAX.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.inovex.zabbixmobile.push;
+package com.inovex.zabbixmobile.push.pubnub;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -28,7 +28,7 @@ public class BootCompletedIntentReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		PushService.startOrStopPushService(context);
+		PubnubPushService.startOrStopPushService(context);
 	}
 
 }

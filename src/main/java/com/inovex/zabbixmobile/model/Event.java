@@ -17,18 +17,17 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.model;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-
 import android.content.Context;
 import android.content.res.Resources;
-import android.widget.TextView;
 
 import com.inovex.zabbixmobile.R;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * A simple demonstration object we are creating and persisting to the database.
@@ -41,19 +40,24 @@ public class Event implements Comparable<Event>, Sharable {
 	public static final String COLUMN_ID = "eventid";
 	@DatabaseField(id = true, columnName = COLUMN_ID)
 	long id;
+
 	public static final String COLUMN_OBJECT_ID = "objectid";
 	@DatabaseField(columnName = COLUMN_OBJECT_ID)
 	long objectId;
+
 	public static final String COLUMN_TRIGGER = "triggerid";
 	@DatabaseField(columnName = COLUMN_TRIGGER, canBeNull = true, foreign = true, foreignAutoCreate = true, foreignAutoRefresh = true)
 	Trigger trigger;
+
 	// Caution: This is the timestamp in milliseconds!
 	public static final String COLUMN_CLOCK = "clock";
 	@DatabaseField(columnName = COLUMN_CLOCK)
 	long clock;
+
 	public static final String COLUMN_VALUE = "value";
 	@DatabaseField(columnName = COLUMN_VALUE)
 	int value;
+
 	public static final String COLUMN_ACK = "acknowledged";
 	@DatabaseField(columnName = COLUMN_ACK)
 	boolean acknowledged;
@@ -181,32 +185,36 @@ public class Event implements Comparable<Event>, Sharable {
 
 	@Override
 	public String getSharableString(Context context) {
-		Resources res = context.getResources();
-		StringBuilder sb = new StringBuilder();
-		sb.append(res.getString(R.string.event) + ":\n");
-		Calendar cal = Calendar.getInstance();
-		cal.setTimeInMillis(clock);
-		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
-				SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
-				Locale.getDefault());
-		sb.append("\t" + res.getString(R.string.time) + ": "
-				+ dateFormatter.format(clock) + "\n");
-		sb.append("\t"
-				+ res.getString(R.string.status)
-				+ ": "
-				+ ((value == VALUE_OK) ? res.getString(R.string.ok) : res
-						.getString(R.string.problem)) + "\n");
-		sb.append("\t"
-				+ res.getString(R.string.acknowledged)
-				+ ": "
-				+ (acknowledged ? res.getString(R.string.yes) : res
-						.getString(R.string.no)) + "\n");
+		if(context != null){
+			Resources res = context.getResources();
+			StringBuilder sb = new StringBuilder();
+			sb.append(res.getString(R.string.event) + ":\n");
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(clock);
+			DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance(
+					SimpleDateFormat.SHORT, SimpleDateFormat.SHORT,
+					Locale.getDefault());
+			sb.append("\t" + res.getString(R.string.time) + ": "
+					+ dateFormatter.format(clock) + "\n");
+			sb.append("\t"
+					+ res.getString(R.string.status)
+					+ ": "
+					+ ((value == VALUE_OK) ? res.getString(R.string.ok) : res
+					.getString(R.string.problem)) + "\n");
+			sb.append("\t"
+					+ res.getString(R.string.acknowledged)
+					+ ": "
+					+ (acknowledged ? res.getString(R.string.yes) : res
+					.getString(R.string.no)) + "\n");
 
-		if (trigger != null) {
-			sb.append(trigger.getSharableString(context));
+			if (trigger != null) {
+				sb.append(trigger.getSharableString(context));
+			}
+
+			return sb.toString();
+		} else {
+			return "";
 		}
-
-		return sb.toString();
 	}
 
 }

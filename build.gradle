@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.3.0'
@@ -26,6 +26,9 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-core:2.4.0'
     compile 'com.pubnub:pubnub:3.5.6'
     compile 'com.jjoe64:graphview:3.1.3'
+    compile 'com.google.android.gms:play-services-gcm:8.1.0'
+    compile project(":MemorizingTrustManager")
+
 }
 
 android {
@@ -33,10 +36,10 @@ android {
     buildToolsVersion "23.0.1"
     defaultConfig {
         applicationId "com.inovex.zabbixmobile"
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion 22
-        versionCode 36
-        versionName "2.4.3"
+        versionCode 40
+        versionName "2.5.1"
     }
     lintOptions {
         abortOnError false

@@ -125,9 +125,10 @@ public class EventsActivity extends BaseSeverityFilterActivity<Event> implements
 
 	@Override
 	public void refreshData() {
-		if(mZabbixDataService != null){
+		if(mZabbixDataService != null && mSpinnerAdapter != null){
 			mZabbixDataService.loadEventsByHostGroup(
 					mSpinnerAdapter.getCurrentItemId(), false, this);
 		}
+		super.refreshData();
 	}
 }

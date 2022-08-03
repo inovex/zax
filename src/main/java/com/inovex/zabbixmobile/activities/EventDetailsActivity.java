@@ -18,14 +18,18 @@ This file is part of ZAX.
 package com.inovex.zabbixmobile.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.activities.fragments.BaseSeverityFilterDetailsFragment;
+import com.inovex.zabbixmobile.listeners.OnAcknowledgeEventListener;
+import com.inovex.zabbixmobile.model.Event;
 
 /**
  * Created by felix on 22/09/15.
  */
-public class EventDetailsActivity extends BaseDetailsActivity {
+public class EventDetailsActivity extends BaseDetailsActivity implements OnAcknowledgeEventListener
+{
 
 	private BaseSeverityFilterDetailsFragment mListFragment;
 
@@ -33,5 +37,18 @@ public class EventDetailsActivity extends BaseDetailsActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_events_details);
+	}
+
+	@Override
+	public void acknowledgeEvent(Event event, String comment) {
+		Log.d(TAG, "acknowledgeEvent(" + event + ", " + comment + ")");
+		mZabbixDataService.acknowledgeEvent(event, comment, this);
+	}
+
+	@Override
+	public void onEventAcknowledged() {
+		// this refreshes the action bar menu
+		mDetailsFragment.refreshItemSelection();
+		mDetailsFragment.refreshCurrentItem();
 	}
 }

@@ -24,9 +24,15 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Cache {
 
 	public enum CacheDataType {
-		HOSTGROUP(7 * 24 * 60 * 60), HOST(2 * 24 * 60 * 60), EVENT(2 * 60), TRIGGER(
-				2 * 60), APPLICATION(2 * 24 * 60 * 60), ITEM(4 * 60), HISTORY_DETAILS(
-				4 * 60), GRAPH(2 * 24 * 60 * 60), SCREEN(2 * 24 * 60 * 60);
+		HOSTGROUP(7 * 24 * 60 * 60),
+		HOST(2 * 24 * 60 * 60),
+		EVENT(2 * 60),
+		TRIGGER(2 * 60),
+		APPLICATION(2 * 24 * 60 * 60),
+		ITEM(4 * 60),
+		HISTORY_DETAILS(4 * 60),
+		GRAPH(2 * 24 * 60 * 60),
+		SCREEN(2 * 24 * 60 * 60);
 
 		private final long lifeTime;
 

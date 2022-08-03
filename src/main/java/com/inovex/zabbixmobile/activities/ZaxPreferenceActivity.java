@@ -18,6 +18,7 @@ This file is part of ZAX.
 package com.inovex.zabbixmobile.activities;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,15 +26,19 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.model.ZaxPreferences;
-import com.inovex.zabbixmobile.push.PushService;
+import com.inovex.zabbixmobile.push.gcm.RegistrationIntentService;
+import com.inovex.zabbixmobile.push.pubnub.PubnubPushService;
 import com.inovex.zabbixmobile.widget.WidgetUpdateBroadcastReceiver;
 
 /**
@@ -53,6 +58,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 	private ZaxPreferences mPrefs;
 	private int activityResult = 0;
 	private Toolbar mToolbar;
+	private String TAG = "ZaxPreferenceActivity";
 
 	// We use the deprecated method because it is compatible to old Android
 	// versions.
@@ -72,6 +78,7 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 				activityResult);
 
 		addPreferencesFromResource(R.xml.preferences);
+
 	}
 
 	@Override
@@ -117,6 +124,15 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 	protected void onResume() {
 		super.onResume();
 		mPrefs.registerOnSharedPreferenceChangeListener(this);
+		setPreferenceSummaries();
+	}
+
+	private void setPreferenceSummaries() {
+		PreferenceManager preferenceManager = getPreferenceManager();
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		preferenceManager.findPreference("gcm_sender_id").setSummary(sharedPreferences.getString("gcm_sender_id", ""));
+		preferenceManager.findPreference("gcm_server_url").setSummary(sharedPreferences.getString("gcm_server_url", ""));
+		preferenceManager.findPreference("pubnub_push_subscribe_key").setSummary(sharedPreferences.getString("pubnub_push_subscribe_key", ""));
 	}
 
 	@Override
@@ -128,65 +144,150 @@ public class ZaxPreferenceActivity extends PreferenceActivity implements
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		if (key.equals("zabbix_push_enabled")
-				|| key.equals("zabbix_push_subscribe_key")
-				|| key.equals("zabbix_push_ringtone")
-				|| key.equals("zabbix_push_old_icons")) {
-			activityResult |= PREFERENCES_CHANGED_PUSH;
-			if (!mPrefs.isPushEnabled()
-					|| mPrefs.getPushSubscribeKey().length() > 0) {
-				PushService.startOrStopPushService(getApplicationContext());
-			}
-		}
-		// show hint for pubsub configuration
-		if (key.equals("zabbix_push_enabled") && mPrefs.isPushEnabled()) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(
-					"To use Push Notifications, you have to configure your Zabbix server. Please read the Howto at http://inovex.github.io/zax/#howto_push")
-					.setCancelable(false)
-					.setPositiveButton("View Howto in Browser",
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog,
-										int id) {
-									Intent viewIntent = new Intent(
-											"android.intent.action.VIEW",
-											Uri.parse("http://inovex.github.io/zax/#howto_push"));
-									startActivity(viewIntent);
-								}
-							})
-					.setNegativeButton("Ok",
-							new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog,
-										int id) {
-									dialog.cancel();
-								}
-							});
-			AlertDialog alert = builder.create();
-			alert.show();
-		}
+		Intent intent;
+		String gcm_sender_id = sharedPreferences.getString("gcm_sender_id", "");
+		String gcm_server_url = sharedPreferences.getString("gcm_server_url", "");
+		switch (key){
+			case "pubnub_push_enabled":
+				// show hint for pubsub configuration
+				if (mPrefs.isPushEnabled() && sharedPreferences.getBoolean("show_push_info",true)) {
+					showConfigInfo();
+					sharedPreferences.edit().putBoolean("show_push_info",false).apply();
+				}
+			case "pubnub_push_subscribe_key":
+//				if(sharedPreferences.getString("pubnub_push_subscribe_key","").length() == 0){
+//					showSettingsIncompleteInfo();
+//				}
+			case "zabbix_push_ringtone":
+			case "zabbix_push_old_icons":
+				activityResult |= PREFERENCES_CHANGED_PUSH;
+				getPreferenceManager().findPreference("pubnub_push_subscribe_key").setSummary(sharedPreferences.getString("pubnub_push_subscribe_key",""));
+				if (!mPrefs.isPushEnabled()
+						|| mPrefs.getPushSubscribeKey().length() > 0) {
+					PubnubPushService.startOrStopPushService(getApplicationContext());
+				}
+				break;
 
-		if (key.equals("widget_refresh_interval_mins")) {
-			activityResult |= PREFERENCES_CHANGED_WIDGET;
-			Intent intent = new Intent(getApplicationContext(),
-					WidgetUpdateBroadcastReceiver.class);
-			intent.putExtra(WidgetUpdateBroadcastReceiver.REFRESH_RATE_CHANGED,
-					true);
-			this.sendBroadcast(intent);
-		}
-		if (key.equals("dark_theme")) {
-			activityResult |= PREFERENCES_CHANGED_THEME;
-			// we start a new preference activity with changed theme
-			Intent intent = getIntent();
-			// we have to pass through the result code
-			intent.putExtra(ARG_ACTIVITY_RESULT, activityResult);
-			// finish();
-			startActivityForResult(intent, REQUEST_CODE_PREFERENCES_THEMED);
-			overridePendingTransition(android.R.anim.fade_in,
-					android.R.anim.fade_out);
-		}
+			case "widget_refresh_interval_mins":
+				activityResult |= PREFERENCES_CHANGED_WIDGET;
+				intent = new Intent(getApplicationContext(),
+						WidgetUpdateBroadcastReceiver.class);
+				intent.putExtra(WidgetUpdateBroadcastReceiver.REFRESH_RATE_CHANGED,
+						true);
+				this.sendBroadcast(intent);
+				break;
 
+			case "dark_theme":
+				activityResult |= PREFERENCES_CHANGED_THEME;
+				// we start a new preference activity with changed theme
+				intent = getIntent();
+				// we have to pass through the result code
+				intent.putExtra(ARG_ACTIVITY_RESULT, activityResult);
+				// finish();
+				startActivityForResult(intent, REQUEST_CODE_PREFERENCES_THEMED);
+				overridePendingTransition(android.R.anim.fade_in,
+						android.R.anim.fade_out);
+				break;
+
+			case "gcm_push_enabled":
+				activityResult |= PREFERENCES_CHANGED_PUSH;
+				if(sharedPreferences.getBoolean("gcm_push_enabled",false)){
+					sharedPreferences.edit().putBoolean("show_push_info",false).apply();
+					Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
+							GooglePlayServicesUtil.isGooglePlayServicesAvailable(this)
+							, this, 0);
+					boolean sentTokenToServer =
+							sharedPreferences.getBoolean("sent_token_to_server", false);
+
+					if(dialog == null){ // play services are available
+						if(gcm_sender_id.length() > 0 && gcm_server_url.length() > 0){
+							if(!sentTokenToServer){ // if not already registered
+								intent = new Intent(this,RegistrationIntentService.class);
+								intent.setAction("register");
+								startService(intent);
+							} else {
+								Log.d(TAG, "already sent Token to server");
+							}
+						} else { // at least on of sender_id and server_url are not configured
+							// handled in preference onchangelistener
+						}
+					} else { // show PlayServices unavailable dialog
+						dialog.show();
+					}
+					if(sharedPreferences.getBoolean("show_push_info",true)){
+						showConfigInfo();
+					}
+				} else {
+					intent = new Intent(this,RegistrationIntentService.class);
+					intent.setAction("unregister");
+					startService(intent);
+				}
+				break;
+
+			case "gcm_sender_id":
+				getPreferenceManager().findPreference("gcm_sender_id").setSummary(gcm_sender_id);
+				getPreferenceManager().findPreference("gcm_server_url").setSummary(gcm_server_url);
+				activityResult |= PREFERENCES_CHANGED_PUSH;
+				intent = new Intent(this,RegistrationIntentService.class);
+				intent.setAction("unregister");
+				startService(intent);
+				if(gcm_sender_id.length() > 0 && gcm_server_url.length() > 0){
+					intent = new Intent(this,RegistrationIntentService.class);
+					intent.setAction("register");
+					startService(intent);
+				} else { // configuration incomplete
+//					showSettingsIncompleteInfo();
+				}
+			break;
+		}
+	}
+
+	private void showSettingsIncompleteInfo() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(
+				R.string.settings_incomplete)
+				.setCancelable(false)
+				.setNegativeButton("Ok",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+												int id) {
+								setPreferenceScreen(null);
+								addPreferencesFromResource(R.xml.preferences);
+								setPreferenceSummaries();
+								dialog.cancel();
+							}
+						});
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
+
+	private void showConfigInfo() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(
+				R.string.push_dialog_info)
+				.setCancelable(false)
+				.setPositiveButton("View Howto in Browser",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+												int id) {
+								Intent viewIntent = new Intent(
+										"android.intent.action.VIEW",
+										Uri.parse("http://inovex.github.io/zax/#howto_push"));
+								startActivity(viewIntent);
+							}
+						})
+				.setNegativeButton("Ok",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+												int id) {
+								dialog.cancel();
+							}
+						});
+		AlertDialog alert = builder.create();
+		alert.show();
 	}
 
 	@Override

@@ -18,32 +18,62 @@ This file is part of ZAX.
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory android:title="@string/push_notifications" >
-        <CheckBoxPreference
-            android:key="zabbix_push_enabled"
-            android:title="@string/enabled" >
-        </CheckBoxPreference>
-
-        <EditTextPreference
-            android:dependency="zabbix_push_enabled"
-            android:key="zabbix_push_subscribe_key"
-            android:title="@string/subscribe_key" >
-        </EditTextPreference>
-
+    <PreferenceCategory android:title="Push Notifications">
         <RingtonePreference
-            android:dependency="zabbix_push_enabled"
             android:key="zabbix_push_ringtone"
             android:ringtoneType="notification"
             android:showDefault="true"
             android:showSilent="true"
             android:title="@string/ringtone" >
         </RingtonePreference>
-        
+
+        <RingtonePreference
+            android:key="push_ok_ringtone"
+            android:ringtoneType="notification"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:title="@string/ringtone_ok" >
+        </RingtonePreference>
+
         <CheckBoxPreference
             android:key="zabbix_push_old_icons"
             android:summary="@string/old_notification_icons_desc"
-            android:title="@string/old_notification_icons" >
+            android:title="@string/old_notification_icons"
+            android:defaultValue="true">
         </CheckBoxPreference>
+
+        <CheckBoxPreference
+            android:key="vibrate"
+            android:summary="@string/vibrate_desc"
+            android:title="@string/vibrate"
+            android:defaultValue="true">
+        </CheckBoxPreference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/push_notifications" >
+        <CheckBoxPreference
+            android:key="pubnub_push_enabled"
+            android:title="@string/enabled" >
+        </CheckBoxPreference>
+
+        <EditTextPreference
+            android:key="pubnub_push_subscribe_key"
+            android:title="@string/subscribe_key">
+        </EditTextPreference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/gcm_push_notifications">
+        <CheckBoxPreference
+            android:key="gcm_push_enabled"
+            android:title="Enabled"/>
+        <EditTextPreference
+            android:key="gcm_sender_id"
+            android:title="@string/gcm_sender_id"/>
+        <EditTextPreference
+            android:key="gcm_server_url"
+            android:title="@string/gcm_push_server"/>
     </PreferenceCategory>
     
     <PreferenceCategory android:title="@string/homescreen_widget" >

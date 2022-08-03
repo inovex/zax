@@ -174,7 +174,8 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 
 	@Override
 	public void onSeverityListAdapterProgressUpdate(int progress) {
-		Log.d(TAG, "progress update: " + progress);
+		if(progress % 10 == 0)
+			Log.d(TAG, "progress update: " + progress);
 		mListFragment.updateProgress(progress);
 	}
 
@@ -245,5 +246,14 @@ public abstract class BaseSeverityFilterActivity<T extends Sharable> extends
 		super.onResume();
 		mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 		mDrawerToggle.setDrawerIndicatorEnabled(true);
+	}
+
+	@Override
+	public void refreshData() {
+		if(this.mListFragment != null)
+			this.mListFragment.showProgressBar();
+		if(this.mDetailsFragment != null)
+			this.mDetailsFragment.showLoadingSpinner();
+		super.refreshData();
 	}
 }

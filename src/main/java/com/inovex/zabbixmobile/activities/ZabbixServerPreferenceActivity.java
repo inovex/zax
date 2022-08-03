@@ -54,7 +54,6 @@ public class ZabbixServerPreferenceActivity extends PreferenceActivity implement
 	private static final String ZABBIX_URL_KEY  = "zabbix_url";
 	private static final String ZABBIX_USER_KEY = "zabbix_username";
 	private static final String ZABBIX_PASSWORD_KEY = "zabbix_password";
-	private static final String ZABBIX_TRUST_ALL_SSL_CA_KEY = "zabbix_trust_all_ssl_ca";
 	private static final String ZABBIX_HTTP_AUTH_ENABLED_KEY = "http_auth_enabled";
 	private static final String ZABBIX_HTTP_AUTH_USER_KEY = "http_auth_username";
 	private static final String ZABBIX_HTTP_AUTH_PASSWORD_KEY = "http_auth_password";
@@ -166,7 +165,6 @@ public class ZabbixServerPreferenceActivity extends PreferenceActivity implement
 
 		if (key.equals(ZABBIX_URL_KEY) || key.equals(ZABBIX_USER_KEY)
 				|| key.equals(ZABBIX_PASSWORD_KEY)
-				|| key.equals(ZABBIX_TRUST_ALL_SSL_CA_KEY)
 				|| key.equals(ZABBIX_HTTP_AUTH_ENABLED_KEY)
 				|| key.equals(ZABBIX_HTTP_AUTH_USER_KEY)
 				|| key.equals(ZABBIX_HTTP_AUTH_PASSWORD_KEY)) {

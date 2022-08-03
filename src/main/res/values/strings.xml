@@ -78,7 +78,7 @@ This file is part of ZAX.
     <string name="loading">Loading</string>
     <string name="zabbix_login">Zabbix Login</string>
     <string name="zabbix_login_in_progress">Logging in to Zabbix. Please wait.</string>
-    <string name="push_notifications">Push Notifications</string>
+    <string name="push_notifications">Pubnub Push Notifications</string>
     <string name="push_connection_error">Error connecting to Pubnub</string>
     <string name="push_connection_success">Successfully connected to Pubnub</string>
     <string name="enabled">Enabled</string>
@@ -97,13 +97,11 @@ This file is part of ZAX.
     <string name="event_details">Event Details</string>
     <string name="latest_data">Latest data</string>
     <string name="at">at</string>
-    <string name="ringtone">Ringtone</string>
+    <string name="ringtone">Ringtone for Problem-Messages</string>
     <string name="acknowledge_event">Acknowledge Event</string>
     <string name="share">Share</string>
     <string name="comment">Comment</string>
     <string name="cancel">Cancel</string>
-    <string name="trust_all_ssl_certificates">Trust all SSL Certificates</string>
-    <string name="trust_all_ssl_certificates_description">Enable this option if you are using SSL and your server\'s certificate is not issued by a certificate authority trusted by your device. Attention: This basically disables SSL. Check only if you know what you are doing!</string>
     <string name="homescreen_widget">Homescreen Widget</string>
     <string name="theme">Theme</string>
     <string name="theme_dark">Use dark theme</string>
@@ -129,12 +127,19 @@ This file is part of ZAX.
 
     <string name="add_server">Add Server</string>
 
-    <string name="remove">Remove</string>
-
-    <string name="change_name">Change Name</string>
+    <string name="delete">Delete</string>
+    <string name="rename">Rename</string>
     
     <string name="android_version_too_old_for_parallel">Your Android version is too old for using multiple zabbix servers on homescreen widgets.</string>
     <string name="info">Info</string>
     <string name="serverpreferences_url_validation_invalid_url">The entered URL is not valid and was not saved. (Did you use backslashes instead of slashes?)</string>
     <string name="open_server_selection_list">open server selection list</string>
+    <string name="gcm_sender_id">GCM Sender ID</string>
+    <string name="gcm_push_notifications">GCM Push Notifications</string>
+    <string name="gcm_push_server">GCM Push Server</string>
+    <string name="push_dialog_info">To use Push Notifications, you have to configure your Zabbix server. Please read the Howto at http://inovex.github.io/zax/#howto_push</string>
+    <string name="settings_incomplete">Some settings are missing. Push-Notifications might not work.</string>
+    <string name="ringtone_ok">Ringtone for OK-Messages</string>
+    <string name="vibrate_desc">Vibrate on Notification</string>
+    <string name="vibrate">Vibrate</string>
 </resources>

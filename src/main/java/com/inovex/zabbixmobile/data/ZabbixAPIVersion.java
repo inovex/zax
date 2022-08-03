@@ -30,7 +30,12 @@ package com.inovex.zabbixmobile.data;
  */
 
 public enum ZabbixAPIVersion {
-	API_1_3(0), API_1_4(1), API_2_0_TO_2_3(2), API_GT_2_4(3);
+	API_1_3(0),
+	API_1_4(1),
+	API_2_0_TO_2_3(2),
+	API_2_4(3),
+	API_GT_3(4);
+
 
 	private final int value;
 
@@ -51,7 +56,9 @@ public enum ZabbixAPIVersion {
 			case 2:
 				return API_2_0_TO_2_3;
 			case 3:
-				return API_GT_2_4;
+				return API_2_4;
+			case 4:
+				return API_GT_3;
 			default:
 				return API_1_3;
 		}

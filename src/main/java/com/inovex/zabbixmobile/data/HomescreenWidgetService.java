@@ -17,9 +17,6 @@ This file is part of ZAX.
 
 package com.inovex.zabbixmobile.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.PendingIntent;
@@ -48,6 +45,9 @@ import com.inovex.zabbixmobile.widget.ZaxWidgetProvider;
 import com.inovex.zabbixmobile.widget.ZaxWidgetProviderList;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Started service providing the homescreen widget with functionality to
  * retrieve data from Zabbix (at the moment the active triggers).
@@ -57,9 +57,11 @@ public class HomescreenWidgetService extends Service {
 	public static final String WIDGET_ID = "WIDGET_ID";
 
 	private enum DisplayStatus {
-		ZAX_ERROR(R.drawable.severity_high), OK(R.drawable.ok), AVG(
-				R.drawable.severity_average), HIGH(R.drawable.severity_high), LOADING(
-				R.drawable.icon);
+		ZAX_ERROR(R.drawable.severity_high),
+		OK(R.drawable.ok),
+		AVG(R.drawable.severity_average),
+		HIGH(R.drawable.severity_high),
+		LOADING(R.drawable.icon);
 
 		private final int drawable;
 
@@ -125,7 +127,7 @@ public class HomescreenWidgetService extends Service {
 		}
 
 		final ZabbixRemoteAPI mRemoteAPI = new ZabbixRemoteAPI(this.getApplicationContext(),
-					mDatabaseHelper, zabbixServerId, null, null);
+					mDatabaseHelper, zabbixServerId, null);
 
 		if (importProblemsTask != null && importProblemsTask.getStatus() == AsyncTask.Status.RUNNING && Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
 			// your android version is too old
@@ -134,7 +136,7 @@ public class HomescreenWidgetService extends Service {
 			return;
 		}
 
-		importProblemsTask = new RemoteAPITask(mRemoteAPI) {
+		importProblemsTask = new RemoteAPITask(mRemoteAPI,this) {
 
 			private List<Trigger> problems;
 			private boolean error;

@@ -18,11 +18,11 @@ This file is part of ZAX.
 package com.inovex.zabbixmobile.data;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.inovex.zabbixmobile.ExceptionBroadcastReceiver;
+import com.inovex.zabbixmobile.R;
 import com.inovex.zabbixmobile.exceptions.FatalException;
 import com.inovex.zabbixmobile.exceptions.FatalException.Type;
 import com.inovex.zabbixmobile.exceptions.ZabbixLoginRequiredException;
@@ -38,9 +38,12 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 
 	private static final String TAG = RemoteAPITask.class.getSimpleName();
 	private final ZabbixRemoteAPI api;
+	private Context context;
+	private FatalException ex = null;
 
-	public RemoteAPITask(ZabbixRemoteAPI api) {
+	public RemoteAPITask(ZabbixRemoteAPI api, Context context) {
 		this.api = api;
+		this.context = context;
 	}
 
 	@Override
@@ -67,16 +70,15 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 	 *            the exception
 	 */
 	private void handleException(FatalException exception) {
-		exception.printStackTrace();
-		// send broadcast with message depending on the type of exception
-		Context context = api.getContext();
-		Intent intent = new Intent();
-		intent.setAction("com.inovex.zabbixmobile.EXCEPTION");
-		intent.putExtra(ExceptionBroadcastReceiver.EXTRA_MESSAGE,
-				context.getString(exception.getMessageResourceId()));
-		context.sendBroadcast(intent);
-		// print stack trace to log
-		exception.printStackTrace();
+		if(!exception.getType().equals(Type.NO_API_ACCESS)){
+			if(exception.getCause() != null){
+				exception.getCause().printStackTrace();
+			} else {
+				exception.printStackTrace();
+			}
+		} else {
+			ex = exception;
+		}
 	}
 
 	/**
@@ -111,4 +113,34 @@ public abstract class RemoteAPITask extends AsyncTask<Void, Integer, Void> {
 		publishProgress(values);
 	}
 
+	@Override
+	protected void onPostExecute(Void aVoid) {
+		super.onPostExecute(aVoid);
+		String errorDescription = null;
+		if(ex != null) {
+			switch (ex.getType()){
+				case NO_API_ACCESS:
+					errorDescription = context.getResources().getString(R.string.exc_no_api_access);
+					break;
+				case ACCOUNT_BLOCKED:
+					errorDescription = context.getResources().getString(R.string.exc_account_blocked);
+					break;
+				case HTTP_AUTHORIZATION_REQUIRED:
+					errorDescription = context.getResources().getString(R.string.exc_http_auth_required);
+					break;
+				case SERVER_NOT_FOUND:
+					errorDescription = context.getResources().getString(R.string.exc_not_found);
+					break;
+				case ZABBIX_LOGIN_INCORRECT:
+					errorDescription = context.getResources().getString(R.string.exc_login_incorrect);
+					break;
+				case PRECONDITION_FAILED:
+					errorDescription = context.getResources().getString(R.string.exc_precondition_failed);
+					break;
+			}
+			if(errorDescription != null){
+				Toast.makeText(context, errorDescription, Toast.LENGTH_SHORT).show();
+			}
+		}
+	}
 }
